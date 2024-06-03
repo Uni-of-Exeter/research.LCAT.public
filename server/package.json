@@ -1,0 +1,20 @@
+{
+  "name": "climate-geo-server",
+  "version": "0.0.0",
+  "private": true,
+  "description": "LCAT Express server",
+  "scripts": {
+    "dev": "PORT=3000 nodemon ./bin/www",
+    "start": "PORT=3000 node ./bin/www",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "morgan": "^1.10.0",
+    "pg": "^8.11.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
