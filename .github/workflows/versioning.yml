@@ -1,0 +1,49 @@
+name: Versioning
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**/*'
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  Versioning:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Setup Server
+        run: |
+          cd server
+          npm install
+          npm ci
+          echo Installed Server Packages on `date`
+          cd ..
+      
+      - name: Setup Client
+        run: |
+          cd client
+          npm install --legacy-peer-deps
+          npm ci --legacy-peer-deps
+          echo Installed Client Packages on `date`
+
+      - name: Run Semantic Versioning
+        run: |
+          cd client
+          npx semantic-release
