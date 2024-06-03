@@ -6,7 +6,7 @@ here](https://lcat.uk/).
 
 ## License
 
-* Development before 2024 Copyright © Then Try This & University of Exeter
+* Development before 2024 Copyright © University of Exeter & Then Try This
 * Development from 2024 Copyright © University of Exeter
 
 This program is free software: you can redistribute it and/or modify
