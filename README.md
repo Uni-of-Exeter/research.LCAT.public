@@ -1,4 +1,4 @@
-# Climate tool for ECEHH/Cornwall Council
+# LCAT - Local Climate Adaptation Tool
 
 A tool for connecting together scientific information across climate,
 health and policy in the UK. You can try the [prototype version
