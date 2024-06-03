@@ -1,0 +1,180 @@
+@font-face {
+    font-family: "Montserrat-Medium";
+    src: local("Montserrat-Medium"), url("../fonts/Montserrat-Medium.ttf");
+}
+
+@font-face {
+    font-family: "Montserrat-Black";
+    src: local("Montserrat-Black"), url("../fonts/Montserrat-Black.ttf");
+}
+
+@font-face {
+    font-family: "Montserrat-SemiBold";
+    src: local("Montserrat-SemiBold"), url("../fonts/Montserrat-SemiBold.ttf");
+}
+
+body {
+    box-sizing: border-box;
+    width: 100%;
+    background: white;
+    color: black;
+    font-family: "Montserrat-Medium", Arial, Helvetica, sans-serif;
+    font-size: 1em;
+    padding: 0;
+    margin: 0;
+    line-height: 1.9; /* measured to match iOS when selects push the text apart */
+}
+
+h1 {
+    font-family: "Montserrat-Black", Arial, Helvetica, sans-serif;
+    font-size: 200%;
+    margin-bottom: 0em;
+    color: #115158ff;
+    text-transform: uppercase;
+}
+
+h2 {
+    font-family: "Montserrat-SemiBold", Arial, Helvetica, sans-serif;
+    border-bottom: 3px solid #f5821fff;
+    text-transform: uppercase;
+}
+
+@media (min-width: 1000px) {
+    body {
+        font-size: 1.3em;
+    }
+}
+
+@media (min-width: 1500px) {
+    body {
+        font-size: 2em;
+    }
+}
+
+select {
+    font-family: "Montserrat-Medium", Arial, Helvetica, sans-serif;
+    border: none;
+    background: #b2e1bcff;
+    font-size: 1em;
+    border-radius: 5px;
+    padding: 0em;
+}
+
+select option {
+    background: #b2e1bcff;
+}
+
+select:hover {
+    background: #f5821fff;
+}
+
+a {
+    color: #115158ff;
+}
+
+button {
+    font-family: "Montserrat-SemiBold", Arial, Helvetica, sans-serif;
+    border: none;
+    background: #ffd768ff;
+    font-size: 1em;
+    border-radius: 2px;
+}
+
+button:hover {
+    background: #f5821fff;
+}
+
+/* Style the button that is used to open and close the collapsible content */
+.collapsible {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: content-box;
+    position: relative;
+    border: none;
+    border-radius: 5px;
+}
+
+.collapsible .header {
+    font-family: "Montserrat-SemiBold", Arial, Helvetica, sans-serif;
+    text-align: center;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    padding-left: 2em;
+    padding-right: 2em;
+    background: #ffd768ff;
+    border-radius: 5px;
+}
+
+.collapsible .header:hover {
+    background: #f5821fff;
+}
+
+/* Style the collapsible content. Note: hidden by default */
+.collapsible-content {
+    padding-left: 2em;
+    padding-right: 2em;
+    overflow: hidden; /* Hide the element content, while height = 0 */
+    max-height: 0;
+    transition: max-height 0.5s ease-out;
+}
+
+.collapsible-content.visible {
+    max-height: 500px;
+    transition: max-height 0.5s ease-in;
+}
+
+.horiz-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    justify-content: space-around;
+}
+
+.vert-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.note {
+    color: #115158;
+    font-size: 80%;
+}
+
+.projected-regions {
+    font-family: "Montserrat-SemiBold", Arial, Helvetica, sans-serif;
+}
+
+.white-section {
+    background: #ffffff;
+    padding-top: 0.5em;
+    padding-bottom: 1.5em;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+.grey-section {
+    background: #f7f7f7;
+    padding-top: 0.5em;
+    padding-bottom: 1.5em;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+@media (min-width: 1000px) {
+    .white-section {
+        padding-left: 50px;
+        padding-right: 50px;
+    }
+    .grey-section {
+        padding-left: 50px;
+        padding-right: 50px;
+    }
+}
+
+.text-emphasis {
+    font-family: "Montserrat-SemiBold", Arial, Helvetica, sans-serif;
+}

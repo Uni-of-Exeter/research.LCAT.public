@@ -1,0 +1,42 @@
+.horiz-container-hazard {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.hazard-img {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.vert-container-hazard {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 75%;
+    width: 33.33%;
+    box-sizing: border-box;
+    margin-bottom: 1.5em;
+    line-height: 1.6;
+    justify-content: space-between;
+}
+
+.hazard-text {
+    padding: 1em;
+    font-size: 120%;
+}
+
+@media (min-width: 1000px) {
+    .vert-container-hazard {
+        width: 20%;
+    }
+}
+
+.climate-hazard-emphasis {
+    font-weight: bold;
+    font-size: 1.3em;
+}

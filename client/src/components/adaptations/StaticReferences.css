@@ -1,0 +1,18 @@
+.reference-container {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    padding-inline: 1em;
+    background-color: white;
+}
+
+.reference-container ul li:nth-child(1),
+.reference-container ul li:nth-child(2),
+.reference-container ul li:nth-child(3),
+.reference-container ul li:nth-child(4) {
+    list-style-type: none;
+}
+
+.reference-emphasis {
+    font-weight: bold;
+    font-size: 1.2em;
+}

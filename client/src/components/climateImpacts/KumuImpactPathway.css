@@ -1,0 +1,12 @@
+.iframe-container {
+    width: 100%;
+    height: 700px;
+    position: relative;
+    justify-content: center;
+}
+
+.iframe-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}

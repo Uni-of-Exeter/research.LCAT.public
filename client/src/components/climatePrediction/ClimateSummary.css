@@ -1,0 +1,29 @@
+.climate-summary .horiz-container {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    flex-wrap: wrap;
+    /*    justify-content: center; */
+}
+
+.climate-summary .vert-container {
+    text-align: center;
+    margin-bottom: 1em;
+    width: 50%;
+    line-height: 1.6;
+}
+
+@media (min-width: 1000px) {
+    .climate-summary .vert-container {
+        width: 25%;
+    }
+}
+
+.climate-summary .vert-container .climate-arrow {
+    margin-bottom: 0.5em;
+}
+
+.summary-text {
+    width: 12em;
+    font-size: 75%;
+}

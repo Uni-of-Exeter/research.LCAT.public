@@ -1,0 +1,50 @@
+.horiz-container-impact {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.health-impact-summary {
+    border-bottom-color: #351431;
+    border-bottom-width: 4px;
+}
+
+.community-impact-summary {
+    border-bottom-color: #266334;
+    border-bottom-width: 4px;
+}
+
+.impact-img {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.vert-container-impact {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 75%;
+    width: 33.33%;
+    box-sizing: border-box;
+    margin-bottom: 1.5em;
+    line-height: 1.6;
+}
+
+.impact-text {
+    padding-left: 2em;
+    padding-right: 2em;
+}
+
+.details-placeholder {
+    text-align: center;
+}
+
+@media (min-width: 1000px) {
+    .vert-container-impact {
+        width: 25%;
+    }
+}
