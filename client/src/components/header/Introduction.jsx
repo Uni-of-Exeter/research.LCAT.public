@@ -25,24 +25,43 @@ function Introduction() {
                     target="_blank"
                     rel="noreferrer"
                 >
-                    <strong className="text-emphasis">anonymous evaluation survey.</strong>
+                    anonymous evaluation survey.
                 </a>
+            </p>
+
+            <p>
+                <strong className="text-emphasis">Helpful resources:</strong>
+            </p>
+
+            <ul>
+                <li>
+                    <a
+                        href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-Introduction-to-Local-Climate-Adaptation-May-2024.pdf"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        Introduction to Local Climate Adaptation.
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Feb-24.pdf"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        LCAT User Guide.
+                    </a>
+                </li>
+            </ul>
+
+            <p>
+                <strong className="text-emphasis">Data disclaimer:</strong>
             </p>
 
             <p>
                 With apologies to our users in Northern Ireland, unfortunately the dataset we are using to model local
                 future climate does not cover Northern Ireland. We have identified an alternative dataset that will
                 allow us to provide climate models for the region, this will be added as soon as possible.
-            </p>
-
-            <p>
-                <a
-                    href="https://www.ecehh.org/research/local-climate-adaptation-tool/"
-                    target="_blank"
-                    rel="noreferrer"
-                >
-                    See our User Guide for more information.
-                </a>
             </p>
         </div>
     );
