@@ -1,0 +1,207 @@
+#!/usr/bin/env python3
+# Development before 2024 Copyright (C) Then Try This and University of Exeter
+# Development from 2024 Copyright (C) University of Exeter
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the Common Good Public License Beta 1.0 as
+# published at http://www.cgpl.org
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# Common Good Public License Beta 1.0 for more details.
+
+# This script creates a command line interface for building and updating
+# the climate tool database, as well as providing documentation of the
+# recipes for how it's done
+
+import yaml
+import os, sys
+from builder import climate_db
+from builder import index_multiple_deprivation as imd
+from builder import link_geom_climate
+from builder import network_from_json
+from builder import stats
+from builder import nfvi_sfri
+from builder import tiff_loader
+from builder import cache_climate
+from builder import link_geom_lsoa
+from builder import vulnerabilities
+
+
+def load_config():
+    with open("config.yml") as f:
+        return yaml.load(f, Loader=yaml.FullLoader)
+
+
+conf = load_config()
+db = climate_db.db(conf)
+
+# all tables should be dropped and recreated when rerunning commands
+
+if len(sys.argv) < 2 or sys.argv[1] == "-?" or sys.argv[1] == "--help":
+    print("Welcome to the climate tool database builder")
+else:
+
+    # load boundaries --------------------------------------------------------
+
+    if sys.argv[1] == "boundary_lsoa":
+        db.load_shp_geom(conf["lsoa_data_shp"], "boundary_lsoa", "27700")
+
+    if sys.argv[1] == "boundary_msoa":
+        db.load_shp_geom(conf["msoa_data_shp"], "boundary_msoa", "27700")
+
+    if sys.argv[1] == "boundary_uk_counties":
+        db.load_shp_geom(conf["uk_counties_data_shp"], "boundary_uk_counties", "32630")
+
+    if sys.argv[1] == "boundary_la_districts":
+        db.load_shp_geom(conf["la_districts_data_shp"], "boundary_la_districts", "27700")
+
+    if sys.argv[1] == "boundary_sc_dz":
+        db.load_shp_geom(conf["sc_dz_data_shp"], "boundary_sc_dz", "4326")
+
+    if sys.argv[1] == "boundary_parishes":
+        db.load_shp_geom(conf["parishes_data_shp"], "boundary_parishes", "27700")
+
+    # climate/boundary --------------------------------------------------------
+
+    if sys.argv[1] == "link_lsoa":
+        link_geom_climate.multi_clever(db, "boundary_lsoa", "chess_scape_grid")
+
+    if sys.argv[1] == "link_msoa":
+        link_geom_climate.multi_clever(db, "boundary_msoa", "chess_scape_grid")
+
+    if sys.argv[1] == "link_uk_counties":
+        link_geom_climate.multi_clever(db, "boundary_uk_counties", "chess_scape_grid")
+
+    if sys.argv[1] == "link_la_districts":
+        link_geom_climate.multi_clever(db, "boundary_la_districts", "chess_scape_grid")
+
+    if sys.argv[1] == "link_sc_dz":
+        link_geom_climate.multi_clever(db, "boundary_sc_dz", "chess_scape_grid")
+
+    if sys.argv[1] == "link_parishes":
+        link_geom_climate.multi_clever(db, "boundary_parishes", "chess_scape_grid")
+
+    if sys.argv[1] == "cache_climate":
+        for boundary in [
+            "boundary_parishes"
+        ]:  # ,"boundary_la_districts","boundary_uk_counties","boundary_msoa","boundary_sc_dz","boundary_lsoa"]:
+            for climate in [
+                "chess_scape_rcp85_annual",
+                "chess_scape_rcp85_summer",
+                "chess_scape_rcp85_winter",
+                "chess_scape_rcp60_annual",
+                "chess_scape_rcp60_summer",
+                "chess_scape_rcp60_winter",
+            ]:
+                cache_climate.cache_climate(db, boundary, climate)
+
+    # vulnerabilities --------------------------------------------------------
+
+    # cache containing lsoas for all other boundaries
+    if sys.argv[1] == "link_all_to_lsoa":
+        link_geom_lsoa.centroids(db, "boundary_uk_counties", "lsoa", "27700")
+        # link_geom_lsoa.centroids(db,"boundary_la_districts","lsoa","27700")
+        # link_geom_lsoa.centroids(db,"boundary_msoa","lsoa","27700")
+        # link_geom_lsoa.centroids(db,"boundary_parishes","lsoa","27700")
+
+    # cache containing datzones for all other boundaries
+    if sys.argv[1] == "link_all_to_sc_dz":
+        link_geom_lsoa.centroids(db, "boundary_uk_counties", "sc_dz", "4326")
+        link_geom_lsoa.centroids(db, "boundary_la_districts", "sc_dz", "4326")
+        link_geom_lsoa.centroids(db, "boundary_msoa", "sc_dz", "4326")
+        link_geom_lsoa.centroids(db, "boundary_parishes", "sc_dz", "4326")
+
+    if sys.argv[1] == "climatejust_load_nfvi":
+        db.load_shp_geom(conf["nfvi_sfri_shp"], "nfvi_sfri", "27700")
+
+    if sys.argv[1] == "climatejust_average_nfvi":
+        # vulnerabilities.import_to_self(db,"boundary_lsoa")
+        # vulnerabilities.import_to_self(db,"boundary_sc_dz")
+        vulnerabilities.import_to_table_median(db, "boundary_uk_counties")
+        vulnerabilities.import_to_table_median(db, "boundary_la_districts")
+        vulnerabilities.import_to_table_median(db, "boundary_msoa")
+        vulnerabilities.import_to_table_median(db, "boundary_parishes")
+
+    if sys.argv[1] == "load_imd_from_csv":
+        # first we need to load in the base imd data (slowly)
+        # scotland
+        imd.load_self_sc_dz(db, "boundary_sc_dz", conf["simd_data_dz_csv"])
+        # england
+        imd.load_self_lsoa(db, "boundary_lsoa", conf["imd_data_lsoa_csv"])
+        # wales
+        imd.load_self_lsoa_wimd(db, "boundary_lsoa", conf["imd_data_lsoa_wales_csv"])
+
+    if sys.argv[1] == "add_average_imd":
+        # now we can use the links to average them across the larger boundaries
+        imd.import_to_table(db, "boundary_uk_counties")
+        imd.import_to_table(db, "boundary_la_districts")
+        imd.import_to_table(db, "boundary_msoa")
+        imd.import_to_table(db, "boundary_parishes")
+
+    if sys.argv[1] == "stats":
+        stats.compute(db)
+
+    if sys.argv[1] == "climate_stats":
+        stats.compute_climate(db)
+
+    if sys.argv[1] == "vuln_stats":
+        stats.compute_vulnerabilities(db)
+
+    if sys.argv[1] == "vuln_avg":
+        stats.compute_vulnerability_averages(db)
+
+    # climate ----------------------------------------------------------------
+
+    if sys.argv[1] == "chess_tif_grid":
+        tiff_loader.import_grid(db, conf["chess_tiff_decades_path"], sys.argv[2])
+
+    if sys.argv[1] == "chess_tif_print_crs":
+        tiff_loader.print_crs(sys.argv[2])
+
+    if sys.argv[1] == "chess_tiff_nuke":
+        for rcp in ["rcp60", "rcp85"]:
+            for season in ["annual", "summer", "winter"]:
+                tiff_loader.nuke(db, "chess_scape_" + rcp + "_" + season)
+
+    if sys.argv[1] == "chess_tiff_create":
+        tiff_loader.create_averages(db, sys.argv[2], conf["chess_tiff_path"], sys.argv[3])
+
+    if sys.argv[1] == "chess_tiff_create_batch":
+        for rcp in ["rcp60", "rcp85"]:
+            for variable in ["tas", "pr", "rsds", "sfcWind"]:
+                tiff_loader.create_averages(db, rcp, conf["chess_tiff_path"], variable)
+
+    if sys.argv[1] == "chess_tiff_import":
+        for rcp in ["rcp60", "rcp85"]:
+            for variable in ["tas", "pr", "rsds", "sfcWind"]:
+                tiff_loader.import_tiffs(db, conf["chess_tiff_decades_path"], rcp, variable)
+
+    # network ----------------------------------------------------------
+
+    if sys.argv[1] == "network_json":
+        network_from_json.load(db, conf["network_json"], "Heat version 2")
+
+    if sys.argv[1] == "network_refs":
+        network_from_json.load_refs(db, conf["refs"])
+
+    if sys.argv[1] == "network_nuke":
+        network_from_json.reset(db)
+
+    if sys.argv[1] == "all":
+        # ukcri.load(db,conf['uk_cri_data_path'])
+        # db.load_shp_geom(conf['lsoa_data_shp'],"lsoa","27700")
+        # db.load_shp_geom(conf['msoa_data_shp'],"msoa","27700")
+        # db.load_shp_geom(conf['counties_data_shp'],"counties","4326")
+        # imd.prepare_col(db,"lsoa")
+        # imd.prepare_col(db,"msoa")
+        # imd.prepare_col(db,"counties")
+
+        # link_geom_climate.simple(db,"lsoa")
+        # link_geom_climate.multi(db,"msoa")
+        # link_geom_climate.multi(db,"counties")
+
+        # imd.load_msoa(db,conf['imd_data_msoa_csv'])
+        # imd.load_counties(db);
+        imd.load_lsoa(db, conf["imd_data_lsoa_csv"])
