@@ -56,12 +56,22 @@ def import_grid(db, fn):
                         properties={},
                     )
                 )
-    db.import_geojson_feature("uk_cri_grid", "27700", geojson.FeatureCollection(features))
+    db.import_geojson_feature(
+        "uk_cri_grid", "27700", geojson.FeatureCollection(features)
+    )
     db.conn.commit()
 
 
 def load_data(db, table, fn):
-    grid_cols = {"year": 0, "location": 1, "lowest": 2, "2nd_low": 3, "median": 4, "2nd_high": 5, "highest": 6}
+    grid_cols = {
+        "year": 0,
+        "location": 1,
+        "lowest": 2,
+        "2nd_low": 3,
+        "median": 4,
+        "2nd_high": 5,
+        "highest": 6,
+    }
     print("loading " + table)
     with open(fn) as csvfile:
         reader = csv.reader(csvfile)
@@ -77,7 +87,11 @@ def load_data(db, table, fn):
 
 
 data_cols = {
-    "uk_cri_grid": [["id", "serial primary key"], ["geom", "geometry(geometry, 27700)"], ["properties", "jsonb"]]
+    "uk_cri_grid": [
+        ["id", "serial primary key"],
+        ["geom", "geometry(geometry, 27700)"],
+        ["properties", "jsonb"],
+    ]
 }
 
 model = "hadgem_rcp85"

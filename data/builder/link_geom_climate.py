@@ -208,6 +208,14 @@ def multi_clever(db, geo_table, grid):
                 db.cur.execute(q)
                 count += 1
         db.conn.commit()
-        print(geo_table + " " + str(count) + "/" + str(len(location_squares)) + ": " + str(c))
+        print(
+            geo_table
+            + " "
+            + str(count)
+            + "/"
+            + str(len(location_squares))
+            + ": "
+            + str(c)
+        )
         geo_id = scur.fetchone()
         c += 1

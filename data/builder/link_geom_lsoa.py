@@ -18,7 +18,13 @@ from shapely.geometry import shape, Point
 def centroids(db, geo_table, base, base_epsg):
     # get the tile geometry in lat/lng
     db.create_tables(
-        {f"{geo_table}_{base}_mapping": [["id", "serial primary key"], ["geo_id", "int"], ["lsoa_id", "int"]]}
+        {
+            f"{geo_table}_{base}_mapping": [
+                ["id", "serial primary key"],
+                ["geo_id", "int"],
+                ["lsoa_id", "int"],
+            ]
+        }
     )
 
     print("loading geometry " + geo_table)
@@ -55,4 +61,13 @@ def centroids(db, geo_table, base, base_epsg):
                 count += 1
 
         db.conn.commit()
-        print(geo_table + " " + str(count) + "/" + str(len(lsoas)) + ": " + str(int((c / len(geometry)) * 100)) + "%")
+        print(
+            geo_table
+            + " "
+            + str(count)
+            + "/"
+            + str(len(lsoas))
+            + ": "
+            + str(int((c / len(geometry)) * 100))
+            + "%"
+        )

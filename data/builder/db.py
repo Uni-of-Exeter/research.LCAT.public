@@ -54,13 +54,16 @@ class db:
             self.conn.commit()
 
     def import_geojson_feature(self, table, srid, feature_data):
-        INSERT_STATEMENT = (
-            f"INSERT INTO {table} (id, geom, properties) VALUES (%s, ST_SetSRID(ST_GeomFromGeoJSON(%s), {srid}), %s);"
-        )
+        INSERT_STATEMENT = f"INSERT INTO {table} (id, geom, properties) VALUES (%s, ST_SetSRID(ST_GeomFromGeoJSON(%s), {srid}), %s);"
         if feature_data.get("type") == "FeatureCollection":
             for feature in feature_data["features"]:
                 self.import_geojson_feature(table, srid, feature)
         elif feature_data.get("type") == "Feature":
             geojson = json.dumps(feature_data["geometry"])
-            str_dict = dict((str(k), str(v)) for k, v in feature_data["properties"].items())
-            self.cur.execute(INSERT_STATEMENT, (feature_data["id"], geojson, json.dumps(feature_data["properties"])))
+            str_dict = dict(
+                (str(k), str(v)) for k, v in feature_data["properties"].items()
+            )
+            self.cur.execute(
+                INSERT_STATEMENT,
+                (feature_data["id"], geojson, json.dumps(feature_data["properties"])),
+            )

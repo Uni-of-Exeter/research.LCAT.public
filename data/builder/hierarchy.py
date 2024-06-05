@@ -56,7 +56,9 @@ def lsoa_to_msoa(db):
 
 
 def lsoa_to_counties(db):
-    db.create_tables({"hierarchy_lsoa_to_counties": [["county", "int"], ["lsoa", "int"]]})
+    db.create_tables(
+        {"hierarchy_lsoa_to_counties": [["county", "int"], ["lsoa", "int"]]}
+    )
 
     print("loading lsoa geom")
     lsoas = load_centroids(db)
