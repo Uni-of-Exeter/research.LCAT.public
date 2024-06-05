@@ -81,6 +81,51 @@ A config file is used to store database credentials and file locations, both req
     parishes_data_shp: "<path/to/shapefile>"
     ```
 
+## Processing steps
+
+With the Python environment set up, data files downloaded, and `config.yml` populated, run the build commands below. First, build all the decade averaged GeoTiff files from the yearly ones:
+
+    ```bash
+    ./build chess_tiff_create_batch
+    ```
+
+Create the tables with:
+
+    ```bash
+    ./build chess_tiff_nuke
+    ```
+
+Populate them with:
+
+    ```bash
+    ./build chess_tiff_import
+    ```
+
+This populates the database tables with all climate variables and decades so the server can provide them in a single select statement (averaged across boundaries)
+
+We also need to load the grid used by the GeoTIFF files.
+
+    ```bash
+    ./build chess_tiff_grid <name_of_a_single_GeoTiff_file>
+    ```
+
+Once we have a climate data grid, we need to import the boundaries we wish to use and link them to the climate data grid:
+
+    ```bash
+    ./build boundary_<boundary_type>
+    ./build link_<boundary_type>
+    ```
+
+Run these commands for each boundary. Linking creates a new table `<boundary_type>_grid_mapping`, which is a many to many mapping from boundary IDs to all the climate grid IDs they overlap or intersect with.
+
+Create the caches: this works across all boundaries and all climate RCP/season tables.
+
+    ```bash
+    ./build cache_all_climate
+    ```
+
+A script has been provided in `data/scripts/build_all.sh`, which shows the build process line by line.
+
 ## Appendix A: GeoTIFF CRS
 
 For reference, this is the coordinate reference system for the GeoTIFFs:
