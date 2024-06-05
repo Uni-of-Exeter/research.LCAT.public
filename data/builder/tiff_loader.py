@@ -18,13 +18,14 @@
 
 # Functions to read (and write) GeoTiff climate model files
 
-import rasterio
-from builder import climate_db
-from psycopg2.extras import execute_values
-import numpy
 import geojson
-from rasterio.plot import show
+import numpy
+import rasterio
+from psycopg2.extras import execute_values
 from pyproj import Transformer
+from rasterio.plot import show
+
+from builder import climate_db
 
 seasons = ["winter", "spring", "summer", "autumn", "annual"]
 decades = [

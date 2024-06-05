@@ -20,10 +20,11 @@
 # their own tables indexed by grid cell id
 
 import csv
-import yaml
-import psycopg2
-import geojson
 import json
+
+import geojson
+import psycopg2
+import yaml
 
 from builder import climate_db
 

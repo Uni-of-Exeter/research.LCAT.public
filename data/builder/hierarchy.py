@@ -16,7 +16,7 @@
 
 # link counties -> msoa -> lsoa to speed up average calculations
 
-from shapely.geometry import shape, Point
+from shapely.geometry import Point, shape
 
 
 def load_centroids(db):

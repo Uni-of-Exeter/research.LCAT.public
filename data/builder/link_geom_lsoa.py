@@ -12,7 +12,7 @@
 
 import geojson
 import psycopg2
-from shapely.geometry import shape, Point
+from shapely.geometry import Point, shape
 
 
 def centroids(db, geo_table, base, base_epsg):

@@ -20,10 +20,12 @@
 # their own tables indexed by grid cell id
 
 import csv
-import yaml
-import psycopg2
+import json
+import os
+
 import geojson
-import json, os
+import psycopg2
+import yaml
 from psycopg2.extras import Json
 
 

@@ -10,11 +10,12 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # Common Good Public License Beta 1.0 for more details.
 
-import netCDF4 as nc
-from builder import climate_db
-from psycopg2.extras import execute_values
-import numpy
 import geojson
+import netCDF4 as nc
+import numpy
+from psycopg2.extras import execute_values
+
+from builder import climate_db
 
 
 def print_info(path):
