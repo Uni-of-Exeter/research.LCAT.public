@@ -34,95 +34,95 @@ This method works better for smaller grid cells and larger boundaries. For examp
 
 Before starting, it can helpful to keep the `.venv` folder in the local project directory. This requires a local config change:
 
-    ```bash
-    poetry config virtualenvs.in-project true
-    ```
+```bash
+poetry config virtualenvs.in-project true
+```
 
 Install dependencies with:
 
-    ```bash
-    cd data
-    poetry install
-    ```
+```bash
+cd data
+poetry install
+```
 
 Activate the virtual environment with:
 
-    ```bash
-    poetry shell
-    ```
+```bash
+poetry shell
+```
 
 This should ensure that the virtual environment is correctly activated. To manually run a Python script with the Poetry environment, run:
 
-    ```bash
-    poetry run python my_script.py
-    ```
+```bash
+poetry run python my_script.py
+```
 
 ## Setting up `config.yml`
 
 A config file is used to store database credentials and file locations, both required by the data scripts to populate the database. Create `data/config.yml` and populate it with the information below:
 
-    ```yml
-    # Database authentication
-    user: "<db_username>"
-    password: "<db_password>"
-    host: "localhost"
-    dbname: "<db_name>"
+```yml
+# Database authentication
+user: "<db_username>"
+password: "<db_password>"
+host: "localhost"
+dbname: "<db_name>"
 
-    # Paths to ceda chess scape files
-    chess_tiff_path: "<path/to/orignal/tiffs>"
-    chess_tiff_decades_path: "<path/to/decades>"
+# Paths to ceda chess scape files
+chess_tiff_path: "<path/to/orignal/tiffs>"
+chess_tiff_decades_path: "<path/to/decades>"
 
-    # Paths to boundary shapefiles
-    lsoa_data_shp: "<path/to/shapefile>"
-    msoa_data_shp: "<path/to/shapefile>"
-    la_districts_data_shp: "<path/to/shapefile>"
-    sc_dz_data_shp: "<path/to/shapefile>"
-    uk_counties_data_shp: "<path/to/shapefile>"
-    parishes_data_shp: "<path/to/shapefile>"
-    ```
+# Paths to boundary shapefiles
+lsoa_data_shp: "<path/to/shapefile>"
+msoa_data_shp: "<path/to/shapefile>"
+la_districts_data_shp: "<path/to/shapefile>"
+sc_dz_data_shp: "<path/to/shapefile>"
+uk_counties_data_shp: "<path/to/shapefile>"
+parishes_data_shp: "<path/to/shapefile>"
+```
 
 ## Processing steps
 
 With the Python environment set up, data files downloaded, and `config.yml` populated, run the build commands below. First, build all the decade averaged GeoTiff files from the yearly ones:
 
-    ```bash
-    ./build chess_tiff_create_batch
-    ```
+```bash
+./build chess_tiff_create_batch
+```
 
 Create the tables with:
 
-    ```bash
-    ./build chess_tiff_nuke
-    ```
+```bash
+./build chess_tiff_nuke
+```
 
 Populate them with:
 
-    ```bash
-    ./build chess_tiff_import
-    ```
+```bash
+./build chess_tiff_import
+```
 
 This populates the database tables with all climate variables and decades so the server can provide them in a single select statement (averaged across boundaries)
 
 We also need to load the grid used by the GeoTIFF files.
 
-    ```bash
-    ./build chess_tiff_grid <name_of_a_single_GeoTiff_file>
-    ```
+```bash
+./build chess_tiff_grid <name_of_a_single_GeoTiff_file>
+```
 
 Once we have a climate data grid, we need to import the boundaries we wish to use and link them to the climate data grid:
 
-    ```bash
-    ./build boundary_<boundary_type>
-    ./build link_<boundary_type>
-    ```
+```bash
+./build boundary_<boundary_type>
+./build link_<boundary_type>
+```
 
 Run these commands for each boundary. Linking creates a new table `<boundary_type>_grid_mapping`, which is a many to many mapping from boundary IDs to all the climate grid IDs they overlap or intersect with.
 
 Create the caches: this works across all boundaries and all climate RCP/season tables.
 
-    ```bash
-    ./build cache_all_climate
-    ```
+```bash
+./build cache_all_climate
+```
 
 A script has been provided in `data/scripts/build_all.sh`, which shows the build process line by line.
 
@@ -130,23 +130,23 @@ A script has been provided in `data/scripts/build_all.sh`, which shows the build
 
 For reference, this is the coordinate reference system for the GeoTIFFs:
 
-    ```wkt
-    PROJCS["unnamed",
-    GEOGCS["unknown",
-        DATUM["unnamed",
-        SPHEROID["Spheroid",6377563.396,299.3249646]
-        ],
-        PRIMEM["Greenwich",0],
-        UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]]
+```wkt
+PROJCS["unnamed",
+GEOGCS["unknown",
+    DATUM["unnamed",
+    SPHEROID["Spheroid",6377563.396,299.3249646]
     ],
-    PROJECTION["Transverse_Mercator"],
-    PARAMETER["latitude_of_origin",49],
-    PARAMETER["central_meridian",-2],
-    PARAMETER["scale_factor",1],
-    PARAMETER["false_easting",400000],
-    PARAMETER["false_northing",-100000],
-    UNIT["metre",1,AUTHORITY["EPSG","9001"]],
-    AXIS["Easting",EAST],
-    AXIS["Northing",NORTH]
-    ]
-    ```
+    PRIMEM["Greenwich",0],
+    UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]]
+],
+PROJECTION["Transverse_Mercator"],
+PARAMETER["latitude_of_origin",49],
+PARAMETER["central_meridian",-2],
+PARAMETER["scale_factor",1],
+PARAMETER["false_easting",400000],
+PARAMETER["false_northing",-100000],
+UNIT["metre",1,AUTHORITY["EPSG","9001"]],
+AXIS["Easting",EAST],
+AXIS["Northing",NORTH]
+]
+```
