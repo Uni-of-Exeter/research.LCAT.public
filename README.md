@@ -9,7 +9,7 @@ The tool is under continual development, with features, styling, and underlying 
 
 ## Installation & documentation
 
-Please view the documentation [here](https://github.com/Uni-of-Exeter/research.LCAT.public/docs/). Installation instructions for the project can be found [here](https://github.com/Uni-of-Exeter/research.LCAT.public/docs/1-install.md/).
+Please view the documentation [here](https://github.com/Uni-of-Exeter/research.LCAT.public/blob/main/docs/). Installation instructions for the project can be found [here](https://github.com/Uni-of-Exeter/research.LCAT.public/blob/main/docs/1-install.md/).
 
 ## License
 
