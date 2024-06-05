@@ -41,9 +41,7 @@ def cache_climate(db, boundary_table, climate_table):
     for decade in decades:
         for variable in variables:
             data_cols[table].append([variable + "_" + decade, "real"])
-            vardec.append(
-                "avg (" + variable + "_" + decade + ") as " + variable + "_" + decade
-            )
+            vardec.append("avg (" + variable + "_" + decade + ") as " + variable + "_" + decade)
             ivardec.append(variable + "_" + decade)
             quotes.append("%s")
     vardec_str = ",".join(vardec)

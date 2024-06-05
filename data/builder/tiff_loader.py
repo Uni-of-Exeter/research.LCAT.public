@@ -90,9 +90,7 @@ def avg_slice(start, end, skip, img):
 
 
 def build_season_avg(img, season):
-    return [
-        avg_slice(season + d * 40, season + (d + 1) * 40, 4, img) for d in range(0, 10)
-    ]
+    return [avg_slice(season + d * 40, season + (d + 1) * 40, 4, img) for d in range(0, 10)]
 
 
 def build_avg(img):
@@ -104,18 +102,7 @@ def save_tiff(img, arr, table, rcp, variable, season, decade):
         profile = img.profile
         profile.update(dtype=rasterio.float32, count=1, compress="lzw")
 
-        fn = (
-            table
-            + "_"
-            + rcp
-            + "_"
-            + variable
-            + "_"
-            + seasons[season]
-            + "_"
-            + decades[decade]
-            + ".tif"
-        )
+        fn = table + "_" + rcp + "_" + variable + "_" + seasons[season] + "_" + decades[decade] + ".tif"
 
         with rasterio.open(fn, "w", **profile) as dst:
             dst.write(arr.astype(rasterio.float32), 1)
@@ -189,9 +176,7 @@ def load_grid(db, fn):
             )
         print("loading grid " + str(int((x / x_size) * 100)) + "%")
 
-    db.import_geojson_feature(
-        "chess_scape_grid", "4326", geojson.FeatureCollection(features)
-    )
+    db.import_geojson_feature("chess_scape_grid", "4326", geojson.FeatureCollection(features))
     db.conn.commit()
 
 
@@ -258,20 +243,8 @@ def import_tiffs(db, path, rcp, variable):
             "2060",
             "2070",
         ]:
-            fn = (
-                "chess_scape_"
-                + rcp
-                + "_"
-                + variable
-                + "_"
-                + season
-                + "_"
-                + decade
-                + ".tif"
-            )
-            load_data(
-                db, path + fn, "chess_scape_" + rcp + "_" + season, decade, variable
-            )
+            fn = "chess_scape_" + rcp + "_" + variable + "_" + season + "_" + decade + ".tif"
+            load_data(db, path + fn, "chess_scape_" + rcp + "_" + season, decade, variable)
 
 
 def import_grid(db, path, fn):

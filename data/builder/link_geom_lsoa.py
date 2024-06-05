@@ -61,13 +61,4 @@ def centroids(db, geo_table, base, base_epsg):
                 count += 1
 
         db.conn.commit()
-        print(
-            geo_table
-            + " "
-            + str(count)
-            + "/"
-            + str(len(lsoas))
-            + ": "
-            + str(int((c / len(geometry)) * 100))
-            + "%"
-        )
+        print(geo_table + " " + str(count) + "/" + str(len(lsoas)) + ": " + str(int((c / len(geometry)) * 100)) + "%")

@@ -56,9 +56,7 @@ def import_grid(db, fn):
                         properties={},
                     )
                 )
-    db.import_geojson_feature(
-        "uk_cri_grid", "27700", geojson.FeatureCollection(features)
-    )
+    db.import_geojson_feature("uk_cri_grid", "27700", geojson.FeatureCollection(features))
     db.conn.commit()
 
 

@@ -70,9 +70,7 @@ def load_grid(db, fn):
             )
         print(x / x_size)
 
-    db.import_geojson_feature(
-        "chessscape_grid", "4326", geojson.FeatureCollection(features)
-    )
+    db.import_geojson_feature("chessscape_grid", "4326", geojson.FeatureCollection(features))
     db.conn.commit()
 
 
@@ -140,16 +138,7 @@ def load_data(db, fn, table, variable):
                   from new_values
                   where not exists (select 1 from upsert up where up.location=new_values.location and up.season=new_values.season)"""
 
-            print(
-                "updating: "
-                + variable
-                + " "
-                + str(y)
-                + " of "
-                + str(y_size)
-                + " t:"
-                + str(t)
-            )
+            print("updating: " + variable + " " + str(y) + " of " + str(y_size) + " t:" + str(t))
             # q=f"insert into {table} (location,season,{variable}) values %s on conflict (location,season) do update set {variable} = excluded.{variable};"
             execute_values(db.cur, q, dat)
             db.conn.commit()
@@ -222,30 +211,18 @@ def nuke_averages(db, table):
 def import_grid(db):
     variable = "tas"
     path = "/home/dave/projects/climate/v2-data/chess/rcp85_bias-corrected/01/seasonal/"
-    fn = (
-        "chess-scape_rcp85_bias-corrected_01_"
-        + variable
-        + "_uk_1km_seasonal_19801201-20801130.nc"
-    )
+    fn = "chess-scape_rcp85_bias-corrected_01_" + variable + "_uk_1km_seasonal_19801201-20801130.nc"
     load_grid(db, path + fn)
 
 
 def import_seasonal_data(db, path, variable):
-    fn = (
-        "chess-scape_rcp85_bias-corrected_01_"
-        + variable
-        + "_uk_1km_seasonal_19801201-20801130.nc"
-    )
+    fn = "chess-scape_rcp85_bias-corrected_01_" + variable + "_uk_1km_seasonal_19801201-20801130.nc"
     print(variable)
     load_data(db, path + fn, "chessscape_seasonal", variable)
 
 
 def import_seasonal_averages(db, path, variable):
-    fn = (
-        "chess-scape_rcp85_bias-corrected_01_"
-        + variable
-        + "_uk_1km_seasonal_19801201-20801130.nc"
-    )
+    fn = "chess-scape_rcp85_bias-corrected_01_" + variable + "_uk_1km_seasonal_19801201-20801130.nc"
     print(variable)
 
 
