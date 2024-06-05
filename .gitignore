@@ -12,19 +12,15 @@ node_modules
 # Ignore .sql files
 *.sql
 
-# Ignore Python .venv folder
+# Ignore Python .venv folder and others
 data/.venv
-
-# Ignore AdminJS build files
-.adminjs/
+data/builder/__pycache__/*
 
 # Ignore data store
 data/store
 
 # Build files
-client/build
-
-data/builder/__pycache__/*
+client/dist
 
 # Logs
 logs

@@ -1,8 +1,15 @@
 # LCAT - Local Climate Adaptation Tool
 
 A tool for connecting together scientific information across climate,
-health and policy in the UK. You can try the [prototype version
-here](https://lcat.uk/).
+health and policy in the UK. Access the latest [release here](https://lcat.uk/).
+
+LCAT has been developed by the University of Exeter’s European Centre for Human Health, alongside stakeholders from Cornwall County Council, and other co-design partners from Local Government, the National Health Service, emergency services, and voluntary and private sectors. Previous partners include Then Try This, who developed previous iterations of the tool.
+
+The tool is under continual development, with features, styling, and underlying data sets liable to change. Where possible, major changes will be signposted. Code previously developed for LCAT can be found in the archived repository [here](https://github.com/UniExeterRSE/LCAT-archived).
+
+## Installation & documentation
+
+Please view the documentation [here](https://github.com/Uni-of-Exeter/research.LCAT.public/blob/main/docs/). Installation instructions for the project can be found [here](https://github.com/Uni-of-Exeter/research.LCAT.public/blob/main/docs/1-install.md/).
 
 ## License
 

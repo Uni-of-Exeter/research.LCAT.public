@@ -266,7 +266,7 @@ class ClimateMap extends React.Component {
                 <p className="note">
                     Data source: The boundaries are from{" "}
                     <a
-                        href="https://github.com/UniExeterRSE/LCAT/blob/main/docs/sources.md"
+                        href="https://github.com/Uni-of-Exeter/research.LCAT.public/blob/main/docs/sources.md"
                         target="_blank"
                         rel="noreferrer"
                     >
