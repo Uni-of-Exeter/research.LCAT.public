@@ -7,6 +7,10 @@ LCAT has been developed by the University of Exeter’s European Centre for Huma
 
 The tool is under continual development, with features, styling, and underlying data sets liable to change. Where possible, major changes will be signposted. Code previously developed for LCAT can be found in the archived repository [here](https://github.com/UniExeterRSE/LCAT-archived).
 
+## Installation & documentation
+
+Please view the documentation [here](https://github.com/Uni-of-Exeter/research.LCAT.public/docs/). Installation instructions for the project can be found [here](https://github.com/Uni-of-Exeter/research.LCAT.public/docs/1-install.md/).
+
 ## License
 
 * Development before 2024 Copyright © University of Exeter & Then Try This
