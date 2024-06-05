@@ -4,23 +4,31 @@
 
 LCAT (the Local Climate Adaptation Tool) is a 3-tier web application, consisting of a Node Express server, a React client, and a Postgres database. To run this project locally, begin by cloning the project:
 
+    ```bash
     git clone https://github.com/Uni-of-Exeter/research.LCAT.public.git
     cd research.LCAT.public
+    ```
 
 ## 1. Express server
 
 A simple NodeJS [Express](https://expressjs.com/) server is provided. To set up, run:
 
+    ```bash
     cd server
     npm install
+    ```
 
 Run the server with:
 
+    ```bash
     npm run start
+    ```
 
-or for local development, Nodemon is provided, by running:
+Or for local development, Nodemon is provided, by running:
 
+    ```bash
     npm run dev
+    ```
 
 In both cases, the server is started on port 3000.
 
@@ -28,12 +36,16 @@ In both cases, the server is started on port 3000.
 
 The front end is built in [React](https://react.dev/), using [Vite](https://vitejs.dev/). To set up, run:
 
+    ```bash
     cd client
     npm install --legacy-peer-deps
+    ```
 
 To launch the Vite development server, run:
 
+    ```bash
     npm run dev
+    ```
 
 This will launch the web app on port 3001. Access the application at `localhost:3001` in your browser.
 
@@ -41,9 +53,11 @@ This will launch the web app on port 3001. Access the application at `localhost:
 
 To build the client for production, and copy the bundle to the server, run the following:
 
+    ```bash
     npm run build
     mkdir -p server/public
     cp -R client/dist/* server/public
+    ```
 
 This will use Vite to produce a minified application bundle that is suitable to be statically served. This occurs on port 3000: to view this, visit `localhost:3000` with the server running.
 
@@ -57,7 +71,7 @@ LCAT uses a Postgres database to store climate data, which is provided to the us
 
 In the server root directory, create a `.env` file containing the database login credentials:
 
-    ```
+    ```text
     DB_USER=db_username
     DB_PASS=db_password
     DB_HOST=localhost:5432
@@ -70,11 +84,15 @@ We will use these going forwards.
 
 Ensure that [Postgres](https://postgresapp.com/) is set up locally. Identify the install location (`<postgres-data-dir>`), and start the Postgres server:
 
+    ```bash
     pg_ctl -D <postgres-data-dir> start
+    ```
 
 We can check that the server is active with `pgrep`:
 
+    ```bash
     pgrep -l postgres
+    ```
 
 Log in to the Postgres service, and then view users, using the following commands:
 
@@ -95,20 +113,20 @@ We now need to create a new database with the `Postgis` extension, and a new use
 
 Create a new database. You can check its creation in the Postgres GUI if desired.
 
-    ```bash
-    create database db_name;
+    ```sql
+    CREATE DATABASE db_name;
     ```
 
 Connect to the new database as the `postgres` user (which should have superuser privileges):
 
-    ```bash
+    ```sql
     \connect db_name postgres
     ```
 
 Create the `Postgis` extension:
 
-    ```bash
-    create extension postgis;
+    ```sql
+    CREATE EXTENSION postgis;
     ```
 
 If `CREATE EXTENSION` is seen, then you have been successful. Log out with `\q`.
@@ -123,7 +141,7 @@ As discussed, the full rebuild process can be shortcut by restoring from a datab
 
 If the database is not completely empty, you might need to use the `-clean` flag. Once complete, check that the database now contains tables by connecting, and then running:
 
-    ```bash
+    ```sql
     \dt
     ```
 
@@ -133,38 +151,38 @@ Finish by quitting with `\q`.
 
 With a populated database, we now need a new user that can connect and view the database/tables. With a started postgres server, create a new user with:
 
-    ```bash
-    create user db_username;
+    ```sql
+    CREATE USER db_username;
     ```
 
 Ensure this username is the same in the `.env` file. If you see `CREATE ROLE`, this has been successful. Note that a `USER` is a `ROLE` with the ability to log in.
 
 Add a password to the new user:
 
-    ```bash
-    alter user db_username with encrypted password 'db_password';
+    ```sql
+    ALTER USER db_username WITH ENCRYPTED PASSWORD 'db_password';
     ```
 
 `ALTER ROLE` confirms that this has been successful.
 
 Now grant database access to this user:
 
-    ```bash
-    grant all privileges on database db_name to db_username;
+    ```sql
+    GRANT ALL PRIVILEGES ON DATABASE db_name TO db_username;
     ```
 
 `GRANT` confirms this.
 
 Finally, we also need to make the database tables accessible to the user. Connect to the new database as `postgres`, or another superuser:
 
-    ```bash
+    ```sql
     \connect db_name postgres
     ```
 
 Grant new user access to tables:
 
-    ```bash
-    grant all privileges on all tables in schema public to db_username;
+    ```sql
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA PUBLIC TO db_username;
     ```
 
 As before, `GRANT` confirms this. Disconnect as before with `\q`.
