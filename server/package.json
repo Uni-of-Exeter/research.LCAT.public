@@ -1,26 +1,30 @@
 {
-  "name": "climate-geo-server",
-  "version": "0.0.0",
-  "private": true,
-  "description": "LCAT Express server",
-  "scripts": {
-    "dev": "PORT=3000 nodemon ./bin/www",
-    "start": "PORT=3000 node ./bin/www",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
-  },
-  "dependencies": {
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "morgan": "^1.10.0",
-    "pg": "^8.11.5",
-    "pug": "^3.0.3"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.4.0",
-    "eslint": "^9.4.0",
-    "globals": "^15.3.0",
-    "nodemon": "^3.1.0"
-  }
+    "name": "climate-geo-server",
+    "version": "0.0.0",
+    "private": true,
+    "description": "LCAT Express server",
+    "scripts": {
+        "dev": "PORT=3000 nodemon ./bin/www",
+        "start": "PORT=3000 node ./bin/www",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "format": "prettier --check .",
+        "format:fix": "prettier --write .",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix"
+    },
+    "dependencies": {
+        "dotenv": "^16.4.5",
+        "express": "^4.19.2",
+        "morgan": "^1.10.0",
+        "pg": "^8.11.5",
+        "pug": "^3.0.3"
+    },
+    "devDependencies": {
+        "eslint": "8.57.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-jsx-a11y": "^6.9.0",
+        "prettier": "3.3.2",
+        "globals": "^15.3.0",
+        "nodemon": "^3.1.0"
+    }
 }
