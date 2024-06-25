@@ -11,42 +11,44 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
 export function andify(a) {
-    if (a.length<2) {
+    if (a.length < 2) {
         return a[0];
     } else {
-        return a.slice(0, -1).join(', ')+' and '+a.slice(-1);
+        return a.slice(0, -1).join(", ") + " and " + a.slice(-1);
     }
 }
 
 export function formatTextWrap(text, maxLineLength) {
-    const words = text.replace(/[\r\n]+/g, ' ').split(' ');
+    const words = text.replace(/[\r\n]+/g, " ").split(" ");
     let lineLength = 0;
-    let ret = [''];
+    let ret = [""];
     for (let word of words) {
         if (lineLength + word.length >= maxLineLength) {
             lineLength = word.length;
-            ret.push([word]); 
+            ret.push([word]);
         } else {
-            lineLength += word.length+1;
-            ret[ret.length-1]+=word+' ';
+            lineLength += word.length + 1;
+            ret[ret.length - 1] += word + " ";
         }
     }
     return ret;
 }
 
 export function camelize(str) {
-    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
-        return word.toUpperCase();
-    }).replace(/\s+/g, '');
+    return str
+        .replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+            return word.toUpperCase();
+        })
+        .replace(/\s+/g, "");
 }
 
 export const rcpText = {
-    rcp60:"existing global policies",
-    "rcp85":"worst case scenario"
-}
+    rcp60: "existing global policies",
+    rcp85: "worst case scenario",
+};
 
 export const seasonText = {
-    annual:"yearly",
-    winter:"winter",
-    summer:"summer"
+    annual: "yearly",
+    winter: "winter",
+    summer: "summer",
 };

@@ -14,12 +14,12 @@
 }
 
 .graph-horiz-container {
-	display: flex;
-	flex-direction: row;
+    display: flex;
+    flex-direction: row;
 }
 
 .rv-xy-plot__axis__title text {
-    font-size: 8pt; 
+    font-size: 8pt;
 }
 
 @media (min-width: 1000px) {
@@ -27,7 +27,7 @@
         font-size: 13pt;
     }
     .rv-xy-plot__axis__title text {
-        font-size: 13pt; 
+        font-size: 13pt;
     }
 }
 
@@ -52,16 +52,15 @@
 }
 
 .key-regional {
-	border-radius: 5px;
+    border-radius: 5px;
     padding: 2px;
     background: #216331;
     color: white;
 }
 
 .key-average {
-	border-radius: 5px;
+    border-radius: 5px;
     padding: 2px;
     background: #48b961;
     color: white;
 }
-

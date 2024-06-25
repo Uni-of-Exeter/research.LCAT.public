@@ -54,7 +54,7 @@ function Graph(props) {
     useEffect(() => {
         setSeason(props.season);
     }, [props.season]);
-    
+
     useEffect(() => {
         function handleResize() {
             // ridiculous (fix, and that margins are defined in pixels)
