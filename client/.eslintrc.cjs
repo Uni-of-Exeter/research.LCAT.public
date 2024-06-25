@@ -4,17 +4,17 @@ module.exports = {
     extends: [
         "eslint:recommended",
         "plugin:react/recommended",
-        "plugin:react/jsx-runtime",
         "plugin:react-hooks/recommended",
-        "react-app",
+        "plugin:jsx-a11y/recommended",
         "prettier",
     ],
-    ignorePatterns: ["dist", ".eslintrc.cjs", "node_modules"],
+    ignorePatterns: ["/dist", ".eslintrc.cjs", "/node_modules", "/src/images/**"],
     parserOptions: { ecmaVersion: "latest", sourceType: "module" },
     settings: { react: { version: "18.2" } },
     plugins: ["react-refresh"],
     rules: {
         "react/jsx-no-target-blank": "off",
         "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+        "react/react-in-jsx-scope": "off",
     },
 };
