@@ -10,11 +10,12 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+import "./ClimateImpactSummary.css";
+
 import React from "react";
 import LoadingOverlay from "react-loading-overlay-ts";
-import { impacts, communityImpacts, pathways } from "./ClimateImpactSummaryData.jsx";
 
-import "./ClimateImpactSummary.css";
+import { communityImpacts, impacts, pathways } from "./ClimateImpactSummaryData.jsx";
 
 function ClimateImpactSummary(props) {
     const selectedPathwayData = pathways.find((item) => item.name === props.selectedHazardName);

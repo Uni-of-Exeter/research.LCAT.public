@@ -10,16 +10,17 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
-import React, { useState, useEffect } from "react";
-import { XYPlot, XAxis, YAxis, VerticalBarSeries, makeWidthFlexible, LabelSeries, ChartLabel } from "react-vis";
-import { useCollapse } from "react-collapsed";
-import ClimatePredictionLoader from "../loaders/ClimatePredictionLoader";
-
 import "../../../node_modules/react-vis/dist/style.css";
-import ModelLoader from "../loaders/ModelLoader";
 import "./Graph.css";
-import { andify } from "../../utils/utils";
+
+import React, { useEffect,useState } from "react";
+import { useCollapse } from "react-collapsed";
+import { ChartLabel,LabelSeries, makeWidthFlexible, VerticalBarSeries, XAxis, XYPlot, YAxis } from "react-vis";
+
 import { climateAverages } from "../../core/climate";
+import { andify } from "../../utils/utils";
+import ClimatePredictionLoader from "../loaders/ClimatePredictionLoader";
+import ModelLoader from "../loaders/ModelLoader";
 
 const FlexibleXYPlot = makeWidthFlexible(XYPlot);
 const winterCol = "#a4f9c8";

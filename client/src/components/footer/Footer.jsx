@@ -10,13 +10,13 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+import "./Footer.css";
+
+import AdaptationGuide from "./AdaptationGuide";
 import ContactUs from "./ContactUs";
 import FooterLogos from "./FooterLogos";
 import FooterText from "./FooterText";
 import UserGuide from "./UserGuide";
-import AdaptationGuide from "./AdaptationGuide";
-
-import "./Footer.css";
 
 function Footer() {
     return (

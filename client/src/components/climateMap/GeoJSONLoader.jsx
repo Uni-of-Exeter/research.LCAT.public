@@ -10,8 +10,8 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
-import { useMap, useMapEvents } from "react-leaflet";
 import { useEffect } from "react";
+import { useMap, useMapEvents } from "react-leaflet";
 
 // Meters/Pixel Zoom Level (1-19) - requires geometry in OS 27700
 const m2px = [

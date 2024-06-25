@@ -12,11 +12,11 @@ Common Good Public License Beta 1.0 for more details. */
 
 import React, { useEffect, useState } from "react";
 import LoadingOverlay from "react-loading-overlay-ts";
-import StaticAdaptation from "./StaticAdaptation";
-import { pathways } from "../climateImpacts/ClimateImpactSummaryData";
-import { adaptationBodyKeys, CCCAdaptationThemes, IPCCCategories } from "./AdaptationCategories";
 
 import adaptationData from "../../kumu/parsed/adaptation_data.json";
+import { pathways } from "../climateImpacts/ClimateImpactSummaryData";
+import { adaptationBodyKeys, CCCAdaptationThemes, IPCCCategories } from "./AdaptationCategories";
+import StaticAdaptation from "./StaticAdaptation";
 
 function StaticAdaptations(props) {
     const [selectedBody, setSelectedBody] = useState("CCC");

@@ -10,10 +10,11 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+import "./StaticReferences.css";
+
 import React from "react";
 
 import adaptationRefs from "../../kumu/parsed/processed_references.json";
-import "./StaticReferences.css";
 
 function formatAuthors(authorsString) {
     if (!authorsString) {

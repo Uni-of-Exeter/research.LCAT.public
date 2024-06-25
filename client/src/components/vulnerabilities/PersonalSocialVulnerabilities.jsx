@@ -10,11 +10,12 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+import "./PersonalSocialVulnerabilities.css";
+
 import React, { useState } from "react";
 import LoadingOverlay from "react-loading-overlay-ts";
-import { vulnerabilityData } from "./PersonalSocialVulnerabilitiesData";
 
-import "./PersonalSocialVulnerabilities.css";
+import { vulnerabilityData } from "./PersonalSocialVulnerabilitiesData";
 
 function PersonalSocialVulnerabilities(props) {
     const [selectedVulnerability, setSelectedVulnerability] = useState(null);

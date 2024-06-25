@@ -10,11 +10,11 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
-import HeatwaveSvg from "../../images/hazards/Heatwave.jsx";
-import WildfiresSvg from "../../images/hazards/Wildfires.jsx";
-import FloodSvg from "../../images/hazards/Flood.jsx";
 import AirPollutionSvg from "../../images/hazards/AirPollution.jsx";
 import CoastalErosionSvg from "../../images/hazards/CoastalErosion.jsx";
+import FloodSvg from "../../images/hazards/Flood.jsx";
+import HeatwaveSvg from "../../images/hazards/Heatwave.jsx";
+import WildfiresSvg from "../../images/hazards/Wildfires.jsx";
 
 // This map contains the rendered content in the ClimateHazardRisk component
 export const climateHazardsData = [

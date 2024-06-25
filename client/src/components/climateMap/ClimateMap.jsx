@@ -10,13 +10,14 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
-import React, { useEffect } from "react";
-import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
-import GeoJSONLoader from "./GeoJSONLoader.jsx";
-import LoadingOverlay from "react-loading-overlay-ts";
 // import { nfviColumns } from "../../core/climatejust.js";
-
 import "./ClimateMap.css";
+
+import React, { useEffect } from "react";
+import { GeoJSON,MapContainer, TileLayer } from "react-leaflet";
+import LoadingOverlay from "react-loading-overlay-ts";
+
+import GeoJSONLoader from "./GeoJSONLoader.jsx";
 
 // Fixes console warning caused by react-loading-overlay-ts
 LoadingOverlay.propTypes = undefined;

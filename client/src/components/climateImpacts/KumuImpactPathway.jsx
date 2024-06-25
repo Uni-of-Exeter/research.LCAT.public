@@ -10,11 +10,12 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
-import React, { useState, useEffect } from "react";
-import { useCollapse } from "react-collapsed";
-import { pathways } from "./ClimateImpactSummaryData";
-
 import "./KumuImpactPathway.css";
+
+import React, { useEffect,useState } from "react";
+import { useCollapse } from "react-collapsed";
+
+import { pathways } from "./ClimateImpactSummaryData";
 
 const KumuImpactPathway = (props) => {
     const [isExpanded, setExpanded] = useState(false);
