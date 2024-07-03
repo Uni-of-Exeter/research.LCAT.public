@@ -10,14 +10,14 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
-import SvgHealthConditions from "../../images/personalSocialVulnerabilities/HealthConditions.jsx";
-import SvgLowIncomes from "../../images/personalSocialVulnerabilities/LowIncomes.jsx";
-import SvgLowLocalKnowledge from "../../images/personalSocialVulnerabilities/LowLocalKnowledge.jsx";
-import SvgLowMobility from "../../images/personalSocialVulnerabilities/LowMobility.jsx";
-import SvgOlderPeople from "../../images/personalSocialVulnerabilities/OlderPeople.jsx";
-import SvgPrivateSocialHousing from "../../images/personalSocialVulnerabilities/PrivateSocialHousing.jsx";
-import SvgSociallyIsolated from "../../images/personalSocialVulnerabilities/SociallyIsolated.jsx";
-import SvgUnderFives from "../../images/personalSocialVulnerabilities/UnderFives.jsx";
+import SvgHealthConditions from "../../images/vulnerabilities/HealthConditions.jsx";
+import SvgLowIncomes from "../../images/vulnerabilities/LowIncomes.jsx";
+import SvgLowLocalKnowledge from "../../images/vulnerabilities/LowLocalKnowledge.jsx";
+import SvgLowMobility from "../../images/vulnerabilities/LowMobility.jsx";
+import SvgOlderPeople from "../../images/vulnerabilities/OlderPeople.jsx";
+import SvgPrivateSocialHousing from "../../images/vulnerabilities/PrivateSocialHousing.jsx";
+import SvgSociallyIsolated from "../../images/vulnerabilities/SociallyIsolated.jsx";
+import SvgUnderFives from "../../images/vulnerabilities/UnderFives.jsx";
 
 // This map contains the rendered content in the PersonalSocialVulnerabilities component
 export const vulnerabilityData = [
