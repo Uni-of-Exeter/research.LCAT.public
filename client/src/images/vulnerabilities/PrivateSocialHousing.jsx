@@ -112,8 +112,8 @@ const SvgPrivateSocialHousing = (props) => {
                                                                         "Tenants in private or social housing"
                                                                             ? "#FFD667"
                                                                             : isHovered
-                                                                            ? "#f5821fff"
-                                                                            : "#fff",
+                                                                              ? "#f5821fff"
+                                                                              : "#fff",
                                                                     strokeWidth: 626004096,
                                                                 }}
                                                                 transform="translate(.656 268.433)scale(.0431)"
@@ -125,8 +125,8 @@ const SvgPrivateSocialHousing = (props) => {
                                                                         "Tenants in private or social housing"
                                                                             ? "#FFD667"
                                                                             : isHovered
-                                                                            ? "#f5821fff"
-                                                                            : "#fff",
+                                                                              ? "#f5821fff"
+                                                                              : "#fff",
                                                                     strokeWidth: 626004096,
                                                                 }}
                                                             >
@@ -138,8 +138,8 @@ const SvgPrivateSocialHousing = (props) => {
                                                                             "Tenants in private or social housing"
                                                                                 ? "#FFD667"
                                                                                 : isHovered
-                                                                                ? "#f5821fff"
-                                                                                : "#fff",
+                                                                                  ? "#f5821fff"
+                                                                                  : "#fff",
                                                                         strokeWidth: 626004096,
                                                                     }}
                                                                     transform="translate(.656 268.433)scale(.0431)"
@@ -152,8 +152,8 @@ const SvgPrivateSocialHousing = (props) => {
                                                                             "Tenants in private or social housing"
                                                                                 ? "#FFD667"
                                                                                 : isHovered
-                                                                                ? "#f5821fff"
-                                                                                : "#fff",
+                                                                                  ? "#f5821fff"
+                                                                                  : "#fff",
                                                                         strokeWidth: 626004096,
                                                                     }}
                                                                     transform="translate(.656 268.433)scale(.0431)"
@@ -166,8 +166,8 @@ const SvgPrivateSocialHousing = (props) => {
                                                                             "Tenants in private or social housing"
                                                                                 ? "#FFD667"
                                                                                 : isHovered
-                                                                                ? "#f5821fff"
-                                                                                : "#fff",
+                                                                                  ? "#f5821fff"
+                                                                                  : "#fff",
                                                                         strokeWidth: 626004096,
                                                                     }}
                                                                     transform="translate(.656 268.433)scale(.0431)"

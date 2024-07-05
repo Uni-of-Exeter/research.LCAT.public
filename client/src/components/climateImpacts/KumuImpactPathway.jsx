@@ -12,7 +12,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./KumuImpactPathway.css";
 
-import React, { useEffect,useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useCollapse } from "react-collapsed";
 
 import { pathways } from "./ClimateImpactSummaryData";

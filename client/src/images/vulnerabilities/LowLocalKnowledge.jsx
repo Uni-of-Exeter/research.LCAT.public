@@ -101,8 +101,8 @@ const SvgLowLocalKnowledge = (props) => {
                                                                 "People living in area for a short time"
                                                                     ? "#FFD667"
                                                                     : isHovered
-                                                                    ? "#f5821fff"
-                                                                    : "#fff",
+                                                                      ? "#f5821fff"
+                                                                      : "#fff",
                                                             strokeWidth: 60164044,
                                                         }}
                                                     >
@@ -114,8 +114,8 @@ const SvgLowLocalKnowledge = (props) => {
                                                                     "People living in area for a short time"
                                                                         ? "#FFD667"
                                                                         : isHovered
-                                                                        ? "#f5821fff"
-                                                                        : "#fff",
+                                                                          ? "#f5821fff"
+                                                                          : "#fff",
                                                                 strokeWidth: 60164044,
                                                             }}
                                                             transform="translate(2.206 270.912)scale(.03758)"
@@ -128,8 +128,8 @@ const SvgLowLocalKnowledge = (props) => {
                                                                     "People living in area for a short time"
                                                                         ? "#FFD667"
                                                                         : isHovered
-                                                                        ? "#f5821fff"
-                                                                        : "#fff",
+                                                                          ? "#f5821fff"
+                                                                          : "#fff",
                                                                 strokeWidth: 60164044,
                                                             }}
                                                             transform="translate(2.206 270.912)scale(.03758)"

@@ -76,8 +76,8 @@ const SvgSociallyIsolated = (props) => {
                                             props.selectedVulnerability === "People who are socially isolated"
                                                 ? "#FFD667"
                                                 : isHovered
-                                                ? "#f5821fff"
-                                                : "#fff",
+                                                  ? "#f5821fff"
+                                                  : "#fff",
                                         strokeWidth: 352.73236084,
                                     }}
                                     transform="translate(-3.028 263.786)scale(.05398)"
@@ -89,8 +89,8 @@ const SvgSociallyIsolated = (props) => {
                                             props.selectedVulnerability === "People who are socially isolated"
                                                 ? "#FFD667"
                                                 : isHovered
-                                                ? "#f5821fff"
-                                                : "#fff",
+                                                  ? "#f5821fff"
+                                                  : "#fff",
                                         strokeWidth: 352.73236084,
                                     }}
                                     transform="translate(-3.028 263.786)scale(.05398)"

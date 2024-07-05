@@ -14,7 +14,7 @@ Common Good Public License Beta 1.0 for more details. */
 import "./ClimateMap.css";
 
 import React, { useEffect } from "react";
-import { GeoJSON,MapContainer, TileLayer } from "react-leaflet";
+import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
 import LoadingOverlay from "react-loading-overlay-ts";
 
 import GeoJSONLoader from "./GeoJSONLoader.jsx";

@@ -13,9 +13,9 @@ Common Good Public License Beta 1.0 for more details. */
 import "../../../node_modules/react-vis/dist/style.css";
 import "./Graph.css";
 
-import React, { useEffect,useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useCollapse } from "react-collapsed";
-import { ChartLabel,LabelSeries, makeWidthFlexible, VerticalBarSeries, XAxis, XYPlot, YAxis } from "react-vis";
+import { ChartLabel, LabelSeries, makeWidthFlexible, VerticalBarSeries, XAxis, XYPlot, YAxis } from "react-vis";
 
 import { climateAverages } from "../../core/climate";
 import { andify } from "../../utils/utils";

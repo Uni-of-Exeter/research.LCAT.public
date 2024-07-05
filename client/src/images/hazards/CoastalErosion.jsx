@@ -57,8 +57,8 @@ const SvgCoastalErosion = (props) => {
                                 props.selectedHazard === "Coastal Erosion"
                                     ? "#FFD667"
                                     : isHovered
-                                    ? "#f5821fff"
-                                    : "#fff",
+                                      ? "#f5821fff"
+                                      : "#fff",
                             strokeWidth: 18.944561,
                         }}
                     >
@@ -69,8 +69,8 @@ const SvgCoastalErosion = (props) => {
                                     props.selectedHazard === "Coastal Erosion"
                                         ? "#FFD667"
                                         : isHovered
-                                        ? "#f5821fff"
-                                        : "#fff",
+                                          ? "#f5821fff"
+                                          : "#fff",
                                 strokeWidth: 18.944561,
                             }}
                             transform="translate(4.385 269.695)scale(.01862)"
@@ -82,8 +82,8 @@ const SvgCoastalErosion = (props) => {
                                     props.selectedHazard === "Coastal Erosion"
                                         ? "#FFD667"
                                         : isHovered
-                                        ? "#f5821fff"
-                                        : "#fff",
+                                          ? "#f5821fff"
+                                          : "#fff",
                                 strokeWidth: 18.944561,
                             }}
                             transform="translate(4.385 269.695)scale(.01862)"
@@ -95,8 +95,8 @@ const SvgCoastalErosion = (props) => {
                                     props.selectedHazard === "Coastal Erosion"
                                         ? "#FFD667"
                                         : isHovered
-                                        ? "#f5821fff"
-                                        : "#fff",
+                                          ? "#f5821fff"
+                                          : "#fff",
                                 strokeWidth: 18.944561,
                             }}
                             transform="translate(4.385 269.695)scale(.01862)"
