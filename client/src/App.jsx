@@ -10,27 +10,24 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+import "./App.css";
+
 import React from "react";
 
-import Introduction from "./components/header/Introduction";
-import LCATHeader from "./components/header/Header";
-
+import StaticAdaptations from "./components/adaptations/StaticAdaptations";
 import ClimateHazardRisk from "./components/climateHazard/ClimateHazardRisk";
 import ClimateImpactSummary from "./components/climateImpacts/ClimateImpactSummary";
+import KumuImpactPathway from "./components/climateImpacts/KumuImpactPathway";
 import ClimateMap from "./components/climateMap/ClimateMap";
-import ClimatePredictionLoader from "./components/loaders/ClimatePredictionLoader";
 import ClimateSettings from "./components/climatePrediction/ClimateSettings";
 import ClimateSummary from "./components/climatePrediction/ClimateSummary";
+import Graph from "./components/climatePrediction/Graph";
 import Feedback from "./components/feedback/Feedback";
 import Footer from "./components/footer/Footer";
-import Graph from "./components/climatePrediction/Graph";
-
-import KumuImpactPathway from "./components/climateImpacts/KumuImpactPathway";
-
+import LCATHeader from "./components/header/Header";
+import Introduction from "./components/header/Introduction";
+import ClimatePredictionLoader from "./components/loaders/ClimatePredictionLoader";
 import PersonalSocialVulnerabilities from "./components/vulnerabilities/PersonalSocialVulnerabilities";
-import StaticAdaptations from "./components/adaptations/StaticAdaptations";
-
-import "./App.css";
 
 class App extends React.Component {
     constructor(props) {

@@ -10,11 +10,12 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # Common Good Public License Beta 1.0 for more details.
 
-import netCDF4 as nc
-from builder import climate_db
-from psycopg2.extras import execute_values
-import numpy
 import geojson
+import netCDF4 as nc
+import numpy
+from psycopg2.extras import execute_values
+
+from builder import climate_db
 
 
 def print_info(path):
@@ -24,7 +25,11 @@ def print_info(path):
 
 def load_grid(db, fn):
     data_cols = {
-        "chessscape_grid": [["id", "serial"], ["geom", "geometry(geometry, 4326)"], ["properties", "jsonb"]],
+        "chessscape_grid": [
+            ["id", "serial"],
+            ["geom", "geometry(geometry, 4326)"],
+            ["properties", "jsonb"],
+        ],
     }
 
     db.create_tables(data_cols)
@@ -46,9 +51,18 @@ def load_grid(db, fn):
                         [
                             [
                                 (float(ds["lon"][y][x]), float(ds["lat"][y][x])),
-                                (float(ds["lon"][y + 1][x]), float(ds["lat"][y + 1][x])),
-                                (float(ds["lon"][y + 1][x + 1]), float(ds["lat"][y + 1][x + 1])),
-                                (float(ds["lon"][y][x + 1]), float(ds["lat"][y][x + 1])),
+                                (
+                                    float(ds["lon"][y + 1][x]),
+                                    float(ds["lat"][y + 1][x]),
+                                ),
+                                (
+                                    float(ds["lon"][y + 1][x + 1]),
+                                    float(ds["lat"][y + 1][x + 1]),
+                                ),
+                                (
+                                    float(ds["lon"][y][x + 1]),
+                                    float(ds["lat"][y][x + 1]),
+                                ),
                             ]
                         ]
                     ),

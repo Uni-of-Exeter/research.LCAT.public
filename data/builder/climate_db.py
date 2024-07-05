@@ -20,10 +20,12 @@
 # their own tables indexed by grid cell id
 
 import csv
-import yaml
-import psycopg2
+import json
+import os
+
 import geojson
-import json, os
+import psycopg2
+import yaml
 from psycopg2.extras import Json
 
 
@@ -68,7 +70,10 @@ class db:
         elif feature_data.get("type") == "Feature":
             geojson = json.dumps(feature_data["geometry"])
             str_dict = dict((str(k), str(v)) for k, v in feature_data["properties"].items())
-            self.cur.execute(INSERT_STATEMENT, (feature_data["id"], geojson, json.dumps(feature_data["properties"])))
+            self.cur.execute(
+                INSERT_STATEMENT,
+                (feature_data["id"], geojson, json.dumps(feature_data["properties"])),
+            )
 
     def load_shp_geom(self, fn, table, projection):
         # import lsoa from GCS_OSGB_1936 (27700)

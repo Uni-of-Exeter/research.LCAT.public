@@ -20,10 +20,11 @@
 # their own tables indexed by grid cell id
 
 import csv
-import yaml
-import psycopg2
-import geojson
 import json
+
+import geojson
+import psycopg2
+import yaml
 
 from builder import climate_db
 
@@ -61,7 +62,15 @@ def import_grid(db, fn):
 
 
 def load_data(db, table, fn):
-    grid_cols = {"year": 0, "location": 1, "lowest": 2, "2nd_low": 3, "median": 4, "2nd_high": 5, "highest": 6}
+    grid_cols = {
+        "year": 0,
+        "location": 1,
+        "lowest": 2,
+        "2nd_low": 3,
+        "median": 4,
+        "2nd_high": 5,
+        "highest": 6,
+    }
     print("loading " + table)
     with open(fn) as csvfile:
         reader = csv.reader(csvfile)
@@ -77,7 +86,11 @@ def load_data(db, table, fn):
 
 
 data_cols = {
-    "uk_cri_grid": [["id", "serial primary key"], ["geom", "geometry(geometry, 27700)"], ["properties", "jsonb"]]
+    "uk_cri_grid": [
+        ["id", "serial primary key"],
+        ["geom", "geometry(geometry, 27700)"],
+        ["properties", "jsonb"],
+    ]
 }
 
 model = "hadgem_rcp85"

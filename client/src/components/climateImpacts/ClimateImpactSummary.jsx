@@ -10,11 +10,12 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+import "./ClimateImpactSummary.css";
+
 import React from "react";
 import LoadingOverlay from "react-loading-overlay-ts";
-import { impacts, communityImpacts, pathways } from "./ClimateImpactSummaryData.jsx";
 
-import "./ClimateImpactSummary.css";
+import { communityImpacts, impacts, pathways } from "./ClimateImpactSummaryData.jsx";
 
 function ClimateImpactSummary(props) {
     const selectedPathwayData = pathways.find((item) => item.name === props.selectedHazardName);
@@ -75,10 +76,8 @@ function ClimateImpactSummary(props) {
 
             <p>
                 Climate change will have a <strong className="text-emphasis">negative impact</strong> on essential
-                community infrastructures and services like {" "}
-                <strong className="text-emphasis">
-                    systems failures of hospitals, transport, water, and energy.
-                </strong>{" "}
+                community infrastructures and services like{" "}
+                <strong className="text-emphasis">systems failures of hospitals, transport, water, and energy.</strong>{" "}
                 See below for additional community impacts for each pathway.
             </p>
 

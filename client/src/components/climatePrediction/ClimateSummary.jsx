@@ -10,16 +10,16 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+import "./ClimateSummary.css";
+
 import LoadingOverlay from "react-loading-overlay-ts";
 
-import TempSvg from "../../images/climate/Temperature";
-import RainSvg from "../../images/climate/Rain";
-import WindSvg from "../../images/climate/WindSpeed";
+import DecreaseSvg from "../../images/buttons/decrease";
+import IncreaseSvg from "../../images/buttons/increase";
 import CloudSvg from "../../images/climate/CloudCover";
-import IncreaseSvg from "../../images/increase";
-import DecreaseSvg from "../../images/decrease";
-
-import "./ClimateSummary.css";
+import RainSvg from "../../images/climate/Rain";
+import TempSvg from "../../images/climate/Temperature";
+import WindSvg from "../../images/climate/WindSpeed";
 
 function climateChange(prediction, variable, year) {
     if (prediction.length > 0) {

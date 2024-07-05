@@ -20,7 +20,18 @@
 def cache_climate(db, boundary_table, climate_table):
     table = "cache_" + boundary_table + "_to_" + climate_table
     variables = ["tas", "sfcWind", "pr", "rsds"]
-    decades = ["1980", "1990", "2000", "2010", "2020", "2030", "2040", "2050", "2060", "2070"]
+    decades = [
+        "1980",
+        "1990",
+        "2000",
+        "2010",
+        "2020",
+        "2030",
+        "2040",
+        "2050",
+        "2060",
+        "2070",
+    ]
 
     data_cols = {table: [["boundary_id", "int primary key"]]}
 

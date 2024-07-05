@@ -12,7 +12,7 @@
 
 import geojson
 import psycopg2
-from shapely.geometry import shape, Point
+from shapely.geometry import Point, shape
 
 # This script connects the input arbitrary geographic zones with
 # the climate data tiles in various ways

@@ -20,10 +20,11 @@
 # their own tables indexed by grid cell id
 
 import csv
-import yaml
-import psycopg2
-import geojson
 import json
+
+import geojson
+import psycopg2
+import yaml
 from psycopg2.extras import Json
 
 
@@ -63,4 +64,7 @@ class db:
         elif feature_data.get("type") == "Feature":
             geojson = json.dumps(feature_data["geometry"])
             str_dict = dict((str(k), str(v)) for k, v in feature_data["properties"].items())
-            self.cur.execute(INSERT_STATEMENT, (feature_data["id"], geojson, json.dumps(feature_data["properties"])))
+            self.cur.execute(
+                INSERT_STATEMENT,
+                (feature_data["id"], geojson, json.dumps(feature_data["properties"])),
+            )

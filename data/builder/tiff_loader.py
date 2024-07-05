@@ -18,16 +18,28 @@
 
 # Functions to read (and write) GeoTiff climate model files
 
-import rasterio
-from builder import climate_db
-from psycopg2.extras import execute_values
-import numpy
 import geojson
-from rasterio.plot import show
+import numpy
+import rasterio
+from psycopg2.extras import execute_values
 from pyproj import Transformer
+from rasterio.plot import show
+
+from builder import climate_db
 
 seasons = ["winter", "spring", "summer", "autumn", "annual"]
-decades = ["1980", "1990", "2000", "2010", "2020", "2030", "2040", "2050", "2060", "2070"]
+decades = [
+    "1980",
+    "1990",
+    "2000",
+    "2010",
+    "2020",
+    "2030",
+    "2040",
+    "2050",
+    "2060",
+    "2070",
+]
 
 
 def nuke(db, table):
@@ -130,7 +142,11 @@ def load_grid(db, fn):
     y_size = img.height
 
     data_cols = {
-        "chess_scape_grid": [["id", "serial"], ["geom", "geometry(geometry, 4326)"], ["properties", "jsonb"]],
+        "chess_scape_grid": [
+            ["id", "serial"],
+            ["geom", "geometry(geometry, 4326)"],
+            ["properties", "jsonb"],
+        ],
     }
 
     db.create_tables(data_cols)
@@ -153,7 +169,10 @@ def load_grid(db, fn):
             features.append(
                 geojson.Feature(
                     id=x * y_size + y,
-                    geometry=geojson.Polygon([[(a[1], a[0]), (b[1], b[0]), (c[1], c[0]), (d[1], d[0])]], properties={}),
+                    geometry=geojson.Polygon(
+                        [[(a[1], a[0]), (b[1], b[0]), (c[1], c[0]), (d[1], d[0])]],
+                        properties={},
+                    ),
                 )
             )
         print("loading grid " + str(int((x / x_size) * 100)) + "%")
@@ -213,7 +232,18 @@ def test_data(db, fn, table, variable):
 
 def import_tiffs(db, path, rcp, variable):
     for season in ["annual", "summer", "winter"]:
-        for decade in ["1980", "1990", "2000", "2010", "2020", "2030", "2040", "2050", "2060", "2070"]:
+        for decade in [
+            "1980",
+            "1990",
+            "2000",
+            "2010",
+            "2020",
+            "2030",
+            "2040",
+            "2050",
+            "2060",
+            "2070",
+        ]:
             fn = "chess_scape_" + rcp + "_" + variable + "_" + season + "_" + decade + ".tif"
             load_data(db, path + fn, "chess_scape_" + rcp + "_" + season, decade, variable)
 

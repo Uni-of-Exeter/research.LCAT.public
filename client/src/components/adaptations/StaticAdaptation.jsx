@@ -10,10 +10,11 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
-import { useCollapse } from "react-collapsed";
-import StaticReferences from "./StaticReferences";
-
 import "./StaticAdaptation.css";
+
+import { useCollapse } from "react-collapsed";
+
+import StaticReferences from "./StaticReferences";
 
 function StaticAdaptation(props) {
     const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();

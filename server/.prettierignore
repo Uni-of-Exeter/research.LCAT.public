@@ -1,0 +1,4 @@
+# Ignore patterns
+dist
+src/images
+package-lock.json

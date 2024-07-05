@@ -12,13 +12,19 @@
 
 import geojson
 import psycopg2
-from shapely.geometry import shape, Point
+from shapely.geometry import Point, shape
 
 
 def centroids(db, geo_table, base, base_epsg):
     # get the tile geometry in lat/lng
     db.create_tables(
-        {f"{geo_table}_{base}_mapping": [["id", "serial primary key"], ["geo_id", "int"], ["lsoa_id", "int"]]}
+        {
+            f"{geo_table}_{base}_mapping": [
+                ["id", "serial primary key"],
+                ["geo_id", "int"],
+                ["lsoa_id", "int"],
+            ]
+        }
     )
 
     print("loading geometry " + geo_table)

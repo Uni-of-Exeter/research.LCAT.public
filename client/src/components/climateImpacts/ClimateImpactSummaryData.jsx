@@ -12,18 +12,6 @@ Common Good Public License Beta 1.0 for more details. */
 
 // General impact icons for impacts data structure
 import SvgAdaptationAndOrMutationOfMicroorganisms from "../../images/impacts/community/AdaptationAndOrMutationOfMicroorganisms";
-import SvgAdverseHealthOutcomesAndMalnutritionAssociatedWithAnUnhealthyDiet from "../../images/impacts/general/AdverseHealthOutcomesAndMalnutritionAssociatedWithAnUnhealthyDiet";
-import SvgAdverseHealthOutcomesAssociatedWithExposureToChemicalsHeavyMetalsAndMicroplastics from "../../images/impacts/general/AdverseHealthOutcomesAssociatedWithExposureToChemicalsHeavyMetalsAndMicroplastics";
-import SvgAdversePregnancyOutcomes from "../../images/impacts/general/AdversePregnancyOutcomes";
-import SvgAntimicrobialResistance from "../../images/impacts/general/AntimicrobialResistance";
-import SvgCardiovascularDiseases from "../../images/impacts/general/CardiovascularDiseases";
-import SvgDrowningOrFloodRelatedAccidents from "../../images/impacts/general/DrowningOrFloodRelatedAccidents";
-import SvgIllnessAndMortalityDueToDampBuildingFabrics from "../../images/impacts/general/IllnessAndMortalityDueToDampBuildingFabrics";
-import SvgInfectionsCausedByPathogenicOrganisms from "../../images/impacts/general/InfectionsCausedByPathogenicOrganisms";
-import SvgInjuries from "../../images/impacts/general/Injuries";
-import SvgRespiratoryDiseases from "../../images/impacts/general/RespiratoryDiseases";
-import SvgVectorBorneDiseases from "../../images/impacts/general/VectorBorneDiseases";
-
 // Community impact icons for communityImpacts data structure
 import SvgBiodiversityAndEcologicalBalanceDisruption from "../../images/impacts/community/BiodiversityAndEcologicalBalanceDisruption";
 import SvgBuildingAndStructuralDamage from "../../images/impacts/community/BuildingAndStructuralDamage";
@@ -33,7 +21,6 @@ import SvgDamageOrLossOfPossessionsOrHome from "../../images/impacts/community/D
 import SvgDamageOrLossOfTheBuiltAndNaturalEnvironment from "../../images/impacts/community/DamageOrLossOfTheBuiltAndNaturalEnvironment";
 import SvgDamageToLocalEconomy from "../../images/impacts/community/DamageToLocalEconomy";
 import SvgFoodSecurity from "../../images/impacts/community/FoodSecurity";
-import SvgIllnessFromBiologicalContaminants from "../../images/impacts/general/IllnessFromBiologicalContaminants";
 import SvgMarineAndCoastalBiodiversityAndEcologicalBalanceDisruption from "../../images/impacts/community/MarineAndCoastalBiodiversityAndEcologicalBalanceDisruption";
 import SvgNegativeImpactOnTheFishingIndustry from "../../images/impacts/community/NegativeImpactOnTheFishingIndustry";
 import SvgNegativeImpactsOnAgriculturalAndLivestockProduction from "../../images/impacts/community/NegativeImpactsOnAgriculturalAndLivestockProduction";
@@ -43,6 +30,18 @@ import SvgPublicTransportDisruption from "../../images/impacts/community/PublicT
 import SvgReductionInWaterQuality from "../../images/impacts/community/ReductionInWaterQuality";
 import SvgTransportDisruption from "../../images/impacts/community/TransportDisruption";
 import SvgUrbanHeatIslandEffect from "../../images/impacts/community/UrbanHeatIslandEffect";
+import SvgAdverseHealthOutcomesAndMalnutritionAssociatedWithAnUnhealthyDiet from "../../images/impacts/general/AdverseHealthOutcomesAndMalnutritionAssociatedWithAnUnhealthyDiet";
+import SvgAdverseHealthOutcomesAssociatedWithExposureToChemicalsHeavyMetalsAndMicroplastics from "../../images/impacts/general/AdverseHealthOutcomesAssociatedWithExposureToChemicalsHeavyMetalsAndMicroplastics";
+import SvgAdversePregnancyOutcomes from "../../images/impacts/general/AdversePregnancyOutcomes";
+import SvgAntimicrobialResistance from "../../images/impacts/general/AntimicrobialResistance";
+import SvgCardiovascularDiseases from "../../images/impacts/general/CardiovascularDiseases";
+import SvgDrowningOrFloodRelatedAccidents from "../../images/impacts/general/DrowningOrFloodRelatedAccidents";
+import SvgIllnessAndMortalityDueToDampBuildingFabrics from "../../images/impacts/general/IllnessAndMortalityDueToDampBuildingFabrics";
+import SvgIllnessFromBiologicalContaminants from "../../images/impacts/general/IllnessFromBiologicalContaminants";
+import SvgInfectionsCausedByPathogenicOrganisms from "../../images/impacts/general/InfectionsCausedByPathogenicOrganisms";
+import SvgInjuries from "../../images/impacts/general/Injuries";
+import SvgRespiratoryDiseases from "../../images/impacts/general/RespiratoryDiseases";
+import SvgVectorBorneDiseases from "../../images/impacts/general/VectorBorneDiseases";
 
 // Impact pathway names, pathway IDs used in inPathway field, and Kumu map iframe embeds
 export const pathways = [

@@ -11,6 +11,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
 import React, { useEffect, useState } from "react";
+
 import { andify } from "../../utils/utils";
 
 function ClimateSettings(props) {
