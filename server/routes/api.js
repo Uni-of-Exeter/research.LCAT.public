@@ -42,12 +42,12 @@ function is_valid_boundary(table) {
 // ]
 
 const boundary_details = {
-    boundary_uk_counties: { name: "name_2", srid: 32630, method: "cache" },
-    boundary_la_districts: { name: "lad22nm", srid: 27700, method: "cache" },
-    boundary_msoa: { name: "msoa11nm", srid: 27700, method: "cell" },
-    boundary_parishes: { name: "parncp19nm", srid: 27700, method: "cell" },
-    boundary_sc_dz: { name: "name", srid: 4326, method: "cell" },
-    boundary_lsoa: { name: "lsoa11nm", srid: 27700, method: "cell" },
+    boundary_uk_counties: { name: "ctyua23nm", srid: 27700, method: "cache" },
+    boundary_la_districts: { name: "lad23nm", srid: 27700, method: "cache" },
+    boundary_parishes: { name: "par23nm", srid: 27700, method: "cell" },
+    boundary_lsoa: { name: "lsoa21nm", srid: 27700, method: "cell" },
+    boundary_msoa: { name: "msoa21nm", srid: 27700, method: "cell" },
+    boundary_sc_dz: { name: "name", srid: 27700, method: "cell" },
 };
 
 const vardec = [];
