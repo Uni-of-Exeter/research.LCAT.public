@@ -27,7 +27,7 @@ All the sources of data used for LCAT, with their authorities and links to origi
 Digital boundary products and reference maps are used under the Open Government Licence. For UK county, LA district, parish, LSOA and MSOA data, the following apply:
 
 - Source: Office for National Statistics licensed under the Open Government Licence v.3.0
-- Contains OS data © Crown copyright and database right [2024]
+- Contains OS data © Crown copyright and database right 2024
 
 For Scotland Data Zone data, the following applies:
 
