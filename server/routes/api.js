@@ -23,31 +23,30 @@ var username = process.env.DB_USER;
 var password = process.env.DB_PASS;
 var host = process.env.DB_HOST;
 var database = process.env.DB_DATABASE;
-var conString = "postgres://" + username + ":" + password + "@" + host + "/" + database; // Your Database Connection
+var conString = "postgres://" + username + ":" + password + "@" + host + "/" + database;
 
 function is_valid_boundary(table) {
     return [
-        "boundary_lsoa",
-        "boundary_msoa",
         "boundary_uk_counties",
         "boundary_la_districts",
+        "boundary_lsoa",
+        "boundary_msoa",
         "boundary_parishes",
         "boundary_sc_dz",
+        "boundary_ni_dz",
+        "boundary_iom",
     ].includes(table);
 }
 
-// const vulnerabilities = [
-//     "imd_rank","imd_decile","a1","a2","h1","h2","i1","i2","i3","i4","i5","f1","f2","k1",
-//     "t1","t2","m1","m2","m3","c1","l1","e1","n1","n2","n3","s1","s2","s3","s4"
-// ]
-
 const boundary_details = {
-    boundary_uk_counties: { name: "ctyua23nm", srid: 27700, method: "cache" },
-    boundary_la_districts: { name: "lad23nm", srid: 27700, method: "cache" },
-    boundary_parishes: { name: "par23nm", srid: 27700, method: "cell" },
-    boundary_lsoa: { name: "lsoa21nm", srid: 27700, method: "cell" },
-    boundary_msoa: { name: "msoa21nm", srid: 27700, method: "cell" },
-    boundary_sc_dz: { name: "name", srid: 27700, method: "cell" },
+    boundary_uk_counties: { name: "CTYUA23NM", srid: 27700, method: "cache" },
+    boundary_la_districts: { name: "LAD23NM", srid: 27700, method: "cache" },
+    boundary_lsoa: { name: "LSOA21NM", srid: 27700, method: "cell" },
+    boundary_msoa: { name: "MSOA21NM", srid: 27700, method: "cell" },
+    boundary_parishes: { name: "PAR23NM", srid: 27700, method: "cell" },
+    boundary_sc_dz: { name: "Name", srid: 27700, method: "cell" },
+    boundary_ni_dz: { name: "DZ2021_nm", srid: 27700, method: "cell" },
+    boundary_iom: { name: "NAME_ENGLI", srid: 27700, method: "cell" },
 };
 
 const vardec = [];

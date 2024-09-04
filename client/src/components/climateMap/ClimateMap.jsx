@@ -167,10 +167,13 @@ class ClimateMap extends React.Component {
     regionTypeToName = (type) => {
         if (type == "boundary_uk_counties") return "UK Counties";
         if (type == "boundary_la_districts") return "Local Authority Districts";
-        if (type == "boundary_parishes") return "Parishes (Eng/Wales)";
+        if (type == "boundary_lsoa") return "LSOA";
         if (type == "boundary_msoa") return "MSOA (Eng/Wales)";
+        if (type == "boundary_parishes") return "Parishes (Eng/Wales)";
         if (type == "boundary_sc_dz") return "Data Zones (Scotland)";
-        return "LSOA";
+        if (type == "boundary_ni_dz") return "Data Zones (Northern Ireland)";
+        if (type == "boundary_iom") return "Isle of Man";
+        return;
     };
 
     clear = () => {
@@ -203,6 +206,8 @@ class ClimateMap extends React.Component {
                         <option value="boundary_msoa">MSOA (Eng/Wales)</option>
                         <option value="boundary_sc_dz">Data Zones (Scotland)</option>
                         <option value="boundary_lsoa">LSOA (Eng/Wales)</option>
+                        <option value="boundary_ni_dz">Data Zones (Northern Ireland)</option>
+                        <option value="boundary_iom">Isle of Man</option>
                     </select>
                     &nbsp;Data for your chosen area/s will appear below.
                     {/*The Index of Multiple Deprivation score 
