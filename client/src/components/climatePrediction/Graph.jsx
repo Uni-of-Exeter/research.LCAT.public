@@ -89,14 +89,14 @@ function Graph(props) {
     function getYAxis() {
         if (variable == "tas") return "Temperature (°C)";
         if (variable == "pr") return "Rainfall (mm/day)";
-        if (variable == "sfcwind") return "Wind (m/s)";
+        if (variable == "sfcWind") return "Wind (m/s)";
         return "Cloudiness (W/m²)";
     }
 
     function getLabel(v) {
         /*if (variable=="tas") return v.toFixed(2)+'°C';
         if (variable=="pr") return v.toFixed(2)+' mm/day';
-        if (variable=="sfcwind") return v.toFixed(2)+' m/s';
+        if (variable=="sfcWind") return v.toFixed(2)+' m/s';
         return v.toFixed(2)+' W/m²';*/
         return v.toFixed(2);
     }
@@ -104,7 +104,7 @@ function Graph(props) {
     function getAvLabel(v) {
         /*if (variable=="tas") return v.toFixed(2)+'°C';
         if (variable=="pr") return v.toFixed(2)+' mm/day';
-        if (variable=="sfcwind") return v.toFixed(2)+' m/s';
+        if (variable=="sfcWind") return v.toFixed(2)+' m/s';
         return v.toFixed(2)+' W/m²';*/
         return v.toFixed(2) + "<br> UK";
     }
@@ -119,7 +119,7 @@ function Graph(props) {
                 for (let year of [1980, 2030, 2040, 2050, 2060, 2070]) {
                     let label_year = "" + year;
                     let v = variable;
-                    if (v == "sfcwind") v = "sfcWind";
+                    // if (v == "sfcwind") v = "sfcWind";
                     let avkey = "chess_scape_" + rcp + "_" + season + "_" + v + "_" + year;
                     if (year == 1980) label_year = "1980 baseline";
 
@@ -209,7 +209,7 @@ function Graph(props) {
                             >
                                 <option value="tas">temperature</option>
                                 <option value="pr">rain</option>
-                                <option value="sfcwind">wind</option>
+                                <option value="sfcWind">wind</option>
                                 <option value="rsds">cloudiness</option>
                             </select>
                             &nbsp;for your&nbsp;

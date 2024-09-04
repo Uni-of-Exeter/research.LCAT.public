@@ -89,9 +89,9 @@ function ClimateSummary(props) {
                         {predict(props.climatePrediction, props.year, "rsds", "Cloudiness", "Watts/m2")}
                     </div>
                     <div className="vert-container">
-                        {arrow(props.climatePrediction, props.year, "sfcwind")}
+                        {arrow(props.climatePrediction, props.year, "sfcWind")}
                         <WindSvg className="climate-arrow" />
-                        {predict(props.climatePrediction, props.year, "sfcwind", "Windiness", "m/sec")}
+                        {predict(props.climatePrediction, props.year, "sfcWind", "Windiness", "m/sec")}
                     </div>
                 </div>
                 <p>
