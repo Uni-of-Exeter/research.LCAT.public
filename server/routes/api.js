@@ -150,41 +150,29 @@ router.get("/region", async function (req, res) {
 
 /// GET CHESS-SCAPE CLIMATE DATA FROM DB ///
 
-// CHESS-SCAPE helper function: build query strings
-function buildQuery(boundaryDetails, locations, rcp, season, climateCol) {
-    if (boundaryDetails.method === "cell") {
-        const sq = `
-            (SELECT DISTINCT grid_cell_id
-             FROM ${boundaryDetails.overlap_table_name}
-             WHERE gid IN (${locations.join(",")}))`;
-
-        return `
-            SELECT ${climateCol.join(", ")}
-            FROM chess_scape_${rcp}_${season}
-            WHERE grid_cell_id IN ${sq};`;
-    } else {
-        const cache_table = `cache_${boundaryDetails.identifier}_to_${rcp}_${season}`;
-
-        return `
-            SELECT ${climateCol.join(", ")}
-            FROM ${cache_table}
-            WHERE gid IN (${locations.join(",")});`;
-    }
-}
-
 // CHESS-SCAPE helper function: generate climate column array
 function generateClimateCols() {
-    const climateCols = [];
+    const averageClimateColNames = [];
     const variables = ["tas", "sfcWind", "pr", "rsds"];
     const decades = ["1980", "1990", "2000", "2010", "2020", "2030", "2040", "2050", "2060", "2070"];
 
     for (const variable of variables) {
         for (const decade of decades) {
-            climateCols.push(`avg("${variable}_${decade}") as "${variable}_${decade}"`);
+            averageClimateColNames.push(`AVG("${variable}_${decade}") as "${variable}_${decade}"`);
         }
     }
 
-    return climateCols;
+    return averageClimateColNames;
+}
+
+// Build query string for averaging climate data
+function buildQuery(boundaryDetails, locations, rcp, season, averageColNames) {
+    const cacheTable = `cache_${boundaryDetails.identifier}_to_${rcp}_${season}`;
+
+    return `
+        SELECT ${averageColNames}
+        FROM ${cacheTable}
+        WHERE gid IN (${locations.join(",")});`;
 }
 
 // Check table name helper function: check front end table name is valid
@@ -224,8 +212,8 @@ router.get("/chess_scape", async (req, res) => {
         }
 
         // Build query based on variables
-        const climateCols = generateClimateCols();
-        let query = buildQuery(boundaryDetails, locations, rcp, season, climateCols);
+        const averageClimateColNames = generateClimateCols();
+        let query = buildQuery(boundaryDetails, locations, rcp, season, averageClimateColNames);
 
         // Connect and execute
         const client = new Client(conString);
