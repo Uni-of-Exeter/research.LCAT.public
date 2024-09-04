@@ -29,6 +29,7 @@ var conString = "postgres://" + username + ":" + password + "@" + host + "/" + d
 let all_boundary_details = {};
 initialiseBoundaryDetails();
 
+// Check table name from front end is valid
 function is_valid_boundary(tableName) {
     return [
         "boundary_uk_counties",
@@ -72,6 +73,7 @@ async function fetchBoundaryDetails() {
     }
 }
 
+// Initialise boundary details
 async function initialiseBoundaryDetails() {
     try {
         all_boundary_details = await fetchBoundaryDetails();
@@ -84,10 +86,9 @@ async function initialiseBoundaryDetails() {
 // CHESS-SCAPE helper function: build query strings
 function buildQuery(boundaryDetails, locations, rcp, season, climateCol) {
     if (boundaryDetails.method === "cell") {
-        const region_grid = `grid_overlaps_${boundaryDetails.identifier}`;
         const sq = `
             (SELECT DISTINCT grid_cell_id
-             FROM ${region_grid}
+             FROM ${boundaryDetails.overlap_table_name}
              WHERE gid IN (${locations.join(",")}))`;
 
         return `
