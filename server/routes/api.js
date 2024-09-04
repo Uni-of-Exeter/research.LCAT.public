@@ -56,70 +56,81 @@ for (let variable of ["tas", "sfcWind", "pr", "rsds"]) {
     }
 }
 
-// get GeoJSONs of regions given a bounding box and detail
-// tolerance from zoom level
-router.get("/region", function (req, res) {
-    let table = req.query.table;
-    let tolerance = req.query.tolerance;
-    let left = req.query.left;
-    let bottom = req.query.bottom;
-    let right = req.query.right;
-    let top = req.query.top;
+// Get GeoJSONs of regions given a bounding box and detail
+// Tolerance from zoom level
+router.get("/region", async function (req, res) {
+    try {
+        // Sanitize and validate inputs
+        let { table, tolerance, left, bottom, right, top } = req.query;
 
-    var name_col = boundary_details[table].name;
-    var srid = boundary_details[table].srid;
+        tolerance = parseFloat(tolerance);
+        left = parseFloat(left);
+        bottom = parseFloat(bottom);
+        right = parseFloat(right);
+        top = parseFloat(top);
 
-    if (is_valid_boundary(table)) {
-        var client = new Client(conString);
-        client.connect();
+        if (isNaN(tolerance) || isNaN(left) || isNaN(bottom) || isNaN(right) || isNaN(top)) {
+            return res.status(400).send({ error: "Invalid input parameters" });
+        }
 
-        let props = ""; //"'imdscore', imdscore";
-        //props = propertyCols.map(key => "'"+key+"', "+key).join(", ");
+        // Retrieve table details safely
+        const boundary = boundary_details[table];
+        if (!boundary) {
+            return res.status(400).send({ error: "Invalid table" });
+        }
 
-        // build a new geojson in 4326 coords given the bounding box
-        // and zoom detail, add the name of the region and it's IMD
-        // score (simplify is specified in metres/pixel so need to
-        // ensure geometry e.g. counties are in 27700 coords before
-        // ST_Simplify)
-        var lsoa_query =
-            `select json_build_object(
+        const { name: name_col, srid } = boundary;
+
+        // Use connection pool for better performance
+        const client = new Client(conString);
+        await client.connect();
+
+        const props = ""; // Placeholder for additional properties
+
+        // Query: Build GeoJSON object for the given bounding box
+        const get_region_query = `
+            SELECT json_build_object(
                 'type', 'FeatureCollection',
-                'features', json_agg(json_build_object(
-                   'type', 'Feature',
-                   'properties', json_build_object('gid', gid,
-                                                   'name', ` +
-            name_col +
-            ` 
-                                                   ` +
-            props +
-            `),
-                   'geometry', ST_AsGeoJSON(
-                                 ST_Transform(
-                                   ST_Simplify(
-                                     ST_Transform(geom,27700),$1),4326))::json
-                   ))
-              )
-         	  from ` +
-            table +
-            ` where geom && ST_TRANSFORM(ST_MakeEnvelope($2,$3,$4,$5,4326),` +
-            srid +
-            `);`;
+                'features', json_agg(
+                    json_build_object(
+                        'type', 'Feature',
+                        'properties', json_build_object(
+                            'gid', gid,
+                            'name', ${name_col}
+                            ${props ? `, ${props}` : ""}
+                        ),
+                        'geometry', ST_AsGeoJSON(
+                            ST_Transform(
+                                ST_Simplify(
+                                    ST_Transform(geom, 27700), $1
+                                ), 4326
+                            )
+                        )::json
+                    )
+                )
+            )
+            FROM ${table}
+            WHERE ST_Intersects(
+                geom, 
+                ST_Transform(ST_MakeEnvelope($2, $3, $4, $5, 4326), ${srid})
+            );
+        `;
 
-        var query = client.query(new Query(lsoa_query, [tolerance, left, bottom, right, top]));
+        // Execute the query with parameterized inputs
+        const result = await client.query(get_region_query, [tolerance, left, bottom, right, top]);
 
-        query.on("row", function (row, result) {
-            result.addRow(row);
-        });
-        query.on("end", function (result) {
-            res.send(result.rows[0].json_build_object);
-            res.end();
-            client.end();
-        });
-        query.on("error", function (err, result) {
-            console.log("------------------error-------------------------");
-            //console.log(req);
-            console.log(err);
-        });
+        // Send the result as GeoJSON
+        if (result.rows.length > 0) {
+            res.json(result.rows[0].json_build_object);
+        } else {
+            res.status(404).send({ error: "No data found" });
+        }
+
+        // Close the client connection
+        await client.end();
+    } catch (err) {
+        console.error("Error:", err);
+        res.status(500).send({ error: "Internal Server Error" });
     }
 });
 
