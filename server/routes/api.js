@@ -14,7 +14,7 @@ var express = require("express");
 var router = express.Router();
 
 // PostgreSQL and PostGIS module and connection setup
-const { Client, Query } = require("pg");
+const { Client } = require("pg");
 
 require("dotenv").config();
 
@@ -29,19 +29,7 @@ var conString = "postgres://" + username + ":" + password + "@" + host + "/" + d
 let all_boundary_details = {};
 initialiseBoundaryDetails();
 
-// Check table name from front end is valid
-function is_valid_boundary(tableName) {
-    return [
-        "boundary_uk_counties",
-        "boundary_la_districts",
-        "boundary_lsoa",
-        "boundary_msoa",
-        "boundary_parishes",
-        "boundary_sc_dz",
-        "boundary_ni_dz",
-        "boundary_iom",
-    ].includes(tableName);
-}
+/// GET BOUNDARY DATA FROM DB ///
 
 // Function to fetch boundary details from the PostgreSQL table and store in memory
 async function fetchBoundaryDetails() {
@@ -81,43 +69,6 @@ async function initialiseBoundaryDetails() {
     } catch (error) {
         console.error("Error initializing boundary details:", error);
     }
-}
-
-// CHESS-SCAPE helper function: build query strings
-function buildQuery(boundaryDetails, locations, rcp, season, climateCol) {
-    if (boundaryDetails.method === "cell") {
-        const sq = `
-            (SELECT DISTINCT grid_cell_id
-             FROM ${boundaryDetails.overlap_table_name}
-             WHERE gid IN (${locations.join(",")}))`;
-
-        return `
-            SELECT ${climateCol.join(", ")}
-            FROM chess_scape_${rcp}_${season}
-            WHERE grid_cell_id IN ${sq};`;
-    } else {
-        const cache_table = `cache_${boundaryDetails.identifier}_to_${rcp}_${season}`;
-
-        return `
-            SELECT ${climateCol.join(", ")}
-            FROM ${cache_table}
-            WHERE gid IN (${locations.join(",")});`;
-    }
-}
-
-// CHESS-SCAPE helper function: generate climate column array
-function generateClimateCols() {
-    const climateCols = [];
-    const variables = ["tas", "sfcWind", "pr", "rsds"];
-    const decades = ["1980", "1990", "2000", "2010", "2020", "2030", "2040", "2050", "2060", "2070"];
-
-    for (const variable of variables) {
-        for (const decade of decades) {
-            climateCols.push(`avg("${variable}_${decade}") as "${variable}_${decade}"`);
-        }
-    }
-
-    return climateCols;
 }
 
 // Get GeoJSONs of regions given a bounding box and detail
@@ -197,6 +148,59 @@ router.get("/region", async function (req, res) {
     }
 });
 
+/// GET CHESS-SCAPE CLIMATE DATA FROM DB ///
+
+// CHESS-SCAPE helper function: build query strings
+function buildQuery(boundaryDetails, locations, rcp, season, climateCol) {
+    if (boundaryDetails.method === "cell") {
+        const sq = `
+            (SELECT DISTINCT grid_cell_id
+             FROM ${boundaryDetails.overlap_table_name}
+             WHERE gid IN (${locations.join(",")}))`;
+
+        return `
+            SELECT ${climateCol.join(", ")}
+            FROM chess_scape_${rcp}_${season}
+            WHERE grid_cell_id IN ${sq};`;
+    } else {
+        const cache_table = `cache_${boundaryDetails.identifier}_to_${rcp}_${season}`;
+
+        return `
+            SELECT ${climateCol.join(", ")}
+            FROM ${cache_table}
+            WHERE gid IN (${locations.join(",")});`;
+    }
+}
+
+// CHESS-SCAPE helper function: generate climate column array
+function generateClimateCols() {
+    const climateCols = [];
+    const variables = ["tas", "sfcWind", "pr", "rsds"];
+    const decades = ["1980", "1990", "2000", "2010", "2020", "2030", "2040", "2050", "2060", "2070"];
+
+    for (const variable of variables) {
+        for (const decade of decades) {
+            climateCols.push(`avg("${variable}_${decade}") as "${variable}_${decade}"`);
+        }
+    }
+
+    return climateCols;
+}
+
+// Check table name helper function: check front end table name is valid
+function is_valid_boundary(tableName) {
+    return [
+        "boundary_uk_counties",
+        "boundary_la_districts",
+        "boundary_lsoa",
+        "boundary_msoa",
+        "boundary_parishes",
+        "boundary_sc_dz",
+        "boundary_ni_dz",
+        "boundary_iom",
+    ].includes(tableName);
+}
+
 router.get("/chess_scape", async (req, res) => {
     try {
         const locations = Array.isArray(req.query.locations) ? req.query.locations : [req.query.locations];
@@ -236,6 +240,8 @@ router.get("/chess_scape", async (req, res) => {
         res.status(500).send({ error: "An error occurred" });
     }
 });
+
+/// OTHER ROUTES ///
 
 router.get("/ping", function (req, res) {
     res.send();
