@@ -25,7 +25,11 @@ var host = process.env.DB_HOST;
 var database = process.env.DB_DATABASE;
 var conString = "postgres://" + username + ":" + password + "@" + host + "/" + database;
 
-function is_valid_boundary(table) {
+// Load boundary details once at startup
+let all_boundary_details = {};
+initialiseBoundaryDetails();
+
+function is_valid_boundary(tableName) {
     return [
         "boundary_uk_counties",
         "boundary_la_districts",
@@ -35,32 +39,90 @@ function is_valid_boundary(table) {
         "boundary_sc_dz",
         "boundary_ni_dz",
         "boundary_iom",
-    ].includes(table);
+    ].includes(tableName);
 }
 
-const boundary_details = {
-    boundary_uk_counties: { name: "CTYUA23NM", srid: 27700, method: "cache" },
-    boundary_la_districts: { name: "LAD23NM", srid: 27700, method: "cache" },
-    boundary_lsoa: { name: "LSOA21NM", srid: 27700, method: "cell" },
-    boundary_msoa: { name: "MSOA21NM", srid: 27700, method: "cell" },
-    boundary_parishes: { name: "PAR23NM", srid: 27700, method: "cell" },
-    boundary_sc_dz: { name: "Name", srid: 27700, method: "cell" },
-    boundary_ni_dz: { name: "DZ2021_nm", srid: 27700, method: "cell" },
-    boundary_iom: { name: "NAME_ENGLI", srid: 27700, method: "cell" },
-};
+// Function to fetch boundary details from the PostgreSQL table and store in memory
+async function fetchBoundaryDetails() {
+    try {
+        const client = new Client(conString);
+        await client.connect();
 
-const vardec = [];
-for (let variable of ["tas", "sfcWind", "pr", "rsds"]) {
-    for (let decade of ["1980", "1990", "2000", "2010", "2020", "2030", "2040", "2050", "2060", "2070"]) {
-        vardec.push("avg(" + variable + "_" + decade + ") as " + variable + "_" + decade);
+        const result = await client.query("SELECT * FROM boundary_details");
+        const boundary_details = {};
+
+        result.rows.forEach((row) => {
+            let tableName = "boundary_" + row.boundary_identifier;
+
+            boundary_details[tableName] = {
+                identifier: row.boundary_identifier,
+                print_name: row.print_name,
+                name_col: row.shapefile_name_col,
+                source_srid: row.source_srid,
+                srid: row.db_srid,
+                boundary_table_name: row.boundary_table_name,
+                overlap_table_name: row.overlap_table_name,
+                method: row.method,
+            };
+        });
+        await client.end();
+        return boundary_details;
+    } catch (error) {
+        console.error("Error fetching boundary details from the database:", error);
     }
+}
+
+async function initialiseBoundaryDetails() {
+    try {
+        all_boundary_details = await fetchBoundaryDetails();
+        console.log("Boundary details successfully fetched from the database.");
+    } catch (error) {
+        console.error("Error initializing boundary details:", error);
+    }
+}
+
+// CHESS-SCAPE helper function: build query strings
+function buildQuery(boundaryDetails, locations, rcp, season, climateCol) {
+    if (boundaryDetails.method === "cell") {
+        const region_grid = `grid_overlaps_${boundaryDetails.identifier}`;
+        const sq = `
+            (SELECT DISTINCT grid_cell_id
+             FROM ${region_grid}
+             WHERE gid IN (${locations.join(",")}))`;
+
+        return `
+            SELECT ${climateCol.join(", ")}
+            FROM chess_scape_${rcp}_${season}
+            WHERE grid_cell_id IN ${sq};`;
+    } else {
+        const cache_table = `cache_${boundaryDetails.identifier}_to_${rcp}_${season}`;
+
+        return `
+            SELECT ${climateCol.join(", ")}
+            FROM ${cache_table}
+            WHERE gid IN (${locations.join(",")});`;
+    }
+}
+
+// CHESS-SCAPE helper function: generate climate column array
+function generateClimateCols() {
+    const climateCols = [];
+    const variables = ["tas", "sfcWind", "pr", "rsds"];
+    const decades = ["1980", "1990", "2000", "2010", "2020", "2030", "2040", "2050", "2060", "2070"];
+
+    for (const variable of variables) {
+        for (const decade of decades) {
+            climateCols.push(`avg("${variable}_${decade}") as "${variable}_${decade}"`);
+        }
+    }
+
+    return climateCols;
 }
 
 // Get GeoJSONs of regions given a bounding box and detail
 // Tolerance from zoom level
 router.get("/region", async function (req, res) {
     try {
-        // Sanitize and validate inputs
         let { table, tolerance, left, bottom, right, top } = req.query;
 
         tolerance = parseFloat(tolerance);
@@ -73,13 +135,15 @@ router.get("/region", async function (req, res) {
             return res.status(400).send({ error: "Invalid input parameters" });
         }
 
-        // Retrieve table details safely
-        const boundary = boundary_details[table];
-        if (!boundary) {
-            return res.status(400).send({ error: "Invalid table" });
+        if (Object.keys(all_boundary_details).length === 0) {
+            await initialiseBoundaryDetails();
         }
 
-        const { name: name_col, srid } = boundary;
+        // Retrieve table details
+        const boundaryDetails = all_boundary_details[table];
+        if (!boundaryDetails) {
+            return res.status(400).send({ error: "Invalid table" });
+        }
 
         // Use connection pool for better performance
         const client = new Client(conString);
@@ -96,7 +160,7 @@ router.get("/region", async function (req, res) {
                         'type', 'Feature',
                         'properties', json_build_object(
                             'gid', gid,
-                            'name', ${name_col}
+                            'name', ${boundaryDetails.name_col}
                             ${props ? `, ${props}` : ""}
                         ),
                         'geometry', ST_AsGeoJSON(
@@ -112,11 +176,10 @@ router.get("/region", async function (req, res) {
             FROM ${table}
             WHERE ST_Intersects(
                 geom, 
-                ST_Transform(ST_MakeEnvelope($2, $3, $4, $5, 4326), ${srid})
+                ST_Transform(ST_MakeEnvelope($2, $3, $4, $5, 4326), ${boundaryDetails.srid})
             );
         `;
 
-        // Execute the query with parameterized inputs
         const result = await client.query(get_region_query, [tolerance, left, bottom, right, top]);
 
         // Send the result as GeoJSON
@@ -126,7 +189,6 @@ router.get("/region", async function (req, res) {
             res.status(404).send({ error: "No data found" });
         }
 
-        // Close the client connection
         await client.end();
     } catch (err) {
         console.error("Error:", err);
@@ -134,105 +196,44 @@ router.get("/region", async function (req, res) {
     }
 });
 
-router.get("/chess_scape", function (req, res) {
-    let locations = req.query.locations;
-    let rcp = req.query.rcp;
-    let season = req.query.season;
-    let boundary = req.query.boundary;
+router.get("/chess_scape", async (req, res) => {
+    try {
+        const locations = Array.isArray(req.query.locations) ? req.query.locations : [req.query.locations];
+        const rcp = req.query.rcp;
+        const season = req.query.season;
+        const boundaryTableName = req.query.boundary;
 
-    if (
-        locations != undefined &&
-        is_valid_boundary(boundary) &&
-        ["summer", "winter", "annual"].includes(season) &&
-        ["rcp60", "rcp85"].includes(rcp)
-    ) {
-        if (!Array.isArray(locations)) {
-            locations = [locations];
+        // Validate input
+        if (
+            !locations ||
+            !is_valid_boundary(boundaryTableName) ||
+            !["summer", "winter", "annual"].includes(season) ||
+            !["rcp60", "rcp85"].includes(rcp)
+        ) {
+            return res.status(400).send({ error: "Invalid parameters" });
         }
 
-        q = "";
-        // the two different methods of climate data averaging...
-        if (boundary_details[boundary].method == "cell") {
-            // for small boundaries or large cells
-            let region_grid = boundary + "_grid_mapping";
-            var sq = `(select distinct tile_id from ` + region_grid + ` where geo_id in (` + locations.join() + `))`;
-            q = `select ` + vardec.join() + ` from chess_scape_` + rcp + `_` + season + ` where id in ` + sq + `;`;
-        } else {
-            // for large boundaries or small cells
-            let cache_table = "cache_" + boundary + "_to_chess_scape_" + rcp + "_" + season;
-            q =
-                `select ` +
-                vardec.join() +
-                ` from ` +
-                cache_table +
-                ` where boundary_id in (` +
-                locations.join() +
-                `);`;
+        const boundaryDetails = all_boundary_details[boundaryTableName];
+        if (!boundaryDetails) {
+            return res.status(400).send({ error: "Invalid boundary" });
         }
 
-        var client = new Client(conString);
-        client.connect();
-        var query = client.query(new Query(q));
+        // Build query based on variables
+        const climateCols = generateClimateCols();
+        let query = buildQuery(boundaryDetails, locations, rcp, season, climateCols);
 
-        query.on("row", function (row, result) {
-            result.addRow(row);
-        });
-        query.on("end", function (result) {
-            res.send(result.rows);
-            res.end();
-            client.end();
-        });
-        query.on("error", function (err, result) {
-            console.log("------------------error-------------------------");
-            console.log(req);
-            console.log(err);
-        });
+        // Connect and execute
+        const client = new Client(conString);
+        await client.connect();
+
+        const result = await client.query(query);
+        res.json(result.rows);
+
+        await client.end();
+    } catch (err) {
+        console.error("Error while executing query:", err);
+        res.status(500).send({ error: "An error occurred" });
     }
-});
-
-// general purpose for debugging
-router.get("/geojson", function (req, res) {
-    let table = req.query.table;
-    let tolerance = req.query.tolerance;
-    let left = req.query.left;
-    let bottom = req.query.bottom;
-    let right = req.query.right;
-    let top = req.query.top;
-
-    var client = new Client(conString);
-    client.connect();
-
-    var str_query =
-        `select json_build_object(
-                'type', 'FeatureCollection',
-                'features', json_agg(json_build_object(
-                   'type', 'Feature',
-                   'geometry', ST_AsGeoJSON(ST_Transform(geom,4326))::json
-                   ))
-              )
-         	  from ` +
-        table +
-        ` where geom && ST_MakeEnvelope(` +
-        left +
-        `, ` +
-        bottom +
-        `, ` +
-        right +
-        `, ` +
-        top +
-        `, 4326);`;
-
-    console.log(str_query);
-    var query = client.query(new Query(str_query));
-
-    query.on("row", function (row, result) {
-        result.addRow(row);
-    });
-    query.on("end", function (result) {
-        res.send(result.rows[0].json_build_object);
-        res.end();
-        client.end();
-    });
 });
 
 router.get("/ping", function (req, res) {
