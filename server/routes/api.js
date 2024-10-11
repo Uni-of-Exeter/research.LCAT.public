@@ -55,6 +55,7 @@ async function fetchBoundaryDetails() {
             };
         });
         await client.end();
+        console.log("Boundary details successfully fetched from the database.");
         return boundary_details;
     } catch (error) {
         console.error("Error fetching boundary details from the database:", error);
@@ -65,7 +66,6 @@ async function fetchBoundaryDetails() {
 async function initialiseBoundaryDetails() {
     try {
         all_boundary_details = await fetchBoundaryDetails();
-        console.log("Boundary details successfully fetched from the database.");
     } catch (error) {
         console.error("Error initializing boundary details:", error);
     }
