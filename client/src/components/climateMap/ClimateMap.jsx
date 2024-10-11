@@ -148,6 +148,16 @@ class ClimateMap extends React.Component {
         });
     };
 
+    clear = () => {
+        for (let r of this.state.regions) {
+            r.clearMe();
+        }
+        this.setState((prev) => ({ 
+            regions: [],
+            geojson_key: prev.geojson_key + 1,
+        }));
+    };
+
     geojsonCallback = (data) => {
         if (data.features != null) {
             this.setState(() => ({
@@ -174,13 +184,6 @@ class ClimateMap extends React.Component {
         if (type == "boundary_ni_dz") return "Data Zones (Northern Ireland)";
         if (type == "boundary_iom") return "Isle of Man";
         return;
-    };
-
-    clear = () => {
-        for (let r of this.state.regions) {
-            r.clearMe();
-        }
-        this.setState(() => ({ regions: [] }));
     };
 
     render() {
