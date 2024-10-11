@@ -150,8 +150,8 @@ router.get("/region", async function (req, res) {
 
 /// GET CHESS-SCAPE CLIMATE DATA FROM DB ///
 
-// CHESS-SCAPE helper function: generate climate column array
-function generateClimateCols() {
+// CHESS-SCAPE helper function: generate climate column SQL
+function buildAvgClimateCols() {
     const averageClimateColNames = [];
     const variables = ["tas", "sfcWind", "pr", "rsds"];
     const decades = ["1980", "1990", "2000", "2010", "2020", "2030", "2040", "2050", "2060", "2070"];
@@ -165,14 +165,37 @@ function generateClimateCols() {
     return averageClimateColNames;
 }
 
-// Build query string for averaging climate data
-function buildQuery(boundaryDetails, locations, rcp, season, averageColNames) {
+// Build query string: cache method - uses cache tables in database (large regions)
+function buildCacheQuery(boundaryDetails, locations, rcp, season, averageColNames) {
     const cacheTable = `cache_${boundaryDetails.identifier}_to_${rcp}_${season}`;
+    const locationGids = locations.join(",");
 
     return `
         SELECT ${averageColNames}
         FROM ${cacheTable}
-        WHERE gid IN (${locations.join(",")});`;
+        WHERE gid IN (${locationGids});
+        `;
+}
+
+// Build query string: cell method - performs calculations on the fly from CHESS-SCAPE tables
+function buildCellQuery(boundaryDetails, locations, rcp, season, averageColNames) {
+    const gridTable = `grid_overlaps_${boundaryDetails.identifier}`;
+    const chessTable = `chess_scape_${rcp}_${season}`;
+    const locationGids = locations.join(",");
+
+    const innerSelectCellsQuery = `
+        (SELECT DISTINCT grid_cell_id
+        FROM ${gridTable} 
+        WHERE gid IN (${locationGids}))
+        `;
+
+    const selectClimateQuery = `
+        SELECT ${averageColNames.join(",")} 
+        FROM ${chessTable} 
+        WHERE grid_cell_id IN ${innerSelectCellsQuery};
+        `;
+
+    return selectClimateQuery;
 }
 
 // Check table name helper function: check front end table name is valid
@@ -211,9 +234,17 @@ router.get("/chess_scape", async (req, res) => {
             return res.status(400).send({ error: "Invalid boundary" });
         }
 
-        // Build query based on variables
-        const averageClimateColNames = generateClimateCols();
-        let query = buildQuery(boundaryDetails, locations, rcp, season, averageClimateColNames);
+        // Get query method
+        const method = boundaryDetails.method;
+        const averageClimateColNames = buildAvgClimateCols();
+
+        // Build query based on variables and method
+        let query;
+        if (method === "cell") {
+            query = buildCellQuery(boundaryDetails, locations, rcp, season, averageClimateColNames);
+        } else {
+            query = buildCacheQuery(boundaryDetails, locations, rcp, season, averageClimateColNames);
+        }
 
         // Connect and execute
         const client = new Client(conString);
