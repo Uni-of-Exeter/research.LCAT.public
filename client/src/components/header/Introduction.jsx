@@ -75,7 +75,7 @@ function Introduction() {
                 not bias corrected. This is due to limitations of the underlying climate datasets used in LCAT. For further information
                 on bias correction, please see {" "}
                 <a
-                    href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Feb-24.pdf"
+                    href="https://www.metoffice.gov.uk/binaries/content/assets/metofficegovuk/pdf/research/ukcp/ukcp18-guidance---how-to-bias-correct.pdf"
                     target="_blank"
                     rel="noreferrer"
                 >
