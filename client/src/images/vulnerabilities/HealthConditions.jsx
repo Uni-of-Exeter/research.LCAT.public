@@ -26,7 +26,7 @@ const SvgHealthConditions = (props) => {
                                 props.selectedVulnerability === "People with health conditions"
                                     ? "#FFD667"
                                     : isHovered
-                                      ? "#f5821fff"
+                                      ? "#FFD667"
                                       : "#fff",
                         }}
                         transform="translate(2.251 267.803)scale(.05168)"
@@ -38,7 +38,7 @@ const SvgHealthConditions = (props) => {
                                 props.selectedVulnerability === "People with health conditions"
                                     ? "#FFD667"
                                     : isHovered
-                                      ? "#f5821fff"
+                                      ? "#FFD667"
                                       : "#fff",
                         }}
                         transform="translate(2.251 267.803)scale(.05168)"
@@ -66,7 +66,7 @@ const SvgHealthConditions = (props) => {
                             props.selectedVulnerability === "People with health conditions"
                                 ? "#FFD667"
                                 : isHovered
-                                  ? "#f5821fff"
+                                  ? "#FFD667"
                                   : "#fff",
                         strokeWidth: 0.35277778,
                     }}

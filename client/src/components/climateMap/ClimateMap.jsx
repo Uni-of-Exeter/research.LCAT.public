@@ -148,6 +148,16 @@ class ClimateMap extends React.Component {
         });
     };
 
+    clear = () => {
+        for (let r of this.state.regions) {
+            r.clearMe();
+        }
+        this.setState((prev) => ({ 
+            regions: [],
+            geojson_key: prev.geojson_key + 1,
+        }));
+    };
+
     geojsonCallback = (data) => {
         if (data.features != null) {
             this.setState(() => ({
@@ -167,17 +177,13 @@ class ClimateMap extends React.Component {
     regionTypeToName = (type) => {
         if (type == "boundary_uk_counties") return "UK Counties";
         if (type == "boundary_la_districts") return "Local Authority Districts";
-        if (type == "boundary_parishes") return "Parishes (Eng/Wales)";
+        if (type == "boundary_lsoa") return "LSOA";
         if (type == "boundary_msoa") return "MSOA (Eng/Wales)";
+        if (type == "boundary_parishes") return "Parishes (Eng/Wales)";
         if (type == "boundary_sc_dz") return "Data Zones (Scotland)";
-        return "LSOA";
-    };
-
-    clear = () => {
-        for (let r of this.state.regions) {
-            r.clearMe();
-        }
-        this.setState(() => ({ regions: [] }));
+        if (type == "boundary_ni_dz") return "Data Zones (Northern Ireland)";
+        if (type == "boundary_iom") return "Isle of Man";
+        return;
     };
 
     render() {
@@ -203,6 +209,8 @@ class ClimateMap extends React.Component {
                         <option value="boundary_msoa">MSOA (Eng/Wales)</option>
                         <option value="boundary_sc_dz">Data Zones (Scotland)</option>
                         <option value="boundary_lsoa">LSOA (Eng/Wales)</option>
+                        <option value="boundary_ni_dz">Data Zones (Northern Ireland)</option>
+                        <option value="boundary_iom">Isle of Man</option>
                     </select>
                     &nbsp;Data for your chosen area/s will appear below.
                     {/*The Index of Multiple Deprivation score 
@@ -267,11 +275,11 @@ class ClimateMap extends React.Component {
                 <p className="note">
                     Data source: The boundaries are from{" "}
                     <a
-                        href="https://github.com/Uni-of-Exeter/research.LCAT.public/blob/main/docs/sources.md"
+                        href="https://github.com/Uni-of-Exeter/research.LCAT.public/blob/main/docs/3-sources.md"
                         target="_blank"
                         rel="noreferrer"
                     >
-                        various governmental sources listed here
+                        various sources listed here
                     </a>
                     .
                 </p>

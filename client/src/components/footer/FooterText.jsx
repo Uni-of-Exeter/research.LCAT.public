@@ -65,6 +65,13 @@ function FooterText() {
             </p>
 
             <p>
+                Boundary data sourced from the Office for National Statistics, and licensed under the Open Government
+                Licence v.3.0
+                <br />
+                Contains OS data © Crown copyright and database right 2024
+            </p>
+
+            <p>
                 Development before 2024 Copyright © Then Try This & University of Exeter
                 <br />
                 Development from 2024 Copyright © University of Exeter

@@ -1,35 +1,62 @@
 # Data sources
 
-All the sources of data used for LCAT, with their authorities, links to original downloads and instructions for processing with the LCAT build scripts.
+All the sources of data used for LCAT are listed here, including their authorities, and links to the original downloads. Some details regarding the climate variables used are provided, but further documentation on these will be added in due course.
 
 ## Climate model
 
-| Type              | Notes                                                                   |  Time span                   | Regions             | LCAT postgres table/col                   | Original Format | Coordinate system | Source URL | Authority                  |
-|-------------------|-------------------------------------------------------------------------|------------------------------|---------------------|------------------------------------------|-----------------|-------------------|------------|----------------------------|
-| Seasonal mean GeoTifs | Means of CHESS-SCAPE RCP6.0/8.5 model runs, one per variable, provided by the Alan Turing Institute. | 1980-2079 averaged by season | Great Britain & IoM | -                                         | GeoTiff         | EPSG 9001         | -          | https://uk-scape.ceh.ac.uk |  
-| Decade mean GeoTifs | Intermediate format generated from seasonal means, one per decade/variable | 1980-2079  averaged by decade | Great Britain & IoM | -                                         | GeoTiff         | EPSG 9001         | -          | https://uk-scape.ceh.ac.uk |  
-| Air temp annual   | These are all stored in a single table per season/rcp to optimise for reading| 1980-2079 averaged by decade | Great Britain & IoM | `chess_scape_<rcp>_annual/tas_<decade>`    | GeoTiff         | -                 | -          | https://uk-scape.ceh.ac.uk |  
-| Rain annual       |                                                                         | 1980-2079 averaged by decade | Great Britain & IoM | `chess_scape_<rcp>_annual/pr_<decade>`     | GeoTiff         | -                 | -          | https://uk-scape.ceh.ac.uk |  
-| Cloudiness annual |                                                                         | 1980-2079 averaged by decade | Great Britain & IoM | `chess_scape_<rcp>_annual/rsds_<decade>`   | GeoTiff         | -                 | -          | https://uk-scape.ceh.ac.uk |  
-| Wind annual       |                                                                         | 1980-2079 averaged by decade | Great Britain & IoM | `chess_scape_<rcp>_annual/sfcWind_<decade>`| GeoTiff         | -                 | -          | https://uk-scape.ceh.ac.uk |  
-| Air temp summer   |                                                                         | 1980-2079 averaged by decade | Great Britain & IoM | `chess_scape_<rcp>_summer/tas_<decade>`    | GeoTiff         | -                 | -          | https://uk-scape.ceh.ac.uk |  
-| Rain summer       |                                                                         | 1980-2079 averaged by decade | Great Britain & IoM | `chess_scape_<rcp>_summer/pr_<decade>`     | GeoTiff         | -                 | -          | https://uk-scape.ceh.ac.uk |  
-| Cloudiness summer |                                                                         | 1980-2079 averaged by decade | Great Britain & IoM | `chess_scape_<rcp>_summer/rsds_<decade>`   | GeoTiff         | -                 | -          | https://uk-scape.ceh.ac.uk |  
-| Wind summer       |                                                                         | 1980-2079 averaged by decade | Great Britain & IoM | `chess_scape_<rcp>_summer/sfcWind_<decade>`| GeoTiff         | -                 | -          | https://uk-scape.ceh.ac.uk |  
-| Air temp winter   |                                                                         | 1980-2079 averaged by decade | Great Britain & IoM | `chess_scape_<rcp>_winter/tas_<decade>`    | GeoTiff         | -                 | -          | https://uk-scape.ceh.ac.uk |  
-| Rain winter       |                                                                         | 1980-2079 averaged by decade | Great Britain & IoM | `chess_scape_<rcp>_winter/pr_<decade>`     | GeoTiff         | -                 | -          | https://uk-scape.ceh.ac.uk |  
-| Cloudiness winter |                                                                         | 1980-2079 averaged by decade | Great Britain & IoM | `chess_scape_<rcp>_winter/rsds_<decade>`   | GeoTiff         | -                 | -          | https://uk-scape.ceh.ac.uk |  
-| Wind winter       |                                                                         | 1980-2079 averaged by decade | Great Britain & IoM | `chess_scape_<rcp>_winter/sfcWind_<decade>`| GeoTiff         | -                 | -          | https://uk-scape.ceh.ac.uk |  
-| Climate data grid | 1km grid, needed to link climate data variables to boundares (converted to EPSG 4326) | n/a                          | Great Britain & IoM | `chess_scape_grid`                         | GeoTiff         | EPSG 4326         | -          | https://uk-scape.ceh.ac.uk |
+Climate data used in LCAT are through the CHESS-SCAPE dataset. This is an ensemble dataset derived from the 2018 UK Climate Projections, itself produced by the Met Office Hadley Centre. CHESS-SCAPE provides future projections of meteorological variables across the United Kingdom and Northern Ireland, downscaling them to a 1 km grid.
+
+This data can be accessed through the CEDA archive [here](https://catalogue.ceda.ac.uk/uuid/8194b416cbee482b89e0dfbe17c5786c/). Please note that the whole dataset is 11 TB: LCAT uses only 10 GB of this, as daily variable predictions are not required in the tool. Details on exactly which files are used will be provided soon. Further details on CHESS-SCAPE can be found in the accompanying documents, for example, in the [release article](https://essd.copernicus.org/articles/15/5371/2023/).
+
+Please note that LCAT now processes the raw NetCDF files directly to create its intermediate tables and database. These scripts will be provided so that interested parties can run the tool locally if desired.
+
+| Type | Notes | Time span | Regions | Original Format | Coordinate system | Source URL | Authority |
+| -| - | - | - | - | - | - | - |
+| NetCDF climate projections | Annual and Seasonal files for RCP 6.0 and RCP 8.5 | 1980-2079 | Great Britain & IoM | NetCDF | EPSG 27700 | <https://uk-scape.ceh.ac.uk> | CEDA |
+
+### Climate variables
+
+Predictions for the following climate variables are extracted from the NetCDF files. Currently Min and Max Temperatures are stored in the database but not used.
+
+| Variable Name| Shorthand Name | Source Units | LCAT Units | Climate phenomenon it relates to |
+| -| - | - | - | - |
+| Precipitation | pr | kg/m2/s | mm/day | Rainfall |
+| Wind speed | sfcWind | m/s | m/s | Windiness |
+| Downward shortwave radiation | rsds | W/m2 | W/m2 | Cloudiness (inverse) |
+| Air temperature | tas | K | deg Celsius | Temperature |
+| Max air temperature | tasmax | K | deg Celsius | Max temperature |
+| Min air temperature | tasmin | K | deg Celsius | Min temperature |
+
+These predictions are across the following Representative Concentration Pathways (RCP's):
+
+| RCPs | Seasons | Decades | Variables | No. data tables/cols |
+| -| - | - | - | - |
+| 6.0, 8.5 (2 RCPs) | Annual, summer, winter (3 seasons) | 1980 – 2070 (10 decades) | 6 variables | 6 tables each with ~60 columns |
 
 ## Boundaries
 
-| Type              | Notes                                                                   |  Time span | Regions             | LCAT postgres table/col  | Original Format | Coordinate system | Source URL | Authority                  |
-|-------------------|-------------------------------------------------------------------------|------------|---------------------|--------------------------|-----------------|-------------------|------------|----------------------------|
-| LSOA              | Areas with average population sizes of 1500 people or 650 households    | 2011       | England and Wales   | `boundary_lsoa`          | ESRI shapefile  | EPSG 27700        | https://datashare.ed.ac.uk/handle/10283/2546 | University of Edinburgh |
-| MSOA              |                                                                         | 2016       | England and Wales   | `boundary_msoa`          | ESRI shapefile  | EPSG 27700        | https://data.gov.uk/dataset/2cf1f346-2f74-4c06-bd4b-30d7e4df5ae7/middle-layer-super-output-area-msoa-boundaries | data.gov.uk |
-| Data Zones        | Scottish equivalent of LSOA                                             | 2020       | Scotland            | `boundary_sc_dz`         | ESRI shapefile  | EPSG 4326         | https://simd.scot/#/simd2020/BTTTFTT/12/-4.6223/55.5558/ | scot.gov |
-| Small areas       | Northern Ireland eqv of LSOA (not yet implemented)                      | 2011       | Northern Ireland    | --                       | ESRI shapefile  | --                | Maybe: https://www.nisra.gov.uk/support/output-geography-census-2011/small-areas | NISRA |
-| Local Authority Districts |                                                                 | 2022       | UK                  | `boundary_la_districts`  | ESRI shapefile  | EPSG 27700        | https://geoportal.statistics.gov.uk/datasets/ons::local-authority-districts-may-2022-uk-bfc-v3/ | ONS |
-| UK Counties       | Could not find a non-paywalled download on .gov.uk                      | ?          | UK                  | `boundary_uk_counties`   | ESRI shapefile  | EPSG 32630        | https://www.ukpostcode.net/shapefile-of-uk-administrative-counties-wiki-16.html | ukpostcode.net?? |
-| Parishes          | England/Wales only                                                      | 2019       | England and Wales   | `boundary_uk_counties`   | ESRI shapefile  | EPSG 27700        | https://geoportal.statistics.gov.uk/datasets/parishes-and-non-civil-parished-areas-april-2019-ew-bgc/ | ONS |
+LCAT uses a number of boundary datasets, which are used to communicate local climate predictions. The following boundary datasets are currently used in the tool:
+
+| Regions | Type | Notes | Time span | LCAT postgres table/col | Original Format | Coordinate system | Source | Authority |
+| - | -| - | - | - | - | - | - | - |
+| UK | Counties | Includes Northern Ireland Districts | Dec 2023  | `boundary_uk_counties` | ESRI shapefile | EPSG 27700 | <https://geoportal.statistics.gov.uk/datasets/3188a83fb19f42818acb213cffc64c58_0/explore?location=53.281691%2C-3.316939%2C5.64> | ONS |
+| UK | Local Authority Districts | Includes Northern Ireland Districts | Dec 2023 | `boundary_la_districts` | ESRI shapefile | EPSG 27700 | <https://geoportal.statistics.gov.uk/datasets/8148555d1e104ead8887b7939eb47ab3_0/explore?location=51.690437%2C-2.041250%2C6.71> | ONS |
+| England and Wales | Parishes | England/Wales only | May 2023 | `boundary_parishes` | ESRI shapefile | EPSG 27700 | <https://geoportal.statistics.gov.uk/datasets/3cc64670a1d443369db274861689d3a9_0/explore?location=52.723973%2C-2.489483%2C6.78> | ONS |
+| England and Wales | LSOA | Areas with average population 1500 people or 650 households | Dec 2021 | `boundary_lsoa` | ESRI shapefile | EPSG 27700 | <https://geoportal.statistics.gov.uk/datasets/d082c4679075463db28bcc8ca2099ade_0/explore?location=55.249653%2C-2.419198%2C8.00> | ONS |
+| England and Wales | MSOA | | Dec 2021  | `boundary_msoa` | ESRI shapefile | EPSG 27700 | <https://geoportal.statistics.gov.uk/maps/ed5c7b7d733d4fd582281f9bfc9f02a2> | ONS |
+| Scotland | Data Zones | Scottish eqv. of LSOA | 2011 (revised Oct 2021) | `boundary_sc_dz` | ESRI shapefile | EPSG 27700 | <https://spatialdata.gov.scot/geonetwork/srv/api/records/7d3e8709-98fa-4d71-867c-d5c8293823f2> | spatialdata.gov.scot |
+| Northern Ireland | Data Zones | Northern Ireland eqv. of LSOA | 2021 | `boundary_ni_dz` | ESRI shapefile | EPSG 29902 | <https://www.nisra.gov.uk/support/geography/data-zones-census-2021> | NISRA |
+| Isle of Man | Regional boundary | Island boundary only (no districts) | 2015 | `boundary_iom` | ESRI shapefile | EPSG 4326 | <https://purl.stanford.edu/nk743nh6214> | Stanford |
+
+### Licenses
+
+Digital boundary products and reference maps are used under the Open Government Licence. For UK county, LA district, Parish, LSOA, MSOA, and Northern Ireland Data Zone boundary data, the following apply:
+
+- Source: Office for National Statistics licensed under the Open Government Licence v.3.0
+- Contains OS data © Crown copyright and database right 2024
+
+For Scotland Data Zone boundary data, the following applies:
+
+- Contains public sector information licensed under the Open Government Licence v3.0
+
+And for Isle of Man boundary data, the license conditions can be found at the source URL.

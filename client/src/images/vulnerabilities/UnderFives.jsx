@@ -61,7 +61,7 @@ const SvgUnderFives = (props) => {
                                 props.selectedVulnerability === "Under 5s"
                                     ? "#FFD667"
                                     : isHovered
-                                      ? "#f5821fff"
+                                      ? "#FFD667"
                                       : "#fff",
                             strokeWidth: 7.57722664,
                         }}

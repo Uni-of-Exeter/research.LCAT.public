@@ -101,7 +101,7 @@ const SvgLowLocalKnowledge = (props) => {
                                                                 "People living in area for a short time"
                                                                     ? "#FFD667"
                                                                     : isHovered
-                                                                      ? "#f5821fff"
+                                                                      ? "#FFD667"
                                                                       : "#fff",
                                                             strokeWidth: 60164044,
                                                         }}
@@ -114,7 +114,7 @@ const SvgLowLocalKnowledge = (props) => {
                                                                     "People living in area for a short time"
                                                                         ? "#FFD667"
                                                                         : isHovered
-                                                                          ? "#f5821fff"
+                                                                          ? "#FFD667"
                                                                           : "#fff",
                                                                 strokeWidth: 60164044,
                                                             }}
@@ -128,7 +128,7 @@ const SvgLowLocalKnowledge = (props) => {
                                                                     "People living in area for a short time"
                                                                         ? "#FFD667"
                                                                         : isHovered
-                                                                          ? "#f5821fff"
+                                                                          ? "#FFD667"
                                                                           : "#fff",
                                                                 strokeWidth: 60164044,
                                                             }}

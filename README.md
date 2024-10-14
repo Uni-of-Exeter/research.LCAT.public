@@ -13,8 +13,8 @@ Please view the documentation [here](https://github.com/Uni-of-Exeter/research.L
 
 ## License
 
-* Development before 2024 Copyright © University of Exeter & Then Try This
-* Development from 2024 Copyright © University of Exeter
+- Development before 2024 Copyright © University of Exeter & Then Try This
+- Development from 2024 Copyright © University of Exeter
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the Common Good Public License Beta 1.0 as
@@ -24,3 +24,10 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details.
+
+Boundary data for England, Wales, Scotland, and Northern Ireland are used in this tool:
+
+- Source: Office for National Statistics licensed under the Open Government Licence v.3.0
+- Contains OS data © Crown copyright and database right 2024
+
+For more details, please view the sources document at [docs/3-sources.md](docs/3-sources.md).
