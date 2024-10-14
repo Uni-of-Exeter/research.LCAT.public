@@ -71,9 +71,17 @@ function Introduction() {
             </p>
 
             <p>
-                With apologies to our users in Northern Ireland, unfortunately the dataset we are using to model local
-                future climate does not cover Northern Ireland. We have identified an alternative dataset that will
-                allow us to provide climate models for the region, this will be added as soon as possible.
+                Please be aware that climate predictions for the regions of Northern Ireland and the Isles of Scilly are
+                not bias corrected. This is due to limitations of the underlying climate datasets used in LCAT. For further information
+                on bias correction, please see {" "}
+                <a
+                    href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Feb-24.pdf"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    this article
+                </a>
+                {" "} by the Met Office.
             </p>
         </div>
     );
