@@ -112,7 +112,7 @@ const SvgPrivateSocialHousing = (props) => {
                                                                         "Tenants in private or social housing"
                                                                             ? "#FFD667"
                                                                             : isHovered
-                                                                              ? "#f5821fff"
+                                                                              ? "#FFD667"
                                                                               : "#fff",
                                                                     strokeWidth: 626004096,
                                                                 }}
@@ -125,7 +125,7 @@ const SvgPrivateSocialHousing = (props) => {
                                                                         "Tenants in private or social housing"
                                                                             ? "#FFD667"
                                                                             : isHovered
-                                                                              ? "#f5821fff"
+                                                                              ? "#FFD667"
                                                                               : "#fff",
                                                                     strokeWidth: 626004096,
                                                                 }}
@@ -138,7 +138,7 @@ const SvgPrivateSocialHousing = (props) => {
                                                                             "Tenants in private or social housing"
                                                                                 ? "#FFD667"
                                                                                 : isHovered
-                                                                                  ? "#f5821fff"
+                                                                                  ? "#FFD667"
                                                                                   : "#fff",
                                                                         strokeWidth: 626004096,
                                                                     }}
@@ -152,7 +152,7 @@ const SvgPrivateSocialHousing = (props) => {
                                                                             "Tenants in private or social housing"
                                                                                 ? "#FFD667"
                                                                                 : isHovered
-                                                                                  ? "#f5821fff"
+                                                                                  ? "#FFD667"
                                                                                   : "#fff",
                                                                         strokeWidth: 626004096,
                                                                     }}
@@ -166,7 +166,7 @@ const SvgPrivateSocialHousing = (props) => {
                                                                             "Tenants in private or social housing"
                                                                                 ? "#FFD667"
                                                                                 : isHovered
-                                                                                  ? "#f5821fff"
+                                                                                  ? "#FFD667"
                                                                                   : "#fff",
                                                                         strokeWidth: 626004096,
                                                                     }}

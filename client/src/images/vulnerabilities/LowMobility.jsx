@@ -87,7 +87,7 @@ const SvgLowMobility = (props) => {
                                                                     "People with low personal mobility"
                                                                         ? "#FFD667"
                                                                         : isHovered
-                                                                          ? "#f5821fff"
+                                                                          ? "#FFD667"
                                                                           : "#fff",
                                                                 strokeWidth: 5805402624,
                                                             }}

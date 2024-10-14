@@ -71,7 +71,7 @@ const SvgOlderPeople = (props) => {
                                         props.selectedVulnerability === "Older people"
                                             ? "#FFD667"
                                             : isHovered
-                                              ? "#f5821fff"
+                                              ? "#FFD667"
                                               : "#fff",
                                     strokeWidth: 59.44264603,
                                 }}

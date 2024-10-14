@@ -97,7 +97,7 @@ const SvgLowIncomes = (props) => {
                                                             props.selectedVulnerability === "People on low incomes"
                                                                 ? "#FFD667"
                                                                 : isHovered
-                                                                  ? "#f5821fff"
+                                                                  ? "#FFD667"
                                                                   : "#fff",
                                                         fillRule: "evenodd",
                                                         strokeWidth: 991505.25,
