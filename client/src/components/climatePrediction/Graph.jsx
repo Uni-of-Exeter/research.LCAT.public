@@ -297,9 +297,8 @@ function Graph(props) {
                 produced by the UK Centre for Ecology & Hydrology (CEH) using four members of the MetOffice UKCP18
                 regional projections. CEH adapted the Climate, Hydrology and Ecology research Support System (CHESS)
                 downscaling methodology, taking into account topographic and observational data to downscale from 12km
-                to 1km grid cells. We use the bias corrected datasets for RCP6.0 and 8.5. Note that the UK average data
-                is currently based on Scotland, Wales and England, and does not include Northern Ireland or all islands,
-                as this is not available within the climate dataset.
+                to 1km grid cells. We use the bias corrected datasets for RCP6.0 and RCP8.5 for the UK and Isle of Man,
+                and the non bias corrected datasets for Northern Ireland and the Isles of Scilly.  
             </p>
         </div>
     );
