@@ -28,38 +28,46 @@ function formatAuthors(authorsString) {
     }
 }
 
-function baseURL(url) {
-    let domain = new URL(url);
-    return domain.hostname;
+function baseURL(url, id) {
+    let domain;
+    try {
+        domain = new URL(url);
+        return domain.hostname;
+    } catch (err) {
+        console.log(id + " failed to produce URL");
+        return;
+    }
 }
 
-function ArticleReference(props) {
+function ArticleReference({ a }) {
+    const { article_id, link, title, type, authors, journal, issue, date } = a;
+
     return (
         <div className="reference-container">
             <p>
-                <a href={props.a.link} className="reference-title" target="_blank" rel="noreferrer">
-                    {props.a.title}
+                <a href={link} className="reference-title" target="_blank" rel="noreferrer">
+                    {title !== "" ? title : link.substring(0, 40) + "..."}
                 </a>
             </p>
             <p>
-                {props.a.type && (
+                {type && (
                     <>
-                        <b>Type: </b>
-                        {props.a.type}
+                        <b>Type & ID: </b>
+                        {type + " - " + article_id}
                         <br />
                     </>
                 )}
-                {props.a.authors && (
+                {authors && (
                     <>
                         <b>Authors: </b>
-                        {formatAuthors(props.a.authors)}
+                        {formatAuthors(authors)}
                         <br />
                     </>
                 )}
-                {props.a.journal && props.a.journal !== "" && (
+                {journal && journal !== "" && (
                     <>
                         <b>Journal/Issue: </b>
-                        {props.a.journal} {props.a.issue} {props.a.date}
+                        {journal} {issue} {date}
                         <br />
                     </>
                 )}
@@ -68,70 +76,76 @@ function ArticleReference(props) {
     );
 }
 
-function WebPageReference(props) {
+function WebPageReference({ a }) {
+    const { link, title, type, article_id } = a;
+
     return (
         <div className="reference-container">
             <p>
-                <a href={props.a.link} className="reference-title" target="_blank" rel="noreferrer">
-                    {props.a.title}
+                <a href={link} className="reference-title" target="_blank" rel="noreferrer">
+                    {title !== "" ? title : link.substring(0, 40) + "..."}
                 </a>
             </p>
             <p>
-                {props.a.type && (
+                {type && (
                     <>
-                        <b>Type: </b>
-                        {props.a.type}
+                        <b>Type & ID: </b>
+                        {type + " - " + article_id}
                         <br />
                     </>
                 )}
                 <b>Source: </b>
-                {baseURL(props.a.link)}
+                {baseURL(link, article_id)}
             </p>
         </div>
     );
 }
 
-function ReportReference(props) {
+function ReportReference({ a }) {
+    const { link, title, type, article_id } = a;
+
     return (
         <div className="reference-container">
             <p>
-                <a href={props.a.link} className="reference-title" target="_blank" rel="noreferrer">
-                    {props.a.title}
+                <a href={link} className="reference-title" target="_blank" rel="noreferrer">
+                    {title !== "" ? title : link.substring(0, 40) + "..."}
                 </a>
             </p>
             <p>
-                {props.a.type && (
+                {type && (
                     <>
-                        <b>Type: </b>
-                        {props.a.type}
+                        <b>Type & ID: </b>
+                        {type + " - " + article_id}
                         <br />
                     </>
                 )}
                 <b>Source: </b>
-                {baseURL(props.a.link)}
+                {baseURL(link, article_id)}
             </p>
         </div>
     );
 }
 
-function BookSectionReference(props) {
+function BookSectionReference({ a }) {
+    const { link, title, type, article_id } = a;
+
     return (
         <div className="reference-container">
             <p>
-                <a href={props.a.link} className="reference-title" target="_blank" rel="noreferrer">
-                    {props.a.title}
+                <a href={link} className="reference-title" target="_blank" rel="noreferrer">
+                    {title !== "" ? title : link.substring(0, 40) + "..."}
                 </a>
             </p>
             <p>
-                {props.a.type && (
+                {type && (
                     <>
-                        <b>Type: </b>
-                        {props.a.type}
+                        <b>Type & ID: </b>
+                        {type + " - " + article_id}
                         <br />
                     </>
                 )}
                 <b>Source: </b>
-                {baseURL(props.a.link)}
+                {baseURL(link, article_id)}
             </p>
         </div>
     );
