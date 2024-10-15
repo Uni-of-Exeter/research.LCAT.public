@@ -51,7 +51,7 @@ export const pathways = [
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Extreme Storms"
-                src="https://embed.kumu.io/ed69770579fec7ddb5cdea482354e0f4"
+                src="https://embed.kumu.io/e836987dc7d7100b341e3ba2a941ea7b"
                 style={{
                     border: "none",
                 }}
@@ -60,7 +60,7 @@ export const pathways = [
         completePathwayMap: (
             <iframe
                 title="Complete Pathway Map for Extreme Storms"
-                src="https://embed.kumu.io/8e653cb7f94729468f3b634145fbe7c9"
+                src="https://embed.kumu.io/0e652cde907f0103070b2c79a7e47b13"
                 style={{
                     border: "none",
                 }}
@@ -73,14 +73,14 @@ export const pathways = [
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Coastal Security"
-                src="https://embed.kumu.io/dcfcc101c8680fee0f43e7b912cdeddf"
+                src="https://embed.kumu.io/56732326c1bf93d40f6a009d1a92e9fd"
                 style={{ border: "none" }}
             />
         ),
         completePathwayMap: (
             <iframe
                 title="Complete Pathway Map for Coastal Security"
-                src="https://embed.kumu.io/77450eb423d7c26a2ca9eccfd0294576"
+                src="https://embed.kumu.io/05e181382a51350528021c4cc7b34983"
                 style={{ border: "none" }}
             />
         ),
@@ -91,14 +91,14 @@ export const pathways = [
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Flooding and Drought"
-                src="https://embed.kumu.io/83dc6a68ceff92c0dc124c984d4f19a4"
+                src="https://embed.kumu.io/d26e21b394b69d37ea143b209b4e6934"
                 style={{ border: "none" }}
             />
         ),
         completePathwayMap: (
             <iframe
                 title="Complete Pathway Map for Flooding and Drought"
-                src="https://embed.kumu.io/fc123acf574fe6e789a6cb6255f7eecc"
+                src="https://embed.kumu.io/948cbc16742ef8c2f1aa357bba6558b8"
                 style={{ border: "none" }}
             />
         ),
@@ -109,14 +109,14 @@ export const pathways = [
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Food and Personal Security"
-                src="https://embed.kumu.io/0af7e916299599d68384abf7a153b63e"
+                src="https://embed.kumu.io/ada31d266a03a003fe425951394987cc"
                 style={{ border: "none" }}
             />
         ),
         completePathwayMap: (
             <iframe
                 title="Complete Pathway Map for Food and Personal Security"
-                src="https://embed.kumu.io/97d06affef1371cd23724be3e55f8aba"
+                src="https://embed.kumu.io/c886a2f88045e20382b2891769c51aed"
                 style={{ border: "none" }}
             />
         ),
@@ -127,14 +127,14 @@ export const pathways = [
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Pathogenic Marine Microorganisms"
-                src="https://embed.kumu.io/7d23ed338ab4604f1016142daf7bfd52"
+                src="https://embed.kumu.io/b98a88bb34cc4f0cbf0d2315f7adb5e9"
                 style={{ border: "none" }}
             />
         ),
         completePathwayMap: (
             <iframe
                 title="Complete Pathway Map for Pathogenic Marine Microorganisms"
-                src="https://embed.kumu.io/b6e535790518a1259bc45bcb6880350e"
+                src="https://embed.kumu.io/e0f8b44984fb5985fe3023d68638ac27"
                 style={{ border: "none" }}
             />
         ),
@@ -145,14 +145,14 @@ export const pathways = [
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Temperature"
-                src="https://embed.kumu.io/bb6423e3bba100e74ace650c18fd4bda"
+                src="https://embed.kumu.io/00665b674dab2da306070a26b93918df"
                 style={{ border: "none" }}
             />
         ),
         completePathwayMap: (
             <iframe
                 title="Complete Pathway Map for Temperature"
-                src="https://embed.kumu.io/f4bedccacc8e5bc30c5ce47cb112cf6f"
+                src="https://embed.kumu.io/557f050f3d6c05ed38c65d4c954b5e1c"
                 style={{ border: "none" }}
             />
         ),
