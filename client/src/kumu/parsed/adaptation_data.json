@@ -97,7 +97,8 @@
             "sector": ["Agriculture & Forestry", "Food Safety & Security"],
             "urban_rural": "Rural",
             "ccc adaptation theme": ["Working lands and seas", "Food security"],
-            "ipcc adaptation category": ["Technological ", "Behavioural"]
+            "ipcc adaptation category": ["Technological ", "Behavioural"],
+            "description": "Saltwater resilient crops are those that are tolerant or thrive when exposed to saltwater. Planting these crops can ensure that if coastal flooding or saltwater intrusion occurs the crops do not fail."
         }
     },
     {
@@ -130,7 +131,7 @@
             "label": "Use air pollution warning systems",
             "sector": ["Air Quality", "Health & Social Care"],
             "description": "The public, particularly vulnerable groups, could be informed of the air quality within their area, enabling them to take appropriate action in the event of increased air pollution.",
-            "reference_id": ["246"],
+            "reference_id": ["246", "1574"],
             "layer": [
                 "Temperature In Full",
                 "Temperature Summary",
@@ -174,8 +175,7 @@
             "sector": ["Food Safety & Security"],
             "ccc adaptation theme": ["Health", "Community preparedness and response"],
             "ipcc adaptation category": ["Educational"],
-            "description": "An increase in temperature and humidity can increase food-related safety risks associated with climate change. Measures to increase education on food handling and safety can reduce the food safety risks. Additionally, increasing education on food preparation can increase people\u2019s ability to change their diets to healthier and more sustainable options. \n\nIncreasing skills and education on safe seafood handling, preparation and cooking, as well as the risks associated with toxins and viral and bacterial infections, can help to reduce the risk of exposure. Methods such as washing hands and surfaces thoroughly can also reduce the exposure risk associated with handling.",
-            "case_studies": ["572"]
+            "description": "An increase in temperature and humidity can increase food-related safety risks associated with climate change. Measures to increase education on food handling and safety can reduce the food safety risks. Additionally, increasing education on food preparation can increase people\u2019s ability to change their diets to healthier and more sustainable options. \n\nIncreasing skills and education on safe seafood handling, preparation and cooking, as well as the risks associated with toxins and viral and bacterial infections, can help to reduce the risk of exposure. Methods such as washing hands and surfaces thoroughly can also reduce the exposure risk associated with handling."
         }
     },
     {
@@ -274,9 +274,7 @@
                 "\u00adBiodiversity & Natural Habitats",
                 "\u00adWater Supply & Quality",
                 "Food Safety & Security"
-            ],
-            "ccc adaptation theme": [],
-            "ipcc adaptation category": []
+            ]
         }
     },
     {
@@ -416,7 +414,7 @@
         "_id": "elem-7Mv16DpC",
         "attributes": {
             "label": "Improve housing quality and resilience measures considered in new developments",
-            "reference_id": ["320", "329", "57", "735", "858"],
+            "reference_id": ["320", "329", "57", "735", "858", "1573"],
             "sector": ["Buildings"],
             "description": "Improving the standards for new developments as well as for how existing houses are retrofitted or adapted to climate impacts will lead to direct benefits to health and wellbeing. Examples include building materials that recover from flood quickly, other wet floodproofing measures, dry floodproofing measures, renewable energy systems, low impact materials, and adequate ventilation.",
             "layer": [
@@ -430,8 +428,7 @@
                 "Engineered and built environment",
                 "Laws and regulations",
                 "Government policies and programs"
-            ],
-            "case_studies": ["577"]
+            ]
         }
     },
     {
@@ -663,6 +660,22 @@
         }
     },
     {
+        "_id": "elem-Aq6uSu4Z",
+        "attributes": {
+            "label": "Develop warm spaces for local population use",
+            "main impact": ["Extreme storms impact", "Food and personal impact"],
+            "reference_id": ["1575", "1576"],
+            "ipcc adaptation category": [
+                "Engineered and built environment",
+                "Services",
+                "Government policies and programs"
+            ],
+            "layer": ["Extreme storms In Full", "Extreme storms Summary", "Temperature In Full", "Temperature Summary"],
+            "ccc adaptation theme": ["Health", "Community preparedness and response"],
+            "description": "Warm spaces should be implemented in communities to provide a safe, supportive, and caring environment to those at risk due to cold temperatures in winter."
+        }
+    },
+    {
         "_id": "elem-BRQvB9vY",
         "attributes": {
             "label": "Increase access to green and blue spaces",
@@ -748,8 +761,7 @@
                 "Community preparedness and response",
                 "Business"
             ],
-            "ipcc adaptation category": ["Behavioural", "Government policies and programs"],
-            "case_studies": ["576"]
+            "ipcc adaptation category": ["Behavioural", "Government policies and programs"]
         }
     },
     {
@@ -773,8 +785,7 @@
             "description": "Improving drainage in flood-prone locations can reduce energy supply disruption.",
             "layer": ["Flooding and drought in full", "Flooding summary"],
             "ccc adaptation theme": ["Energy"],
-            "ipcc adaptation category": ["Engineered and built environment"],
-            "case_studies": ["317"]
+            "ipcc adaptation category": ["Engineered and built environment"]
         }
     },
     {
@@ -874,8 +885,7 @@
             "main_adaptation": ["Measures to increase air quality"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities"],
-            "ipcc adaptation category": ["Engineered and built environment", "Laws and regulations"],
-            "case_studies": ["556"]
+            "ipcc adaptation category": ["Engineered and built environment", "Laws and regulations"]
         }
     },
     {
@@ -929,7 +939,7 @@
         "_id": "elem-IQPpTj8a",
         "attributes": {
             "label": "Antimicrobial resistance planning",
-            "reference_id": ["1179", "1181", "1320", "367", "424", "1321"],
+            "reference_id": ["1179", "1181", "1320", "1321", "367", "424", "1584"],
             "sector": [
                 "\u00adBiodiversity & Natural Habitats",
                 "Agriculture & Forestry",
@@ -961,7 +971,7 @@
         "_id": "elem-IcOXUVop",
         "attributes": {
             "label": "Natural flood management strategies",
-            "reference_id": ["1344", "1384", "1389", "380", "384", "408", "409", "417", "418", "419", "851", "569"],
+            "reference_id": ["1344", "1373", "1384", "380", "384", "408", "409", "417", "418", "419", "851", "1389"],
             "sector": [
                 "\u00adBiodiversity & Natural Habitats",
                 "Agriculture & Forestry",
@@ -1009,7 +1019,7 @@
     {
         "_id": "elem-IvvlrcLt",
         "attributes": {
-            "label": "Consider including air quality monitoring and measures to reduce road-traffic-related emissions in  the R123 list of funding options for using the CIL",
+            "label": "Consider including air quality monitoring and measures to reduce road-traffic-related emissions",
             "description": "In consultation with local communities, consider including air quality monitoring and measures to reduce road-traffic-related emissions in the Regulation 123 list of funding options for using the Community Infrastructure Levy (see the Planning Portal information on the Community Infrastructure Levy).",
             "main_adaptation": ["Manage development to mitigate road-traffic-related air pollution"],
             "sector": ["Air Quality", "Transport"],
@@ -1047,11 +1057,10 @@
             "label": "Passive cooling",
             "sector": ["Buildings"],
             "description": "Passive cooling is an approach that focuses on providing thermal comfort by controlling heat gains and heat dissipation without involving mechanical or electrical devices.",
-            "reference_id": ["97", "96"],
+            "reference_id": ["96", "97", "1573"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Towns and cities", "Buildings", "Health", "Community preparedness and response"],
-            "ipcc adaptation category": ["Engineered and built environment", "Technological "],
-            "case_studies": ["1480", "1544"]
+            "ipcc adaptation category": ["Engineered and built environment", "Technological "]
         }
     },
     {
@@ -1124,7 +1133,7 @@
         "attributes": {
             "label": "Ocean-based climate interventions",
             "reference_id": ["1063", "1065"],
-            "description": "Ocean-based climate interventions are an area of adaptation actions that are not yet fully researched, but could hold promise for addressing some of the main causes of climate change such as greenhouse gas concentrations and warming surface temperatures. These actions are more likely to require national or international cooperation to be effective as well as a better understanding of the potential effects. Some examples include\n- alkalinisation of the ocean to enhance carbon storage\n- harnessing ocean energy in place of fossil fuels\n- artificial upwelling to draw out heat from the atmosphere",
+            "description": "Ocean-based climate interventions are an area of adaptation actions that are not yet fully researched, but could hold promise for addressing some of the main causes of climate change such as greenhouse gas concentrations and warming surface temperatures. These actions are more likely to require national or international cooperation to be effective as well as a better understanding of the potential effects. Some examples include\n- alkalinization of the ocean to enhance carbon storage\n- harnessing ocean energy in place of fossil fuels\n- artificial upwelling to draw out heat from the atmosphere",
             "sector": [
                 "\u00adBiodiversity & Natural Habitats",
                 "Food Safety & Security",
@@ -1154,7 +1163,7 @@
         "attributes": {
             "label": "Relevant retrofit of existing buildings",
             "sector": ["Buildings"],
-            "reference_id": ["164", "223", "224", "52", "68", "70", "82", "889"],
+            "reference_id": ["164", "223", "224", "52", "68", "70", "82", "1573"],
             "description": "Retrofit of existing buildings, especially if a multiple measure approach is taken, may protect housing and buildings from a range of climate impacts.Retrofit has to be carefully considered, as retrofit to net zero energy standards can cause an increase in risks to occupants and buildings. \nSome examples of retrofit actions include \n- insulation of walls \n- insulation of roofs\n- insulation of floors\n- replacing windows and doors\n- increase airtightness\n- make energy systems more sustainable \n- low flow water fittings\n- renewable rooftop installation\n- roof and wall coverings capable of resisting high winds\n- protection for openings to resist wind, debris, and wind-driven rain\n- structural systems that provide a path for loads from wind",
             "layer": ["Extreme storms In Full", "Extreme storms Summary", "Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Towns and cities", "Buildings", "Community preparedness and response"],
@@ -1238,7 +1247,7 @@
     {
         "_id": "elem-MJHpDNCD",
         "attributes": {
-            "label": "Expand health education and risk communication associated with heat and drought",
+            "label": "Expand health education and risk communication associated with drought",
             "sector": ["Health & Social Care", "\u00adEducation Services"],
             "reference_id": ["115", "136", "137", "162", "319", "459", "532", "72", "1109"],
             "description": "Increasing education on the health impacts and risks associated with climate impacts can enable people to cope more effectively.",
@@ -1346,7 +1355,7 @@
             "sector": ["Air Quality"],
             "description": "Include air pollution in 'plan making' by all tiers of local government, in line with the Department for Communities and Local Government's National Planning Policy Framework. This includes county, district and unitary authorities, as well as regional bodies and transport authorities. \n\nThe Local Plan and other strategic planning processes (such as the core strategy, local transport plan, environment and health and wellbeing strategies) should include zero- and low-emission travel.",
             "main_adaptation": ["Measures to increase air quality"],
-            "reference_id": ["206"],
+            "reference_id": ["206", "1574"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities", "Buildings", "Business"],
             "ipcc adaptation category": ["Laws and regulations", "Government policies and programs"]
@@ -1743,21 +1752,11 @@
         }
     },
     {
-        "_id": "elem-UKW4CZ6B",
-        "attributes": {
-            "label": "Action",
-            "layer": [],
-            "ccc adaptation theme": [],
-            "ipcc adaptation category": [],
-            "reference_id": []
-        }
-    },
-    {
         "_id": "elem-UdRkJbIo",
         "attributes": {
             "label": "Improve wastewater management systems",
             "description": "Wastewater systems should be maintained, and if necessary, adapted to reduce the risk of pollution leaking from sewerage systems during floods.",
-            "reference_id": ["1376", "367", "369", "370", "384", "813", "976", "569"],
+            "reference_id": ["1373", "367", "369", "370", "384", "813", "976", "1376"],
             "sector": ["\u00adWater Supply & Quality"],
             "layer": [
                 "Coastal security In Full",
@@ -2018,8 +2017,7 @@
             "layer": ["Food and personal security in full", "Food and personal security summary"],
             "sector": ["Food Safety & Security", "Health & Social Care"],
             "ccc adaptation theme": ["Health", "Community preparedness and response"],
-            "ipcc adaptation category": ["Educational"],
-            "case_studies": ["572", "573", "574"]
+            "ipcc adaptation category": ["Educational"]
         }
     },
     {
@@ -2184,9 +2182,7 @@
                 "Drought summary",
                 "Flooding summary",
                 "Food and personal security in full",
-                "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Food and personal security summary"
             ],
             "ccc adaptation theme": ["Transport", "Towns and cities", "Health", "Community preparedness and response"],
             "ipcc adaptation category": ["Educational", "Behavioural", "Government policies and programs"],
@@ -2434,7 +2430,7 @@
         "_id": "elem-dK125KMe",
         "attributes": {
             "label": "Increase awareness and knowledge of antimicrobial resistance",
-            "reference_id": ["1320", "1411", "1412", "1413"],
+            "reference_id": ["1320", "1411", "1412", "1413", "1584"],
             "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
             "description": "Awareness campaigns and training should be undertaken to increase people\u2019s understanding of the risks associated with antimicrobial resistance and increase knowledge on how they can reduce the impacts.\nHealthcare staff should be provided with education and training to increase their knowledge and enable them to manage antimicrobial resistance effectively.",
             "sector": [
@@ -2461,8 +2457,7 @@
             "layer": ["Food and personal security in full", "Food and personal security summary"],
             "sector": ["Agriculture & Forestry", "Food Safety & Security", "Health & Social Care"],
             "ccc adaptation theme": ["Working lands and seas", "Food security", "Health"],
-            "ipcc adaptation category": ["Laws and regulations"],
-            "case_studies": ["570", "571"]
+            "ipcc adaptation category": ["Laws and regulations"]
         }
     },
     {
@@ -2532,8 +2527,7 @@
             "layer": ["Extreme storms In Full", "Extreme storms Summary"],
             "ccc adaptation theme": ["Energy", "Towns and cities", "Community preparedness and response", "Finance"],
             "ipcc adaptation category": ["Economic", "Government policies and programs"],
-            "main_adaptation": ["Cold weather plans"],
-            "case_studies": ["556"]
+            "main_adaptation": ["Cold weather plans"]
         }
     },
     {
@@ -2557,7 +2551,7 @@
         "attributes": {
             "label": "Use methods to limit pathogens in sewage and agricultural and urban runoff from entering the environment and coastal waters",
             "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
-            "reference_id": ["1246", "1282", "1364", "1376", "1404", "569"],
+            "reference_id": ["1246", "1282", "1364", "1373", "1376", "1404"],
             "description": "Methods should be employed to prevent and reduce urban and agricultural runoff from entering aquatic environments including:\n- increased efficiency of farming and the use of fertilisers and pesticides.\n- improved management of wastewater.\n- implementation of natural flood management strategies that limit the flow of water during heavy rainfall events.",
             "sector": [
                 "\u00adBiodiversity & Natural Habitats",
@@ -2591,8 +2585,7 @@
                 "Ecosystem-based",
                 "Laws and regulations",
                 "Government policies and programs"
-            ],
-            "case_studies": ["1515"]
+            ]
         }
     },
     {
@@ -2728,7 +2721,7 @@
         "_id": "elem-gw3reS27",
         "attributes": {
             "label": "Ensure adequate mental health service provision",
-            "reference_id": ["386", "388", "537", "860", "861"],
+            "reference_id": ["386", "388", "537", "860", "861", "1579"],
             "description": "Mental healthcare services should be adequate to reduce the negative health impacts and associated physical health conditions.",
             "sector": ["Health & Social Care"],
             "layer": [
@@ -2743,7 +2736,8 @@
                 "Food and personal security summary"
             ],
             "ccc adaptation theme": ["Health", "Community preparedness and response"],
-            "ipcc adaptation category": ["Services", "Government policies and programs"]
+            "ipcc adaptation category": ["Services", "Government policies and programs"],
+            "case_studies": ["1575"]
         }
     },
     {
@@ -2778,12 +2772,20 @@
         "attributes": {
             "label": "Identify alternatives to plastic products",
             "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
-            "reference_id": ["1380", "1381", "1458", "1459", "1460"],
+            "reference_id": ["1380", "1381"],
             "description": "Exploring potential sustainable alternatives to plastics could reduce the abundance of plastics entering the environment.",
             "sector": ["Business & Industry"],
-            "ccc adaptation theme": ["Working lands and seas", "Food security", "Business"],
-            "ipcc adaptation category": ["Technological ", "Behavioural", "Laws and regulations"],
-            "case_studies": ["1517"]
+            "ccc adaptation theme": ["Business"],
+            "ipcc adaptation category": ["Technological "]
+        }
+    },
+    {
+        "_id": "elem-h7Bokqnd",
+        "attributes": {
+            "label": "Early warning systems to inform the public of marine pathogens",
+            "layer": ["pathogenic Marine Microorganisms", "Pathogenic Marine Microorganisms Summary"],
+            "reference_id": ["1354", "1355", "1356", "1282"],
+            "description": ""
         }
     },
     {
@@ -2792,7 +2794,7 @@
             "label": "Rapid establishment and provision of healthcare services during and after floods",
             "sector": ["Health & Social Care"],
             "description": "Establishing health clinics to people experiencing or who have experienced flooding can ensure adequate healthcare service provision.",
-            "reference_id": ["386", "388"],
+            "reference_id": ["386", "388", "1579"],
             "layer": ["Flooding and drought in full", "Flooding summary"],
             "ccc adaptation theme": ["Health"],
             "ipcc adaptation category": ["Services", "Government policies and programs"]
@@ -2997,9 +2999,13 @@
                 "128",
                 "133",
                 "135",
+                "1373",
                 "142",
                 "143",
                 "144",
+                "1572",
+                "1573",
+                "1575",
                 "193",
                 "260",
                 "261",
@@ -3012,7 +3018,7 @@
                 "851",
                 "87",
                 "99",
-                "1373"
+                "1583"
             ],
             "urban_rural": "Urban",
             "description": "Development of green infrastructure is the strategic addition of plant cover to urban spaces. Plant cover refers to how much of a given area is covered by vegetation (as opposed to human-made structures). It is a measure of land use in urban areas.\n\nThe best application of plant cover is through planting trees, preferably aligned, which provide local benefit, while grass can affect heat accumulation and help to maintain an adequate surface temperature.  Vegetation placement and the design of urban green infrastructure should be justified and applied where it most efficiently reduces exposure to heat stress, such as in green cycling/walking corridors. Green and blue infrastructure can also be designed to absorb rainwater, reducing and flow rate and volume. A reduction in flow can also reduce the likelihood of pollution from urban environments from contaminating watercourses. \n\nPlant and tree species should be selected based upon the requirements of the local area and consideration of how certain species, such as allergenic species, may impact health during the pollen season.",
@@ -3217,7 +3223,7 @@
         "attributes": {
             "label": "Encourage outdoor recreational activities and time spent within green and blue spaces",
             "description": "Outdoor recreational activities and time spent within green and blue spaces provide multiple health and wellbeing benefits, including improving immunity. However, care should be undertaken to reduce exposure to hazards and pathogens within the environment which may impact health.",
-            "reference_id": ["1455", "1456", "1457", "367", "664", "851", "1464"],
+            "reference_id": ["1455", "1456", "367", "664", "851", "1457"],
             "sector": [
                 "\u00adBiodiversity & Natural Habitats",
                 "Health & Social Care",
@@ -3267,7 +3273,7 @@
         "attributes": {
             "label": "Installation of external shading and shutters",
             "sector": ["Buildings"],
-            "reference_id": ["52", "53", "74"],
+            "reference_id": ["52", "53", "74", "1573"],
             "description": "External shutters are found to be very effective in decreasing overheating in buildings. However, they may not be practical in some houses because, in the UK, many windows open outwards.",
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Towns and cities", "Buildings"],
@@ -3339,18 +3345,6 @@
         }
     },
     {
-        "_id": "elem-reuE6wdv",
-        "attributes": {
-            "label": "Encourage regular physical activity",
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
-            "ccc adaptation theme": ["Health", "Community preparedness and response"],
-            "ipcc adaptation category": ["Educational", "Behavioural", "Government policies and programs"],
-            "description": "Regular physical activity provides multiple health and wellbeing benefits, including improved immune function. Regular physical activity can support healthy aging and thermoregulatory capacity, in addition to preventing obesity and associated non-communicable diseases.",
-            "reference_id": ["1462", "1463", "1464", "1465", "1466", "1467", "1453"],
-            "sector": ["Health & Social Care"]
-        }
-    },
-    {
         "_id": "elem-rykkVFb0",
         "attributes": {
             "label": "Enhance drought monitoring and early warning systems",
@@ -3369,8 +3363,7 @@
                 "Food and personal security summary"
             ],
             "ccc theme": ["Water supply", "Telecoms & ICT", "Community preparedness and response"],
-            "ipcc adaptation category": ["Technological ", "Informational"],
-            "ccc adaptation theme": []
+            "ipcc adaptation category": ["Technological ", "Informational"]
         }
     },
     {
@@ -3440,9 +3433,7 @@
                 "Flooding and drought in full",
                 "Flooding summary",
                 "Food and personal security in full",
-                "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Food and personal security summary"
             ],
             "ccc adaptation theme": [
                 "Nature",
@@ -3460,7 +3451,7 @@
         "_id": "elem-t6KRJyKi",
         "attributes": {
             "label": "Improvement of ventilation",
-            "reference_id": ["52", "53", "320", "321", "324", "325"],
+            "reference_id": ["320", "321", "324", "325", "52", "53", "1573"],
             "sector": ["Buildings"],
             "description": "Buildings should be designed and adapted to ensure that they are adequately ventilated through either mechanical or preferably natural strategies which enable airflow and maintain rooms at optimal temperatures internally. Building infrastructure should also be designed to enable external airflow through streets, particularly within urban environments.\n\nImproved indoor ventilation can reduce mould-growth and  moisture associated with flooding and heavy rainfall.",
             "layer": [
@@ -3472,8 +3463,7 @@
                 "Flooding summary"
             ],
             "ccc adaptation theme": ["Towns and cities", "Buildings", "Health"],
-            "ipcc adaptation category": ["Engineered and built environment", "Technological "],
-            "case_studies": ["77"]
+            "ipcc adaptation category": ["Engineered and built environment", "Technological "]
         }
     },
     {
@@ -3648,7 +3638,7 @@
                 "Behavioural",
                 "Government policies and programs"
             ],
-            "case_studies": ["1475", "1476", "453", "1483", "1484", "1485", "1486"]
+            "case_studies": ["1475", "1476", "1483", "1484", "1485", "1486"]
         }
     },
     {
@@ -3696,7 +3686,7 @@
             "sector": ["Food Safety & Security", "Health & Social Care", "Business & Industry"],
             "ccc adaptation theme": ["Food security", "Business"],
             "ipcc adaptation category": ["Laws and regulations"],
-            "case_studies": ["1489", "1490", "1496", "555", "1499"]
+            "case_studies": ["1489", "1490", "1496", "1499", "555"]
         }
     },
     {
@@ -3754,8 +3744,7 @@
                 "Economic",
                 "Laws and regulations",
                 "Government policies and programs"
-            ],
-            "case_studies": ["555", "556", "557", "558", "559", "568"]
+            ]
         }
     },
     {
@@ -3780,7 +3769,7 @@
         "_id": "elem-w4VRfLtl",
         "attributes": {
             "label": "Promote risk identification",
-            "reference_id": ["258", "816"],
+            "reference_id": ["258", "816", "1581"],
             "description": "Risk identification before and after a climate impact ensures that vulnerable groups in the population are recognized, assisted, and receive adequate care. Community risk registers allow for those helping in recovery to deliver necessary services like medical care, equipment, or relocation of those most at risk.",
             "layer": ["Extreme storms In Full", "Extreme storms Summary"],
             "ccc adaptation theme": ["Health", "Community preparedness and response"],
@@ -3847,7 +3836,7 @@
                 "Community preparedness and response"
             ],
             "ipcc adaptation category": ["Informational", "Behavioural", "Government policies and programs"],
-            "case_studies": ["1445", "1473"]
+            "case_studies": ["1445"]
         }
     },
     {
@@ -3868,7 +3857,7 @@
             "label": "Emergency planning and response to extreme flood events",
             "description": "Emergency planning policies can ensure appropriate preparation, response and recovery in the event of extreme floods.",
             "sector": ["Transport", "Health & Social Care", "Police & Crime"],
-            "reference_id": ["1002", "319", "336", "397", "398", "399", "401", "67", "811", "1107"],
+            "reference_id": ["1002", "319", "336", "397", "398", "399", "401", "67", "811", "1579"],
             "layer": [
                 "Extreme storms In Full",
                 "Extreme storms Summary",
@@ -3939,9 +3928,7 @@
             "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
             "reference_id": ["1358", "1359", "1360"],
             "description": "People should be educated to increase their awareness of methods to prevent and limit infection during and after seawater exposure. Waterproof bandages can be used to cover open wounds, particularly in people who are old and immunocompromised. Once out of the water, skin and new wounds can be washed to remove marine pathogens.",
-            "sector": ["\u00adWater Supply & Quality", "Health & Social Care"],
-            "ccc adaptation theme": [],
-            "ipcc adaptation category": []
+            "sector": ["\u00adWater Supply & Quality", "Health & Social Care"]
         }
     },
     {
