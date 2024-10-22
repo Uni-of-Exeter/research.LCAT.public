@@ -14,7 +14,21 @@ LCAT links together boundary information and climate predictions, allowing users
 
 ## Climate data
 
+LCAT uses the [CHESS-SCAPE](https://catalogue.ceda.ac.uk/uuid/8194b416cbee482b89e0dfbe17c5786c/) dataset, a dataset that provides climate predictions for different variables up to 2080. This dataset is an ensemble of four different realisations of future climate for each of four different representative concentration pathway scenarios (RCP2.6, RCP4.5, RCP6.0 and RCP8.5), provided both with and without bias correction.
 
+From the release article abstract by `Robinson et al`, which can be found [here](https://essd.copernicus.org/articles/15/5371/2023/):
+
+```text
+"CHESS-SCAPE is a 1 km resolution dataset containing 11 near-surface meteorological variables that can be used to as input to many different impact models. The variables are available at several time resolutions, from daily to decadal means, for the years 1980–2080. It was derived from the state-of-the art regional climate projections in the United Kingdom Climate Projections 2018 (UKCP18) regional climate model (RCM) 12 km ensemble, downscaled to 1 km using a combination of physical and empirical methods to account for local topographic effects. CHESS-SCAPE has four ensemble members, which were chosen to span the range of temperature and precipitation change in the UKCP18 ensemble, representing the ensemble climate model uncertainty.
+
+CHESS-SCAPE consists of projections for four emissions scenarios, given by the Representative Concentration Pathways 2.6, 4.5, 6.0 and 8.5, which were derived from the UKCP18 RCM RCP8.5 scenarios using time shifting and pattern scaling. These correspond to UK annual warming projections of between 0.9–1.9 K for RCP2.6 up to 2.8–4.3 K for RCP8.5 between 1980–2000 and 2060–2080. Little change in annual precipitation is projected, but larger changes in seasonal precipitation are seen with some scenarios projecting large increases in precipitation in the winter (up to 22 %) and large decreases in the summer (up to −39 %). All four RCP scenarios and ensemble members are also provided with bias correction, using the CHESS-met historical gridded dataset as a baseline."
+```
+
+```text
+Robinson, E.L. et al. (2023) ‘Chess-scape: High-resolution future projections of multiple climate scenarios for the United Kingdom derived from downscaled United Kingdom Climate Projections 2018 regional climate model output’, Earth System Science Data, 15(12), pp. 5371–5401. doi:10.5194/essd-15-5371-2023. 
+```
+
+Please note that LCAT uses Ensemble 1, and RCPs 6.0 and 8.5 only. Bias corrected data are used in LCAT where possible, however, for some regions (Northern Ireland and the Isles of Scilly) only non-bias corrected data are available.
 
 ## Methods
 
