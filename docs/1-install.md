@@ -61,15 +61,15 @@ cp -R client/dist/* server/public
 
 This will use Vite to produce a minified application bundle that is suitable to be statically served. This occurs on port 3000: to view this, visit `localhost:3000` with the server running.
 
-## 3. Postgres database
+## 3. PostgreSQL database
 
-LCAT uses a Postgres database to store climate data, which is provided to the user in the application via the API (located in the server module). To set this up locally from a database backup, follow the instructions (for macOS) below.
+LCAT uses a Postgres database to store climate data, which is served to the user in the application via the API (located in the server module). You will need to build this database from scratch, or rebuild the database from a backup.
 
-**Note**: You can find detailed instructions for rebuilding the database from the raw data files in `docs/2-database-build.md`. To shortcut this rebuild process, and restore from an existing database, you can download a database backup [here](http://data-lcat-uk.s3-website.eu-west-2.amazonaws.com/dumps/climate_geo_data2_prod_backup_20230829.sql.gz).
+**Note**: You can find detailed instructions for rebuilding the database in `docs/2-database-build.md`.
 
 ### Create .env file
 
-In the server root directory, create a `.env` file containing the database login credentials:
+Once you have a working database, you will need to create a .env file in the server root directory. This should contain the database credentials used to build the database.
 
 ```text
 DB_USER=db_username
@@ -77,115 +77,6 @@ DB_PASS=db_password
 DB_HOST=localhost:5432
 DB_DATABASE=db_name
 ```
-
-We will use these going forwards.
-
-### Set up & verification
-
-Ensure that [Postgres](https://postgresapp.com/) is set up locally. Identify the install location (`<postgres-data-dir>`), and start the Postgres server:
-
-```bash
-pg_ctl -D <postgres-data-dir> start
-```
-
-We can check that the server is active with `pgrep`:
-
-```bash
-pgrep -l postgres
-```
-
-Log in to the Postgres service, and then view users, using the following commands:
-
-```bash
-psql postgres
-\du
-```
-
-If at least one user is present, we can proceed. Quit the service with `\q` or `ctrl-d`.
-
-### Create new database
-
-We now need to create a new database with the `Postgis` extension, and a new user with elevated privileges. With the `Postgres` server started, log in as `postgres`:
-
-```bash
-psql postgres
-```
-
-Create a new database. You can check its creation in the Postgres GUI if desired.
-
-```sql
-CREATE DATABASE db_name;
-```
-
-Connect to the new database as the `postgres` user (which should have superuser privileges):
-
-```sql
-\connect db_name postgres
-```
-
-Create the `Postgis` extension:
-
-```sql
-CREATE EXTENSION postgis;
-```
-
-If `CREATE EXTENSION` is seen, then you have been successful. Log out with `\q`.
-
-### Restore backup into new database
-
-As discussed, the full rebuild process can be shortcut by restoring from a database backup, using the `pg_restore` utility. Download the `.sql` database backup from the `s3` link above. Identify the database backup location and run the following:
-
-```bash
-pg_restore -d db_name <path_to_database_backup>
-```
-
-If the database is not completely empty, you might need to use the `-clean` flag. Once complete, check that the database now contains tables by connecting, and then running:
-
-```sql
-\dt
-```
-
-Finish by quitting with `\q`.
-
-### Create new user
-
-With a populated database, we now need a new user that can connect and view the database/tables. With a started postgres server, create a new user with:
-
-```sql
-CREATE USER db_username;
-```
-
-Ensure this username is the same in the `.env` file. If you see `CREATE ROLE`, this has been successful. Note that a `USER` is a `ROLE` with the ability to log in.
-
-Add a password to the new user:
-
-```sql
-ALTER USER db_username WITH ENCRYPTED PASSWORD 'db_password';
-```
-
-`ALTER ROLE` confirms that this has been successful.
-
-Now grant database access to this user:
-
-```sql
-GRANT ALL PRIVILEGES ON DATABASE db_name TO db_username;
-```
-
-`GRANT` confirms this.
-
-Finally, we also need to make the database tables accessible to the user. Connect to the new database as `postgres`, or another superuser:
-
-```sql
-\connect db_name postgres
-```
-
-Grant new user access to tables:
-
-```sql
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA PUBLIC TO db_username;
-```
-
-As before, `GRANT` confirms this. Disconnect as before with `\q`.
 
 ## Running everything
 
