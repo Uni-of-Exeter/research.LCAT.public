@@ -50,7 +50,7 @@ These predictions are across the following Representative Concentration Pathways
 
 ### Climate data files
 
-The whole CHESS-SCAPE dataset is ~11 TB, due to the inclusion of daily climate predictions. LCAT only needs a subset of these files, which are shown using `tree` below:
+The whole CHESS-SCAPE dataset is ~11 TB, due to the inclusion of daily climate predictions. LCAT only needs a subset of these files, which are shown using `tree` below. Ensure all folder and file names remain the same!
 
 ```markdown
 chess-scape
@@ -122,9 +122,11 @@ chess-scape
                 └── chess-scape_rcp85_bias-corrected_01_tasmin_uk_1km_seasonal_19801201-20801130.nc
 ```
 
-## References
+## References and Kumu export
 
 LCAT serves the user references, articles, and other pieces of research related to the options they have selected in the tool. These have been aggregated by the LCAT team, and can be found [here](https://docs.google.com/spreadsheets/d/18c_5SSG9VmagkX3bdC_F2eDtzFz9oQJvPQbhEfwmUNc/edit?gid=0#gid=0). They are reviewed periodically by the team.
+
+A Kumu export is also required. This is a `.json` representation of the climate pathway maps that link climate hazards, adaptations, and more.
 
 ### Licenses
 

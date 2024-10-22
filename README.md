@@ -9,7 +9,7 @@ The tool is under continual development, with features, styling, and underlying 
 
 ## Installation & documentation
 
-Please view the documentation [here](https://github.com/Uni-of-Exeter/research.LCAT.public/blob/main/docs/). Installation instructions for the project can be found [here](https://github.com/Uni-of-Exeter/research.LCAT.public/blob/main/docs/1-install.md/).
+Please view the documentation [here](https://github.com/Uni-of-Exeter/research.LCAT.public/blob/main/docs/). A PDF guide to how LCAT works can be found [here](https://github.com/Uni-of-Exeter/research.LCAT.public/blob/autumn-clean-up/docs/files/lcat_data_pipeline_overview.pdf).
 
 ## License
 
@@ -30,4 +30,4 @@ Boundary data for England, Wales, Scotland, and Northern Ireland are used in thi
 - Source: Office for National Statistics licensed under the Open Government Licence v.3.0
 - Contains OS data © Crown copyright and database right 2024
 
-For more details, please view the sources document at [docs/3-sources.md](docs/3-sources.md).
+For more details, please view the sources document at [docs/4-sources.md](docs/4-sources.md).
