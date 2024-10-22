@@ -11,7 +11,7 @@ cd research.LCAT.public
 
 ## 1. PostgreSQL database
 
-LCAT uses a Postgres database to store climate data, which is served to the user in the application via the API (located in the server module). You will need to build this database from scratch, or rebuild the database from a backup, as explained in `docs/2-build-database.md`. Once complete, ensure that the Postgres server is running.
+LCAT uses a Postgres database to store climate data, which is served to the user in the application via the API (located in the server module). You will need to build this database from scratch, or rebuild the database from a dump, as explained in `docs/2-build-database.md`. Once complete, ensure that the Postgres server is running.
 
 ### Create .env file
 

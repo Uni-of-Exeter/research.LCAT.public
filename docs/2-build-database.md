@@ -125,12 +125,14 @@ Two approaches are provided, the first operates on the raw data files, the secon
 
 ### Approach a. Building from raw data
 
-We can run the processing scripts on the raw data files. A notebook has been provided to do this in one shot. This can be found at `data/examples/build_database.ipynb`.
+We can run the processing scripts on the raw data files. A notebook has been provided to do this in one shot. This can be found at [data/examples/build_db.ipynb](../data/examples/build_db.ipynb).
 
-### TODO: Approach b. Restoring from backup
+### Approach b. Restoring from dump
 
-Alternatively, you can restore from a database dump using `pg_restore`. This dump can be found on S3 [here](). A notebook has also been provided at `data/examples/restore_from_backup.ipynb`.
+Alternatively, you can restore from a database dump using `pg_restore`. A notebook has also been provided at [data/examples/db_from_dump.ipynb](../data/examples/db_from_dump.ipynb).
 
-## TODO: Visualisation
+Please note that the database dump required for this will be found on S3 shortly.
 
-If you want to test the database works before installing the rest of the application, you can visualise some of the data with the notebook found at `data/example/visualise_database.ipynb`.
+## Database visualisation
+
+If you want to test the database works before installing the rest of the application, you can visualise some of the data with the notebook found at [data/examples/visualise_db.ipynb](../data/examples/visualise_db.ipynb).
