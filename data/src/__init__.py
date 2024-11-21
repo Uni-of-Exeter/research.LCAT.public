@@ -6,4 +6,6 @@ from src.db_manager import DBManager
 from src.db_plotter import DBPlotter
 from src.grid_loader import GridLoader
 from src.overlap_calculator import OverlapCalculator
+from src.process_kumu import ProcessKumu
+from src.process_references import ProcessReferences
 from src.reference_loader import ReferenceLoader
