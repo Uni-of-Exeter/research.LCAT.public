@@ -29,9 +29,7 @@ class CacheClimate:
 
             print("Connecting using db config from config file...")
 
-        self.conn = psycopg2.connect(
-            host=host, dbname=dbname, user=user, password=password
-        )
+        self.conn = psycopg2.connect(host=host, dbname=dbname, user=user, password=password)
         self.cur = self.conn.cursor()
 
         print("Connection successful.")
@@ -94,9 +92,7 @@ class CacheClimate:
         """
 
         column_names = self.get_climate_column_names()
-        columns_definition = ",\n    ".join(
-            [f'"{col}" DOUBLE PRECISION' for col in column_names]
-        )
+        columns_definition = ",\n    ".join([f'"{col}" DOUBLE PRECISION' for col in column_names])
 
         create_table_query = f"""
         CREATE TABLE "{self.cache_table}" (

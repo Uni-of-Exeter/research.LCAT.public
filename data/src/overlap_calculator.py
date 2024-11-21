@@ -28,6 +28,7 @@ def plot_geometry(geometry, ax=None, **kwargs):
 
     return ax
 
+
 class OverlapCalculator:
     """
     Class to determine grid cell overlaps between boundary/shapefile regions, and grid cells.
@@ -75,9 +76,7 @@ class OverlapCalculator:
 
             print("Connecting using db config from config file...")
 
-        self.conn = psycopg2.connect(
-            host=host, dbname=dbname, user=user, password=password
-        )
+        self.conn = psycopg2.connect(host=host, dbname=dbname, user=user, password=password)
         self.cur = self.conn.cursor()
 
         print("Connection successful.")
@@ -293,9 +292,7 @@ class OverlapCalculator:
             candidate_cells = self.get_candidate_cells(bounding_box)
 
             # Step 3c: Find the closest grid cell among the candidates
-            closest_grid_cell_id, _, bias_corrected = self.find_closest_grid_cell(
-                region_geom, candidate_cells
-            )
+            closest_grid_cell_id, _, bias_corrected = self.find_closest_grid_cell(region_geom, candidate_cells)
 
             if closest_grid_cell_id is None:
                 # Expand the bounding box if no cell is found
@@ -385,17 +382,13 @@ class OverlapCalculator:
         region_name = self.get_region_name(gid)
         bounding_box_geom = self.get_bounding_box(region_geom, scale_factor)
         candidate_cells = self.get_candidate_cells(bounding_box_geom)
-        closest_grid_cell_id, _ = self.find_closest_grid_cell(
-            region_geom, candidate_cells
-        )
+        closest_grid_cell_id, _ = self.find_closest_grid_cell(region_geom, candidate_cells)
         closest_grid_cell_geom = self.get_grid_cell_geometry(closest_grid_cell_id)
 
         fig, ax = plt.subplots()
 
         # Plot the region
-        ax = plot_geometry(
-            region_geom, ax=ax, color="red", linewidth=1, label="Region"
-        )
+        ax = plot_geometry(region_geom, ax=ax, color="red", linewidth=1, label="Region")
 
         # Plot the bounding box/envelope we are using to find grid cells
         ax = plot_geometry(
@@ -421,7 +414,7 @@ class OverlapCalculator:
         ax.set_ylabel("Northing")
         ax.xaxis.set_major_formatter(ScalarFormatter(useMathText=True))
         ax.yaxis.set_major_formatter(ScalarFormatter(useMathText=True))
-        ax.ticklabel_format(style='sci', axis='both', scilimits=(0,0))
+        ax.ticklabel_format(style="sci", axis="both", scilimits=(0, 0))
 
         ax.set_title(
             f"{boundary_identifier}: closest grid cell to no overlap region: {closest_grid_cell_id} - {region_name}"

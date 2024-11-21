@@ -54,9 +54,7 @@ class GridLoader:
 
             print("Connecting using db config from config file...")
 
-        self.conn = psycopg2.connect(
-            host=host, dbname=dbname, user=user, password=password
-        )
+        self.conn = psycopg2.connect(host=host, dbname=dbname, user=user, password=password)
         self.cur = self.conn.cursor()
 
         print("Connection successful.")
@@ -68,9 +66,7 @@ class GridLoader:
 
         try:
             data = xr.open_dataset(filepath, engine="netcdf4")
-            print(
-                f"Loaded file into xarray with sizes y: {data.y.size}, x: {data.x.size}, t: {data.time.size}"
-            )
+            print(f"Loaded file into xarray with sizes y: {data.y.size}, x: {data.x.size}, t: {data.time.size}")
 
         except Exception as e:
             print(f"netcdf file open failed with error: {e}")
@@ -88,20 +84,14 @@ class GridLoader:
         whilst also cleaning up the NI grid.
         """
 
-        if (
-            not filepath_bias_corrected
-            or not filepath_non_bias_corrected
-            or not variable
-        ):
+        if not filepath_bias_corrected or not filepath_non_bias_corrected or not variable:
             filename_bias_corrected = "data/rcp60_bias-corrected/01/annual/chess-scape_rcp60_bias-corrected_01_tas_uk_1km_annual_19801201-20801130.nc"
-            filepath_bias_corrected = os.path.join(
-                self.data_location, filename_bias_corrected
-            )
+            filepath_bias_corrected = os.path.join(self.data_location, filename_bias_corrected)
 
-            filename_non_bias_corrected = "data/rcp60/01/annual/chess-scape_rcp60_01_tas_uk_1km_annual_19801201-20801130.nc"
-            filepath_non_bias_corrected = os.path.join(
-                self.data_location, filename_non_bias_corrected
+            filename_non_bias_corrected = (
+                "data/rcp60/01/annual/chess-scape_rcp60_01_tas_uk_1km_annual_19801201-20801130.nc"
             )
+            filepath_non_bias_corrected = os.path.join(self.data_location, filename_non_bias_corrected)
             variable = "tas"
 
             print(
@@ -109,9 +99,7 @@ class GridLoader:
             )
 
         self.data["bias_corrected"] = self.open_netcdf_file(filepath_bias_corrected)
-        self.data["non_bias_corrected"] = self.open_netcdf_file(
-            filepath_non_bias_corrected
-        )
+        self.data["non_bias_corrected"] = self.open_netcdf_file(filepath_non_bias_corrected)
         self.variable = variable
 
     def create_polygon_mask(self, polygon_vertices, y_size, x_size):
@@ -173,12 +161,8 @@ class GridLoader:
 
         y_size, x_size = data.sizes["y"], data.sizes["x"]
 
-        ni_polygon_mask = self.create_polygon_mask(
-            ni_polygon_vertices, y_size, x_size
-        )
-        scilly_isles_polygon_mask = self.create_polygon_mask(
-            scilly_isles_polygon_vertices, y_size, x_size
-        )
+        ni_polygon_mask = self.create_polygon_mask(ni_polygon_vertices, y_size, x_size)
+        scilly_isles_polygon_mask = self.create_polygon_mask(scilly_isles_polygon_vertices, y_size, x_size)
 
         # Get combined polygon mask
         combined_polygon_mask = ni_polygon_mask | scilly_isles_polygon_mask
@@ -194,9 +178,7 @@ class GridLoader:
         """
 
         if len(self.data) != 2:
-            raise ValueError(
-                "Warning: netcdf data not loaded. Please load to continue."
-            )
+            raise ValueError("Warning: netcdf data not loaded. Please load to continue.")
 
         for key in self.data:
             self.masks[key] = self.get_mask(key)
@@ -207,22 +189,18 @@ class GridLoader:
         """
 
         if "bias_corrected" not in self.masks or "non_bias_corrected" not in self.masks:
-            raise ValueError(
-                "Warning: masks not cached. Please cache masks to continue."
-            )
+            raise ValueError("Warning: masks not cached. Please cache masks to continue.")
 
-        self.masks["aggregated"] = (
-            self.masks["bias_corrected"] + self.masks["non_bias_corrected"]
-        )
+        self.masks["aggregated"] = self.masks["bias_corrected"] + self.masks["non_bias_corrected"]
 
     def create_aggregated_labelled_mask(self):
         """
         Create a labelled mask. False == 0, bias_corrected == 1, non_bias_corrected = 2.
         """
 
-        self.masks["aggregated_labelled"] = self.masks["bias_corrected"].astype(
-            int
-        ) + 2 * self.masks["non_bias_corrected"].astype(int)
+        self.masks["aggregated_labelled"] = self.masks["bias_corrected"].astype(int) + 2 * self.masks[
+            "non_bias_corrected"
+        ].astype(int)
 
     def plot_mask(self, mask, key):
         """

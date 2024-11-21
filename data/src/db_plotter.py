@@ -53,9 +53,7 @@ class DBPlotter:
 
             print("Connecting using db config from config file...")
 
-        self.conn = psycopg2.connect(
-            host=host, dbname=dbname, user=user, password=password
-        )
+        self.conn = psycopg2.connect(host=host, dbname=dbname, user=user, password=password)
         self.cur = self.conn.cursor()
 
         print("Connection successful.")
@@ -143,9 +141,7 @@ class DBPlotter:
         gdf = gpd.GeoDataFrame(data, geometry="geometry")
 
         if merged:
-            grouped = gdf.groupby("bias_corrected")["geometry"].apply(
-                lambda x: unary_union(x)
-            )
+            grouped = gdf.groupby("bias_corrected")["geometry"].apply(lambda x: unary_union(x))
             gdf = gpd.GeoDataFrame(grouped, geometry="geometry").reset_index()
 
         gdf.sort_values(by=["bias_corrected"], inplace=True)
@@ -224,12 +220,8 @@ class DBPlotter:
         for row in grid_geometry:
             grid_cell_id = row[0]
             geom = wkb.loads(row[1], hex=True)
-            data_value = chess_data_dict.get(
-                grid_cell_id, np.nan
-            )  # Get the data value, default to NaN if not present
-            data.append(
-                {"id": grid_cell_id, "geometry": geom, "data_value": data_value}
-            )
+            data_value = chess_data_dict.get(grid_cell_id, np.nan)  # Get the data value, default to NaN if not present
+            data.append({"id": grid_cell_id, "geometry": geom, "data_value": data_value})
 
         gdf = gpd.GeoDataFrame(data, geometry="geometry")
 
@@ -276,9 +268,7 @@ class DBPlotter:
             ax.set_xlim([x_min, x_max])
             ax.set_ylim([y_min, y_max])
 
-        ax.set_title(
-            f"CHESS-SCAPE data: {variable} ({decade}) at RCP{rcp/10}", fontsize=14
-        )
+        ax.set_title(f"CHESS-SCAPE data: {variable} ({decade}) at RCP{rcp/10}", fontsize=14)
         ax.set_xlabel("Eastings", fontsize=14)
         ax.set_ylabel("Northings", fontsize=14)
         ax.xaxis.set_major_formatter(mpl.ticker.ScalarFormatter(useMathText=True))
@@ -474,9 +464,7 @@ class DBPlotter:
         for row in cell_geometry:
             grid_cell_id = row[0]
             geom = wkb.loads(row[1], hex=True)
-            data_value = chess_data_dict.get(
-                grid_cell_id, np.nan
-            )  # Get the data value, default to NaN if not present
+            data_value = chess_data_dict.get(grid_cell_id, np.nan)  # Get the data value, default to NaN if not present
             cell_data.append(
                 {
                     "id": grid_cell_id,
@@ -492,9 +480,7 @@ class DBPlotter:
         cell_gdf.sort_values(by="data_value", inplace=True)
 
         # Normalize the data for the color map
-        norm = Normalize(
-            vmin=cell_gdf["data_value"].min(), vmax=cell_gdf["data_value"].max()
-        )
+        norm = Normalize(vmin=cell_gdf["data_value"].min(), vmax=cell_gdf["data_value"].max())
 
         # Choose cmap
         cmap = plt.cm.viridis
@@ -584,9 +570,7 @@ class DBPlotter:
 
         return no_overlap_geometry
 
-    def plot_no_overlap_locations(
-        self, boundary_identifier, viewbox=None, show_labels=True
-    ):
+    def plot_no_overlap_locations(self, boundary_identifier, viewbox=None, show_labels=True):
         """
         Plot the location of the regions with no overlaps on the grid cell plot.
         """
@@ -605,9 +589,7 @@ class DBPlotter:
 
         gdf = gpd.GeoDataFrame(data, geometry="geometry")
 
-        grouped = gdf.groupby("bias_corrected")["geometry"].apply(
-            lambda x: unary_union(x)
-        )
+        grouped = gdf.groupby("bias_corrected")["geometry"].apply(lambda x: unary_union(x))
         gdf = gpd.GeoDataFrame(grouped, geometry="geometry").reset_index()
 
         gdf.sort_values(by=["bias_corrected"], inplace=True)
@@ -703,9 +685,7 @@ class DBPlotter:
 
         return chess_data
 
-    def plot_boundary_coloured_by_cache(
-        self, boundary_identifier, variable, decade, rcp, season, lines=None
-    ):
+    def plot_boundary_coloured_by_cache(self, boundary_identifier, variable, decade, rcp, season, lines=None):
         """
         Get boundary geometry from database, create GeoDataFrame for fast plotting, and create plot.
         Regions are colored by the data returned from the cached CHESS-SCAPE data.
@@ -715,9 +695,7 @@ class DBPlotter:
         boundary_geometry = self.get_boundary_geometry(boundary_identifier)
 
         # Get cached data for the boundary
-        chess_data = self.get_cached_chess_data(
-            boundary_identifier, variable, decade, rcp, season
-        )
+        chess_data = self.get_cached_chess_data(boundary_identifier, variable, decade, rcp, season)
 
         # Convert chess_data into a dictionary for easy lookup
         chess_data_dict = {row[0]: row[1] for row in chess_data}

@@ -63,9 +63,7 @@ class ChessScapeLoader:
         """
 
         if 0 not in mask:
-            raise ValueError(
-                "Have you loaded a boolean mask? Please load labelled mask instead."
-            )
+            raise ValueError("Have you loaded a boolean mask? Please load labelled mask instead.")
 
         self.mask = mask
 
@@ -88,9 +86,7 @@ class ChessScapeLoader:
 
             print("Connecting using db config from config file...")
 
-        self.conn = psycopg2.connect(
-            host=host, dbname=dbname, user=user, password=password
-        )
+        self.conn = psycopg2.connect(host=host, dbname=dbname, user=user, password=password)
         self.cur = self.conn.cursor()
 
         print("Connection successful.")
@@ -129,9 +125,7 @@ class ChessScapeLoader:
         self.season = season
         self.rcp = rcp
         self.variable = variable
-        self.table_name = (
-            f"chess_scape_rcp{self.rcp}_{self.season}_{self.variable}"
-        )
+        self.table_name = f"chess_scape_rcp{self.rcp}_{self.season}_{self.variable}"
         self.aggregated_table_name = f"chess_scape_rcp{self.rcp}_{self.season}"
 
         # Clear other variables
@@ -140,14 +134,14 @@ class ChessScapeLoader:
         self.data_means[bias_corrected_key] = {}
 
         # Create filepath folder adjustments
-        bias_corrected_folder = (
-            "_bias-corrected" if bias_corrected_key == "bias_corrected" else ""
-        )
+        bias_corrected_folder = "_bias-corrected" if bias_corrected_key == "bias_corrected" else ""
         season_folder = "seasonal" if season != "annual" else "annual"
 
         # Create filepath
         sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/{season_folder}"
-        filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{variable}_uk_1km_{season_folder}_19801201-20801130.nc"
+        filename = (
+            f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{variable}_uk_1km_{season_folder}_19801201-20801130.nc"
+        )
         filepath = os.path.join(self.data_location, sub_folders, filename)
 
         # Load netcdf file
@@ -231,9 +225,7 @@ class ChessScapeLoader:
         """
 
         for bias_corrected_key in self.data_keys:
-            self.data_means[bias_corrected_key] = self.create_means(
-                self.data[bias_corrected_key]
-            )
+            self.data_means[bias_corrected_key] = self.create_means(self.data[bias_corrected_key])
 
     def transform_dataset(self, data):
         """
@@ -320,9 +312,7 @@ class ChessScapeLoader:
 
         # Add columns to database in one go
         any_key = self.data_keys[0]
-        new_column_names = [
-            f"{self.variable}_{decade}" for decade in self.data_means[any_key]
-        ]
+        new_column_names = [f"{self.variable}_{decade}" for decade in self.data_means[any_key]]
         self.add_multiple_columns(new_column_names)
 
         # Create string buffer
@@ -372,10 +362,7 @@ class ChessScapeLoader:
         self.drop_table(self.aggregated_table_name)
 
         base_table = f"{self.aggregated_table_name}_{variables[0]}"
-        table_name_joins = [
-            f'JOIN "{self.aggregated_table_name}_{var}" USING (grid_cell_id)'
-            for var in variables[1:]
-        ]
+        table_name_joins = [f'JOIN "{self.aggregated_table_name}_{var}" USING (grid_cell_id)' for var in variables[1:]]
         joins_string = " ".join(table_name_joins)
 
         join_table_query = f"""

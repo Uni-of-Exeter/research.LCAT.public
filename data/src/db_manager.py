@@ -21,14 +21,9 @@ class DBManager:
         """
 
         if not dbname:
-            dbname = 'postgres'
+            dbname = "postgres"
 
-        return psycopg2.connect(
-            dbname=dbname,
-            user=self.superuser,
-            password=self.superuser_pass,
-            host=self.host
-        )
+        return psycopg2.connect(dbname=dbname, user=self.superuser, password=self.superuser_pass, host=self.host)
 
     def _connect_user(self, dbname=None):
         """
@@ -36,14 +31,9 @@ class DBManager:
         """
 
         if not dbname:
-            dbname = 'postgres'
+            dbname = "postgres"
 
-        return psycopg2.connect(
-            dbname=dbname,
-            user=self.user,
-            password=self.user_pass,
-            host=self.host
-        )
+        return psycopg2.connect(dbname=dbname, user=self.user, password=self.user_pass, host=self.host)
 
     def create_user_role(self):
         """
@@ -55,9 +45,9 @@ class DBManager:
             connection.autocommit = True
             cursor = connection.cursor()
 
-            query = sql.SQL("CREATE ROLE {user} WITH PASSWORD %s NOSUPERUSER CREATEDB CREATEROLE INHERIT LOGIN;").format(
-                user=sql.Identifier(self.user)
-            )
+            query = sql.SQL(
+                "CREATE ROLE {user} WITH PASSWORD %s NOSUPERUSER CREATEDB CREATEROLE INHERIT LOGIN;"
+            ).format(user=sql.Identifier(self.user))
             cursor.execute(query, (self.user_pass,))
             cursor.close()
             connection.close()
@@ -155,9 +145,9 @@ class DBManager:
 
             # Step 5: Insert data into the test table
             insert_query = sql.SQL("INSERT INTO test_table (name) VALUES (%s);")
-            cursor.execute(insert_query, ('Test Name 1',))
-            cursor.execute(insert_query, ('Test Name 2',))
-            cursor.execute(insert_query, ('Test Name 3',))
+            cursor.execute(insert_query, ("Test Name 1",))
+            cursor.execute(insert_query, ("Test Name 2",))
+            cursor.execute(insert_query, ("Test Name 3",))
             print("Data inserted into test table successfully.")
 
             # Step 6: Select data from the test table
