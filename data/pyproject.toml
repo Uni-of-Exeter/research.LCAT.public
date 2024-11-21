@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "research.lcat.public.data"
+name = "data"
 version = "0.1.0"
-description = "Climate data analysis module"
+description = "LCAT data module"
 authors = ["Simon Kirby <s.kirby@exeter.ac.uk>"]
 readme = "README.md"
 package-mode = false
