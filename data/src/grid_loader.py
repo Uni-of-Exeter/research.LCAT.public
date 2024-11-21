@@ -151,43 +151,42 @@ class GridLoader:
         if bias_corrected_key == "bias_corrected":
             return ~data[self.variable][0].isnull().values
 
-        else:
-            # If not bias corrected, we need to clean up the mask to select just NI data and Scilly Isles data
-            dirty_mask = ~data[self.variable][0].isnull().values
+        # If not bias corrected, we need to clean up the mask to select just NI data and Scilly Isles data
+        dirty_mask = ~data[self.variable][0].isnull().values
 
-            # Define coordinates for a polygon that encompasses NI non-bias corrected data
-            a = (0, 460)
-            b = (200, 460)
-            c = (200, 500)
-            d = (135, 620)
-            e = (0, 600)
+        # Define coordinates for a polygon that encompasses NI non-bias corrected data
+        a = (0, 460)
+        b = (200, 460)
+        c = (200, 500)
+        d = (135, 620)
+        e = (0, 600)
 
-            # Define coordinates for a polygon that encompasses Scilly Isles non-bias corrected data
-            f = (75, 0)
-            g = (75, 50)
-            h = (100, 50)
-            i = (100, 0)
+        # Define coordinates for a polygon that encompasses Scilly Isles non-bias corrected data
+        f = (75, 0)
+        g = (75, 50)
+        h = (100, 50)
+        i = (100, 0)
 
-            # Create masks defined by the polygon bounds
-            ni_polygon_vertices = [a, b, c, d, e]
-            scilly_isles_polygon_vertices = [f, g, h, i]
+        # Create masks defined by the polygon bounds
+        ni_polygon_vertices = [a, b, c, d, e]
+        scilly_isles_polygon_vertices = [f, g, h, i]
 
-            y_size, x_size = data.sizes["y"], data.sizes["x"]
+        y_size, x_size = data.sizes["y"], data.sizes["x"]
 
-            ni_polygon_mask = self.create_polygon_mask(
-                ni_polygon_vertices, y_size, x_size
-            )
-            scilly_isles_polygon_mask = self.create_polygon_mask(
-                scilly_isles_polygon_vertices, y_size, x_size
-            )
+        ni_polygon_mask = self.create_polygon_mask(
+            ni_polygon_vertices, y_size, x_size
+        )
+        scilly_isles_polygon_mask = self.create_polygon_mask(
+            scilly_isles_polygon_vertices, y_size, x_size
+        )
 
-            # Get combined polygon mask
-            combined_polygon_mask = ni_polygon_mask | scilly_isles_polygon_mask
+        # Get combined polygon mask
+        combined_polygon_mask = ni_polygon_mask | scilly_isles_polygon_mask
 
-            # Get the total mask (i.e. get the non-bias corrected data that exists within each polygon mask)
-            non_bias_mask = dirty_mask & combined_polygon_mask
+        # Get the total mask (i.e. get the non-bias corrected data that exists within each polygon mask)
+        non_bias_mask = dirty_mask & combined_polygon_mask
 
-            return non_bias_mask
+        return non_bias_mask
 
     def cache_masks(self):
         """

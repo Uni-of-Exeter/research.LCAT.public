@@ -181,10 +181,7 @@ class ChessScapeLoader:
 
         # Check we always only select time points in Jan and Jul in our time slice
         if self.season != "annual":
-            if self.season == "winter":
-                month_check = 1
-            else:
-                month_check = 7
+            month_check = 1 if self.season == "winter" else 7
 
             if not np.all(np.array([date.month for date in time_slice]) == month_check):
                 raise ValueError("Different months identified in time slice")

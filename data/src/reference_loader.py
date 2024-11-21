@@ -43,7 +43,7 @@ class ReferenceLoader:
             filepath = self.conf["processed_references_json"]
             print("References filepath retrieved from config file.")
 
-        with open(filepath, "r") as file:
+        with open(filepath) as file:
             self.data = json.load(file)
 
     def create_table(self):

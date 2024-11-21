@@ -9,25 +9,25 @@ def plot_geometry(geometry, ax=None, **kwargs):
     """
     Plot geometry using matplotlib. Handles both Polygon and MultiPolygon.
     """
-    
+
     if ax is None:
         fig, ax = plt.subplots()
 
     geom = wkb.loads(geometry, hex=True)
-    
+
     # Check if the geometry is a Polygon
     if isinstance(geom, Polygon):
         x, y = geom.exterior.xy
         ax.plot(x, y, **kwargs)
-    
+
     # Check if the geometry is a MultiPolygon
     elif isinstance(geom, MultiPolygon):
         for poly in geom.geoms:
             x, y = poly.exterior.xy
             ax.plot(x, y, **kwargs)
-    
+
     return ax
-    
+
 class OverlapCalculator:
     """
     Class to determine grid cell overlaps between boundary/shapefile regions, and grid cells.
@@ -497,8 +497,7 @@ class OverlapCalculator:
         if geometry:
             return geometry[0]
 
-        else:
-            return geometry
+        return geometry
 
     def select_overlaps_from_overlap_table(self, gid):
         """
