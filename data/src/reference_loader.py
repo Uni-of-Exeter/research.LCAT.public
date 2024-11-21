@@ -80,11 +80,7 @@ class ReferenceLoader:
 
         required_fields = ["article_id", "type", "doi", "link", "title", "authors", "date", "journal", "issue"]
 
-        for field in required_fields:
-            if field not in record:
-                return False
-
-        return True
+        return all(field in record for field in required_fields)
 
     def insert_data(self):
         """

@@ -172,9 +172,6 @@ class OverlapCalculator:
 
         return [i[0] for i in no_overlap_regions]
 
-        self.no_overlap_regions[self.new_table_name] = no_overlap_regions
-        print(f"No overlaps: {self.new_table_name} {len(no_overlap_regions)}")
-
     def get_bounding_box(self, region_geom, scale_factor=1.0):
         """
         Calculate the bounding box of the region's geometry, scaling it while keeping the centroid fixed.
