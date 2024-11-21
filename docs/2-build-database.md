@@ -121,17 +121,13 @@ kumu_json: "/data_store/references/kumu_export.json"
 
 ## Build database
 
-Two approaches are provided, the first operates on the raw data files, the second uses a compressed database dump to restore from.
+One main approach is provided, using scripts to operate on the raw data files to create the Postgres database. In the future we hope to provide a `pg_restore` method from a `.sql.gz` dump. This will allow users to get the tool running locally without having to aggregate the data files themselves.
 
 ### Approach a. Building from raw data
 
 We can run the processing scripts on the raw data files. A notebook has been provided to do this in one shot. This can be found at [data/examples/build_db.ipynb](../data/examples/build_db.ipynb).
 
-### Approach b. Restoring from dump
-
-Alternatively, you can restore from a database dump using `pg_restore`. A notebook has also been provided at [data/examples/db_from_dump.ipynb](../data/examples/db_from_dump.ipynb).
-
-Please note that the database dump required for this will be found on S3 shortly.
+### TODO: Approach b. Restoring from dump
 
 ## Database visualisation
 
