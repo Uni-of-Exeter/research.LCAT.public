@@ -152,7 +152,7 @@ class ClimateMap extends React.Component {
         for (let r of this.state.regions) {
             r.clearMe();
         }
-        this.setState((prev) => ({ 
+        this.setState((prev) => ({
             regions: [],
             geojson_key: prev.geojson_key + 1,
         }));
@@ -191,8 +191,9 @@ class ClimateMap extends React.Component {
             <div>
                 <h1>Select your area</h1>
                 <p>
-                    To begin, select the area/s you are interested in by clicking on the map. The map units can be
-                    changed and are currently displaying&nbsp;
+                    To begin, select the area/s you are interested in by clicking on the map. Climate data for your
+                    chosen area/s will appear below. The map units can be changed to explore the UK and the Isle of
+                    Man at via the following dropdown:{" "}
                     <select
                         onChange={(e) => {
                             this.setState(() => ({
@@ -212,7 +213,6 @@ class ClimateMap extends React.Component {
                         <option value="boundary_ni_dz">Data Zones (Northern Ireland)</option>
                         <option value="boundary_iom">Isle of Man</option>
                     </select>
-                    &nbsp;Data for your chosen area/s will appear below.
                     {/*The Index of Multiple Deprivation score 
 
 		  <select onChange={(e) => { this.setState(() => ({
