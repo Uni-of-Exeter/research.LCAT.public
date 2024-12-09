@@ -81,6 +81,11 @@
     margin-right: 1em;
 }
 
-.map-selection button {
-    font-size: 75%;
+/* Style the individual leaflet zoom buttons */
+.leaflet-control-zoom a {
+    width: 75px !important;
+    height: 75px !important;
+    line-height: 64px !important;
+    text-align: center !important;
+    font-size: 5em !important;
 }
