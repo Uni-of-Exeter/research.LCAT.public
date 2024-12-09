@@ -67,22 +67,28 @@ function Introduction() {
             </ul>
 
             <p>
-                <strong className="text-emphasis">Data disclaimer:</strong>
+                <strong className="text-emphasis">Data disclaimers:</strong>
             </p>
 
-            <p>
-                Please be aware that climate predictions for the regions of Northern Ireland and the Isles of Scilly are
-                not bias corrected. This is due to limitations of the underlying climate datasets used in LCAT. For further information
-                on bias correction, please see {" "}
-                <a
-                    href="https://www.metoffice.gov.uk/binaries/content/assets/metofficegovuk/pdf/research/ukcp/ukcp18-guidance---how-to-bias-correct.pdf"
-                    target="_blank"
-                    rel="noreferrer"
-                >
-                    this article
-                </a>
-                {" "} by the Met Office.
-            </p>
+            <ul>
+                <li>
+                    Please be aware that climate predictions for the regions of Northern Ireland and the Isles of Scilly
+                    are not bias corrected. This is due to limitations of the underlying climate datasets used in LCAT.
+                    For further information on bias correction, please see{" "}
+                    <a
+                        href="https://www.metoffice.gov.uk/binaries/content/assets/metofficegovuk/pdf/research/ukcp/ukcp18-guidance---how-to-bias-correct.pdf"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        this article
+                    </a>{" "}
+                    by the Met Office.
+                </li>
+                <li>
+                    Bias-corrected climate predictions for the Isle of Man have been added to LCAT. Select this region via the
+                    dropdown below.
+                </li>
+            </ul>
         </div>
     );
 }
