@@ -85,8 +85,13 @@ function Introduction() {
                     by the Met Office.
                 </li>
                 <li>
-                    Bias-corrected climate predictions for the Isle of Man have been added to LCAT. Select this region via the
-                    dropdown below.
+                    Climate predictions for the Shetland Islands (bias and non bias-corrected) are not included in the
+                    CHESS-SCAPE dataset. Please be aware that climate predictions displayed in LCAT for these regions
+                    are approximated to the closest predictions available in the Orkney Islands.
+                </li>
+                <li>
+                    Bias-corrected climate predictions for the Isle of Man have been added to LCAT. Select this region
+                    via the dropdown below.
                 </li>
             </ul>
         </div>
