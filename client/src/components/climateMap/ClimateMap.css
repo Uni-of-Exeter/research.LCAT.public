@@ -83,9 +83,9 @@
 
 /* Style the individual leaflet zoom buttons */
 .leaflet-control-zoom a {
-    width: 75px !important;
-    height: 75px !important;
-    line-height: 64px !important;
+    width: 60px !important;
+    height: 60px !important;
+    line-height: 50px !important;
     text-align: center !important;
-    font-size: 5em !important;
+    font-size: 4em !important;
 }
