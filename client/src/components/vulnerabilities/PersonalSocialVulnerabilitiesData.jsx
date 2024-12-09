@@ -78,7 +78,7 @@ export const vulnerabilityData = [
                 <ul>
                     <li>
                         Climate Just's mapping tool:{" "}
-                        <a href="https://www.climatejust.org.uk/map" target="_blank" rel="noreferrer">
+                        <a href="https://www.climatejust.org.uk/map.html" target="_blank" rel="noreferrer">
                             Mapping tool page | Climate Just
                         </a>
                     </li>
@@ -134,7 +134,7 @@ export const vulnerabilityData = [
                 <ul>
                     <li>
                         Climate Just's mapping tool:{" "}
-                        <a href="https://www.climatejust.org.uk/map" target="_blank" rel="noreferrer">
+                        <a href="https://www.climatejust.org.uk/map.html" target="_blank" rel="noreferrer">
                             Mapping tool page | Climate Just
                         </a>
                     </li>
@@ -198,7 +198,7 @@ export const vulnerabilityData = [
                 <ul>
                     <li>
                         Climate Just's mapping tool:{" "}
-                        <a href="https://www.climatejust.org.uk/map" target="_blank" rel="noreferrer">
+                        <a href="https://www.climatejust.org.uk/map.html" target="_blank" rel="noreferrer">
                             Mapping tool page | Climate Just
                         </a>
                     </li>
@@ -262,7 +262,7 @@ export const vulnerabilityData = [
                 <ul>
                     <li>
                         Climate Just's mapping tool:{" "}
-                        <a href="https://www.climatejust.org.uk/map" target="_blank" rel="noreferrer">
+                        <a href="https://www.climatejust.org.uk/map.html" target="_blank" rel="noreferrer">
                             Mapping tool page | Climate Just
                         </a>
                     </li>
@@ -332,7 +332,7 @@ export const vulnerabilityData = [
                 <ul>
                     <li>
                         Climate Just's mapping tool:{" "}
-                        <a href="https://www.climatejust.org.uk/map" target="_blank" rel="noreferrer">
+                        <a href="https://www.climatejust.org.uk/map.html" target="_blank" rel="noreferrer">
                             Mapping tool page | Climate Just
                         </a>
                     </li>
@@ -393,7 +393,7 @@ export const vulnerabilityData = [
                     <li>
                         Climate Just's mapping tool provides a range of data including length of residency & English
                         proficiency:{" "}
-                        <a href="https://www.climatejust.org.uk/map" target="_blank" rel="noreferrer">
+                        <a href="https://www.climatejust.org.uk/map.html" target="_blank" rel="noreferrer">
                             Mapping tool page | Climate Just
                         </a>
                     </li>
@@ -456,7 +456,7 @@ export const vulnerabilityData = [
                 <ul>
                     <li>
                         Climate Just's mapping tool:{" "}
-                        <a href="https://www.climatejust.org.uk/map" target="_blank" rel="noreferrer">
+                        <a href="https://www.climatejust.org.uk/map.html" target="_blank" rel="noreferrer">
                             Mapping tool page | Climate Just
                         </a>
                     </li>
@@ -538,7 +538,7 @@ export const vulnerabilityData = [
                 <ul>
                     <li>
                         Climate Just's mapping tool:{" "}
-                        <a href="https://www.climatejust.org.uk/map" target="_blank" rel="noreferrer">
+                        <a href="https://www.climatejust.org.uk/map.html" target="_blank" rel="noreferrer">
                             Mapping tool page | Climate Just
                         </a>
                     </li>
