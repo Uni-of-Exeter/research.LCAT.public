@@ -29,7 +29,7 @@ const tileLayer = {
     url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
 };
 
-const center = [55, -5.2];
+const center = [55.8, -3.2];
 const highlightCol = "#ffd768ff";
 
 function RegionsListener(props) {
