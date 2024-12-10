@@ -52,7 +52,7 @@ function Introduction() {
                         target="_blank"
                         rel="noreferrer"
                     >
-                        Introduction to Local Climate Adaptation.
+                        Introduction to Local Climate Adaptation
                     </a>
                 </li>
                 <li>
@@ -61,28 +61,15 @@ function Introduction() {
                         target="_blank"
                         rel="noreferrer"
                     >
-                        LCAT User Guide.
+                        LCAT User Guide
+                    </a>
+                </li>
+                <li>
+                    <a href="https://climatedataportal.metoffice.gov.uk/pages/lacs" target="_blank" rel="noreferrer">
+                        Met Office Local Authority Climate Service
                     </a>
                 </li>
             </ul>
-
-            <p>
-                <strong className="text-emphasis">Data disclaimer:</strong>
-            </p>
-
-            <p>
-                Please be aware that climate predictions for the regions of Northern Ireland and the Isles of Scilly are
-                not bias corrected. This is due to limitations of the underlying climate datasets used in LCAT. For further information
-                on bias correction, please see {" "}
-                <a
-                    href="https://www.metoffice.gov.uk/binaries/content/assets/metofficegovuk/pdf/research/ukcp/ukcp18-guidance---how-to-bias-correct.pdf"
-                    target="_blank"
-                    rel="noreferrer"
-                >
-                    this article
-                </a>
-                {" "} by the Met Office.
-            </p>
         </div>
     );
 }

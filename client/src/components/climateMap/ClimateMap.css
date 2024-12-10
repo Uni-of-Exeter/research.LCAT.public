@@ -1,6 +1,6 @@
 .leaflet-container {
     width: 100%;
-    height: 500px;
+    aspect-ratio: 1 / 1.1;
     z-index: 0;
     border: 2px solid #333;
     overflow: hidden;
@@ -8,9 +8,15 @@
     margin: 0;
 }
 
-@media (min-width: 2000px) {
+@media (min-width: 1300px) {
     .leaflet-container {
-        height: 750px;
+        height: 80vh;
+    }
+}
+
+@media (min-width: 1300px) {
+    .map-selection {
+        height: 80vh;
     }
 }
 
@@ -53,14 +59,8 @@
         margin-top: 1em;
         margin-top: 0;
         width: 10em;
-        height: 500px;
+        height: auto;
         padding-bottom: 0;
-    }
-}
-
-@media (min-width: 2000px) {
-    .map-selection {
-        height: 750px;
     }
 }
 
@@ -81,6 +81,11 @@
     margin-right: 1em;
 }
 
-.map-selection button {
-    font-size: 75%;
+/* Style the individual leaflet zoom buttons */
+.leaflet-control-zoom a {
+    width: 60px !important;
+    height: 60px !important;
+    line-height: 50px !important;
+    text-align: center !important;
+    font-size: 4em !important;
 }
