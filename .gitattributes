@@ -1,0 +1,2 @@
+# Exclude examples notebooks from language stats
+data/examples/** linguist-vendored
