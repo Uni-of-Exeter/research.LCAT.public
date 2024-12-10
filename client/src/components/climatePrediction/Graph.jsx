@@ -280,25 +280,24 @@ function Graph(props) {
                 </div>
             </div>
             <p className="note">
-                Data source: The climate data used is from{" "}
+                Data source: The current iteration of the tool uses climate data from the{" "}
                 <a
                     href="https://catalogue.ceda.ac.uk/uuid/8194b416cbee482b89e0dfbe17c5786c"
                     target="_blank"
                     rel="noreferrer"
                 >
                     CHESS-SCAPE
+                </a>{" "}
+                dataset. CHESS-SCAPE provides bias-corrected data for England, Scotland, Wales, and the Isle of Man.
+                CHESS-SCAPE provides non bias-corrected data for Northern Ireland and the Isles of Scilly. The tool
+                displays RCP 6.0 and RCP 8.5. For more information, please see the{" "}
+                <a
+                    href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Feb-24.pdf"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    LCAT User Guide.
                 </a>
-                , RCP6.0 and 8.5 were selected on the advice of climate researchers and published literature.{" "}
-                <a href="https://www.unep.org/resources/emissions-gap-report-2022" target="_blank" rel="noreferrer">
-                    Existing policies point to a 2.8C temperature rise by 2100, in line with RCP6.0
-                </a>
-                . To improve relatability, the baseline used is quite recent (1980 decade average), note that this does
-                not fully reflect the extent of climate change since pre-industrial times. The CHESS-SCAPE dataset is
-                produced by the UK Centre for Ecology & Hydrology (CEH) using four members of the MetOffice UKCP18
-                regional projections. CEH adapted the Climate, Hydrology and Ecology research Support System (CHESS)
-                downscaling methodology, taking into account topographic and observational data to downscale from 12km
-                to 1km grid cells. We use the bias corrected datasets for RCP6.0 and RCP8.5 for the UK and Isle of Man,
-                and the non bias corrected datasets for Northern Ireland and the Isles of Scilly.  
             </p>
         </div>
     );
