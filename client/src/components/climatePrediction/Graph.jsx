@@ -20,7 +20,6 @@ import { ChartLabel, LabelSeries, makeWidthFlexible, VerticalBarSeries, XAxis, X
 import { climateAverages } from "../../core/climate";
 import { andify } from "../../utils/utils";
 import ClimatePredictionLoader from "../loaders/ClimatePredictionLoader";
-import ModelLoader from "../loaders/ModelLoader";
 
 const FlexibleXYPlot = makeWidthFlexible(XYPlot);
 const winterCol = "#a4f9c8";
