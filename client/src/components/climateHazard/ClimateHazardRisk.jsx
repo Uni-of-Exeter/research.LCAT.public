@@ -17,7 +17,7 @@ import LoadingOverlay from "react-loading-overlay-ts";
 
 import { climateHazardsData } from "./ClimateHazardData";
 
-function ClimateHazardRisk(props) {
+const ClimateHazardRisk = (props) => {
     const [selectedHazard, setSelectedHazard] = useState(null);
 
     const handleHazardClick = (hazard) => {

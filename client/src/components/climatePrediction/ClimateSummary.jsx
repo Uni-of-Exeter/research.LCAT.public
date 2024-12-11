@@ -65,7 +65,7 @@ function predict(prediction, year, variable, name, units) {
     return "Not loaded yet";
 }
 
-function ClimateSummary(props) {
+const ClimateSummary = (props) => {
     if (props.regions.length === 0) {
         return null;
     }

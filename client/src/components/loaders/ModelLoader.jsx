@@ -12,7 +12,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import { useEffect } from "react";
 
-function ModelLoader(props) {
+const ModelLoader = (props) => {
     useEffect(() => {
         // don't bother loading if we have no regions yet
         if (props.regions.length > 0) {

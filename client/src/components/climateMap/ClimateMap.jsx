@@ -32,12 +32,12 @@ const tileLayer = {
 const center = [55.8, -3.2];
 const highlightCol = "#ffd768ff";
 
-function RegionsListener(props) {
+const RegionsListener = (props) => {
     useEffect(() => {
         props.callback(props.regions, props.regionType);
     }, [props.regions, props.regionType]);
     return null;
-}
+};
 
 class ClimateMap extends React.Component {
     constructor(props) {
@@ -192,8 +192,8 @@ class ClimateMap extends React.Component {
                 <h1>Select your area</h1>
                 <p>
                     To begin, select the area/s you are interested in by clicking on the map. Climate data for your
-                    chosen area/s will appear below. The map units can be changed to explore the UK and the Isle of
-                    Man at via the following dropdown:{" "}
+                    chosen area/s will appear below. The map units can be changed to explore the UK and the Isle of Man
+                    at via the following dropdown:{" "}
                     <select
                         onChange={(e) => {
                             this.setState(() => ({

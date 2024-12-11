@@ -28,7 +28,7 @@ const summerCol = "#4c9f70";
 const selectedRegionCol = "#216331";
 const averageRegionCol = "#48b961";
 
-function Graph(props) {
+const Graph = (props) => {
     const [data, setData] = useState([]);
     const [avg, setAvg] = useState([]);
     const [labelData, setLabelData] = useState([]);

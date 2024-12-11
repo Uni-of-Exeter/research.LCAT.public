@@ -16,7 +16,7 @@ import React from "react";
 
 import adaptationRefs from "../../kumu/parsed/processed_references.json";
 
-function formatAuthors(authorsString) {
+const formatAuthors = (authorsString) => {
     if (!authorsString) {
         return "";
     }
@@ -26,9 +26,9 @@ function formatAuthors(authorsString) {
     } else {
         return authorsString;
     }
-}
+};
 
-function baseURL(url, id) {
+const baseURL = (url, id) => {
     let domain;
     try {
         domain = new URL(url);
@@ -37,9 +37,9 @@ function baseURL(url, id) {
         console.log(id + " failed to produce URL");
         return;
     }
-}
+};
 
-function ArticleReference({ a }) {
+const ArticleReference = ({ a }) => {
     const { article_id, link, title, type, authors, journal, issue, date } = a;
 
     return (
@@ -74,9 +74,9 @@ function ArticleReference({ a }) {
             </p>
         </div>
     );
-}
+};
 
-function WebPageReference({ a }) {
+const WebPageReference = ({ a }) => {
     const { link, title, type, article_id } = a;
 
     return (
@@ -99,9 +99,9 @@ function WebPageReference({ a }) {
             </p>
         </div>
     );
-}
+};
 
-function ReportReference({ a }) {
+const ReportReference = ({ a }) => {
     const { link, title, type, article_id } = a;
 
     return (
@@ -124,9 +124,9 @@ function ReportReference({ a }) {
             </p>
         </div>
     );
-}
+};
 
-function BookSectionReference({ a }) {
+const BookSectionReference = ({ a }) => {
     const { link, title, type, article_id } = a;
 
     return (
@@ -149,9 +149,9 @@ function BookSectionReference({ a }) {
             </p>
         </div>
     );
-}
+};
 
-function StaticReferences(props) {
+const StaticReferences = (props) => {
     const filteredRefs = props.referenceIds.map((id) => adaptationRefs[id.toString()]).filter(Boolean);
 
     if (filteredRefs.length > 0) {
@@ -172,6 +172,6 @@ function StaticReferences(props) {
             </div>
         );
     }
-}
+};
 
 export default StaticReferences;

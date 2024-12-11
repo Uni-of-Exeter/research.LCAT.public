@@ -10,7 +10,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
-function FooterLogos() {
+const FooterLogos = () => {
     return (
         <div className="footer">
             <div className="logo-block">
@@ -28,6 +28,6 @@ function FooterLogos() {
             </div>
         </div>
     );
-}
+};
 
 export default FooterLogos;

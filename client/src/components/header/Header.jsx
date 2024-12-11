@@ -12,7 +12,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import { ReactComponent as LCATLogoSvg } from "../../images/logos/LCAT_Logo_Primary_RGB.svg";
 
-function LCATHeader() {
+const LCATHeader = () => {
     return (
         <div className="white-section">
             <header className="App-header">
@@ -20,6 +20,6 @@ function LCATHeader() {
             </header>
         </div>
     );
-}
+};
 
 export default LCATHeader;

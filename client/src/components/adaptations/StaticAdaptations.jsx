@@ -18,7 +18,7 @@ import { pathways } from "../climateImpacts/ClimateImpactSummaryData";
 import { adaptationBodyKeys, CCCAdaptationThemes, IPCCCategories } from "./AdaptationCategories";
 import StaticAdaptation from "./StaticAdaptation";
 
-function StaticAdaptations(props) {
+const StaticAdaptations = (props) => {
     const [selectedBody, setSelectedBody] = useState("CCC");
     const [filterState, setFilterState] = useState("No filter applied");
 

@@ -19,7 +19,7 @@ const m2px = [
     4.78, 2.39, 1.19, 0.6, 0.3,
 ];
 
-function GeoJSONLoader(props) {
+const GeoJSONLoader = (props) => {
     const map = useMap();
 
     async function getGeojson() {

@@ -30,7 +30,7 @@ import ClimatePredictionLoader from "./components/loaders/ClimatePredictionLoade
 import PersonalSocialVulnerabilities from "./components/vulnerabilities/PersonalSocialVulnerabilities";
 import { defaultState } from "./utils/defaultState";
 
-function App() {
+const App = () => {
     const [regions, setRegions] = useState(defaultState.regions);
     const [regionType, setRegionType] = useState(defaultState.regionType);
     const [climatePrediction, setClimatePrediction] = useState(defaultState.climatePrediction);

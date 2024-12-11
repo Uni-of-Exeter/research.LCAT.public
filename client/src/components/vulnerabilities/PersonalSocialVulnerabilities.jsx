@@ -17,7 +17,7 @@ import LoadingOverlay from "react-loading-overlay-ts";
 
 import { vulnerabilityData } from "./PersonalSocialVulnerabilitiesData";
 
-function PersonalSocialVulnerabilities(props) {
+const PersonalSocialVulnerabilities = (props) => {
     const [selectedVulnerability, setSelectedVulnerability] = useState(null);
 
     const handleVulnerabilityClick = (vulnerability) => {

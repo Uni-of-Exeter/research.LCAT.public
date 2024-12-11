@@ -18,7 +18,7 @@ import FooterLogos from "./FooterLogos";
 import FooterText from "./FooterText";
 import UserGuide from "./UserGuide";
 
-function Footer() {
+const Footer = () => {
     return (
         <div>
             <div className="contact-footer">
@@ -30,6 +30,6 @@ function Footer() {
             <FooterText />
         </div>
     );
-}
+};
 
 export default Footer;

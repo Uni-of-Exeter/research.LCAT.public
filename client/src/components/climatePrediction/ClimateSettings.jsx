@@ -14,7 +14,7 @@ import React, { useEffect, useState } from "react";
 
 import { andify } from "../../utils/utils";
 
-function ClimateSettings(props) {
+const ClimateSettings = (props) => {
     const [rcp, setRcp] = useState("rcp60");
     const [season, setSeason] = useState("annual");
 

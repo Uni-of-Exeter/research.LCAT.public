@@ -16,7 +16,7 @@ import { useCollapse } from "react-collapsed";
 
 import StaticReferences from "./StaticReferences";
 
-function StaticAdaptation(props) {
+const StaticAdaptation = (props) => {
     const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
 
     return (

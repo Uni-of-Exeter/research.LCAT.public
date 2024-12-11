@@ -17,7 +17,7 @@ import LoadingOverlay from "react-loading-overlay-ts";
 
 import { communityImpacts, impacts, pathways } from "./ClimateImpactSummaryData.jsx";
 
-function ClimateImpactSummary(props) {
+const ClimateImpactSummary = (props) => {
     const selectedPathwayData = pathways.find((item) => item.name === props.selectedHazardName);
     const filteredImpacts = impacts.filter((item) => item.inPathway.includes(selectedPathwayData.id));
     const filteredCommunityImpacts = communityImpacts.filter((item) => item.inPathway.includes(selectedPathwayData.id));
@@ -96,6 +96,6 @@ function ClimateImpactSummary(props) {
             </div>
         </LoadingOverlay>
     );
-}
+};
 
 export default ClimateImpactSummary;
