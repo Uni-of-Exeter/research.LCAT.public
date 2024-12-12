@@ -1,6 +1,6 @@
 .leaflet-container {
     width: 100%;
-    aspect-ratio: 1 / 1.1;
+    height: 500px;
     z-index: 0;
     border: 2px solid #333;
     overflow: hidden;
@@ -8,15 +8,9 @@
     margin: 0;
 }
 
-@media (min-width: 1300px) {
+@media (min-width: 2000px) {
     .leaflet-container {
-        height: 80vh;
-    }
-}
-
-@media (min-width: 1300px) {
-    .map-selection {
-        height: 80vh;
+        height: 750px;
     }
 }
 
@@ -60,8 +54,14 @@
         margin-top: 1em;
         margin-top: 0;
         width: 10em;
-        height: auto;
+        height: 500px;
         padding-bottom: 0;
+    }
+}
+
+@media (min-width: 2000px) {
+    .map-selection {
+        height: 750px;
     }
 }
 
@@ -80,6 +80,10 @@
     list-style-type: none;
     border-bottom: 2px solid #ffbc42;
     margin-right: 1em;
+}
+
+.map-selection button {
+    font-size: 75%;
 }
 
 /* Style the individual leaflet zoom buttons */

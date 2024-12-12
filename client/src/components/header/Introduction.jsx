@@ -57,7 +57,7 @@ const Introduction = () => {
                 </li>
                 <li>
                     <a
-                        href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Feb-24.pdf"
+                        href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Autumn-24.pdf"
                         target="_blank"
                         rel="noreferrer"
                     >

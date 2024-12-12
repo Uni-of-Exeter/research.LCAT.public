@@ -20,7 +20,7 @@ const UserGuide = () => {
                 <p>
                     <a
                         className="user-guide-button"
-                        href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Feb-24.pdf"
+                        href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Autumn-24.pdf"
                         target="_blank"
                         rel="noreferrer"
                     ></a>
@@ -28,7 +28,7 @@ const UserGuide = () => {
                 <p>
                     Read the&nbsp;
                     <a
-                        href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Feb-24.pdf"
+                        href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Autumn-24.pdf"
                         target="_blank"
                         rel="noreferrer"
                     >
