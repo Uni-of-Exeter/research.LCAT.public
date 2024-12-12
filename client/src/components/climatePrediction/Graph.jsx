@@ -292,7 +292,7 @@ function Graph(props) {
                 CHESS-SCAPE provides non bias-corrected data for Northern Ireland and the Isles of Scilly. The tool
                 displays RCP 6.0 and RCP 8.5. For more information, please see the{" "}
                 <a
-                    href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Feb-24.pdf"
+                    href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Autumn-24.pdf"
                     target="_blank"
                     rel="noreferrer"
                 >
