@@ -23,6 +23,7 @@ const UserGuide = () => {
                         href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Autumn-24.pdf"
                         target="_blank"
                         rel="noreferrer"
+                        aria-label="Read the LCAT User Guide PDF"
                     ></a>
                 </p>
                 <p>

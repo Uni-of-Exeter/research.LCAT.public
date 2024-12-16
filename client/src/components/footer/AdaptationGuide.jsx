@@ -23,6 +23,7 @@ const AdaptationGuide = () => {
                         href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-Introduction-to-Local-Climate-Adaptation-May-2024.pdf"
                         target="_blank"
                         rel="noreferrer"
+                        aria-label="Download the Introduction to Local Climate Adaptation PDF"
                     ></a>
                 </p>
                 <p>
