@@ -16,162 +16,83 @@ import React from "react";
 
 import adaptationRefs from "../../kumu/parsed/processed_references.json";
 
+// Function to format authors
 const formatAuthors = (authorsString) => {
-    if (!authorsString) {
-        return "";
-    }
-    let authors = authorsString.split(",");
-    if (authors.length > 3) {
-        return authors.slice(0, 2).join(", ") + " et al.";
-    } else {
-        return authorsString;
-    }
+    if (!authorsString) return "";
+    const authors = authorsString.split(",");
+    return authors.length > 3 ? `${authors.slice(0, 2).join(", ")} et al.` : authors.join(", ");
 };
 
+// Function to extract domain from a URL
 const baseURL = (url, id) => {
-    let domain;
     try {
-        domain = new URL(url);
-        return domain.hostname;
-    } catch (err) {
-        console.log(id + " failed to produce URL");
-        return;
+        return new URL(url).hostname;
+    } catch {
+        console.error(`${id} failed to produce a valid URL`);
+        return "Invalid URL";
     }
 };
 
-const ArticleReference = ({ a }) => {
-    const { article_id, link, title, type, authors, journal, issue, date } = a;
+// Reference Component
+const Reference = ({ link, title, type, article_id, authors, journal, issue, date }) => (
+    <div className="reference-container">
+        <p>
+            <a href={link} className="reference-title" target="_blank" rel="noreferrer">
+                {title || `${link.substring(0, 40)}...`}
+            </a>
+        </p>
+        <p>
+            {type && (
+                <>
+                    <b>Type & ID: </b>
+                    {type} - {article_id}
+                    <br />
+                </>
+            )}
+            {authors && (
+                <>
+                    <b>Authors: </b>
+                    {formatAuthors(authors)}
+                    <br />
+                </>
+            )}
+            {journal && (
+                <>
+                    <b>Journal/Issue: </b>
+                    {journal} {issue} {date}
+                    <br />
+                </>
+            )}
+            <b>Source: </b>
+            {baseURL(link, article_id)}
+        </p>
+    </div>
+);
+
+// All references component
+const StaticReferences = ({ referenceIds }) => {
+    const filteredRefs = referenceIds.map((id) => adaptationRefs[id.toString()]).filter(Boolean);
+
+    if (!filteredRefs.length) return null;
 
     return (
-        <div className="reference-container">
-            <p>
-                <a href={link} className="reference-title" target="_blank" rel="noreferrer">
-                    {title !== "" ? title : link.substring(0, 40) + "..."}
-                </a>
-            </p>
-            <p>
-                {type && (
-                    <>
-                        <b>Type & ID: </b>
-                        {type + " - " + article_id}
-                        <br />
-                    </>
-                )}
-                {authors && (
-                    <>
-                        <b>Authors: </b>
-                        {formatAuthors(authors)}
-                        <br />
-                    </>
-                )}
-                {journal && journal !== "" && (
-                    <>
-                        <b>Journal/Issue: </b>
-                        {journal} {issue} {date}
-                        <br />
-                    </>
-                )}
-            </p>
+        <div>
+            <b className="reference-emphasis">References:</b>
+            {filteredRefs.map((ref) => (
+                <Reference
+                    key={ref.article_id}
+                    link={ref.link}
+                    title={ref.title}
+                    type={ref.type}
+                    article_id={ref.article_id}
+                    authors={ref.authors}
+                    journal={ref.journal}
+                    issue={ref.issue}
+                    date={ref.date}
+                />
+            ))}
         </div>
     );
-};
-
-const WebPageReference = ({ a }) => {
-    const { link, title, type, article_id } = a;
-
-    return (
-        <div className="reference-container">
-            <p>
-                <a href={link} className="reference-title" target="_blank" rel="noreferrer">
-                    {title !== "" ? title : link.substring(0, 40) + "..."}
-                </a>
-            </p>
-            <p>
-                {type && (
-                    <>
-                        <b>Type & ID: </b>
-                        {type + " - " + article_id}
-                        <br />
-                    </>
-                )}
-                <b>Source: </b>
-                {baseURL(link, article_id)}
-            </p>
-        </div>
-    );
-};
-
-const ReportReference = ({ a }) => {
-    const { link, title, type, article_id } = a;
-
-    return (
-        <div className="reference-container">
-            <p>
-                <a href={link} className="reference-title" target="_blank" rel="noreferrer">
-                    {title !== "" ? title : link.substring(0, 40) + "..."}
-                </a>
-            </p>
-            <p>
-                {type && (
-                    <>
-                        <b>Type & ID: </b>
-                        {type + " - " + article_id}
-                        <br />
-                    </>
-                )}
-                <b>Source: </b>
-                {baseURL(link, article_id)}
-            </p>
-        </div>
-    );
-};
-
-const BookSectionReference = ({ a }) => {
-    const { link, title, type, article_id } = a;
-
-    return (
-        <div className="reference-container">
-            <p>
-                <a href={link} className="reference-title" target="_blank" rel="noreferrer">
-                    {title !== "" ? title : link.substring(0, 40) + "..."}
-                </a>
-            </p>
-            <p>
-                {type && (
-                    <>
-                        <b>Type & ID: </b>
-                        {type + " - " + article_id}
-                        <br />
-                    </>
-                )}
-                <b>Source: </b>
-                {baseURL(link, article_id)}
-            </p>
-        </div>
-    );
-};
-
-const StaticReferences = (props) => {
-    const filteredRefs = props.referenceIds.map((id) => adaptationRefs[id.toString()]).filter(Boolean);
-
-    if (filteredRefs.length > 0) {
-        return (
-            <div>
-                <b className="reference-emphasis">References:</b>
-                {filteredRefs.map((r) => {
-                    if (r.type === "Journal Article") return <ArticleReference key={r.article_id} a={r} />;
-                    if (r.type === "Conference Proceedings") return <ArticleReference key={r.article_id} a={r} />;
-                    if (r.type === "Book" || r.type === "Book Chapter")
-                        return <ArticleReference key={r.article_id} a={r} />;
-                    if (r.type === "Web Page") return <WebPageReference key={r.article_id} a={r} />;
-                    if (r.type === "Report" || r.type === "Research Report" || r.type === "Report Section")
-                        return <ReportReference key={r.article_id} a={r} />;
-                    if (r.type === "Book Section") return <BookSectionReference key={r.article_id} a={r} />;
-                    // return <p>{r.type}: not understood</p>;
-                })}
-            </div>
-        );
-    }
 };
 
 export default StaticReferences;
