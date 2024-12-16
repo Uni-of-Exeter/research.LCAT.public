@@ -24,6 +24,7 @@ const Feedback = () => {
                         href="https://forms.office.com/pages/responsepage.aspx?id=d10qkZj77k6vMhM02PBKUwt2iHj6sgtNt-F8e7EjD4hUNURIUFRZUTJHNVNKUTFNWVNNSzAxSDdFRS4u"
                         target="_blank"
                         rel="noreferrer"
+                        aria-label="Access the evaluation survey in a new tab"
                     >
                         Please access the survey here.
                     </a>
