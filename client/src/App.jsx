@@ -52,10 +52,9 @@ const App = () => {
                 regionType={regionType}
                 callback={(prediction) => {
                     setClimatePrediction(prediction);
-                    setLoadingPrediction(false);
                 }}
-                loadingCallback={() => {
-                    setLoadingPrediction(true);
+                loadingCallback={(loadingState) => {
+                    setLoadingPrediction(loadingState);
                 }}
             />
 
@@ -139,6 +138,6 @@ const App = () => {
             <Footer />
         </div>
     );
-}
+};
 
 export default App;

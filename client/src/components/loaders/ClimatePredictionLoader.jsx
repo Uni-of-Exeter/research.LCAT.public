@@ -12,38 +12,62 @@ Common Good Public License Beta 1.0 for more details. */
 
 import { useEffect } from "react";
 
-const ClimatePredictionLoader = (props) => {
+const ClimatePredictionLoader = ({
+    regions,
+    season,
+    rcp,
+    regionType,
+    callback,
+    loadingCallback,
+}) => {
     useEffect(() => {
-        // don't bother loading if we have no regions yet
-        if (props.regions.length > 0) {
+        // Load data only if regions are provided
+        if (regions.length === 0) return;
+
+        const fetchClimatePrediction = async () => {
+            // Set loading state to true before starting the fetch
+            loadingCallback(true);
+
             try {
-                let prepend = "";
-                if (process.env.NODE_ENV === "development") {
-                    prepend = "http://localhost:3000";
+                const prepend =
+                    process.env.NODE_ENV === "development"
+                        ? "http://localhost:3000"
+                        : "";
+
+                // Construct query
+                const queryParams = new URLSearchParams({
+                    rcp,
+                    season,
+                    boundary: regionType,
+                });
+
+                regions.forEach((region) => {
+                    queryParams.append("locations", region.id);
+                });
+
+                const url = `${prepend}/api/chess_scape?${queryParams}`;
+
+                // Fetch data
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch: ${response.statusText}`);
                 }
 
-                var url =
-                    prepend +
-                    "/api/chess_scape?" +
-                    new URLSearchParams({
-                        rcp: props.rcp,
-                        season: props.season,
-                        boundary: props.regionType,
-                    }) +
-                    "&" +
-                    // clumsy, fixme
-                    new URLSearchParams(props.regions.map((v) => ["locations", v.id]));
+                const data = await response.json();
 
-                props.loadingCallback();
-
-                fetch(url).then((response) => {
-                    response.json().then((v) => props.callback(v));
-                });
+                // Invoke callback with fetched data
+                callback(data);
             } catch (error) {
-                console.error(error);
+                console.error("Error fetching climate prediction:", error);
+            } finally {
+                // Set loading state to false after fetch completes
+                loadingCallback(false);
             }
-        }
-    }, [props.rcp, props.regions, props.season, props.regionType]);
+        };
+
+        fetchClimatePrediction();
+    }, [regions, season, rcp, regionType, callback, loadingCallback]);
 
     return null;
 };
