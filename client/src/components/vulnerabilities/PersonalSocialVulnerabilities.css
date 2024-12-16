@@ -24,6 +24,7 @@
 }
 
 .vert-container-vulnerability {
+    all: unset;
     display: flex;
     flex-direction: column;
     text-align: center;
@@ -33,6 +34,12 @@
     margin-bottom: 1.5em;
     line-height: 1.6;
     justify-content: space-between;
+}
+
+.vert-container-vulnerability:hover {
+    background: none;
+    color: inherit;
+    border: none;
 }
 
 .vulnerability-text {

@@ -20,9 +20,13 @@ import { vulnerabilityData } from "./PersonalSocialVulnerabilitiesData";
 const PersonalSocialVulnerabilities = (props) => {
     const [selectedVulnerability, setSelectedVulnerability] = useState(null);
 
-    const handleVulnerabilityClick = (vulnerability) => {
-        setSelectedVulnerability(vulnerability);
+    const handleVulnerabilityClick = (vulnerabilityName) => {
+        setSelectedVulnerability(vulnerabilityName);
     };
+
+    const selectedVulnerabilityDetails = vulnerabilityData.find(
+        (vulnerability) => vulnerability.name === selectedVulnerability,
+    );
 
     return (
         <LoadingOverlay active={props.loading} spinner text={"Loading vulnerability data"}>
@@ -47,10 +51,10 @@ const PersonalSocialVulnerabilities = (props) => {
             </p>
 
             <div className="horiz-container-vulnerability">
-                {vulnerabilityData.map((vulnerability, index) => (
-                    <div
+                {vulnerabilityData.map((vulnerability) => (
+                    <button
                         className="vert-container-vulnerability"
-                        key={index}
+                        key={vulnerability.name}
                         onClick={() => handleVulnerabilityClick(vulnerability.name)}
                     >
                         <div className="vulnerability-text">
@@ -59,14 +63,14 @@ const PersonalSocialVulnerabilities = (props) => {
                         <div className="vulnerability-img">
                             {React.cloneElement(vulnerability.icon, { selectedVulnerability })}
                         </div>
-                    </div>
+                    </button>
                 ))}
             </div>
 
             {selectedVulnerability ? (
                 <div className="selected-vulnerability-details">
                     <h2 className="vulnerability-information">{selectedVulnerability}</h2>
-                    {vulnerabilityData.find((vulnerability) => vulnerability.name === selectedVulnerability)?.details}
+                    <p>{selectedVulnerabilityDetails.details}</p>
                 </div>
             ) : (
                 <div className="details-placeholder">
@@ -82,6 +86,6 @@ const PersonalSocialVulnerabilities = (props) => {
             </p>
         </LoadingOverlay>
     );
-}
+};
 
 export default PersonalSocialVulnerabilities;
