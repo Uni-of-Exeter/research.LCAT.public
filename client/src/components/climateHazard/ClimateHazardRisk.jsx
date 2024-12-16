@@ -35,13 +35,13 @@ const ClimateHazardRisk = (props) => {
             </p>
 
             <div className="horiz-container-hazard">
-                {climateHazardsData.map((hazard, index) => (
-                    <div className="vert-container-hazard" key={index} onClick={() => handleHazardClick(hazard.name)}>
+                {climateHazardsData.map((hazard) => (
+                    <button className="vert-container-hazard" key={hazard.name} onClick={() => handleHazardClick(hazard.name)}>
                         <div className="hazard-text">
                             <strong>{hazard.name}</strong>
                         </div>
                         <div className="hazard-img">{React.cloneElement(hazard.icon, { selectedHazard })}</div>
-                    </div>
+                    </button>
                 ))}
             </div>
 
