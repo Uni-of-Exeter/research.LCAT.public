@@ -13,11 +13,10 @@ Common Good Public License Beta 1.0 for more details. */
 import "./PersonalSocialVulnerabilities.css";
 
 import React, { useState } from "react";
-import LoadingOverlay from "react-loading-overlay-ts";
 
 import { vulnerabilityData } from "./PersonalSocialVulnerabilitiesData";
 
-const PersonalSocialVulnerabilities = (props) => {
+const PersonalSocialVulnerabilities = () => {
     const [selectedVulnerability, setSelectedVulnerability] = useState(null);
 
     const handleVulnerabilityClick = (vulnerabilityName) => {
@@ -29,7 +28,7 @@ const PersonalSocialVulnerabilities = (props) => {
     );
 
     return (
-        <LoadingOverlay active={props.loading} spinner text={"Loading vulnerability data"}>
+        <div>
             <h1>Personal and Social Vulnerabilities</h1>
 
             <p>
@@ -70,7 +69,7 @@ const PersonalSocialVulnerabilities = (props) => {
             {selectedVulnerability ? (
                 <div className="selected-vulnerability-details">
                     <h2 className="vulnerability-information">{selectedVulnerability}</h2>
-                    <p>{selectedVulnerabilityDetails.details}</p>
+                    <div>{selectedVulnerabilityDetails.details}</div>
                 </div>
             ) : (
                 <div className="details-placeholder">
@@ -84,7 +83,7 @@ const PersonalSocialVulnerabilities = (props) => {
                     A selection of vulnerability insight, by theme, from ClimateJust.
                 </a>
             </p>
-        </LoadingOverlay>
+        </div>
     );
 };
 

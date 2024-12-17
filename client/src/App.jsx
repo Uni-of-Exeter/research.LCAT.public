@@ -118,7 +118,7 @@ const App = () => {
 
             {regions.length > 0 && (
                 <div className="white-section">
-                    <PersonalSocialVulnerabilities loading={loadingPrediction} />
+                    <PersonalSocialVulnerabilities />
                 </div>
             )}
 
