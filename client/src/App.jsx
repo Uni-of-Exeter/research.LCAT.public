@@ -36,7 +36,7 @@ const App = () => {
     const [climatePrediction, setClimatePrediction] = useState(defaultState.climatePrediction);
     const [season, setSeason] = useState(defaultState.season);
     const [rcp, setRcp] = useState(defaultState.rcp);
-    const [year, setYear] = useState(defaultState.year);
+    const [year] = useState(defaultState.year);
     const [loadingPrediction, setLoadingPrediction] = useState(defaultState.loadingPrediction);
     const [selectedHazardName, setSelectedHazardName] = useState(defaultState.selectedHazardName);
 
@@ -60,11 +60,10 @@ const App = () => {
 
             <div className="white-section">
                 <ClimateMap
+                    regions={regions}
+                    setRegions={setRegions}
                     regionType={regionType}
-                    regionsCallback={(newRegions, newRegionType) => {
-                        setRegionType(newRegionType);
-                        setRegions(newRegions);
-                    }}
+                    setRegionType={setRegionType}
                 />
             </div>
 

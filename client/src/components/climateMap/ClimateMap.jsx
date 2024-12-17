@@ -10,10 +10,9 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
-// import { nfviColumns } from "../../core/climatejust.js";
 import "./ClimateMap.css";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
 import LoadingOverlay from "react-loading-overlay-ts";
 
@@ -27,21 +26,11 @@ const tileLayer = {
 const center = [55.8, -3.2];
 const highlightCol = "#ffd768ff";
 
-const RegionsListener = ({ regions, regionType, callback }) => {
-    useEffect(() => {
-        callback(regions, regionType);
-    }, [regions, regionType, callback]);
-    return null;
-};
-
-const ClimateMap = ({ regionsCallback }) => {
+const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
     const [geojsonKey, setGeojsonKey] = useState(0);
     const [geojson, setGeojson] = useState(false);
-    const [regionType, setRegionType] = useState("boundary_uk_counties");
-    const [regions, setRegions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [triggerLoadingIndicator, setTriggerLoadingIndicator] = useState(true);
-    const [mapProperty] = useState("imdscore");
 
     const regionsIncludes = (id) => regions.some((e) => e.id === id);
 
@@ -135,6 +124,7 @@ const ClimateMap = ({ regionsCallback }) => {
                         setRegions([]);
                         setTriggerLoadingIndicator(true);
                     }}
+                    value={regionType}
                 >
                     <option value="boundary_uk_counties">UK Counties</option>
                     <option value="boundary_la_districts">Local Authority Districts</option>
@@ -146,8 +136,6 @@ const ClimateMap = ({ regionsCallback }) => {
                     <option value="boundary_iom">Isle of Man</option>
                 </select>
             </p>
-
-            <RegionsListener regions={regions} regionType={regionType} callback={regionsCallback} />
 
             <div className="map-container">
                 <div className="climate-map">
@@ -178,7 +166,7 @@ const ClimateMap = ({ regionsCallback }) => {
             </div>
 
             <p className="note">
-                Data source: The boundaries are from
+                Data source: The boundaries are from{" "}
                 <a
                     href="https://github.com/Uni-of-Exeter/research.LCAT.public/blob/main/docs/4-sources.md"
                     target="_blank"
