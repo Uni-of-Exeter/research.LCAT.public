@@ -76,7 +76,6 @@ const App = () => {
                         rcp={rcp}
                         rcpCallback={setRcp}
                         seasonCallback={setSeason}
-                        yearCallback={setYear}
                     />
 
                     <ClimateSummary
