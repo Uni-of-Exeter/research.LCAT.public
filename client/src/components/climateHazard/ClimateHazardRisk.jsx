@@ -13,11 +13,10 @@ Common Good Public License Beta 1.0 for more details. */
 import "./ClimateHazardRisk.css";
 
 import React, { useState } from "react";
-import LoadingOverlay from "react-loading-overlay-ts";
 
 import { climateHazardsData } from "./ClimateHazardData";
 
-const ClimateHazardRisk = (props) => {
+const ClimateHazardRisk = () => {
     const [selectedHazard, setSelectedHazard] = useState(null);
 
     const handleHazardClick = (hazard) => {
@@ -25,7 +24,7 @@ const ClimateHazardRisk = (props) => {
     };
 
     return (
-        <LoadingOverlay active={props.loading} spinner text={"Loading climate data"}>
+        <div>
             <h1>Climate Hazard Risk</h1>
 
             <p>
@@ -36,7 +35,11 @@ const ClimateHazardRisk = (props) => {
 
             <div className="horiz-container-hazard">
                 {climateHazardsData.map((hazard) => (
-                    <button className="vert-container-hazard" key={hazard.name} onClick={() => handleHazardClick(hazard.name)}>
+                    <button
+                        className="vert-container-hazard"
+                        key={hazard.name}
+                        onClick={() => handleHazardClick(hazard.name)}
+                    >
                         <div className="hazard-text">
                             <strong>{hazard.name}</strong>
                         </div>
@@ -55,8 +58,8 @@ const ClimateHazardRisk = (props) => {
                     <p>Please click a climate hazard risk icon to view details.</p>
                 </div>
             )}
-        </LoadingOverlay>
+        </div>
     );
-}
+};
 
 export default ClimateHazardRisk;
