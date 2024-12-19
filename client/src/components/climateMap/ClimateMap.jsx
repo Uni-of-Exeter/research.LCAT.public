@@ -32,8 +32,6 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
     const [loading, setLoading] = useState(true);
     const [triggerLoadingIndicator, setTriggerLoadingIndicator] = useState(true);
 
-    const regionsIncludes = (id) => regions.some((e) => e.id === id);
-
     const onEachFeature = async (feature, layer) => {
         let col = "#00000000";
         let gid = feature.properties.gid;
@@ -46,10 +44,6 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
             fillOpacity: 1,
         });
 
-        if (regionsIncludes(gid)) {
-            layer.setStyle({ fillColor: highlightCol });
-        }
-
         layer.on("mouseover", () => {
             layer.bringToFront();
             layer.setStyle({ weight: 6 });
@@ -60,11 +54,11 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
         });
 
         layer.on("click", () => {
-            setRegions((prev) => {
-                if (!regionsIncludes(gid)) {
+            setRegions((prevRegions) => {
+                if (!prevRegions.some((e) => e.id === gid)) {
                     layer.setStyle({ fillColor: highlightCol, fillOpacity: 1 });
                     return [
-                        ...prev,
+                        ...prevRegions,
                         {
                             id: gid,
                             name: feature.properties.name,
@@ -74,7 +68,7 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
                     ];
                 } else {
                     layer.setStyle({ fillColor: col, fillOpacity: 1 });
-                    return prev.filter((r) => r.id !== gid);
+                    return prevRegions.filter((r) => r.id !== gid);
                 }
             });
         });
