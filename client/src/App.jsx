@@ -12,7 +12,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./App.css";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import StaticAdaptations from "./components/adaptations/StaticAdaptations";
 import ClimateHazardRisk from "./components/climateHazard/ClimateHazardRisk";
@@ -37,7 +37,7 @@ const App = () => {
     const [season, setSeason] = useState(defaultState.season);
     const [rcp, setRcp] = useState(defaultState.rcp);
     const [year] = useState(defaultState.year);
-    const [loadingPrediction, setLoadingPrediction] = useState(defaultState.loadingPrediction);
+    const [isPredictionLoading, setIsPredictionLoading] = useState(defaultState.isPredictionLoading);
     const [selectedHazardName, setSelectedHazardName] = useState(defaultState.selectedHazardName);
 
     return (
@@ -50,12 +50,8 @@ const App = () => {
                 season={season}
                 rcp={rcp}
                 regionType={regionType}
-                callback={(prediction) => {
-                    setClimatePrediction(prediction);
-                }}
-                loadingCallback={(loadingState) => {
-                    setLoadingPrediction(loadingState);
-                }}
+                setClimatePrediction={setClimatePrediction}
+                setIsPredictionLoading={setIsPredictionLoading}
             />
 
             <div className="white-section">
@@ -67,7 +63,7 @@ const App = () => {
                 />
             </div>
 
-            {regions.length > 0 && (
+            {/* {regions.length > 0 && (
                 <div className="grey-section">
                     <ClimateSettings
                         regions={regions}
@@ -133,7 +129,7 @@ const App = () => {
             )}
 
             <Feedback />
-            <Footer />
+            <Footer /> */}
         </div>
     );
 };

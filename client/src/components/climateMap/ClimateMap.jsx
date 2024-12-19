@@ -36,11 +36,13 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
         let col = "#00000000";
         let gid = feature.properties.gid;
 
+        const isSelected = regions.some((e) => e.id === gid);
+
         layer.bindTooltip(feature.properties.name);
         layer.setStyle({
             color: "#115158ff",
             weight: 3,
-            fillColor: col,
+            fillColor: isSelected ? highlightCol : col,
             fillOpacity: 1,
         });
 

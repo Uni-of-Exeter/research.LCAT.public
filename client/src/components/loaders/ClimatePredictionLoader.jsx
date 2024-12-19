@@ -17,8 +17,8 @@ const ClimatePredictionLoader = ({
     season,
     rcp,
     regionType,
-    callback,
-    loadingCallback,
+    setClimatePrediction,
+    setIsPredictionLoading,
 }) => {
     useEffect(() => {
         // Load data only if regions are provided
@@ -26,13 +26,10 @@ const ClimatePredictionLoader = ({
 
         const fetchClimatePrediction = async () => {
             // Set loading state to true before starting the fetch
-            loadingCallback(true);
+            setIsPredictionLoading(true);
 
             try {
-                const prepend =
-                    process.env.NODE_ENV === "development"
-                        ? "http://localhost:3000"
-                        : "";
+                const prepend = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "";
 
                 // Construct query
                 const queryParams = new URLSearchParams({
@@ -57,17 +54,17 @@ const ClimatePredictionLoader = ({
                 const data = await response.json();
 
                 // Invoke callback with fetched data
-                callback(data);
+                setClimatePrediction(data);
             } catch (error) {
                 console.error("Error fetching climate prediction:", error);
             } finally {
                 // Set loading state to false after fetch completes
-                loadingCallback(false);
+                setIsPredictionLoading(false);
             }
         };
 
         fetchClimatePrediction();
-    }, [regions, season, rcp, regionType, callback, loadingCallback]);
+    }, [regions, season, rcp, regionType, setClimatePrediction, setIsPredictionLoading]);
 
     return null;
 };
