@@ -211,23 +211,22 @@ const Graph = (props) => {
                                 <option value="sfcWind">wind</option>
                                 <option value="rsds">cloudiness</option>
                             </select>
-                            &nbsp;for your&nbsp;
+                            &nbsp;for&nbsp;
                             <select
                                 onChange={(e) => {
                                     setShowAverage(e.target.value === "1");
                                 }}
                             >
-                                <option value="0">selected areas only</option>
+                                <option value="0">your selected areas only</option>
                                 <option value="1">your areas vs the UK</option>
                             </select>
-                            &nbsp;
-                            {showAverage && (
-                                <p>
-                                    Key: <span className="key-regional">Your area</span>{" "}
-                                    <span className="key-average">UK average</span>
-                                </p>
-                            )}
                         </p>
+                        {showAverage && (
+                            <p>
+                                Key: <span className="key-regional">Your area</span>{" "}
+                                <span className="key-average">UK average</span>
+                            </p>
+                        )}
 
                         <div className="graph-horiz-container">
                             {/* <div className="graph-y-axis">{getYAxis()}</div> */}
@@ -300,6 +299,6 @@ const Graph = (props) => {
             </p>
         </div>
     );
-}
+};
 
 export default Graph;
