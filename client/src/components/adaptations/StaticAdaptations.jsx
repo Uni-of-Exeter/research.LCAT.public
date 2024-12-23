@@ -63,7 +63,7 @@ const StaticAdaptations = (props) => {
                 <select
                     value={props.selectedHazardName}
                     onChange={(e) => {
-                        props.hazardCallback(e.target.value);
+                        props.setSelectedHazardName(e.target.value);
                     }}
                 >
                     {pathways.map((pathway) => (

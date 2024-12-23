@@ -158,11 +158,11 @@ const Graph = (props) => {
                 <div {...getCollapseProps()}>
                     <ClimatePredictionLoader
                         regions={props.regions}
-                        regionType={props.boundary}
                         season={season}
                         rcp={rcp}
-                        callback={(prediction) => setPrediction(prediction)}
-                        loadingCallback={(loading) => {}}
+                        regionType={props.boundary}
+                        setClimatePrediction={(prediction) => setPrediction(prediction)}
+                        setIsPredictionLoading={(loading) => {}}
                     />
 
                     <div className="content">
@@ -175,7 +175,7 @@ const Graph = (props) => {
                                 value={rcp}
                                 onChange={(e) => {
                                     setRcp(e.target.value);
-                                    props.rcpCallback(e.target.value);
+                                    props.setRcp(e.target.value);
                                 }}
                             >
                                 <option value="rcp60">existing global policies</option>
@@ -193,7 +193,7 @@ const Graph = (props) => {
                                 value={season}
                                 onChange={(e) => {
                                     setSeason(e.target.value);
-                                    props.seasonCallback(e.target.value);
+                                    props.setSeason(e.target.value);
                                 }}
                             >
                                 <option value="annual">yearly</option>

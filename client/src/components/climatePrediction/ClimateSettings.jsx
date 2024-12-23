@@ -14,7 +14,7 @@ import React from "react";
 
 import { andify } from "../../utils/utils";
 
-const ClimateSettings = ({ regions, rcp, season, rcpCallback, seasonCallback }) => {
+const ClimateSettings = ({ regions, rcp, season, setRcp, setSeason }) => {
     if (regions.length === 0) {
         return null;
     }
@@ -26,7 +26,7 @@ const ClimateSettings = ({ regions, rcp, season, rcpCallback, seasonCallback }) 
                 For&nbsp;
                 <span className="projected-regions">{andify(regions.map((e) => e.name))}</span>
                 &nbsp;under the&nbsp;
-                <select value={rcp} onChange={(e) => rcpCallback(e.target.value)}>
+                <select value={rcp} onChange={(e) => setRcp(e.target.value)}>
                     <option value="rcp60">existing global policies</option>
                     <option value="rcp85">worst case scenario</option>
                 </select>
@@ -34,7 +34,7 @@ const ClimateSettings = ({ regions, rcp, season, rcpCallback, seasonCallback }) 
                 {rcp === "rcp60" && <span>(equivalent to global warming level of 2.0-3.7C which is RCP 6.0)</span>}
                 {rcp === "rcp85" && <span>(equivalent to global warming level of 3.2-5.4C which is RCP 8.5)</span>}
                 &nbsp;the&nbsp;
-                <select value={season} onChange={(e) => seasonCallback(e.target.value)}>
+                <select value={season} onChange={(e) => setSeason(e.target.value)}>
                     <option value="annual">yearly</option>
                     <option value="summer">summer</option>
                     <option value="winter">winter</option>

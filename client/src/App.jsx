@@ -63,21 +63,21 @@ const App = () => {
                 />
             </div>
 
-            {/* {regions.length > 0 && (
+            {regions.length > 0 && (
                 <div className="grey-section">
                     <ClimateSettings
                         regions={regions}
                         season={season}
                         rcp={rcp}
-                        rcpCallback={setRcp}
-                        seasonCallback={setSeason}
+                        setRcp={setRcp}
+                        setSeason={setSeason}
                     />
 
                     <ClimateSummary
                         climatePrediction={climatePrediction}
                         year={year}
                         regions={regions}
-                        loading={loadingPrediction}
+                        loading={isPredictionLoading}
                     />
 
                     <Graph
@@ -85,29 +85,29 @@ const App = () => {
                         boundary={regionType}
                         season={season}
                         rcp={rcp}
-                        seasonCallback={setSeason}
-                        rcpCallback={setRcp}
+                        setSeason={setSeason}
+                        setRcp={setRcp}
                     />
                 </div>
             )}
 
             {regions.length > 0 && (
                 <div className="white-section">
-                    <ClimateHazardRisk loading={loadingPrediction} />
+                    <ClimateHazardRisk loading={isPredictionLoading} />
                 </div>
             )}
 
             {regions.length > 0 && (
                 <div className="grey-section">
                     <ClimateImpactSummary
-                        loading={loadingPrediction}
+                        loading={isPredictionLoading}
                         selectedHazardName={selectedHazardName}
-                        hazardCallback={setSelectedHazardName}
+                        setSelectedHazardName={setSelectedHazardName}
                     />
                     <KumuImpactPathway
                         regions={regions}
                         selectedHazardName={selectedHazardName}
-                        hazardCallback={setSelectedHazardName}
+                        setSelectedHazardName={setSelectedHazardName}
                     />
                 </div>
             )}
@@ -123,13 +123,13 @@ const App = () => {
                     <StaticAdaptations
                         regions={regions}
                         selectedHazardName={selectedHazardName}
-                        hazardCallback={setSelectedHazardName}
+                        setSelectedHazardName={setSelectedHazardName}
                     />
                 </div>
             )}
 
             <Feedback />
-            <Footer /> */}
+            <Footer />
         </div>
     );
 };

@@ -82,7 +82,7 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
         setGeojsonKey((prev) => prev + 1);
     };
 
-    const geojsonCallback = (data) => {
+    const handleSetGeojson = (data) => {
         if (data.features != null) {
             setGeojson(data);
             setGeojsonKey((prev) => prev + 1);
@@ -144,8 +144,8 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
                             <GeoJSONLoader
                                 apicall="/api/region"
                                 table={regionType}
-                                loadingCallback={(isLoading) => setLoading(isLoading)}
-                                callback={geojsonCallback}
+                                setLoading={(isLoading) => setLoading(isLoading)}
+                                handleSetGeojson={handleSetGeojson}
                             />
                             {geojson && <GeoJSON key={geojsonKey} data={geojson} onEachFeature={onEachFeature} />}
                             <TileLayer {...tileLayer} />
@@ -162,7 +162,7 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
             </div>
 
             <p className="note">
-                Data source: The boundaries are from
+                Data source: The boundaries are from{" "}
                 <a
                     href="https://github.com/Uni-of-Exeter/research.LCAT.public/blob/main/docs/4-sources.md"
                     target="_blank"

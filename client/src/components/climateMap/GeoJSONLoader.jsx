@@ -19,7 +19,7 @@ const m2px = [
     4.78, 2.39, 1.19, 0.6, 0.3,
 ];
 
-const GeoJSONLoader = ({ apicall, table, loadingCallback, callback }) => {
+const GeoJSONLoader = ({ apicall, table, setLoading, handleSetGeojson }) => {
     const map = useMap();
 
     // Base URL prepend for development
@@ -29,7 +29,7 @@ const GeoJSONLoader = ({ apicall, table, loadingCallback, callback }) => {
 
     // Function to fetch GeoJSON data
     const getGeojson = async () => {
-        loadingCallback(true);
+        setLoading(true);
         try {
             const bounds = map.getBounds();
             const tolerance = m2px[map.getZoom() - 1];
@@ -46,11 +46,11 @@ const GeoJSONLoader = ({ apicall, table, loadingCallback, callback }) => {
             const response = await fetch(`${getBaseURL()}${apicall}?${params}`);
             const geojsonData = await response.json();
 
-            callback(geojsonData);
+            handleSetGeojson(geojsonData);
         } catch (error) {
             console.error("Error fetching GeoJSON data:", error);
         } finally {
-            loadingCallback(false);
+            setLoading(false);
         }
     };
 
