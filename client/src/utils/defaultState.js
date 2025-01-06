@@ -5,6 +5,7 @@ export const defaultState = {
     season: "annual",
     rcp: "rcp60",
     year: 2070,
+    variable: "tas",
     isPredictionLoading: false,
     selectedHazardName: "Extreme Storms",
 };

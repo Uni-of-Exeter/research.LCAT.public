@@ -37,6 +37,7 @@ const App = () => {
     const [season, setSeason] = useState(defaultState.season);
     const [rcp, setRcp] = useState(defaultState.rcp);
     const [year] = useState(defaultState.year);
+    const [variable, setVariable] = useState(defaultState.variable);
     const [isPredictionLoading, setIsPredictionLoading] = useState(defaultState.isPredictionLoading);
     const [selectedHazardName, setSelectedHazardName] = useState(defaultState.selectedHazardName);
 
@@ -82,11 +83,13 @@ const App = () => {
 
                     <Graph
                         regions={regions}
-                        boundary={regionType}
                         season={season}
                         rcp={rcp}
                         setSeason={setSeason}
                         setRcp={setRcp}
+                        climatePrediction={climatePrediction}
+                        variable={variable}
+                        setVariable={setVariable}
                     />
                 </div>
             )}
