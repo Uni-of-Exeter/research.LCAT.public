@@ -92,7 +92,8 @@
     border-radius: 4px;
     padding: 6px 10px;
     box-sizing: border-box;
-    font-size: 14px;
+    font-size: 13px;
+    font-family: "Montserrat-Medium", Arial, Helvetica, sans-serif;
 }
 
 .climate-map-checkbox-list {
