@@ -12,7 +12,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./ClimateMap.css";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
 import LoadingOverlay from "react-loading-overlay-ts";
 
@@ -33,12 +33,14 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
     const [triggerLoadingIndicator, setTriggerLoadingIndicator] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
 
+    const layerMap = useRef(new Map());
+
     const onEachFeature = (feature, layer) => {
         const col = "#00000000";
         const gid = feature.properties.gid;
-
+    
         const isSelected = regions.some((e) => e.id === gid);
-
+    
         layer.bindTooltip(feature.properties.name);
         layer.setStyle({
             color: "#115158ff",
@@ -46,36 +48,41 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
             fillColor: isSelected ? highlightCol : col,
             fillOpacity: 1,
         });
-
+    
+        // Store the layer reference
+        layerMap.current.set(gid, layer);
+    
         layer.on("mouseover", () => {
             layer.bringToFront();
             layer.setStyle({ weight: 6 });
         });
-
+    
         layer.on("mouseout", () => {
             layer.setStyle({ weight: 3 });
         });
-
+    
         layer.on("click", () => toggleRegion(gid, feature, layer));
     };
 
     const toggleRegion = (gid, feature, layer = null) => {
         const col = "#00000000";
+        const targetLayer = layer || layerMap.current.get(gid);
+    
         setRegions((prevRegions) => {
             const alreadySelected = prevRegions.some((r) => r.id === gid);
             if (!alreadySelected) {
-                layer && layer.setStyle({ fillColor: highlightCol, fillOpacity: 1 });
+                targetLayer && targetLayer.setStyle({ fillColor: highlightCol, fillOpacity: 1 });
                 return [
                     ...prevRegions,
                     {
                         id: gid,
                         name: feature.properties.name,
                         properties: feature.properties,
-                        clearMe: () => layer && layer.setStyle({ fillColor: col, fillOpacity: 1 }),
+                        clearMe: () => targetLayer && targetLayer.setStyle({ fillColor: col, fillOpacity: 1 }),
                     },
                 ];
             } else {
-                layer && layer.setStyle({ fillColor: col, fillOpacity: 1 });
+                targetLayer && targetLayer.setStyle({ fillColor: col, fillOpacity: 1 });
                 return prevRegions.filter((r) => r.id !== gid);
             }
         });
@@ -85,6 +92,7 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
         regions.forEach((r) => r.clearMe());
         setRegions([]);
         setGeojsonKey((prev) => prev + 1);
+        layerMap.current.clear();
     };
 
     const handleSetGeojson = (data) => {
@@ -169,7 +177,7 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
                         <div className="climate-map-checkbox-list">
                             {filteredRegions.map((feature) => {
                                 const isSelected = regions.some((r) => r.id === feature.properties.gid);
-                                const checkboxId = `checkbox-${feature.properties.gid}`; // Unique ID for each checkbox
+                                const checkboxId = `checkbox-${feature.properties.gid}`;
                                 return (
                                     <div key={feature.properties.gid}>
                                         <input
