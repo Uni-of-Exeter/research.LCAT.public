@@ -73,20 +73,20 @@ const Graph = (props) => {
         handleResize();
     }, []);
 
-    function getYAxis() {
+    const getYAxis = () => {
         if (variable == "tas") return "Temperature (°C)";
         if (variable == "pr") return "Rainfall (mm/day)";
         if (variable == "sfcWind") return "Wind (m/s)";
         return "Cloudiness (W/m²)";
-    }
+    };
 
-    function getLabel(v) {
+    const getLabel = (v) => {
         /*if (variable=="tas") return v.toFixed(2)+'°C';
         if (variable=="pr") return v.toFixed(2)+' mm/day';
         if (variable=="sfcWind") return v.toFixed(2)+' m/s';
         return v.toFixed(2)+' W/m²';*/
         return v.toFixed(2);
-    }
+    };
 
     useEffect(() => {
         if (climatePrediction.length > 0) {
@@ -116,13 +116,13 @@ const Graph = (props) => {
                 setLabelData(label);
             }
         }
-    }, [climatePrediction, showAverage, variable]);
+    }, [climatePrediction, rcp, season, showAverage, variable]);
 
     useEffect(() => setExpanded(false), [regions]);
 
-    function handleOnClick() {
+    const handleOnClick = () => {
         setExpanded(!isExpanded);
-    }
+    };
 
     if (regions.length === 0) {
         return null;
@@ -223,17 +223,15 @@ const Graph = (props) => {
                                 />
                                 <XAxis />
                                 <YAxis />
-                                <VerticalBarSeries color={selectedRegionCol} animation data={data} />
+                                <VerticalBarSeries color={selectedRegionCol} data={data} />
                                 <LabelSeries
-                                    animation
                                     data={labelData}
                                     labelAnchorX={showAverage ? "end" : "middle"}
                                     getLabel={(d) => getLabel(d.y)}
                                 />
-                                {showAverage && <VerticalBarSeries color={averageRegionCol} animation data={avg} />}
+                                {showAverage && <VerticalBarSeries color={averageRegionCol} data={avg} />}
                                 {showAverage && (
                                     <LabelSeries
-                                        animation
                                         data={avgLabel}
                                         labelAnchorX={"right"}
                                         getLabel={(d) => getLabel(d.y)}

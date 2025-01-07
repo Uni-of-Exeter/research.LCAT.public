@@ -113,7 +113,7 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
             <p>
                 To begin, select the area/s you are interested in by clicking on the map. Climate data for your chosen
                 area/s will appear below. The map units can be changed to explore the UK and the Isle of Man via the
-                following dropdown:
+                following dropdown:{"  "}
                 <select
                     onChange={(e) => {
                         setRegionType(e.target.value);
