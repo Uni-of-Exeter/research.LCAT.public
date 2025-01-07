@@ -13,19 +13,22 @@ Common Good Public License Beta 1.0 for more details. */
 import "./PersonalSocialVulnerabilities.css";
 
 import React, { useState } from "react";
-import LoadingOverlay from "react-loading-overlay-ts";
 
 import { vulnerabilityData } from "./PersonalSocialVulnerabilitiesData";
 
-function PersonalSocialVulnerabilities(props) {
+const PersonalSocialVulnerabilities = () => {
     const [selectedVulnerability, setSelectedVulnerability] = useState(null);
 
-    const handleVulnerabilityClick = (vulnerability) => {
-        setSelectedVulnerability(vulnerability);
+    const handleVulnerabilityClick = (vulnerabilityName) => {
+        setSelectedVulnerability(vulnerabilityName);
     };
 
+    const selectedVulnerabilityDetails = vulnerabilityData.find(
+        (vulnerability) => vulnerability.name === selectedVulnerability,
+    );
+
     return (
-        <LoadingOverlay active={props.loading} spinner text={"Loading vulnerability data"}>
+        <div>
             <h1>Personal and Social Vulnerabilities</h1>
 
             <p>
@@ -47,10 +50,10 @@ function PersonalSocialVulnerabilities(props) {
             </p>
 
             <div className="horiz-container-vulnerability">
-                {vulnerabilityData.map((vulnerability, index) => (
-                    <div
+                {vulnerabilityData.map((vulnerability) => (
+                    <button
                         className="vert-container-vulnerability"
-                        key={index}
+                        key={vulnerability.name}
                         onClick={() => handleVulnerabilityClick(vulnerability.name)}
                     >
                         <div className="vulnerability-text">
@@ -59,14 +62,14 @@ function PersonalSocialVulnerabilities(props) {
                         <div className="vulnerability-img">
                             {React.cloneElement(vulnerability.icon, { selectedVulnerability })}
                         </div>
-                    </div>
+                    </button>
                 ))}
             </div>
 
             {selectedVulnerability ? (
                 <div className="selected-vulnerability-details">
                     <h2 className="vulnerability-information">{selectedVulnerability}</h2>
-                    {vulnerabilityData.find((vulnerability) => vulnerability.name === selectedVulnerability)?.details}
+                    <div>{selectedVulnerabilityDetails.details}</div>
                 </div>
             ) : (
                 <div className="details-placeholder">
@@ -80,8 +83,8 @@ function PersonalSocialVulnerabilities(props) {
                     A selection of vulnerability insight, by theme, from ClimateJust.
                 </a>
             </p>
-        </LoadingOverlay>
+        </div>
     );
-}
+};
 
 export default PersonalSocialVulnerabilities;

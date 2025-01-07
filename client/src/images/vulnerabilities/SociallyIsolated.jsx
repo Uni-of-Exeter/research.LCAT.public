@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const SvgSociallyIsolated = (props) => {
+const SvgSociallyIsolated = ({ selectedVulnerability, ...rest }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     return (
@@ -11,7 +11,7 @@ const SvgSociallyIsolated = (props) => {
             viewBox="0 0 30.858 30.858"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            {...props}
+            {...rest}
         >
             <g transform="translate(0 -266.142)">
                 <g
@@ -73,7 +73,7 @@ const SvgSociallyIsolated = (props) => {
                                     d="M342.7 282.21a20.78 20.78 0 0 0-20.78 20.78 20.8 20.8 0 0 0 6.085 14.7 20.8 20.8 0 0 0 14.695 6.086 20.8 20.8 0 0 0 14.699-6.086 20.8 20.8 0 0 0 6.086-14.7 20.8 20.8 0 0 0-6.086-14.694 20.8 20.8 0 0 0-14.699-6.086"
                                     style={{
                                         fill:
-                                            props.selectedVulnerability === "People who are socially isolated"
+                                            selectedVulnerability === "People who are socially isolated"
                                                 ? "#FFD667"
                                                 : isHovered
                                                   ? "#FFD667"
@@ -86,7 +86,7 @@ const SvgSociallyIsolated = (props) => {
                                     d="M552.31 292.59 348.41 90.55a8.11 8.11 0 0 0-11.41 0L133.09 292.59a8.1 8.1 0 0 0-2.402 5.719 8.1 8.1 0 0 0 2.347 5.742l34.375 34.695h-.004q.494.389 1.04.695v158.98a9.754 9.754 0 0 0 9.757 9.754h329a9.77 9.77 0 0 0 6.899-2.855 9.77 9.77 0 0 0 2.855-6.899v-158.98a7.5 7.5 0 0 0 1.04-.695l34.374-34.695a8.106 8.106 0 0 0-.054-11.461zM338.02 439.83h9.352l7.933 48.828H330.09zm42.262 48.828-10.363-63.809v-65.676c.59.469 1.172.941 1.734 1.465a39.4 39.4 0 0 1 10.652 30.062c0 5.535 4.485 10.023 10.02 10.023 5.536 0 10.023-4.488 10.023-10.023 0-19.133-5.726-34.18-17.02-44.72h-.004a62.18 62.18 0 0 0-42.629-14.94 62.27 62.27 0 0 0-42.629 14.94c-11.297 10.54-17.02 25.587-17.02 44.72 0 5.535 4.485 10.023 10.02 10.023 5.536 0 10.023-4.488 10.023-10.023a39.47 39.47 0 0 1 10.543-29.961 30 30 0 0 1 1.844-1.574v65.68l-10.367 63.812H187.96v-158.87L337 182.107a8.11 8.11 0 0 1 11.41 0l149.03 147.67v158.87z"
                                     style={{
                                         fill:
-                                            props.selectedVulnerability === "People who are socially isolated"
+                                            selectedVulnerability === "People who are socially isolated"
                                                 ? "#FFD667"
                                                 : isHovered
                                                   ? "#FFD667"

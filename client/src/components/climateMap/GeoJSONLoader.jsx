@@ -19,51 +19,51 @@ const m2px = [
     4.78, 2.39, 1.19, 0.6, 0.3,
 ];
 
-function GeoJSONLoader(props) {
+const GeoJSONLoader = ({ apicall, table, setLoading, handleSetGeojson }) => {
     const map = useMap();
 
-    async function getGeojson() {
-        props.loadingCallback(true);
-        try {
-            let b = map.getBounds();
-            let prepend = "";
-            if (process.env.NODE_ENV === "development") {
-                prepend = "http://localhost:3000";
-            }
+    // Base URL prepend for development
+    const getBaseURL = () => {
+        return process.env.NODE_ENV === "development" ? "http://localhost:3000" : "";
+    };
 
-            let response = await fetch(
-                prepend +
-                    props.apicall +
-                    "?" +
-                    new URLSearchParams({
-                        table: props.table,
-                        left: b._southWest.lng,
-                        bottom: b._southWest.lat,
-                        right: b._northEast.lng,
-                        top: b._northEast.lat,
-                        tolerance: m2px[map.getZoom() - 1],
-                    }),
-            );
-            response.json().then((v) => {
-                props.loadingCallback(false);
-                props.callback(v);
+    // Function to fetch GeoJSON data
+    const getGeojson = async () => {
+        setLoading(true);
+        try {
+            const bounds = map.getBounds();
+            const tolerance = m2px[map.getZoom() - 1];
+
+            const params = new URLSearchParams({
+                table,
+                left: bounds._southWest.lng,
+                bottom: bounds._southWest.lat,
+                right: bounds._northEast.lng,
+                top: bounds._northEast.lat,
+                tolerance,
             });
+
+            const response = await fetch(`${getBaseURL()}${apicall}?${params}`);
+            const geojsonData = await response.json();
+
+            handleSetGeojson(geojsonData);
         } catch (error) {
-            console.error(error);
+            console.error("Error fetching GeoJSON data:", error);
+        } finally {
+            setLoading(false);
         }
-    }
-    // update when moved
+    };
+
+    // Trigger GeoJSON load on region table change or map movement
     useMapEvents({
-        moveend: (e) => {
-            getGeojson();
-        },
+        moveend: getGeojson,
     });
-    // update first time. or when the region table changes
+
     useEffect(() => {
         getGeojson();
-    }, [props.table]);
+    }, [table]);
 
     return null;
-}
+};
 
 export default GeoJSONLoader;

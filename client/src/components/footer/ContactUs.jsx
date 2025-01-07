@@ -18,7 +18,13 @@ const ContactUs = () => {
             <h1>Need help? Contact us.</h1>
             <div className="footer-flex-content">
                 <p>
-                    <a className="email-button" href="mailto:lcat@exeter.ac.uk" target="_blank" rel="noreferrer"></a>
+                    <a
+                        className="email-button"
+                        href="mailto:lcat@exeter.ac.uk"
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="Send an email to lcat@exeter.ac.uk"
+                    ></a>
                 </p>
                 <p>
                     Email us at:&nbsp;

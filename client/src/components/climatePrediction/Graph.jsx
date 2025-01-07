@@ -19,8 +19,6 @@ import { ChartLabel, LabelSeries, makeWidthFlexible, VerticalBarSeries, XAxis, X
 
 import { climateAverages } from "../../core/climate";
 import { andify } from "../../utils/utils";
-import ClimatePredictionLoader from "../loaders/ClimatePredictionLoader";
-import ModelLoader from "../loaders/ModelLoader";
 
 const FlexibleXYPlot = makeWidthFlexible(XYPlot);
 const winterCol = "#a4f9c8";
@@ -28,7 +26,9 @@ const summerCol = "#4c9f70";
 const selectedRegionCol = "#216331";
 const averageRegionCol = "#48b961";
 
-function Graph(props) {
+const Graph = (props) => {
+    const { regions, season, rcp, setSeason, setRcp, climatePrediction, variable, setVariable } = props;
+
     const [data, setData] = useState([]);
     const [avg, setAvg] = useState([]);
     const [labelData, setLabelData] = useState([]);
@@ -39,22 +39,9 @@ function Graph(props) {
         left: undefined,
         height: 300,
     });
-    const [season, setSeason] = useState("annual");
-    const [rcp, setRcp] = useState("rcp60");
-    const [variable, setVariable] = useState("tas");
-    const [prediction, setPrediction] = useState([]);
 
     const [isExpanded, setExpanded] = useState(false);
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
-
-    // change when settings change
-    useEffect(() => {
-        setRcp(props.rcp);
-    }, [props.rcp]);
-
-    useEffect(() => {
-        setSeason(props.season);
-    }, [props.season]);
 
     useEffect(() => {
         function handleResize() {
@@ -86,48 +73,39 @@ function Graph(props) {
         handleResize();
     }, []);
 
-    function getYAxis() {
+    const getYAxis = () => {
         if (variable == "tas") return "Temperature (°C)";
         if (variable == "pr") return "Rainfall (mm/day)";
         if (variable == "sfcWind") return "Wind (m/s)";
         return "Cloudiness (W/m²)";
-    }
+    };
 
-    function getLabel(v) {
+    const getLabel = (v) => {
         /*if (variable=="tas") return v.toFixed(2)+'°C';
         if (variable=="pr") return v.toFixed(2)+' mm/day';
         if (variable=="sfcWind") return v.toFixed(2)+' m/s';
         return v.toFixed(2)+' W/m²';*/
         return v.toFixed(2);
-    }
-
-    function getAvLabel(v) {
-        /*if (variable=="tas") return v.toFixed(2)+'°C';
-        if (variable=="pr") return v.toFixed(2)+' mm/day';
-        if (variable=="sfcWind") return v.toFixed(2)+' m/s';
-        return v.toFixed(2)+' W/m²';*/
-        return v.toFixed(2) + "<br> UK";
-    }
+    };
 
     useEffect(() => {
-        if (prediction.length > 0) {
+        if (climatePrediction.length > 0) {
             let out = [];
             let label = [];
             let av = [];
             let avlabel = [];
-            if (prediction[0][variable + "_1980"] != null) {
+            if (climatePrediction[0][variable + "_1980"] != null) {
                 for (let year of [1980, 2030, 2040, 2050, 2060, 2070]) {
                     let label_year = "" + year;
                     let v = variable;
-                    // if (v == "sfcwind") v = "sfcWind";
                     let avkey = "chess_scape_" + rcp + "_" + season + "_" + v + "_" + year;
                     if (year == 1980) label_year = "1980 baseline";
 
                     let offset = 0;
                     if (showAverage) offset = 2;
 
-                    out.push({ x: label_year, y: prediction[0][variable + "_" + year] });
-                    label.push({ x: label_year, y: prediction[0][variable + "_" + year], xOffset: -offset });
+                    out.push({ x: label_year, y: climatePrediction[0][variable + "_" + year] });
+                    label.push({ x: label_year, y: climatePrediction[0][variable + "_" + year], xOffset: -offset });
 
                     av.push({ x: label_year, y: climateAverages[avkey] });
                     avlabel.push({ x: label_year, y: climateAverages[avkey], xOffset: offset });
@@ -138,15 +116,15 @@ function Graph(props) {
                 setLabelData(label);
             }
         }
-    }, [prediction, showAverage, variable]);
+    }, [climatePrediction, rcp, season, showAverage, variable]);
 
-    useEffect(() => setExpanded(false), [props.regions]);
+    useEffect(() => setExpanded(false), [regions]);
 
-    function handleOnClick() {
+    const handleOnClick = () => {
         setExpanded(!isExpanded);
-    }
+    };
 
-    if (props.regions.length === 0) {
+    if (regions.length === 0) {
         return null;
     }
 
@@ -157,26 +135,16 @@ function Graph(props) {
                     {isExpanded ? "Hide" : "Explore"} climate details
                 </div>
                 <div {...getCollapseProps()}>
-                    <ClimatePredictionLoader
-                        regions={props.regions}
-                        regionType={props.boundary}
-                        season={season}
-                        rcp={rcp}
-                        callback={(prediction) => setPrediction(prediction)}
-                        loadingCallback={(loading) => {}}
-                    />
-
                     <div className="content">
                         <h1>Climate details</h1>
                         <p>
                             The graph below shows the future climate change expected in&nbsp;
-                            <span className={"projected-regions"}>{andify(props.regions.map((e) => e.name))}</span>
+                            <span className={"projected-regions"}>{andify(regions.map((e) => e.name))}</span>
                             &nbsp;under&nbsp;
                             <select
                                 value={rcp}
                                 onChange={(e) => {
                                     setRcp(e.target.value);
-                                    props.rcpCallback(e.target.value);
                                 }}
                             >
                                 <option value="rcp60">existing global policies</option>
@@ -194,7 +162,6 @@ function Graph(props) {
                                 value={season}
                                 onChange={(e) => {
                                     setSeason(e.target.value);
-                                    props.seasonCallback(e.target.value);
                                 }}
                             >
                                 <option value="annual">yearly</option>
@@ -212,23 +179,22 @@ function Graph(props) {
                                 <option value="sfcWind">wind</option>
                                 <option value="rsds">cloudiness</option>
                             </select>
-                            &nbsp;for your&nbsp;
+                            &nbsp;for&nbsp;
                             <select
                                 onChange={(e) => {
                                     setShowAverage(e.target.value === "1");
                                 }}
                             >
-                                <option value="0">selected areas only</option>
+                                <option value="0">your selected areas only</option>
                                 <option value="1">your areas vs the UK</option>
                             </select>
-                            &nbsp;
-                            {showAverage && (
-                                <p>
-                                    Key: <span className="key-regional">Your area</span>{" "}
-                                    <span className="key-average">UK average</span>
-                                </p>
-                            )}
                         </p>
+                        {showAverage && (
+                            <p>
+                                Key: <span className="key-regional">Your area</span>{" "}
+                                <span className="key-average">UK average</span>
+                            </p>
+                        )}
 
                         <div className="graph-horiz-container">
                             {/* <div className="graph-y-axis">{getYAxis()}</div> */}
@@ -257,17 +223,15 @@ function Graph(props) {
                                 />
                                 <XAxis />
                                 <YAxis />
-                                <VerticalBarSeries color={selectedRegionCol} animation data={data} />
+                                <VerticalBarSeries color={selectedRegionCol} data={data} />
                                 <LabelSeries
-                                    animation
                                     data={labelData}
                                     labelAnchorX={showAverage ? "end" : "middle"}
                                     getLabel={(d) => getLabel(d.y)}
                                 />
-                                {showAverage && <VerticalBarSeries color={averageRegionCol} animation data={avg} />}
+                                {showAverage && <VerticalBarSeries color={averageRegionCol} data={avg} />}
                                 {showAverage && (
                                     <LabelSeries
-                                        animation
                                         data={avgLabel}
                                         labelAnchorX={"right"}
                                         getLabel={(d) => getLabel(d.y)}
@@ -301,6 +265,6 @@ function Graph(props) {
             </p>
         </div>
     );
-}
+};
 
 export default Graph;

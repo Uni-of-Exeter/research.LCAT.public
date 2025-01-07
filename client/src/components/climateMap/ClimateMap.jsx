@@ -10,19 +10,13 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
-// import { nfviColumns } from "../../core/climatejust.js";
 import "./ClimateMap.css";
 
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
 import LoadingOverlay from "react-loading-overlay-ts";
 
 import GeoJSONLoader from "./GeoJSONLoader.jsx";
-
-// Fixes console warning caused by react-loading-overlay-ts
-LoadingOverlay.propTypes = undefined;
-
-// const colormap = require("colormap");
 
 const tileLayer = {
     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -32,260 +26,154 @@ const tileLayer = {
 const center = [55.8, -3.2];
 const highlightCol = "#ffd768ff";
 
-function RegionsListener(props) {
-    useEffect(() => {
-        props.callback(props.regions, props.regionType);
-    }, [props.regions, props.regionType]);
-    return null;
-}
+const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
+    const [geojsonKey, setGeojsonKey] = useState(0);
+    const [geojson, setGeojson] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [triggerLoadingIndicator, setTriggerLoadingIndicator] = useState(true);
 
-class ClimateMap extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            geojson_key: 0,
-            geojson: false,
-            regionType: "boundary_uk_counties",
-            regions: [],
-            loading: true,
-            triggerLoadingIndicator: true,
-            mapProperty: "imdscore",
-        };
-
-        // this.cols = colormap({
-        //     colormap: "bathymetry",
-        //     nshades: 100,
-        //     format: "hex",
-        //     alpha: 0.5,
-        // });
-
-        // this.cols.reverse();
-        this.score_adjust = 0.7;
-    }
-
-    regionsIncludes = (id) => {
-        return this.state.regions.filter((e) => e.id === id).length > 0;
-    };
-
-    // responsible for styling and callbacks for each region
-    onEachFeature = async (feature, layer) => {
-        // colour based on IMD score
-        // let min = 0; // parseFloat(this.props.stats[this.props.regionType+"_"+this.state.mapProperty+"_min"]);
-        // let max = 13; // parseFloat(this.props.stats[this.props.regionType+"_"+this.state.mapProperty+"_max"]);
-        // let v = feature.properties[this.state.mapProperty];
-        //let v = feature.properties["tas_end"]-feature.properties["tas_start"];
-        // let index = Math.round(((v - min) / (max - min)) * 99);
-
-        // let col = this.cols[index];
-
-        // let nfvi = nfviColumns[this.state.mapProperty];
-        // if (nfvi != undefined) {
-        //     // flip direction
-        //     if (nfvi.direction == "less-than") {
-        //         col = this.cols[100 - index];
-        //     }
-        // }
-
+    const onEachFeature = async (feature, layer) => {
         let col = "#00000000";
-
         let gid = feature.properties.gid;
+
+        const isSelected = regions.some((e) => e.id === gid);
+
         layer.bindTooltip(feature.properties.name);
         layer.setStyle({
             color: "#115158ff",
             weight: 3,
-            fillColor: col,
+            fillColor: isSelected ? highlightCol : col,
             fillOpacity: 1,
         });
 
-        if (this.regionsIncludes(gid)) {
-            layer.setStyle({ fillColor: highlightCol });
-        }
-
-        layer.on("mouseover", function (e) {
+        layer.on("mouseover", () => {
             layer.bringToFront();
             layer.setStyle({ weight: 6 });
         });
 
-        layer.on("mouseout", function (e) {
+        layer.on("mouseout", () => {
             layer.setStyle({ weight: 3 });
         });
 
         layer.on("click", () => {
-            if (!this.regionsIncludes(gid)) {
-                layer.setStyle({
-                    fillColor: highlightCol,
-                    fillOpacity: 1,
-                });
-
-                this.setState((prev) => ({
-                    // do not use push because [].push(1) = 1!?
-                    regions: [
-                        ...prev.regions,
+            setRegions((prevRegions) => {
+                if (!prevRegions.some((e) => e.id === gid)) {
+                    layer.setStyle({ fillColor: highlightCol, fillOpacity: 1 });
+                    return [
+                        ...prevRegions,
                         {
                             id: gid,
                             name: feature.properties.name,
                             properties: feature.properties,
-                            clearMe: function () {
-                                layer.setStyle({
-                                    fillColor: col,
-                                    fillOpacity: 1,
-                                });
-                            },
+                            clearMe: () => layer.setStyle({ fillColor: col, fillOpacity: 1 }),
                         },
-                    ],
-                }));
-            } else {
-                layer.setStyle({
-                    fillColor: col,
-                    fillOpacity: 1,
-                });
-
-                this.setState((prev) => ({
-                    regions: prev.regions.filter((v, i) => v.id !== gid),
-                }));
-            }
+                    ];
+                } else {
+                    layer.setStyle({ fillColor: col, fillOpacity: 1 });
+                    return prevRegions.filter((r) => r.id !== gid);
+                }
+            });
         });
     };
 
-    clear = () => {
-        for (let r of this.state.regions) {
-            r.clearMe();
-        }
-        this.setState((prev) => ({
-            regions: [],
-            geojson_key: prev.geojson_key + 1,
-        }));
+    const clear = () => {
+        regions.forEach((r) => r.clearMe());
+        setRegions([]);
+        setGeojsonKey((prev) => prev + 1);
     };
 
-    geojsonCallback = (data) => {
+    const handleSetGeojson = (data) => {
         if (data.features != null) {
-            this.setState(() => ({
-                geojson: data,
-                geojson_key: this.state.geojson_key + 1,
-                triggerLoadingIndicator: false,
-            }));
+            setGeojson(data);
+            setGeojsonKey((prev) => prev + 1);
         } else {
-            this.setState(() => ({
-                geojson: { features: [] },
-                geojson_key: this.state.geojson_key + 1,
-                triggerLoadingIndicator: false,
-            }));
+            setGeojson({ features: [] });
+            setGeojsonKey((prev) => prev + 1);
         }
+        setTriggerLoadingIndicator(false);
     };
 
-    regionTypeToName = (type) => {
-        if (type == "boundary_uk_counties") return "UK Counties";
-        if (type == "boundary_la_districts") return "Local Authority Districts";
-        if (type == "boundary_lsoa") return "LSOA";
-        if (type == "boundary_msoa") return "MSOA (Eng/Wales)";
-        if (type == "boundary_parishes") return "Parishes (Eng/Wales)";
-        if (type == "boundary_sc_dz") return "Data Zones (Scotland)";
-        if (type == "boundary_ni_dz") return "Data Zones (Northern Ireland)";
-        if (type == "boundary_iom") return "Isle of Man";
-        return;
+    const regionTypeToName = (type) => {
+        const mapping = {
+            boundary_uk_counties: "UK Counties",
+            boundary_la_districts: "Local Authority Districts",
+            boundary_lsoa: "LSOA",
+            boundary_msoa: "MSOA (Eng/Wales)",
+            boundary_parishes: "Parishes (Eng/Wales)",
+            boundary_sc_dz: "Data Zones (Scotland)",
+            boundary_ni_dz: "Data Zones (Northern Ireland)",
+            boundary_iom: "Isle of Man",
+        };
+        return mapping[type] || "";
     };
 
-    render() {
-        return (
-            <div>
-                <h1>Select your area</h1>
-                <p>
-                    To begin, select the area/s you are interested in by clicking on the map. Climate data for your
-                    chosen area/s will appear below. The map units can be changed to explore the UK and the Isle of
-                    Man at via the following dropdown:{" "}
-                    <select
-                        onChange={(e) => {
-                            this.setState(() => ({
-                                regionType: e.target.value,
-                                // clear regions when the type changes
-                                regions: [],
-                                triggerLoadingIndicator: true,
-                            }));
-                        }}
+    return (
+        <div>
+            <h1>Select your area</h1>
+            <p>
+                To begin, select the area/s you are interested in by clicking on the map. Climate data for your chosen
+                area/s will appear below. The map units can be changed to explore the UK and the Isle of Man via the
+                following dropdown:{"  "}
+                <select
+                    onChange={(e) => {
+                        setRegionType(e.target.value);
+                        setRegions([]);
+                        setTriggerLoadingIndicator(true);
+                    }}
+                    value={regionType}
+                >
+                    <option value="boundary_uk_counties">UK Counties</option>
+                    <option value="boundary_la_districts">Local Authority Districts</option>
+                    <option value="boundary_parishes">Parishes (Eng/Wales)</option>
+                    <option value="boundary_msoa">MSOA (Eng/Wales)</option>
+                    <option value="boundary_sc_dz">Data Zones (Scotland)</option>
+                    <option value="boundary_lsoa">LSOA (Eng/Wales)</option>
+                    <option value="boundary_ni_dz">Data Zones (Northern Ireland)</option>
+                    <option value="boundary_iom">Isle of Man</option>
+                </select>
+            </p>
+
+            <div className="map-container">
+                <div className="climate-map">
+                    <LoadingOverlay
+                        active={loading && triggerLoadingIndicator}
+                        spinner
+                        text={"Loading " + regionTypeToName(regionType)}
                     >
-                        <option value="boundary_uk_counties">UK Counties</option>
-                        <option value="boundary_la_districts">Local Authority Districts</option>
-                        <option value="boundary_parishes">Parishes (Eng/Wales)</option>
-                        <option value="boundary_msoa">MSOA (Eng/Wales)</option>
-                        <option value="boundary_sc_dz">Data Zones (Scotland)</option>
-                        <option value="boundary_lsoa">LSOA (Eng/Wales)</option>
-                        <option value="boundary_ni_dz">Data Zones (Northern Ireland)</option>
-                        <option value="boundary_iom">Isle of Man</option>
-                    </select>
-                    {/*The Index of Multiple Deprivation score 
-
-		  <select onChange={(e) => { this.setState(() => ({
-                    mapProperty: e.target.value,
-                    geojson_key: this.state.geojson_key+1,
-                }));}}>                  
-                  <option value="imdscore">Index of Multiple Deprivation</option>
-                  {Object.keys(nfviColumns).map((k) => (
-                      <option value={k}>{nfviColumns[k].name.slice(0,30)}</option>
-                  ))}
-                  </select> 
-                
-                  is shown to help guide you to priority areas. */}
-                </p>
-
-                <RegionsListener
-                    regions={this.state.regions}
-                    regionType={this.state.regionType}
-                    callback={this.props.regionsCallback}
-                />
-
-                <div className="map-container">
-                    <div className="climate-map">
-                        <LoadingOverlay
-                            active={this.state.loading}
-                            spinner
-                            text={"Loading " + this.regionTypeToName(this.state.regionType)}
-                        >
-                            <MapContainer center={center} zoom={6} minZoom={5} scrollWheelZoom={true}>
-                                <GeoJSONLoader
-                                    apicall={"/api/region"}
-                                    table={this.state.regionType}
-                                    callback={this.geojsonCallback}
-                                    loadingCallback={(loading) => {
-                                        this.setState(() => ({
-                                            loading: loading && this.state.triggerLoadingIndicator,
-                                        }));
-                                    }}
-                                />
-                                {this.state.geojson && (
-                                    <GeoJSON
-                                        key={this.state.geojson_key}
-                                        data={this.state.geojson}
-                                        onEachFeature={this.onEachFeature}
-                                    />
-                                )}
-                                <TileLayer {...tileLayer} />
-                            </MapContainer>
-                        </LoadingOverlay>
-                    </div>
-                    <div className="map-selection">
-                        <h2>{this.regionTypeToName(this.state.regionType)} selected</h2>
-                        {this.state.regions.map((r) => (
-                            <ul key={r.name}>{r.name}</ul>
-                        ))}
-                        {this.state.regions.length > 0 && <button onClick={() => this.clear()}>Clear selection</button>}
-                    </div>
+                        <MapContainer center={center} zoom={6} minZoom={5} scrollWheelZoom={true}>
+                            <GeoJSONLoader
+                                apicall="/api/region"
+                                table={regionType}
+                                setLoading={(isLoading) => setLoading(isLoading)}
+                                handleSetGeojson={handleSetGeojson}
+                            />
+                            {geojson && <GeoJSON key={geojsonKey} data={geojson} onEachFeature={onEachFeature} />}
+                            <TileLayer {...tileLayer} />
+                        </MapContainer>
+                    </LoadingOverlay>
                 </div>
-
-                <p className="note">
-                    Data source: The boundaries are from{" "}
-                    <a
-                        href="https://github.com/Uni-of-Exeter/research.LCAT.public/blob/main/docs/4-sources.md"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        various sources listed here
-                    </a>
-                    .
-                </p>
+                <div className="map-selection">
+                    <h2>{regionTypeToName(regionType)} selected</h2>
+                    {regions.map((r) => (
+                        <ul key={r.name}>{r.name}</ul>
+                    ))}
+                    {regions.length > 0 && <button onClick={clear}>Clear selection</button>}
+                </div>
             </div>
-        );
-    }
-}
+
+            <p className="note">
+                Data source: The boundaries are from{" "}
+                <a
+                    href="https://github.com/Uni-of-Exeter/research.LCAT.public/blob/main/docs/4-sources.md"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    various sources listed here
+                </a>
+                .
+            </p>
+        </div>
+    );
+};
 
 export default ClimateMap;

@@ -21,86 +21,108 @@ import RainSvg from "../../images/climate/Rain";
 import TempSvg from "../../images/climate/Temperature";
 import WindSvg from "../../images/climate/WindSpeed";
 
-function climateChange(prediction, variable, year) {
+// Function to parse the float values from the prediction
+const climateChange = (prediction, variable, year) => {
     if (prediction.length > 0) {
-        if (prediction[0][variable + "_1980"] != null) {
-            let baseline = parseFloat(prediction[0][variable + "_1980"]);
-            let predict = parseFloat(prediction[0][variable + "_" + year]);
-            return predict - baseline;
-        }
+        const baseline = parseFloat(prediction[0][`${variable}_1980`]);
+        const predict = parseFloat(prediction[0][`${variable}_${year}`]);
+        return baseline != null && predict != null ? predict - baseline : null;
     }
     return null;
-}
+};
 
-function arrow(prediction, year, variable) {
-    let v = climateChange(prediction, variable, year);
-    if (v == null) return null;
-    // more radiation = less cloud
-    if (variable === "rsds") {
-        v = -v;
-    }
-    if (v < 0) return <DecreaseSvg className="climate-arrow" />;
-    else return <IncreaseSvg className="climate-arrow" />;
-}
+// Function to render an arrow pointing up or down
+const renderArrow = (value, variable) => {
+    if (value == null) return null;
+    // Invert value for rsds (more radiation = less cloud)
+    const adjustedValue = variable === "rsds" ? -value : value;
+    return adjustedValue < 0 ? <DecreaseSvg className="climate-arrow" /> : <IncreaseSvg className="climate-arrow" />;
+};
 
-function predict(prediction, year, variable, name, units) {
-    if (prediction.length > 0) {
-        let v = climateChange(prediction, variable, year);
-        if (v == null) return <span>No data yet for this area, coming soon.</span>;
-        let pv = Math.abs(v).toFixed(2);
-        if (variable === "rsds") {
-            v = -v;
-        }
-        let dir = "increases";
-        if (v < 0) dir = "decreases";
-        if (v === 0) {
-            return <span>No change in {name}</span>;
-        }
-        return (
-            <div className="summary-text">
-                {name} {dir} by {pv} {units}
-            </div>
-        );
+// Component to create summary text for each climate variable
+const PredictionSummary = ({ prediction, year, variable, name, units }) => {
+    const value = climateChange(prediction, variable, year);
+    if (value == null) {
+        return <span>No data yet for this area, coming soon.</span>;
     }
-    return "Not loaded yet";
-}
+    const adjustedValue = variable === "rsds" ? -value : value;
+    const absoluteValue = Math.abs(adjustedValue).toFixed(2);
+    const direction = adjustedValue === 0 ? "No change in" : adjustedValue > 0 ? "increases" : "decreases";
 
-function ClimateSummary(props) {
-    if (props.regions.length === 0) {
-        return null;
-    }
     return (
-        <LoadingOverlay active={props.loading} spinner text={"Loading climate data"}>
+        <div className="summary-text">
+            {adjustedValue === 0 ? (
+                `${direction} ${name}`
+            ) : (
+                <>
+                    {name} {direction} by {absoluteValue} {units}
+                </>
+            )}
+        </div>
+    );
+};
+
+// Component for arrow + prediction + icon for each climate variable
+const ClimateVariable = ({ prediction, year, variable, name, units, Icon }) => {
+    const value = climateChange(prediction, variable, year);
+
+    return (
+        <div className="vert-container">
+            {renderArrow(value, variable)}
+            <Icon className="climate-arrow" />
+            <PredictionSummary prediction={prediction} year={year} variable={variable} name={name} units={units} />
+        </div>
+    );
+};
+
+// Final component for climate summary section
+const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
+    if (regions.length === 0) return null;
+
+    return (
+        <LoadingOverlay active={loading} spinner text="Loading climate data">
             <div className="climate-summary">
                 <div className="horiz-container">
-                    <div className="vert-container">
-                        {arrow(props.climatePrediction, props.year, "tas")}
-                        <TempSvg className="climate-arrow" />
-                        {predict(props.climatePrediction, props.year, "tas", "Temperature", "°C")}
-                    </div>
-                    <div className="vert-container">
-                        {arrow(props.climatePrediction, props.year, "pr")}
-                        <RainSvg className="climate-arrow" />
-                        {predict(props.climatePrediction, props.year, "pr", "Rainfall", "mm/day")}
-                    </div>
-                    <div className="vert-container">
-                        {arrow(props.climatePrediction, props.year, "rsds")}
-                        <CloudSvg className="climate-arrow" />
-                        {predict(props.climatePrediction, props.year, "rsds", "Cloudiness", "Watts/m2")}
-                    </div>
-                    <div className="vert-container">
-                        {arrow(props.climatePrediction, props.year, "sfcWind")}
-                        <WindSvg className="climate-arrow" />
-                        {predict(props.climatePrediction, props.year, "sfcWind", "Windiness", "m/sec")}
-                    </div>
+                    <ClimateVariable
+                        prediction={climatePrediction}
+                        year={year}
+                        variable="tas"
+                        name="Temperature"
+                        units="°C"
+                        Icon={TempSvg}
+                    />
+                    <ClimateVariable
+                        prediction={climatePrediction}
+                        year={year}
+                        variable="pr"
+                        name="Rainfall"
+                        units="mm/day"
+                        Icon={RainSvg}
+                    />
+                    <ClimateVariable
+                        prediction={climatePrediction}
+                        year={year}
+                        variable="rsds"
+                        name="Cloudiness"
+                        units="Watts/m2"
+                        Icon={CloudSvg}
+                    />
+                    <ClimateVariable
+                        prediction={climatePrediction}
+                        year={year}
+                        variable="sfcWind"
+                        name="Windiness"
+                        units="m/sec"
+                        Icon={WindSvg}
+                    />
                 </div>
                 <p>
                     Note: Yearly average climate change does not always reflect the extremes of summer and winter.
-                    Change the drop down menu above to see the predictions for the different seasons.
+                    Change the drop-down menu above to see the predictions for the different seasons.
                 </p>
             </div>
         </LoadingOverlay>
     );
-}
+};
 
 export default ClimateSummary;
