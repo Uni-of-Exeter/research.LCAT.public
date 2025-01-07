@@ -16,6 +16,7 @@
 .graph-horiz-container {
     display: flex;
     flex-direction: row;
+    justify-content: center;
 }
 
 .rv-xy-plot__axis__title text {

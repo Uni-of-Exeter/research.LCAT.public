@@ -12,7 +12,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./App.css";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import StaticAdaptations from "./components/adaptations/StaticAdaptations";
 import ClimateHazardRisk from "./components/climateHazard/ClimateHazardRisk";

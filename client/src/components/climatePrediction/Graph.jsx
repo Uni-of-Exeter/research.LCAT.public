@@ -10,113 +10,61 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
-import "../../../node_modules/react-vis/dist/style.css";
 import "./Graph.css";
 
 import React, { useEffect, useState } from "react";
 import { useCollapse } from "react-collapsed";
-import { ChartLabel, LabelSeries, makeWidthFlexible, VerticalBarSeries, XAxis, XYPlot, YAxis } from "react-vis";
+import { CartesianGrid, Label, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-import { climateAverages } from "../../core/climate";
+// import { climateAverages } from "../../core/climate";
 import { andify } from "../../utils/utils";
 
-const FlexibleXYPlot = makeWidthFlexible(XYPlot);
+// const FlexibleXYPlot = makeWidthFlexible(XYPlot);
 const winterCol = "#a4f9c8";
 const summerCol = "#4c9f70";
 const selectedRegionCol = "#216331";
 const averageRegionCol = "#48b961";
 
+const units = {
+    tas: { label: "Temperature", unit: "°C" },
+    pr: { label: "Rainfall", unit: "mm/day" },
+    sfcWind: { label: "Wind", unit: "m/s" },
+    rsds: { label: "Cloudiness", unit: "W/m²" },
+    default: { label: "", unit: "" },
+};
+
 const Graph = (props) => {
     const { regions, season, rcp, setSeason, setRcp, climatePrediction, variable, setVariable } = props;
 
     const [data, setData] = useState([]);
-    const [avg, setAvg] = useState([]);
-    const [labelData, setLabelData] = useState([]);
-    const [avgLabel, setAvgLabel] = useState([]);
-    const [showAverage, setShowAverage] = useState(false);
-    const [margin, setMargin] = useState({
-        bottom: undefined,
-        left: undefined,
-        height: 300,
-    });
+    // const [showAverage, setShowAverage] = useState(false);
 
     const [isExpanded, setExpanded] = useState(false);
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
 
-    useEffect(() => {
-        function handleResize() {
-            // ridiculous (fix, and that margins are defined in pixels)
-            if (window.innerWidth < 700) {
-                setMargin({
-                    bottom: 30,
-                    left: 50,
-                    height: 300,
-                });
-            } else {
-                if (window.innerWidth > 1300) {
-                    setMargin({
-                        bottom: 200,
-                        left: 200,
-                        height: 700,
-                    });
-                } else {
-                    setMargin({
-                        bottom: 100,
-                        left: 100,
-                        height: 450,
-                    });
-                }
-            }
-        }
-
-        window.addEventListener("resize", handleResize);
-        handleResize();
-    }, []);
-
     const getYAxis = () => {
-        if (variable == "tas") return "Temperature (°C)";
-        if (variable == "pr") return "Rainfall (mm/day)";
-        if (variable == "sfcWind") return "Wind (m/s)";
-        return "Cloudiness (W/m²)";
+        const variableInfo = units[variable] || units.default;
+        return `${variableInfo.label} (${variableInfo.unit})`;
     };
 
-    const getLabel = (v) => {
-        /*if (variable=="tas") return v.toFixed(2)+'°C';
-        if (variable=="pr") return v.toFixed(2)+' mm/day';
-        if (variable=="sfcWind") return v.toFixed(2)+' m/s';
-        return v.toFixed(2)+' W/m²';*/
-        return v.toFixed(2);
+    const formatValueTo2SF = (value) => {
+        const unit = units[variable]?.unit || units.default.unit;
+        return `${Number(value).toFixed(2)} ${unit}`;
     };
 
     useEffect(() => {
         if (climatePrediction.length > 0) {
-            let out = [];
-            let label = [];
-            let av = [];
-            let avlabel = [];
-            if (climatePrediction[0][variable + "_1980"] != null) {
-                for (let year of [1980, 2030, 2040, 2050, 2060, 2070]) {
-                    let label_year = "" + year;
-                    let v = variable;
-                    let avkey = "chess_scape_" + rcp + "_" + season + "_" + v + "_" + year;
-                    if (year == 1980) label_year = "1980 baseline";
+            const predictionData = climatePrediction[0];
+            const years = [1980, 1990, 2000, 2020, 2030, 2040, 2050, 2060, 2070];
 
-                    let offset = 0;
-                    if (showAverage) offset = 2;
+            const formattedData = years.map((year) => ({
+                x: year === 1980 ? "1980 baseline" : String(year),
+                y: predictionData[`${variable}_${year}`],
+            }));
 
-                    out.push({ x: label_year, y: climatePrediction[0][variable + "_" + year] });
-                    label.push({ x: label_year, y: climatePrediction[0][variable + "_" + year], xOffset: -offset });
-
-                    av.push({ x: label_year, y: climateAverages[avkey] });
-                    avlabel.push({ x: label_year, y: climateAverages[avkey], xOffset: offset });
-                }
-                setAvg(av);
-                setAvgLabel(avlabel);
-                setData(out);
-                setLabelData(label);
-            }
+            setData(formattedData);
         }
-    }, [climatePrediction, rcp, season, showAverage, variable]);
+    }, [climatePrediction, rcp, season, variable]);
 
     useEffect(() => setExpanded(false), [regions]);
 
@@ -189,57 +137,61 @@ const Graph = (props) => {
                                 <option value="1">your areas vs the UK</option>
                             </select>
                         </p>
-                        {showAverage && (
+                        {/* {showAverage && (
                             <p>
                                 Key: <span className="key-regional">Your area</span>{" "}
                                 <span className="key-average">UK average</span>
                             </p>
-                        )}
+                        )} */}
 
                         <div className="graph-horiz-container">
-                            {/* <div className="graph-y-axis">{getYAxis()}</div> */}
-                            <FlexibleXYPlot
-                                height={margin.height}
-                                margin={{ bottom: margin.bottom, left: margin.left, right: 0, top: 10 }}
-                                xType="ordinal"
-                            >
-                                <ChartLabel
-                                    text="Decades"
-                                    className="graph-axes-label"
-                                    includeMargin={false}
-                                    xPercent={0.45}
-                                    yPercent={1.3}
-                                />
-                                <ChartLabel
-                                    text={getYAxis()}
-                                    className="graph-axes-label"
-                                    includeMargin={false}
-                                    xPercent={-0.07}
-                                    yPercent={0.25}
-                                    style={{
-                                        transform: "rotate(-90)",
-                                        textAnchor: "end",
+                            <ResponsiveContainer width="85%" height={600}>
+                                <LineChart
+                                    data={data}
+                                    margin={{
+                                        top: 10,
+                                        right: 10,
+                                        left: 10,
+                                        bottom: 50,
                                     }}
-                                />
-                                <XAxis />
-                                <YAxis />
-                                <VerticalBarSeries color={selectedRegionCol} data={data} />
-                                <LabelSeries
-                                    data={labelData}
-                                    labelAnchorX={showAverage ? "end" : "middle"}
-                                    getLabel={(d) => getLabel(d.y)}
-                                />
-                                {showAverage && <VerticalBarSeries color={averageRegionCol} data={avg} />}
-                                {showAverage && (
-                                    <LabelSeries
-                                        data={avgLabel}
-                                        labelAnchorX={"right"}
-                                        getLabel={(d) => getLabel(d.y)}
-                                    />
-                                )}
-                            </FlexibleXYPlot>
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="x">
+                                        <Label value="Decades" offset={-40} position="insideBottom" />
+                                    </XAxis>
+                                    <YAxis>
+                                        <Label
+                                            value={getYAxis()}
+                                            angle={-90}
+                                            position="insideLeft"
+                                            style={{ textAnchor: "middle" }}
+                                        />
+                                    </YAxis>
+                                    <Tooltip formatter={formatValueTo2SF} />
+                                    {/* <Legend /> */}
+                                    <Line
+                                        type="monotone"
+                                        dataKey="y"
+                                        stroke={selectedRegionCol}
+                                        dot
+                                        activeDot={{ r: 8 }}
+                                    >
+                                        {/* Adding a custom label for each point */}
+                                        {/* <Label position="top" formatter={(v) => formatValueTo2SF(v)} /> */}
+                                    </Line>
+                                    {/* {showAverage && (
+                                        <Line
+                                            type="monotone"
+                                            data={avg}
+                                            dataKey="y"
+                                            stroke={averageRegionCol}
+                                            dot
+                                            activeDot={{ r: 8 }}
+                                        />
+                                    )} */}
+                                </LineChart>
+                            </ResponsiveContainer>
                         </div>
-                        {/* <div className="graph-x-axis">Decades</div> */}
                     </div>
                 </div>
             </div>
