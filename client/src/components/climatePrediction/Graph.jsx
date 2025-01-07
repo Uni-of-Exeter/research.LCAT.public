@@ -14,7 +14,7 @@ import "./Graph.css";
 
 import React, { useEffect, useState } from "react";
 import { useCollapse } from "react-collapsed";
-import { CartesianGrid, Label, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Area, CartesianGrid, ComposedChart, Label, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 // import { climateAverages } from "../../core/climate";
 import { andify } from "../../utils/utils";
@@ -27,6 +27,8 @@ const averageRegionCol = "#48b961";
 
 const units = {
     tas: { label: "Temperature", unit: "°C" },
+    tasmin: { label: "Temperature (min)", unit: "°C" },
+    tasmax: { label: "Temperature (max)", unit: "°C" },
     pr: { label: "Rainfall", unit: "mm/day" },
     sfcWind: { label: "Wind", unit: "m/s" },
     rsds: { label: "Cloudiness", unit: "W/m²" },
@@ -49,21 +51,40 @@ const Graph = (props) => {
 
     const formatValueTo2SF = (value) => {
         const unit = units[variable]?.unit || units.default.unit;
+
+        // Check if the value is an array
+        if (Array.isArray(value) && value.length === 2) {
+            const [min, max] = value;
+            return `${Number(min).toFixed(2)}–${Number(max).toFixed(2)} ${unit}`;
+        }
+
+        // If value is not an array, format as a single number
         return `${Number(value).toFixed(2)} ${unit}`;
     };
 
     useEffect(() => {
-        if (climatePrediction.length > 0) {
-            const predictionData = climatePrediction[0];
-            const years = [1980, 1990, 2000, 2020, 2030, 2040, 2050, 2060, 2070];
+        if (climatePrediction.length === 0) return;
 
-            const formattedData = years.map((year) => ({
+        const predictionData = climatePrediction[0];
+        const years = [1980, 1990, 2000, 2020, 2030, 2040, 2050, 2060, 2070];
+
+        const formattedData = years.map((year) => {
+            const baseData = {
                 x: year === 1980 ? "1980 baseline" : String(year),
                 y: predictionData[`${variable}_${year}`],
-            }));
+            };
 
-            setData(formattedData);
-        }
+            if (variable === "tas") {
+                return {
+                    ...baseData,
+                    range: [predictionData[`${variable}min_${year}`], predictionData[`${variable}max_${year}`]],
+                };
+            }
+
+            return baseData;
+        });
+
+        setData(formattedData);
     }, [climatePrediction, rcp, season, variable]);
 
     useEffect(() => setExpanded(false), [regions]);
@@ -137,16 +158,10 @@ const Graph = (props) => {
                                 <option value="1">your areas vs the UK</option>
                             </select>
                         </p>
-                        {/* {showAverage && (
-                            <p>
-                                Key: <span className="key-regional">Your area</span>{" "}
-                                <span className="key-average">UK average</span>
-                            </p>
-                        )} */}
 
                         <div className="graph-horiz-container">
                             <ResponsiveContainer width="85%" height={600}>
-                                <LineChart
+                                <ComposedChart
                                     data={data}
                                     margin={{
                                         top: 10,
@@ -168,28 +183,25 @@ const Graph = (props) => {
                                         />
                                     </YAxis>
                                     <Tooltip formatter={formatValueTo2SF} />
-                                    {/* <Legend /> */}
+
                                     <Line
                                         type="monotone"
                                         dataKey="y"
                                         stroke={selectedRegionCol}
                                         dot
                                         activeDot={{ r: 8 }}
-                                    >
-                                        {/* Adding a custom label for each point */}
-                                        {/* <Label position="top" formatter={(v) => formatValueTo2SF(v)} /> */}
-                                    </Line>
-                                    {/* {showAverage && (
-                                        <Line
+                                    />
+
+                                    {variable === "tas" && (
+                                        <Area
                                             type="monotone"
-                                            data={avg}
-                                            dataKey="y"
-                                            stroke={averageRegionCol}
-                                            dot
-                                            activeDot={{ r: 8 }}
+                                            dataKey="range"
+                                            stroke={selectedRegionCol}
+                                            fill={selectedRegionCol}
+                                            opacity={0.5}
                                         />
-                                    )} */}
-                                </LineChart>
+                                    )}
+                                </ComposedChart>
                             </ResponsiveContainer>
                         </div>
                     </div>

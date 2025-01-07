@@ -153,7 +153,7 @@ router.get("/region", async function (req, res) {
 // CHESS-SCAPE helper function: generate climate column SQL
 function buildAvgClimateCols() {
     const averageClimateColNames = [];
-    const variables = ["tas", "sfcWind", "pr", "rsds"];
+    const variables = ["tas", "sfcWind", "pr", "rsds", "tasmin", "tasmax"];
     const decades = ["1980", "1990", "2000", "2010", "2020", "2030", "2040", "2050", "2060", "2070"];
 
     for (const variable of variables) {
