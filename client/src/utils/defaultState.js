@@ -1,5 +1,6 @@
 export const defaultState = {
     regions: [],
+    allRegions: [],
     regionType: "boundary_uk_counties",
     climatePrediction: [],
     season: "annual",

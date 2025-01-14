@@ -26,7 +26,7 @@ const tileLayer = {
 const center = [55.8, -3.2];
 const highlightCol = "#ffd768ff";
 
-const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
+const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType }) => {
     const [geojsonKey, setGeojsonKey] = useState(0);
     const [geojson, setGeojson] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -39,10 +39,11 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
     const onEachFeature = (feature, layer) => {
         const col = "#00000000";
         const gid = feature.properties.gid;
+        const name = feature.properties.name;
 
         const isSelected = regions.some((e) => e.id === gid);
 
-        layer.bindTooltip(feature.properties.name);
+        layer.bindTooltip(name);
         layer.setStyle({
             color: "#115158ff",
             weight: 3,
@@ -62,10 +63,10 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
             layer.setStyle({ weight: 3 });
         });
 
-        layer.on("click", () => toggleRegion(gid, feature, layer));
+        layer.on("click", () => toggleRegion(gid, name, layer));
     };
 
-    const toggleRegion = (gid, feature, layer = null) => {
+    const toggleRegion = (gid, name, layer = null) => {
         const col = "#00000000";
         const targetLayer = layer || layerMap.current.get(gid);
 
@@ -77,8 +78,7 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
                     ...prevRegions,
                     {
                         id: gid,
-                        name: feature.properties.name,
-                        properties: feature.properties,
+                        name: name,
                         clearMe: () => targetLayer && targetLayer.setStyle({ fillColor: col, fillOpacity: 1 }),
                     },
                 ];
@@ -116,10 +116,10 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
         return mapping[type] || "";
     };
 
-    const filteredRegions = geojson
-        ? geojson.features
-              .filter((feature) => feature.properties.name.toLowerCase().includes(searchTerm.toLowerCase()))
-              .sort((a, b) => a.properties.name.localeCompare(b.properties.name))
+    const filteredRegions = allRegions
+        ? allRegions
+              .filter((region) => region.name.toLowerCase().includes(searchTerm.toLowerCase()))
+              .sort((a, b) => a.name.localeCompare(b.name))
         : [];
 
     const toggleDrawer = () => {
@@ -153,7 +153,6 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
 
             <div className="map-container">
                 <div className={`climate-map ${isDrawerOpen ? "drawer-open" : "drawer-closed"}`}>
-                    
                     <LoadingOverlay
                         active={loading && triggerLoadingIndicator}
                         spinner
@@ -180,24 +179,24 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
                             <div className="climate-map-search">
                                 <input
                                     type="text"
-                                    placeholder="Search visible regions..."
+                                    placeholder="Search regions..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                             </div>
                             <div className="climate-map-checkbox-list">
-                                {filteredRegions.map((feature) => {
-                                    const isSelected = regions.some((r) => r.id === feature.properties.gid);
-                                    const checkboxId = `checkbox-${feature.properties.gid}`;
+                                {filteredRegions.map((region) => {
+                                    const isSelected = regions.some((r) => r.id === region.gid);
+                                    const checkboxId = `checkbox-${region.gid}`;
                                     return (
-                                        <div key={feature.properties.gid}>
+                                        <div key={region.gid}>
                                             <input
                                                 type="checkbox"
                                                 id={checkboxId}
                                                 checked={isSelected}
-                                                onChange={() => toggleRegion(feature.properties.gid, feature)}
+                                                onChange={() => toggleRegion(region.gid, region.name)}
                                             />
-                                            <label htmlFor={checkboxId}>{feature.properties.name}</label>
+                                            <label htmlFor={checkboxId}>{region.name}</label>
                                         </div>
                                     );
                                 })}
