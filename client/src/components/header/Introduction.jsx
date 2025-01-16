@@ -30,15 +30,7 @@ const Introduction = () => {
             </ul>
             <p>
                 LCAT is <strong className="text-emphasis">evidence-based</strong> and designed with and for{" "}
-                <strong className="text-emphasis"> local decision makers.</strong> To provide feedback on the tool and
-                aid us in the co-design process, please fill in our{" "}
-                <a
-                    href="https://forms.office.com/pages/responsepage.aspx?id=d10qkZj77k6vMhM02PBKUwt2iHj6sgtNt-F8e7EjD4hUNURIUFRZUTJHNVNKUTFNWVNNSzAxSDdFRS4u"
-                    target="_blank"
-                    rel="noreferrer"
-                >
-                    anonymous evaluation survey.
-                </a>
+                <strong className="text-emphasis"> local decision makers.</strong>
             </p>
 
             <p>
