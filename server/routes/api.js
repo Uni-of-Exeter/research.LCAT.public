@@ -71,6 +71,47 @@ async function initialiseBoundaryDetails() {
     }
 }
 
+// For a given boundary dataset, get all region gids and names in geojson dataset
+router.get("/all_regions", async function (req, res) {
+    try {
+        const { boundary } = req.query;
+
+        // Validate query parameter
+        if (!boundary) {
+            return res.status(400).send({ error: "Missing 'boundary' parameter" });
+        }
+
+        // Ensure `all_boundary_details` is initialized
+        if (Object.keys(all_boundary_details).length === 0) {
+            await initialiseBoundaryDetails();
+        }
+
+        // Retrieve table details from `all_boundary_details`
+        const boundaryDetails = all_boundary_details[boundary];
+        if (!boundaryDetails) {
+            return res.status(400).send({ error: "Invalid boundary table" });
+        }
+
+        const query = `
+            SELECT gid, ${boundaryDetails.name_col} AS name
+            FROM ${boundary};
+        `;
+
+        const client = new Client(conString);
+        await client.connect();
+
+        try {
+            const result = await client.query(query);
+            res.json(result.rows);
+        } finally {
+            await client.end();
+        }
+    } catch (err) {
+        console.error("Error:", err.message || err);
+        res.status(500).send({ error: "Internal Server Error" });
+    }
+});
+
 // Get GeoJSONs of regions given a bounding box and detail
 // Tolerance from zoom level
 router.get("/region", async function (req, res) {

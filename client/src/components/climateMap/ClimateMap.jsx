@@ -12,7 +12,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./ClimateMap.css";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
 import LoadingOverlay from "react-loading-overlay-ts";
 
@@ -26,25 +26,52 @@ const tileLayer = {
 const center = [55.8, -3.2];
 const highlightCol = "#ffd768ff";
 
-const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
+const mapping = {
+    boundary_uk_counties: "UK Counties",
+    boundary_la_districts: "Local Authority Districts",
+    boundary_lsoa: "LSOA",
+    boundary_msoa: "MSOA (Eng/Wales)",
+    boundary_parishes: "Parishes (Eng/Wales)",
+    boundary_sc_dz: "Data Zones (Scotland)",
+    boundary_ni_dz: "Data Zones (Northern Ireland)",
+    boundary_iom: "Isle of Man",
+};
+
+const regionsToShowToggle = [
+    "MSOA (Eng/Wales)",
+    "Parishes (Eng/Wales)",
+    "Data Zones (Scotland)",
+    "Data Zones (Northern Ireland)",
+];
+
+const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType }) => {
     const [geojsonKey, setGeojsonKey] = useState(0);
     const [geojson, setGeojson] = useState(false);
     const [loading, setLoading] = useState(true);
     const [triggerLoadingIndicator, setTriggerLoadingIndicator] = useState(true);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+    const [selectAllToggleState, setSelectAllToggleState] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
 
-    const onEachFeature = async (feature, layer) => {
-        let col = "#00000000";
-        let gid = feature.properties.gid;
+    const layerMap = useRef(new Map());
+
+    const onEachFeature = (feature, layer) => {
+        const col = "#00000000";
+        const gid = feature.properties.gid;
+        const name = feature.properties.name;
 
         const isSelected = regions.some((e) => e.id === gid);
 
-        layer.bindTooltip(feature.properties.name);
+        layer.bindTooltip(name);
         layer.setStyle({
             color: "#115158ff",
             weight: 3,
             fillColor: isSelected ? highlightCol : col,
             fillOpacity: 1,
         });
+
+        // Store the layer reference
+        layerMap.current.set(gid, layer);
 
         layer.on("mouseover", () => {
             layer.bringToFront();
@@ -55,24 +82,29 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
             layer.setStyle({ weight: 3 });
         });
 
-        layer.on("click", () => {
-            setRegions((prevRegions) => {
-                if (!prevRegions.some((e) => e.id === gid)) {
-                    layer.setStyle({ fillColor: highlightCol, fillOpacity: 1 });
-                    return [
-                        ...prevRegions,
-                        {
-                            id: gid,
-                            name: feature.properties.name,
-                            properties: feature.properties,
-                            clearMe: () => layer.setStyle({ fillColor: col, fillOpacity: 1 }),
-                        },
-                    ];
-                } else {
-                    layer.setStyle({ fillColor: col, fillOpacity: 1 });
-                    return prevRegions.filter((r) => r.id !== gid);
-                }
-            });
+        layer.on("click", () => toggleRegion(gid, name, layer));
+    };
+
+    const toggleRegion = (gid, name, layer = null) => {
+        const col = "#00000000";
+        const targetLayer = layer || layerMap.current.get(gid);
+
+        setRegions((prevRegions) => {
+            const alreadySelected = prevRegions.some((r) => r.id === gid);
+            if (!alreadySelected) {
+                targetLayer && targetLayer.setStyle({ fillColor: highlightCol, fillOpacity: 1 });
+                return [
+                    ...prevRegions,
+                    {
+                        id: gid,
+                        name: name,
+                        clearMe: () => targetLayer && targetLayer.setStyle({ fillColor: col, fillOpacity: 1 }),
+                    },
+                ];
+            } else {
+                targetLayer && targetLayer.setStyle({ fillColor: col, fillOpacity: 1 });
+                return prevRegions.filter((r) => r.id !== gid);
+            }
         });
     };
 
@@ -80,31 +112,48 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
         regions.forEach((r) => r.clearMe());
         setRegions([]);
         setGeojsonKey((prev) => prev + 1);
+        layerMap.current.clear();
     };
 
     const handleSetGeojson = (data) => {
-        if (data.features != null) {
-            setGeojson(data);
-            setGeojsonKey((prev) => prev + 1);
-        } else {
-            setGeojson({ features: [] });
-            setGeojsonKey((prev) => prev + 1);
-        }
+        setGeojson(data.features ? data : { features: [] });
+        setGeojsonKey((prev) => prev + 1);
         setTriggerLoadingIndicator(false);
     };
 
-    const regionTypeToName = (type) => {
-        const mapping = {
-            boundary_uk_counties: "UK Counties",
-            boundary_la_districts: "Local Authority Districts",
-            boundary_lsoa: "LSOA",
-            boundary_msoa: "MSOA (Eng/Wales)",
-            boundary_parishes: "Parishes (Eng/Wales)",
-            boundary_sc_dz: "Data Zones (Scotland)",
-            boundary_ni_dz: "Data Zones (Northern Ireland)",
-            boundary_iom: "Isle of Man",
-        };
+    const regionTypeToName = (mapping, type) => {
         return mapping[type] || "";
+    };
+
+    const filteredRegions = allRegions
+        ? allRegions
+              .filter((region) => region.name.toLowerCase().includes(searchTerm.toLowerCase()))
+              .sort((a, b) => a.name.localeCompare(b.name))
+        : [];
+
+    const toggleDrawer = () => {
+        setIsDrawerOpen(!isDrawerOpen);
+    };
+
+    const handleToggleSelectAll = () => {
+        if (selectAllToggleState) {
+            // Deselect all
+            filteredRegions.forEach((region) => {
+                const isSelected = regions.some((r) => r.id === region.gid);
+                if (isSelected) {
+                    toggleRegion(region.gid, region.name);
+                }
+            });
+        } else {
+            // Select all
+            filteredRegions.forEach((region) => {
+                const isSelected = regions.some((r) => r.id === region.gid);
+                if (!isSelected) {
+                    toggleRegion(region.gid, region.name);
+                }
+            });
+        }
+        setSelectAllToggleState(!selectAllToggleState);
     };
 
     return (
@@ -112,8 +161,7 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
             <h1>Select your area</h1>
             <p>
                 To begin, select the area/s you are interested in by clicking on the map. Climate data for your chosen
-                area/s will appear below. The map units can be changed to explore the UK and the Isle of Man via the
-                following dropdown:{"  "}
+                area/s will appear below.{" "}
                 <select
                     onChange={(e) => {
                         setRegionType(e.target.value);
@@ -134,26 +182,68 @@ const ClimateMap = ({ regions, setRegions, regionType, setRegionType }) => {
             </p>
 
             <div className="map-container">
-                <div className="climate-map">
+                <div className={`climate-map ${isDrawerOpen ? "drawer-open" : "drawer-closed"}`}>
                     <LoadingOverlay
                         active={loading && triggerLoadingIndicator}
                         spinner
-                        text={"Loading " + regionTypeToName(regionType)}
+                        text={"Loading " + regionTypeToName(mapping, regionType)}
                     >
                         <MapContainer center={center} zoom={6} minZoom={5} scrollWheelZoom={true}>
                             <GeoJSONLoader
                                 apicall="/api/region"
                                 table={regionType}
-                                setLoading={(isLoading) => setLoading(isLoading)}
+                                setLoading={setLoading}
                                 handleSetGeojson={handleSetGeojson}
                             />
                             {geojson && <GeoJSON key={geojsonKey} data={geojson} onEachFeature={onEachFeature} />}
                             <TileLayer {...tileLayer} />
                         </MapContainer>
                     </LoadingOverlay>
+
+                    <button className="drawer-toggle-button" onClick={toggleDrawer} aria-label="Toggle Search Drawer">
+                        {isDrawerOpen ? "→" : "←"}
+                    </button>
+
+                    {isDrawerOpen && (
+                        <div className="climate-map-search-container">
+                            <div className="climate-map-search">
+                                <input
+                                    type="text"
+                                    placeholder="Search regions..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                            <div className="climate-map-checkbox-list">
+                                {filteredRegions.map((region) => {
+                                    const isSelected = regions.some((r) => r.id === region.gid);
+                                    const checkboxId = `checkbox-${region.gid}`;
+                                    return (
+                                        <div key={region.gid}>
+                                            <input
+                                                type="checkbox"
+                                                id={checkboxId}
+                                                checked={isSelected}
+                                                onChange={() => toggleRegion(region.gid, region.name)}
+                                            />
+                                            <label htmlFor={checkboxId}>{region.name}</label>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            {filteredRegions.length <= 30 && regionsToShowToggle.includes(mapping[regionType]) && (
+                                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                    <button onClick={handleToggleSelectAll}>
+                                        {selectAllToggleState ? "Clear selection" : "Select all"}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
+
                 <div className="map-selection">
-                    <h2>{regionTypeToName(regionType)} selected</h2>
+                    <h2>{regionTypeToName(mapping, regionType)} selected</h2>
                     {regions.map((r) => (
                         <ul key={r.name}>{r.name}</ul>
                     ))}

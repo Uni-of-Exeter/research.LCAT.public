@@ -12,7 +12,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./App.css";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import StaticAdaptations from "./components/adaptations/StaticAdaptations";
 import ClimateHazardRisk from "./components/climateHazard/ClimateHazardRisk";
@@ -26,6 +26,7 @@ import Feedback from "./components/feedback/Feedback";
 import Footer from "./components/footer/Footer";
 import LCATHeader from "./components/header/Header";
 import Introduction from "./components/header/Introduction";
+import AllRegionLoader from "./components/loaders/AllRegionLoader";
 import ClimatePredictionLoader from "./components/loaders/ClimatePredictionLoader";
 import PersonalSocialVulnerabilities from "./components/vulnerabilities/PersonalSocialVulnerabilities";
 import { defaultState } from "./utils/defaultState";
@@ -33,6 +34,7 @@ import { defaultState } from "./utils/defaultState";
 const App = () => {
     const [regions, setRegions] = useState(defaultState.regions);
     const [regionType, setRegionType] = useState(defaultState.regionType);
+    const [allRegions, setAllRegions] = useState(defaultState.allRegions);
     const [climatePrediction, setClimatePrediction] = useState(defaultState.climatePrediction);
     const [season, setSeason] = useState(defaultState.season);
     const [rcp, setRcp] = useState(defaultState.rcp);
@@ -45,6 +47,8 @@ const App = () => {
         <div className="App">
             <LCATHeader />
             <Introduction />
+
+            <AllRegionLoader regionType={regionType} setAllRegions={setAllRegions} />
 
             <ClimatePredictionLoader
                 regions={regions}
@@ -59,6 +63,7 @@ const App = () => {
                 <ClimateMap
                     regions={regions}
                     setRegions={setRegions}
+                    allRegions={allRegions}
                     regionType={regionType}
                     setRegionType={setRegionType}
                 />
