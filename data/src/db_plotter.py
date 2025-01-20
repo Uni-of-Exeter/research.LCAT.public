@@ -30,7 +30,7 @@ class DBPlotter:
         """
 
         self.clean_boundary_names = {
-            "uk_counties": "UK Counties",
+            "uk_counties": "UK Counties and Unitary Authorities",
             "la_districts": "LA Districts",
             "lsoa": "LSOAs",
             "msoa": "MSOAs",
