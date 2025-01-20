@@ -231,13 +231,13 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                                     );
                                 })}
                             </div>
-                            {filteredRegions.length <= 30 && regionsToShowToggle.includes(mapping[regionType]) && (
+                            {/* {filteredRegions.length <= 30 && regionsToShowToggle.includes(mapping[regionType]) && (
                                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                                     <button onClick={handleToggleSelectAll}>
                                         {selectAllToggleState ? "Clear selection" : "Select all"}
                                     </button>
                                 </div>
-                            )}
+                            )} */}
                         </div>
                     )}
                 </div>
