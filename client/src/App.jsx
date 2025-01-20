@@ -22,7 +22,6 @@ import ClimateMap from "./components/climateMap/ClimateMap";
 import ClimateSettings from "./components/climatePrediction/ClimateSettings";
 import ClimateSummary from "./components/climatePrediction/ClimateSummary";
 import Graph from "./components/climatePrediction/Graph";
-import Feedback from "./components/feedback/Feedback";
 import Footer from "./components/footer/Footer";
 import LCATHeader from "./components/header/Header";
 import Introduction from "./components/header/Introduction";
@@ -136,7 +135,6 @@ const App = () => {
                 </div>
             )}
 
-            <Feedback />
             <Footer />
         </div>
     );
