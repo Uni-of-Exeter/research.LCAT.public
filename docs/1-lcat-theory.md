@@ -45,7 +45,7 @@ This method is used when regions are smaller, and overlap fewer climate grid cel
 
 ### 2. Cache method
 
-As some larger regions cover thousands of cells, we need to cache some of these average climate results to ensure acceptable performance in the tool. We perform the following cache method for UK Counties, LA Districts, and the Isle of Man:
+As some larger regions cover thousands of cells, we need to cache some of these average climate results to ensure acceptable performance in the tool. We perform the following cache method for UK Counties and Unitary Authorities, LA Districts, and the Isle of Man:
 
 1. For each unique region in the boundary (i.e. every county), get the overlapping climate grid cells
 2. Get and average the climate data for these overlapping cells

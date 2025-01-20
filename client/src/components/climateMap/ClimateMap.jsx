@@ -27,7 +27,7 @@ const center = [55.8, -3.2];
 const highlightCol = "#ffd768ff";
 
 const mapping = {
-    boundary_uk_counties: "UK Counties",
+    boundary_uk_counties: "UK Counties and Unitary Authorities",
     boundary_la_districts: "Local Authority Districts",
     boundary_lsoa: "LSOA",
     boundary_msoa: "MSOA (Eng/Wales)",
@@ -170,7 +170,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                     }}
                     value={regionType}
                 >
-                    <option value="boundary_uk_counties">UK Counties</option>
+                    <option value="boundary_uk_counties">UK Counties and Unitary Authorities</option>
                     <option value="boundary_la_districts">Local Authority Districts</option>
                     <option value="boundary_parishes">Parishes (Eng/Wales)</option>
                     <option value="boundary_msoa">MSOA (Eng/Wales)</option>
