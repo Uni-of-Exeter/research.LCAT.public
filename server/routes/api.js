@@ -138,7 +138,6 @@ router.get("/region", async function (req, res) {
             return res.status(400).send({ error: "Invalid table" });
         }
 
-        // Use connection pool for better performance
         const client = new Client(conString);
         await client.connect();
 
@@ -186,6 +185,62 @@ router.get("/region", async function (req, res) {
     } catch (err) {
         console.error("Error:", err);
         res.status(500).send({ error: "Internal Server Error" });
+    }
+});
+
+// Get bounding box of array of regions
+router.get("/bounding_box", async (req, res) => {
+    const tableName = req.query.tableName;
+    let gids = req.query.gids || [];
+
+    if (!Array.isArray(gids)) {
+        gids = [gids];
+    }
+
+    if (!tableName || gids.length === 0) {
+        return res.status(400).json({ error: "Invalid parameters." });
+    }
+
+    const query = `
+        SELECT
+          ST_XMin(ext) AS min_lon,
+          ST_YMin(ext) AS min_lat,
+          ST_XMax(ext) AS max_lon,
+          ST_YMax(ext) AS max_lat
+        FROM (
+          SELECT ST_Extent(
+                   ST_Transform(geom, 4326)
+                 ) AS ext
+          FROM ${tableName}
+          WHERE gid = ANY($1)
+        ) sub;
+      `;
+
+    const client = new Client(conString);
+    await client.connect();
+
+    try {
+        const result = await client.query(query, [gids]);
+
+        // If there's no result or bounding box is null, respond accordingly
+        if (result.rows.length === 0 || result.rows[0].min_lon == null) {
+            return res.json({ bbox: null });
+        }
+
+        const row = result.rows[0];
+        const bbox = [
+            parseFloat(row.min_lon),
+            parseFloat(row.min_lat),
+            parseFloat(row.max_lon),
+            parseFloat(row.max_lat),
+        ];
+
+        return res.json({ bbox });
+    } catch (err) {
+        console.error("Error fetching bounding box:", err);
+        return res.status(500).json({ error: "Internal server error." });
+    } finally {
+        await client.end();
     }
 });
 
