@@ -34,6 +34,7 @@ import { defaultState } from "./utils/defaultState";
 const App = () => {
     const [regions, setRegions] = useState(defaultState.regions);
     const [regionType, setRegionType] = useState(defaultState.regionType);
+    const [regionBbox, setRegionBbox] = useState(defaultState.regionBbox);
     const [allRegions, setAllRegions] = useState(defaultState.allRegions);
     const [climatePrediction, setClimatePrediction] = useState(defaultState.climatePrediction);
     const [season, setSeason] = useState(defaultState.season);
@@ -57,6 +58,7 @@ const App = () => {
                 regionType={regionType}
                 setClimatePrediction={setClimatePrediction}
                 setIsPredictionLoading={setIsPredictionLoading}
+                setRegionBbox={setRegionBbox}
             />
 
             <div className="white-section">
@@ -128,7 +130,7 @@ const App = () => {
 
             {regions.length > 0 && (
                 <div className="grey-section">
-                    <ClimateJustVulnerabilities />
+                    <ClimateJustVulnerabilities regionBbox={regionBbox} />
                 </div>
             )}
 
