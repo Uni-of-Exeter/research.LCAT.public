@@ -19,10 +19,13 @@ const ClimatePredictionLoader = ({
     regionType,
     setClimatePrediction,
     setIsPredictionLoading,
+    setRegionBbox,
 }) => {
     useEffect(() => {
         // Load data only if regions are provided
         if (regions.length === 0) return;
+
+        const gids = regions.map((region) => region.id);
 
         const fetchClimatePrediction = async () => {
             // Set loading state to true before starting the fetch
@@ -36,10 +39,7 @@ const ClimatePredictionLoader = ({
                     rcp,
                     season,
                     boundary: regionType,
-                });
-
-                regions.forEach((region) => {
-                    queryParams.append("locations", region.id);
+                    locations: gids,
                 });
 
                 const url = `${prepend}/api/chess_scape?${queryParams}`;
@@ -65,6 +65,41 @@ const ClimatePredictionLoader = ({
 
         fetchClimatePrediction();
     }, [regions, season, rcp, regionType, setClimatePrediction, setIsPredictionLoading]);
+
+    // Get bounding box from array of gid arrays
+    useEffect(() => {
+        // If no regions, nothing to fetch
+        if (regions.length === 0) return;
+
+        const gids = regions.map((region) => region.id);
+
+        const fetchBoundingBox = async () => {
+            try {
+                // Construct base URL
+                const prepend = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "";
+
+                // Build query params (tableName + multiple gids)
+                const queryParams = new URLSearchParams();
+                queryParams.append("tableName", regionType);
+                gids.forEach((gid) => queryParams.append("gids", gid));
+
+                const bboxUrl = `${prepend}/api/bounding_box?${queryParams}`;
+                const response = await fetch(bboxUrl);
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch bounding box: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                setRegionBbox(data.bbox ?? null);
+            } catch (error) {
+                console.error("Error fetching bounding box:", error);
+            }
+        };
+
+        fetchBoundingBox();
+    }, [regions, regionType, setRegionBbox]);
 
     return null;
 };
