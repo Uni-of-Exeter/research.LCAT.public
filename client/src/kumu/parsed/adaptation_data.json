@@ -3632,9 +3632,8 @@
                 "Food and personal security in full",
                 "Food and personal security summary"
             ],
-            "ccc theme": ["Water supply", "Telecoms & ICT", "Community preparedness and response"],
-            "ipcc adaptation category": ["Technological ", "Informational"],
-            "aggregated_layers": ["Flooding and Drought", "Food and Personal Security"]
+            "ccc adaptation theme": ["Water supply", "Telecoms & ICT", "Community preparedness and response"],
+            "ipcc adaptation category": ["Technological ", "Informational"]
         }
     },
     {
