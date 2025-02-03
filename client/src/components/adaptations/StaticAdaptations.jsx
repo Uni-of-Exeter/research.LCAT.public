@@ -37,6 +37,8 @@ const StaticAdaptations = (props) => {
         const layers = adaptation.attributes.layer.map((layer) => layer.toLowerCase());
         const bodyData = adaptation.attributes[selectedKey];
 
+        if (bodyData === undefined) return;
+
         if (filterState === "No filter applied") {
             return layers.some((layer) => layer.includes(hazardName + " in full"));
         } else {
@@ -116,6 +118,6 @@ const StaticAdaptations = (props) => {
             </p>
         </LoadingOverlay>
     );
-}
+};
 
 export default StaticAdaptations;
