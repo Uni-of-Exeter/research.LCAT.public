@@ -29,11 +29,18 @@ const StaticAdaptation = (props) => {
                 <div className="content">
                     <b className="static-adaptation-emphasis">Description:</b>
                     <p>{props.adaptation.description}</p>
+                    <b className="static-adaptation-emphasis">Related climate impact pathways:</b>
+                    <ul>
+                        {props.adaptation.aggregated_layers.map((item, index) => (
+                            <li key={index}>{item}</li>
+                        ))}
+                    </ul>
+
                     <StaticReferences referenceIds={props.adaptation.reference_id} />
                 </div>
             </div>
         </div>
     );
-}
+};
 
 export default StaticAdaptation;
