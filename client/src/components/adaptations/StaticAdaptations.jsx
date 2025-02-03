@@ -58,8 +58,7 @@ const StaticAdaptations = (props) => {
                 pathway, adaptation theme, and activity type.
             </p>
             <p>
-                You are viewing{" "}
-                <strong className="text-emphasis">{filteredAdaptations.length} climate adaptations </strong> for&nbsp;
+                <b className="static-adaptation-emphasis">Selected climate impact pathway: </b>
                 <select
                     value={props.selectedHazardName}
                     onChange={(e) => {
@@ -73,38 +72,47 @@ const StaticAdaptations = (props) => {
                     ))}
                 </select>
             </p>
-            <p>
-                These adaptations can be filtered by the{"  "}
-                <select
-                    value={selectedBody}
-                    onChange={(e) => {
-                        setSelectedBody(e.target.value);
-                    }}
-                >
-                    <option value="CCC">Climate Change Committee</option>
-                    <option value="IPCC">Intergovernmental Panel on Climate Change</option>
-                </select>
-                {" adaptation "}
-                {selectedBody === "CCC" ? "themes: " : "activity types: "}
-                <select
-                    value={filterState}
-                    onChange={(e) => {
-                        setFilterState(e.target.value);
-                    }}
-                >
-                    <option value="No filter applied">No filter applied</option>
-                    {adaptationCategories.map((category, index) => (
-                        <option value={category} key={index}>
-                            {category}
-                        </option>
-                    ))}
-                </select>
-            </p>
-
+                <ul>
+                    <li>{filteredAdaptations.length} climate adaptations were found.</li>
+                    <li>
+                        Filter category:{"  "}
+                        <select
+                            value={selectedBody}
+                            onChange={(e) => {
+                                setSelectedBody(e.target.value);
+                            }}
+                        >
+                            <option value="CCC">Climate Change Committee adaptation themes</option>
+                            <option value="IPCC">Intergovernmental Panel on Climate Change activity types</option>
+                        </select>
+                    </li>
+                    <li>
+                        Apply filter:{"  "}
+                        <select
+                            value={filterState}
+                            onChange={(e) => {
+                                setFilterState(e.target.value);
+                            }}
+                        >
+                            <option value="No filter applied">No filter applied</option>
+                            {adaptationCategories.map((category, index) => (
+                                <option value={category} key={index}>
+                                    {category}
+                                </option>
+                            ))}
+                        </select>
+                    </li>
+                </ul>
             <div>
                 {filteredAdaptations.length ? (
                     filteredAdaptations.map((adaptation) => {
-                        return <StaticAdaptation key={adaptation._id} adaptation={adaptation.attributes} />;
+                        return (
+                            <StaticAdaptation
+                                key={adaptation._id}
+                                adaptation={adaptation.attributes}
+                                selectedHazardName={props.selectedHazardName}
+                            />
+                        );
                     })
                 ) : (
                     <h3>No adaptations found</h3>
@@ -116,6 +124,6 @@ const StaticAdaptations = (props) => {
             </p>
         </LoadingOverlay>
     );
-}
+};
 
 export default StaticAdaptations;

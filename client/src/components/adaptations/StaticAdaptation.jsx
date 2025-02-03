@@ -29,11 +29,13 @@ const StaticAdaptation = (props) => {
                 <div className="content">
                     <b className="static-adaptation-emphasis">Description:</b>
                     <p>{props.adaptation.description}</p>
-                    <b className="static-adaptation-emphasis">Related climate impact pathways:</b>
+                    <p>This adaptation is also relevant to the following climate impact pathways:</p>
                     <ul>
-                        {props.adaptation.aggregated_layers.map((item, index) => (
-                            <li key={index}>{item}</li>
-                        ))}
+                        {props.adaptation.aggregated_layers
+                            .filter((item) => item !== props.selectedHazardName)
+                            .map((item, index) => (
+                                <li key={index}>{item}</li>
+                            ))}
                     </ul>
 
                     <StaticReferences referenceIds={props.adaptation.reference_id} />
