@@ -42,6 +42,40 @@ class ProcessKumu:
             if "layer" in element["attributes"]
         ]
 
+    def _capitalise_except_and(self, text):
+        """
+        Capitalise words except "and".
+        """
+
+        words = text.split()
+        capitalized_words = [word.capitalize() if word.lower() != "and" else word for word in words]
+
+        return " ".join(capitalized_words)
+
+    def aggregate_layers(self):
+        """
+        Aggregate the clean layers and store in the .json.
+
+        i.e. ["Coastal security In Full", "Food and personal security in full"] -> ["Coastal Security", "Food and Personal Security"]
+        """
+
+        splitter = " in full"
+
+        for adaptation in self.filtered_data:
+            layer_data = adaptation["attributes"]["layer"]
+            new_layer_data = []
+
+            for layer in layer_data:
+                lower_layer = layer.lower()
+
+                if splitter in lower_layer:
+                    splits = lower_layer.split(splitter)
+                    hazard = splits[0]
+                    formatted_hazard = self._capitalise_except_and(hazard)
+                    new_layer_data.append(formatted_hazard)
+
+            adaptation["attributes"]["aggregated_layers"] = new_layer_data
+
     def save_json(self, output_filename):
         """
         Save the filtered data as a json file.
