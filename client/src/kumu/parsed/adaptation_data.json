@@ -3194,7 +3194,22 @@
                 "Information & Communication Technology",
                 "International Factors"
             ],
-            "ccc adaptation theme": ["All"],
+            "ccc adaptation theme": [
+                "Nature",
+                "Working lands and seas",
+                "Food security",
+                "Water supply",
+                "Energy",
+                "Telecoms & ICT",
+                "Transport",
+                "Towns and cities",
+                "Buildings",
+                "Health",
+                "Community preparedness and response",
+                "Business",
+                "Finance",
+                "All"
+            ],
             "ipcc adaptation category": [
                 "Engineered and built environment",
                 "Technological ",
