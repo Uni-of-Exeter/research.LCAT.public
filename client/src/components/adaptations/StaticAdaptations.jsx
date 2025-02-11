@@ -15,34 +15,43 @@ import LoadingOverlay from "react-loading-overlay-ts";
 
 import adaptationData from "../../kumu/parsed/adaptation_data.json";
 import { pathways } from "../climateImpacts/ClimateImpactSummaryData";
-import { adaptationBodyKeys, CCCAdaptationThemes, IPCCCategories } from "./AdaptationCategories";
+import { adaptationFilters } from "./AdaptationCategories";
 import StaticAdaptation from "./StaticAdaptation";
 
 const StaticAdaptations = (props) => {
-    const [selectedBody, setSelectedBody] = useState("CCC");
-    const [filterState, setFilterState] = useState("No filter applied");
+    const { selectedHazardName, setSelectedHazardName } = props;
 
-    // Get the correct key based on the selectedBody
-    const selectedKey = adaptationBodyKeys[selectedBody];
-    const adaptationCategories = selectedBody === "CCC" ? CCCAdaptationThemes : IPCCCategories;
+    const defaultFilterName = adaptationFilters[0].filterName;
+    const defaultFilterCategory = adaptationFilters[0].category;
 
-    // Reset filterState if selectedBody changes
-    useEffect(() => {
-        setFilterState("No filter applied");
-    }, [selectedBody]);
+    const [filterName, setFilterName] = useState(defaultFilterName);
+    const [filterCategory, setFilterCategory] = useState(defaultFilterCategory);
+    const [loading, setLoading] = useState(false);
 
-    // Filter adaptation list based on selectedBody (i.e. CCC or IPCC) and filterState
+    // Handle change in filter: set filterName and filterCategory when dropdown is used
+    const handleFilterChange = (e) => {
+        const selectedFilterName = e.target.value;
+        const selectedFilter = adaptationFilters.find((filter) => filter.filterName === selectedFilterName);
+
+        if (selectedFilter) {
+            setFilterName(selectedFilter.filterName);
+            setFilterCategory(selectedFilter.category);
+        }
+    };
+
+    // Filter adaptations using filterName and filterCategory
     const filteredAdaptations = adaptationData.filter((adaptation) => {
-        const hazardName = props.selectedHazardName.toLowerCase();
+        const hazardName = selectedHazardName.toLowerCase();
         const layers = adaptation.attributes.layer.map((layer) => layer.toLowerCase());
-        const bodyData = adaptation.attributes[selectedKey];
+        const adaptationCategories = adaptation.attributes[filterCategory] || [];
 
-        if (!bodyData) return;
-
-        if (filterState === "No filter applied") {
+        if (filterName === defaultFilterName) {
             return layers.some((layer) => layer.includes(hazardName + " in full"));
         } else {
-            return layers.some((layer) => layer.includes(hazardName + " in full")) && bodyData.includes(filterState);
+            return (
+                layers.some((layer) => layer.includes(hazardName + " in full")) &&
+                adaptationCategories.includes(filterName)
+            );
         }
     });
 
@@ -51,7 +60,7 @@ const StaticAdaptations = (props) => {
     }
 
     return (
-        <LoadingOverlay active={props.loading} spinner text={"Loading adaptations"}>
+        <LoadingOverlay active={loading} spinner text={"Loading adaptations"}>
             <h1>Adaptations</h1>
             <p>
                 Based on the expected climate change and resulting impacts in the UK, the following adaptations should
@@ -62,9 +71,9 @@ const StaticAdaptations = (props) => {
             <p>
                 <b className="static-adaptation-emphasis">Selected climate impact pathway: </b>
                 <select
-                    value={props.selectedHazardName}
+                    value={selectedHazardName}
                     onChange={(e) => {
-                        props.setSelectedHazardName(e.target.value);
+                        setSelectedHazardName(e.target.value);
                     }}
                 >
                     {pathways.map((pathway) => (
@@ -74,45 +83,30 @@ const StaticAdaptations = (props) => {
                     ))}
                 </select>
             </p>
-                <ul>
-                    <li>{filteredAdaptations.length} climate adaptations were found.</li>
-                    <li>
-                        Filter category:{"  "}
-                        <select
-                            value={selectedBody}
-                            onChange={(e) => {
-                                setSelectedBody(e.target.value);
-                            }}
-                        >
-                            <option value="CCC">Climate Change Committee adaptation themes</option>
-                            <option value="IPCC">Intergovernmental Panel on Climate Change activity types</option>
-                        </select>
-                    </li>
-                    <li>
-                        Apply filter:{"  "}
-                        <select
-                            value={filterState}
-                            onChange={(e) => {
-                                setFilterState(e.target.value);
-                            }}
-                        >
-                            <option value="No filter applied">No filter applied</option>
-                            {adaptationCategories.map((category, index) => (
-                                <option value={category} key={index}>
-                                    {category}
-                                </option>
-                            ))}
-                        </select>
-                    </li>
-                </ul>
+            <ul>
+                <li>
+                    {filteredAdaptations.length} climate adaptation
+                    {filteredAdaptations.length === 1 ? " was" : "s were"} found
+                </li>
+                <li>
+                    These adaptations can be filtered by theme:{"  "}
+                    <select value={filterName} onChange={handleFilterChange}>
+                        {adaptationFilters.map((filter, index) => (
+                            <option value={filter.filterName} key={index}>
+                                {filter.displayName}
+                            </option>
+                        ))}
+                    </select>
+                </li>
+            </ul>
             <div>
                 {filteredAdaptations.length ? (
                     filteredAdaptations.map((adaptation) => {
                         return (
                             <StaticAdaptation
                                 key={adaptation._id}
-                                adaptation={adaptation.attributes}
-                                selectedHazardName={props.selectedHazardName}
+                                adaptation={adaptation}
+                                selectedHazardName={selectedHazardName}
                             />
                         );
                     })
@@ -120,6 +114,7 @@ const StaticAdaptations = (props) => {
                     <h3>No adaptations found</h3>
                 )}
             </div>
+
             <p className="note">
                 Data source: The adaptation data is based on published scientific literature and reports. You can see
                 the references used by expanding each adaptation.
