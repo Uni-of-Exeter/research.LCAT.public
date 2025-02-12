@@ -7,7 +7,7 @@ const AdaptationGrid = ({ adaptationData, pathways }) => {
 
     // Define columns for DataGrid
     const columns = [
-        { field: "label", headerName: "Label", flex: 2 },
+        { field: "label", headerName: "Adaptation name", flex: 2 },
         ...pathways.map((pathway) => ({
             field: pathway.name,
             type: "boolean",
@@ -44,7 +44,7 @@ const AdaptationGrid = ({ adaptationData, pathways }) => {
                 initialState={{
                     pagination: {
                         paginationModel: {
-                            pageSize: 8,
+                            pageSize: 10,
                         },
                     },
                 }}

@@ -11,6 +11,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
 import React, { useEffect, useState } from "react";
+import { useCollapse } from "react-collapsed";
 import LoadingOverlay from "react-loading-overlay-ts";
 
 import adaptationData from "../../kumu/parsed/adaptation_data.json";
@@ -20,7 +21,7 @@ import AdaptationGrid from "./AdaptationGrid";
 import StaticAdaptation from "./StaticAdaptation";
 
 const StaticAdaptations = (props) => {
-    const { selectedHazardName, setSelectedHazardName } = props;
+    const { selectedHazardName, setSelectedHazardName, regions } = props;
 
     const defaultFilterName = adaptationFilters[0].filterName;
     const defaultFilterCategory = adaptationFilters[0].category;
@@ -28,6 +29,9 @@ const StaticAdaptations = (props) => {
     const [filterName, setFilterName] = useState(defaultFilterName);
     const [filterCategory, setFilterCategory] = useState(defaultFilterCategory);
     const [loading, setLoading] = useState(false);
+
+    const [isExpanded, setExpanded] = useState(false);
+    const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
 
     // Handle change in filter: set filterName and filterCategory when dropdown is used
     const handleFilterChange = (e) => {
@@ -56,20 +60,18 @@ const StaticAdaptations = (props) => {
         }
     });
 
+    useEffect(() => setExpanded(false), [regions]);
+
+    function handleOnClick() {
+        setExpanded(!isExpanded);
+    }
+
     if (!adaptationData) {
         return <div>Loading...</div>;
     }
 
     return (
         <LoadingOverlay active={loading} spinner text={"Loading adaptations"}>
-            <h1>Adaptation Grid</h1>
-
-            <p>
-                This is a mock-up of an adaptation data grid. It allows users to filter and sort adaptations more easily.
-            </p>
-
-            <AdaptationGrid adaptationData={adaptationData} pathways={pathways}/>
-
             <h1>Adaptations</h1>
             <p>
                 Based on the expected climate change and resulting impacts in the UK, the following adaptations should
@@ -128,6 +130,30 @@ const StaticAdaptations = (props) => {
                 Data source: The adaptation data is based on published scientific literature and reports. You can see
                 the references used by expanding each adaptation.
             </p>
+
+            <div className="collapsible">
+                <div className="header" style={{ margin: "1em" }} {...getToggleProps({ onClick: handleOnClick })}>
+                    {isExpanded ? "Hide" : "Explore"} adaptation details
+                </div>
+                <div {...getCollapseProps()}>
+                    <h1>Adaptation Grid</h1>
+                    <ul>
+                        <li>
+                            This is a mock-up of an adaptation data grid. It allows users to filter and sort adaptations
+                            more easily.
+                        </li>
+                        <li>
+                            However, there is some repeated functionality with the yellow adaptations, so it is not
+                            entirely clear if this adds much.
+                        </li>
+                    </ul>
+                    <AdaptationGrid adaptationData={adaptationData} pathways={pathways} />
+
+                    <p className="note">
+                        Data source: The adaptation data can be downloaded from [insert link to Google Sheet here].
+                    </p>
+                </div>
+            </div>
         </LoadingOverlay>
     );
 };

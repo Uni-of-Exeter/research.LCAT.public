@@ -130,6 +130,7 @@ const App = () => {
                     <StaticAdaptations
                         selectedHazardName={selectedHazardName}
                         setSelectedHazardName={setSelectedHazardName}
+                        regions={regions}
                     />
                 </div>
             )}
