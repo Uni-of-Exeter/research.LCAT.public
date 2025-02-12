@@ -12,7 +12,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./ClimateMap.css";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
 import LoadingOverlay from "react-loading-overlay-ts";
 
@@ -135,26 +135,44 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
         setIsDrawerOpen(!isDrawerOpen);
     };
 
-    const handleToggleSelectAll = () => {
-        if (selectAllToggleState) {
-            // Deselect all
-            filteredRegions.forEach((region) => {
-                const isSelected = regions.some((r) => r.id === region.gid);
-                if (isSelected) {
-                    toggleRegion(region.gid, region.name);
-                }
-            });
-        } else {
-            // Select all
-            filteredRegions.forEach((region) => {
-                const isSelected = regions.some((r) => r.id === region.gid);
-                if (!isSelected) {
-                    toggleRegion(region.gid, region.name);
-                }
-            });
-        }
-        setSelectAllToggleState(!selectAllToggleState);
-    };
+    // Potential feature to select a number of regions at once
+    // const handleToggleSelectAll = () => {
+    //     if (selectAllToggleState) {
+    //         // Deselect all
+    //         filteredRegions.forEach((region) => {
+    //             const isSelected = regions.some((r) => r.id === region.gid);
+    //             if (isSelected) {
+    //                 toggleRegion(region.gid, region.name);
+    //             }
+    //         });
+    //     } else {
+    //         // Select all
+    //         filteredRegions.forEach((region) => {
+    //             const isSelected = regions.some((r) => r.id === region.gid);
+    //             if (!isSelected) {
+    //                 toggleRegion(region.gid, region.name);
+    //             }
+    //         });
+    //     }
+    //     setSelectAllToggleState(!selectAllToggleState);
+    // };
+
+    // Hide search drawer in map if window becomes narrow (or vice versa)
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 750) {
+                setIsDrawerOpen(false);
+            } else {
+                setIsDrawerOpen(true);
+            }
+        };
+
+        // Run once on mount to set the initial state
+        handleResize();
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     return (
         <div>
