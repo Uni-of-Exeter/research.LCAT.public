@@ -16,6 +16,7 @@ import LoadingOverlay from "react-loading-overlay-ts";
 import adaptationData from "../../kumu/parsed/adaptation_data.json";
 import { pathways } from "../climateImpacts/ClimateImpactSummaryData";
 import { adaptationFilters } from "./AdaptationCategories";
+import AdaptationGrid from "./AdaptationGrid";
 import StaticAdaptation from "./StaticAdaptation";
 
 const StaticAdaptations = (props) => {
@@ -61,6 +62,14 @@ const StaticAdaptations = (props) => {
 
     return (
         <LoadingOverlay active={loading} spinner text={"Loading adaptations"}>
+            <h1>Adaptation Grid</h1>
+
+            <p>
+                This is a mock-up of an adaptation data grid. It allows users to filter and sort adaptations more easily.
+            </p>
+
+            <AdaptationGrid adaptationData={adaptationData} pathways={pathways}/>
+
             <h1>Adaptations</h1>
             <p>
                 Based on the expected climate change and resulting impacts in the UK, the following adaptations should
