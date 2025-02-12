@@ -21,11 +21,28 @@ const KumuImpactPathway = (props) => {
     const [isExpanded, setExpanded] = useState(false);
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
     const [whichPathway, setWhichPathway] = useState("summary");
-    const pathway = pathways.find((item) => item.name === props.selectedHazardName);
-    const pathwayMap = whichPathway === "summary" ? pathway.summaryPathwayMap : pathway.completePathwayMap;
 
-    const togglePathway = () => {
-        setWhichPathway(whichPathway === "summary" ? "complete" : "summary");
+    const pathway = pathways.find((item) => item.name === props.selectedHazardName);
+
+    let pathwayMap;
+    switch (whichPathway) {
+        case "summary":
+            pathwayMap = pathway.summaryPathwayMap;
+            break;
+        case "complete":
+            pathwayMap = pathway.completePathwayMap;
+            break;
+        case "complete (with adaptations)":
+            pathwayMap = pathway.completePathwayMapWithAdaptations;
+            break;
+        default:
+            pathwayMap = pathway.summaryPathwayMap;
+    }
+
+    const togglePathway = (value) => {
+        if (value !== whichPathway) {
+            setWhichPathway(value);
+        }
     };
 
     useEffect(() => setExpanded(false), [props.regions]);
@@ -59,9 +76,10 @@ const KumuImpactPathway = (props) => {
                         </p>
                         <p>
                             You are viewing the{" "}
-                            <select value={whichPathway} onChange={togglePathway}>
+                            <select value={whichPathway} onChange={(event) => togglePathway(event.target.value)}>
                                 <option value="summary">summary</option>
                                 <option value="complete">complete</option>
+                                <option value="complete (with adaptations)">complete (with adaptations)</option>
                             </select>{" "}
                             climate impacts for{" "}
                             <select
