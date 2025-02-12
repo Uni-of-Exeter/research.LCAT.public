@@ -14,12 +14,17 @@
 }
 
 .adaptation.header {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding: 0.5em 2em 0.5em 1em;
 }
 
 .arrow {
     position: absolute;
     right: 1em;
-    top: 1em;
+    top: 40%;
+    transform: translateY(-50%);
     border: solid black;
     border-width: 0 3px 3px 0;
     display: inline-block;

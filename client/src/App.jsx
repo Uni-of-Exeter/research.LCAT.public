@@ -128,7 +128,6 @@ const App = () => {
             {regions.length > 0 && (
                 <div className="grey-section">
                     <StaticAdaptations
-                        regions={regions}
                         selectedHazardName={selectedHazardName}
                         setSelectedHazardName={setSelectedHazardName}
                     />

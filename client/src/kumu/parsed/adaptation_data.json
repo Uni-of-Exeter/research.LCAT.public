@@ -14,7 +14,8 @@
                 "Community preparedness and response"
             ],
             "main_adaptation": ["Protection approaches"],
-            "ipcc adaptation category": ["Engineered and built environment"]
+            "ipcc adaptation category": ["Engineered and built environment"],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -32,7 +33,8 @@
             ],
             "ccc adaptation theme": ["Health", "Community preparedness and response"],
             "ipcc adaptation category": ["Educational"],
-            "case_studies": ["1498", "1516"]
+            "case_studies": ["1498", "1516"],
+            "aggregated_layers": ["Flooding and Drought", "Food and Personal Security"]
         }
     },
     {
@@ -45,7 +47,8 @@
             "layer": ["Flooding and drought in full", "Drought summary", "Flooding summary"],
             "ccc adaptation theme": ["Energy"],
             "ipcc adaptation category": ["Engineered and built environment", "Technological "],
-            "case_studies": ["1500", "317", "1501"]
+            "case_studies": ["1500", "317", "1501"],
+            "aggregated_layers": ["Flooding and Drought"]
         }
     },
     {
@@ -72,7 +75,8 @@
                 "Laws and regulations",
                 "Government policies and programs"
             ],
-            "case_studies": ["1445", "1474"]
+            "case_studies": ["1445", "1474"],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -85,7 +89,8 @@
             "reference_id": ["206"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities"],
-            "ipcc adaptation category": ["Economic", "Laws and regulations", "Government policies and programs"]
+            "ipcc adaptation category": ["Economic", "Laws and regulations", "Government policies and programs"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -98,7 +103,8 @@
             "urban_rural": "Rural",
             "ccc adaptation theme": ["Working lands and seas", "Food security"],
             "ipcc adaptation category": ["Technological ", "Behavioural"],
-            "description": "Saltwater resilient crops are those that are tolerant or thrive when exposed to saltwater. Planting these crops can ensure that if coastal flooding or saltwater intrusion occurs the crops do not fail."
+            "description": "Saltwater resilient crops are those that are tolerant or thrive when exposed to saltwater. Planting these crops can ensure that if coastal flooding or saltwater intrusion occurs the crops do not fail.",
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -122,7 +128,8 @@
                 "Community preparedness and response"
             ],
             "ipcc adaptation category": ["Ecosystem-based", "Government policies and programs"],
-            "case_studies": ["552", "553"]
+            "case_studies": ["552", "553"],
+            "aggregated_layers": ["Food and Personal Security", "Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -141,7 +148,8 @@
                 "Food and personal security summary"
             ],
             "ccc adaptation theme": ["Telecoms & ICT", "Health"],
-            "ipcc adaptation category": ["Technological ", "Informational"]
+            "ipcc adaptation category": ["Technological ", "Informational"],
+            "aggregated_layers": ["Temperature", "Flooding and Drought", "Food and Personal Security"]
         }
     },
     {
@@ -158,7 +166,8 @@
                 "Coastal security Summary"
             ],
             "ccc adaptation theme": ["Community preparedness and response"],
-            "ipcc adaptation category": ["Services", "Behavioural"]
+            "ipcc adaptation category": ["Services", "Behavioural"],
+            "aggregated_layers": ["Extreme Storms", "Coastal Security"]
         }
     },
     {
@@ -175,7 +184,8 @@
             "sector": ["Food Safety & Security"],
             "ccc adaptation theme": ["Health", "Community preparedness and response"],
             "ipcc adaptation category": ["Educational"],
-            "description": "An increase in temperature and humidity can increase food-related safety risks associated with climate change. Measures to increase education on food handling and safety can reduce the food safety risks. Additionally, increasing education on food preparation can increase people\u2019s ability to change their diets to healthier and more sustainable options. \n\nIncreasing skills and education on safe seafood handling, preparation and cooking, as well as the risks associated with toxins and viral and bacterial infections, can help to reduce the risk of exposure. Methods such as washing hands and surfaces thoroughly can also reduce the exposure risk associated with handling."
+            "description": "An increase in temperature and humidity can increase food-related safety risks associated with climate change. Measures to increase education on food handling and safety can reduce the food safety risks. Additionally, increasing education on food preparation can increase people\u2019s ability to change their diets to healthier and more sustainable options. \n\nIncreasing skills and education on safe seafood handling, preparation and cooking, as well as the risks associated with toxins and viral and bacterial infections, can help to reduce the risk of exposure. Methods such as washing hands and surfaces thoroughly can also reduce the exposure risk associated with handling.",
+            "aggregated_layers": ["Food and Personal Security", "Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -204,7 +214,8 @@
                 "Ecosystem-based",
                 "Government policies and programs"
             ],
-            "urban_rural": "Coastal"
+            "urban_rural": "Coastal",
+            "aggregated_layers": ["Coastal Security", "Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -224,7 +235,8 @@
             ],
             "ccc adaptation theme": ["Towns and cities", "Buildings", "Business", "Finance"],
             "ipcc adaptation category": ["Economic", "Laws and regulations", "Government policies and programs"],
-            "case_studies": ["540"]
+            "case_studies": ["540"],
+            "aggregated_layers": ["Extreme Storms", "Coastal Security", "Flooding and Drought"]
         }
     },
     {
@@ -260,7 +272,12 @@
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas", "Food security"],
             "ipcc adaptation category": ["Ecosystem-based", "Behavioural", "Government policies and programs"],
-            "case_studies": ["1430", "546", "1539", "1559"]
+            "case_studies": ["1430", "546", "1539", "1559"],
+            "aggregated_layers": [
+                "Flooding and Drought",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
+            ]
         }
     },
     {
@@ -274,7 +291,8 @@
                 "\u00adBiodiversity & Natural Habitats",
                 "\u00adWater Supply & Quality",
                 "Food Safety & Security"
-            ]
+            ],
+            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -296,7 +314,13 @@
                 "Pathogenic Marine Microorganisms Summary"
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas", "Food security", "Health", "Business"],
-            "ipcc adaptation category": ["Services", "Laws and regulations", "Government policies and programs"]
+            "ipcc adaptation category": ["Services", "Laws and regulations", "Government policies and programs"],
+            "aggregated_layers": [
+                "Extreme Storms",
+                "Flooding and Drought",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
+            ]
         }
     },
     {
@@ -308,7 +332,8 @@
             "description": "Due to the hazardous nature of microplastics and chemical pollutants, methods to manage and remove plastic waste and litter from the environment are required. \n\nBeach cleans can help to reduce the abundance of litter within the environment. Additionally, removal of plastics from surface waters could help to limit the associated health impacts.",
             "sector": ["\u00adBiodiversity & Natural Habitats"],
             "ccc adaptation theme": ["Community preparedness and response"],
-            "ipcc adaptation category": ["Behavioural"]
+            "ipcc adaptation category": ["Behavioural"],
+            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -334,7 +359,13 @@
                 "Technological ",
                 "Government policies and programs"
             ],
-            "case_studies": ["1563", "1564"]
+            "case_studies": ["1563", "1564"],
+            "aggregated_layers": [
+                "Extreme Storms",
+                "Coastal Security",
+                "Flooding and Drought",
+                "Food and Personal Security"
+            ]
         }
     },
     {
@@ -351,7 +382,8 @@
                 "Behavioural",
                 "Government policies and programs"
             ],
-            "case_studies": ["1527", "1528", "1529"]
+            "case_studies": ["1527", "1528", "1529"],
+            "aggregated_layers": ["Flooding and Drought"]
         }
     },
     {
@@ -377,7 +409,8 @@
                 "Business"
             ],
             "ipcc adaptation category": ["Technological ", "Behavioural", "Government policies and programs"],
-            "case_studies": ["1124"]
+            "case_studies": ["1124"],
+            "aggregated_layers": ["Coastal Security", "Food and Personal Security", "Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -395,7 +428,8 @@
             "sector": ["Agriculture & Forestry", "Food Safety & Security"],
             "urban_rural": "Rural",
             "ccc adaptation theme": ["Working lands and seas", "Food security"],
-            "ipcc adaptation category": ["Technological ", "Educational", "Behavioural"]
+            "ipcc adaptation category": ["Technological ", "Educational", "Behavioural"],
+            "aggregated_layers": ["Food and Personal Security", "Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -407,7 +441,8 @@
             "layer": ["Coastal security In Full", "Coastal security Summary"],
             "ccc adaptation theme": ["Community preparedness and response"],
             "ipcc adaptation category": ["Educational", "Informational", "Behavioural"],
-            "case_studies": ["1476", "1498"]
+            "case_studies": ["1476", "1498"],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -428,7 +463,8 @@
                 "Engineered and built environment",
                 "Laws and regulations",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Extreme Storms", "Coastal Security"]
         }
     },
     {
@@ -458,7 +494,8 @@
                 "Economic",
                 "Laws and regulations",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -484,7 +521,14 @@
             "thematic areas for adaptation action": [],
             "ccc adaptation theme": ["Towns and cities", "Buildings", "Health", "Community preparedness and response"],
             "ipcc adaptation category": ["Services", "Laws and regulations", "Government policies and programs"],
-            "case_studies": ["1510", "1518", "1519", "1520", "1531", "1532"]
+            "case_studies": ["1510", "1518", "1519", "1520", "1531", "1532"],
+            "aggregated_layers": [
+                "Extreme Storms",
+                "Coastal Security",
+                "Flooding and Drought",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
+            ]
         }
     },
     {
@@ -497,7 +541,8 @@
             "layer": ["Coastal security In Full", "Coastal security Summary"],
             "sector": ["Cultural Heritage", "International Factors"],
             "ccc adaptation theme": ["Towns and cities", "Community preparedness and response"],
-            "ipcc adaptation category": ["Engineered and built environment", "Behavioural"]
+            "ipcc adaptation category": ["Engineered and built environment", "Behavioural"],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -509,7 +554,8 @@
             "layer": ["Food and personal security in full", "Food and personal security summary"],
             "sector": ["Agriculture & Forestry", "Food Safety & Security"],
             "ccc adaptation theme": ["Working lands and seas", "Food security"],
-            "ipcc adaptation category": ["Technological ", "Informational", "Government policies and programs"]
+            "ipcc adaptation category": ["Technological ", "Informational", "Government policies and programs"],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -521,7 +567,8 @@
             "description": "Scotland's private water supplies are at risk from climate impacts. Suggestions to improve the water supplies include risk assessments of water quality issues from various climate impacts, develop household water storage capacity in the event of drought or low water quality, monitor and anticipate water demand fluctuation, and consider centralized management of supply in rural areas.",
             "layer": ["Extreme storms In Full", "Extreme storms Summary"],
             "ccc adaptation theme": ["Water supply"],
-            "ipcc adaptation category": ["Engineered and built environment", "Services"]
+            "ipcc adaptation category": ["Engineered and built environment", "Services"],
+            "aggregated_layers": ["Extreme Storms"]
         }
     },
     {
@@ -535,7 +582,8 @@
             "urban_rural": "Urban",
             "layer": ["Flooding and drought in full", "Flooding summary"],
             "ccc adaptation theme": ["Towns and cities", "Community preparedness and response"],
-            "ipcc adaptation category": ["Engineered and built environment", "Ecosystem-based"]
+            "ipcc adaptation category": ["Engineered and built environment", "Ecosystem-based"],
+            "aggregated_layers": ["Flooding and Drought"]
         }
     },
     {
@@ -558,7 +606,8 @@
                 "Technological ",
                 "Services",
                 "Laws and regulations"
-            ]
+            ],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -585,7 +634,8 @@
                 "Informational",
                 "Behavioural",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -604,7 +654,8 @@
             ],
             "ccc adaptation theme": ["Transport"],
             "ipcc adaptation category": ["Engineered and built environment", "Technological "],
-            "case_studies": ["1502"]
+            "case_studies": ["1502"],
+            "aggregated_layers": ["Flooding and Drought", "Food and Personal Security"]
         }
     },
     {
@@ -630,7 +681,8 @@
             ],
             "ccc adaptation theme": ["Health", "Community preparedness and response"],
             "ipcc adaptation category": ["Technological ", "Informational", "Government policies and programs"],
-            "case_studies": ["1482"]
+            "case_studies": ["1482"],
+            "aggregated_layers": ["Flooding and Drought", "Food and Personal Security"]
         }
     },
     {
@@ -656,7 +708,8 @@
             "layer": ["Food and personal security in full", "Food and personal security summary"],
             "sector": ["Food Safety & Security"],
             "ccc adaptation theme": ["Working lands and seas", "Food security", "Business"],
-            "ipcc adaptation category": ["Behavioural", "Laws and regulations", "Government policies and programs"]
+            "ipcc adaptation category": ["Behavioural", "Laws and regulations", "Government policies and programs"],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -672,7 +725,8 @@
             ],
             "layer": ["Extreme storms In Full", "Extreme storms Summary", "Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Health", "Community preparedness and response"],
-            "description": "Warm spaces should be implemented in communities to provide a safe, supportive, and caring environment to those at risk due to cold temperatures in winter."
+            "description": "Warm spaces should be implemented in communities to provide a safe, supportive, and caring environment to those at risk due to cold temperatures in winter.",
+            "aggregated_layers": ["Extreme Storms", "Temperature"]
         }
     },
     {
@@ -700,7 +754,8 @@
                 "Ecosystem-based",
                 "Government policies and programs"
             ],
-            "case_studies": ["1497", "129"]
+            "case_studies": ["1497", "129"],
+            "aggregated_layers": ["Flooding and Drought", "Food and Personal Security"]
         }
     },
     {
@@ -717,7 +772,8 @@
                 "Behavioural",
                 "Laws and regulations",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -730,7 +786,8 @@
             "sector": ["Food Safety & Security", "Business & Industry"],
             "ccc adaptation theme": ["Health", "Community preparedness and response"],
             "ipcc adaptation category": ["Behavioural", "Government policies and programs"],
-            "case_studies": ["1489", "1490"]
+            "case_studies": ["1489", "1490"],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -743,7 +800,8 @@
             "description": "Speed limits and average speed technology on the roadside can promote a smoother driving style and speed reduction.",
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities"],
-            "ipcc adaptation category": ["Engineered and built environment", "Technological ", "Laws and regulations"]
+            "ipcc adaptation category": ["Engineered and built environment", "Technological ", "Laws and regulations"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -761,7 +819,8 @@
                 "Community preparedness and response",
                 "Business"
             ],
-            "ipcc adaptation category": ["Behavioural", "Government policies and programs"]
+            "ipcc adaptation category": ["Behavioural", "Government policies and programs"],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -773,7 +832,8 @@
             "reference_id": ["151", "167"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Towns and cities", "Buildings", "Health", "Community preparedness and response"],
-            "ipcc adaptation category": ["Engineered and built environment", "Services"]
+            "ipcc adaptation category": ["Engineered and built environment", "Services"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -785,7 +845,8 @@
             "description": "Improving drainage in flood-prone locations can reduce energy supply disruption.",
             "layer": ["Flooding and drought in full", "Flooding summary"],
             "ccc adaptation theme": ["Energy"],
-            "ipcc adaptation category": ["Engineered and built environment"]
+            "ipcc adaptation category": ["Engineered and built environment"],
+            "aggregated_layers": ["Flooding and Drought"]
         }
     },
     {
@@ -798,7 +859,8 @@
             "reference_id": ["206"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities", "Community preparedness and response"],
-            "ipcc adaptation category": ["Services", "Educational", "Behavioural", "Government policies and programs"]
+            "ipcc adaptation category": ["Services", "Educational", "Behavioural", "Government policies and programs"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -818,7 +880,8 @@
             ],
             "ccc adaptation theme": ["Towns and cities", "Buildings", "Community preparedness and response"],
             "ipcc adaptation category": ["Informational"],
-            "main_adaptation": ["Accomodation approaches"]
+            "main_adaptation": ["Accomodation approaches"],
+            "aggregated_layers": ["Extreme Storms", "Coastal Security", "Flooding and Drought"]
         }
     },
     {
@@ -859,7 +922,13 @@
                 "Business"
             ],
             "ipcc adaptation category": ["Engineered and built environment", "Economic", "Laws and regulations"],
-            "case_studies": ["1542"]
+            "case_studies": ["1542"],
+            "aggregated_layers": [
+                "Extreme Storms",
+                "Coastal Security",
+                "Flooding and Drought",
+                "Food and Personal Security"
+            ]
         }
     },
     {
@@ -872,7 +941,8 @@
             "sector": ["Business & Industry"],
             "ccc adaptation theme": ["Business"],
             "ipcc adaptation category": ["Laws and regulations"],
-            "case_studies": ["1530"]
+            "case_studies": ["1530"],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -885,7 +955,8 @@
             "main_adaptation": ["Measures to increase air quality"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities"],
-            "ipcc adaptation category": ["Engineered and built environment", "Laws and regulations"]
+            "ipcc adaptation category": ["Engineered and built environment", "Laws and regulations"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -902,7 +973,8 @@
                 "Towns and cities",
                 "Community preparedness and response"
             ],
-            "ipcc adaptation category": ["Engineered and built environment", "Ecosystem-based", "Informational"]
+            "ipcc adaptation category": ["Engineered and built environment", "Ecosystem-based", "Informational"],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -914,7 +986,8 @@
             "description": "Regulatory control measures should be used to monitor water quality in seafood harvest waters and high risk seafood such as oysters through microbiological analysis. Methods to minimise pathogens within shellfish can reduce the risk of infection.",
             "sector": ["\u00adBiodiversity & Natural Habitats", "Food Safety & Security"],
             "ccc adaptation theme": ["Working lands and seas", "Food security"],
-            "ipcc adaptation category": ["Laws and regulations"]
+            "ipcc adaptation category": ["Laws and regulations"],
+            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -932,7 +1005,8 @@
                 "Community preparedness and response",
                 "Business"
             ],
-            "ipcc adaptation category": ["Technological ", "Services", "Government policies and programs"]
+            "ipcc adaptation category": ["Technological ", "Services", "Government policies and programs"],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -964,7 +1038,14 @@
             ],
             "ccc adaptation theme": ["Health", "Community preparedness and response"],
             "ipcc adaptation category": ["Informational", "Behavioural", "Government policies and programs"],
-            "case_studies": ["1431", "1432"]
+            "case_studies": ["1431", "1432"],
+            "aggregated_layers": [
+                "Extreme Storms",
+                "Temperature",
+                "Flooding and Drought",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
+            ]
         }
     },
     {
@@ -1013,7 +1094,14 @@
                 "Towns and cities",
                 "Community preparedness and response"
             ],
-            "ipcc adaptation category": ["Engineered and built environment", "Ecosystem-based"]
+            "ipcc adaptation category": ["Engineered and built environment", "Ecosystem-based"],
+            "aggregated_layers": [
+                "Extreme Storms",
+                "Coastal Security",
+                "Flooding and Drought",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
+            ]
         }
     },
     {
@@ -1031,7 +1119,8 @@
                 "Technological ",
                 "Laws and regulations",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1048,7 +1137,8 @@
                 "Flooding summary"
             ],
             "ccc adaptation theme": ["Buildings"],
-            "ipcc adaptation category": ["Engineered and built environment"]
+            "ipcc adaptation category": ["Engineered and built environment"],
+            "aggregated_layers": ["Extreme Storms", "Flooding and Drought"]
         }
     },
     {
@@ -1060,7 +1150,8 @@
             "reference_id": ["96", "97", "1573"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Towns and cities", "Buildings", "Health", "Community preparedness and response"],
-            "ipcc adaptation category": ["Engineered and built environment", "Technological "]
+            "ipcc adaptation category": ["Engineered and built environment", "Technological "],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1081,7 +1172,13 @@
                 "Pathogenic Marine Microorganisms Summary"
             ],
             "ccc adaptation theme": ["Towns and cities"],
-            "ipcc adaptation category": ["Engineered and built environment", "Technological "]
+            "ipcc adaptation category": ["Engineered and built environment", "Technological "],
+            "aggregated_layers": [
+                "Extreme Storms",
+                "Temperature",
+                "Flooding and Drought",
+                "Pathogenic Marine Microorganisms"
+            ]
         }
     },
     {
@@ -1094,7 +1191,8 @@
             "description": "Actions to mitigate road-traffic-related air pollution include: \n\u2022 reducing the number of motorised trips through the development of local parking plans and supporting car clubs and active travel. \n\u2022 supporting zero- and low-emission vehicle use. \n\u2022 introducing and managing vegetation and street trees to encourage street ventilation.",
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities", "Buildings", "Business"],
-            "ipcc adaptation category": ["Engineered and built environment", "Economic"]
+            "ipcc adaptation category": ["Engineered and built environment", "Economic"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1107,7 +1205,8 @@
             "urban_rural": "Rural",
             "ccc adaptation theme": ["Working lands and seas", "Food security", "Water supply"],
             "ipcc adaptation category": ["Ecosystem-based", "Government policies and programs"],
-            "case_studies": ["1428"]
+            "case_studies": ["1428"],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -1125,7 +1224,8 @@
                 "Behavioural",
                 "Laws and regulations",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1155,7 +1255,8 @@
                 "Laws and regulations",
                 "Government policies and programs"
             ],
-            "urban_rural": "Coastal"
+            "urban_rural": "Coastal",
+            "aggregated_layers": ["Coastal Security", "Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -1168,7 +1269,8 @@
             "layer": ["Extreme storms In Full", "Extreme storms Summary", "Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Towns and cities", "Buildings", "Community preparedness and response"],
             "ipcc adaptation category": ["Engineered and built environment", "Technological "],
-            "case_studies": ["1520", "1528", "1544"]
+            "case_studies": ["1520", "1528", "1544"],
+            "aggregated_layers": ["Extreme Storms", "Temperature"]
         }
     },
     {
@@ -1181,7 +1283,8 @@
             "reference_id": ["206"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities", "Buildings", "Business"],
-            "ipcc adaptation category": ["Engineered and built environment", "Economic", "Laws and regulations"]
+            "ipcc adaptation category": ["Engineered and built environment", "Economic", "Laws and regulations"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1217,7 +1320,12 @@
             ],
             "ccc adaptation theme": ["Telecoms & ICT", "Health"],
             "ipcc adaptation category": ["Technological ", "Informational"],
-            "case_studies": ["1208"]
+            "case_studies": ["1208"],
+            "aggregated_layers": [
+                "Flooding and Drought",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
+            ]
         }
     },
     {
@@ -1241,7 +1349,8 @@
                 "Towns and cities",
                 "Community preparedness and response"
             ],
-            "ipcc adaptation category": ["Engineered and built environment", "Technological "]
+            "ipcc adaptation category": ["Engineered and built environment", "Technological "],
+            "aggregated_layers": ["Flooding and Drought", "Food and Personal Security"]
         }
     },
     {
@@ -1263,7 +1372,8 @@
             ],
             "ccc adaptation theme": ["Health", "Community preparedness and response"],
             "ipcc adaptation category": ["Educational", "Informational", "Behavioural"],
-            "case_studies": ["1473"]
+            "case_studies": ["1473"],
+            "aggregated_layers": ["Extreme Storms", "Temperature", "Coastal Security", "Food and Personal Security"]
         }
     },
     {
@@ -1287,7 +1397,8 @@
             ],
             "ipcc adaptation category": ["Engineered and built environment", "Ecosystem-based"],
             "main_adaptation": ["Natural flood management strategies"],
-            "case_studies": ["1474", "1537"]
+            "case_studies": ["1474", "1537"],
+            "aggregated_layers": ["Extreme Storms", "Coastal Security"]
         }
     },
     {
@@ -1308,7 +1419,8 @@
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas", "Towns and cities"],
             "ipcc adaptation category": ["Engineered and built environment", "Ecosystem-based"],
-            "main_adaptation": ["Natural flood management strategies", "Retreat approaches"]
+            "main_adaptation": ["Natural flood management strategies", "Retreat approaches"],
+            "aggregated_layers": ["Extreme Storms", "Coastal Security", "Food and Personal Security"]
         }
     },
     {
@@ -1326,7 +1438,8 @@
                 "Buildings",
                 "Community preparedness and response"
             ],
-            "ipcc adaptation category": ["Engineered and built environment", "Technological ", "Informational"]
+            "ipcc adaptation category": ["Engineered and built environment", "Technological ", "Informational"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1345,7 +1458,8 @@
                 "Behavioural",
                 "Economic",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1358,7 +1472,8 @@
             "reference_id": ["206", "1574"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities", "Buildings", "Business"],
-            "ipcc adaptation category": ["Laws and regulations", "Government policies and programs"]
+            "ipcc adaptation category": ["Laws and regulations", "Government policies and programs"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1371,7 +1486,8 @@
             "layer": ["Extreme storms In Full", "Extreme storms Summary"],
             "ccc adaptation theme": ["Health"],
             "ipcc adaptation category": ["Services"],
-            "case_studies": ["455"]
+            "case_studies": ["455"],
+            "aggregated_layers": ["Extreme Storms"]
         }
     },
     {
@@ -1383,7 +1499,8 @@
             "reference_id": ["67", "244"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Towns and cities", "Buildings", "Health"],
-            "ipcc adaptation category": ["Engineered and built environment", "Technological "]
+            "ipcc adaptation category": ["Engineered and built environment", "Technological "],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1395,7 +1512,8 @@
             "description": "Measures to educate people how to reduce exposure to low air quality can limit negative health  impacts of air pollution and particulate matter.",
             "layer": ["Flooding and drought in full", "Drought summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities", "Health", "Community preparedness and response"],
-            "ipcc adaptation category": ["Educational", "Government policies and programs"]
+            "ipcc adaptation category": ["Educational", "Government policies and programs"],
+            "aggregated_layers": ["Flooding and Drought"]
         }
     },
     {
@@ -1408,7 +1526,8 @@
             "sector": ["Agriculture & Forestry", "Food Safety & Security"],
             "urban_rural": "Rural",
             "ccc adaptation theme": ["Working lands and seas", "Food security"],
-            "ipcc adaptation category": ["Technological ", "Ecosystem-based", "Behavioural"]
+            "ipcc adaptation category": ["Technological ", "Ecosystem-based", "Behavioural"],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -1425,7 +1544,8 @@
                 "Engineered and built environment",
                 "Behavioural",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1478,7 +1598,14 @@
                 "Community preparedness and response"
             ],
             "ipcc adaptation category": ["Ecosystem-based"],
-            "main_adaptation": ["Natural flood management strategies", "Accomodation approaches"]
+            "main_adaptation": ["Natural flood management strategies", "Accomodation approaches"],
+            "aggregated_layers": [
+                "Extreme Storms",
+                "Coastal Security",
+                "Flooding and Drought",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
+            ]
         }
     },
     {
@@ -1491,7 +1618,8 @@
             "description": "To reduce emissions within clean air zones, action could be taken to specify emission standards for private hire and other licensed vehicles.",
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities"],
-            "ipcc adaptation category": ["Technological ", "Services", "Economic", "Laws and regulations"]
+            "ipcc adaptation category": ["Technological ", "Services", "Economic", "Laws and regulations"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1527,7 +1655,8 @@
             "ccc adaptation theme": ["Nature", "Working lands and seas", "Food security"],
             "ipcc adaptation category": ["Ecosystem-based", "Laws and regulations"],
             "case_studies": ["1440", "1445", "1559"],
-            "urban_rural": "Coastal"
+            "urban_rural": "Coastal",
+            "aggregated_layers": ["Coastal Security", "Food and Personal Security", "Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -1552,7 +1681,8 @@
                 "Business"
             ],
             "ipcc adaptation category": ["Ecosystem-based", "Government policies and programs"],
-            "case_studies": ["546", "1539"]
+            "case_studies": ["546", "1539"],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -1570,7 +1700,8 @@
                 "Behavioural",
                 "Economic",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1589,7 +1720,8 @@
                 "Health & Social Care"
             ],
             "ccc adaptation theme": ["Food security", "Health", "Community preparedness and response"],
-            "ipcc adaptation category": ["Educational", "Informational"]
+            "ipcc adaptation category": ["Educational", "Informational"],
+            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -1616,7 +1748,8 @@
                 "Engineered and built environment",
                 "Laws and regulations",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -1629,7 +1762,8 @@
             "description": "To promote a smoother driving style and speed reduction, in-vehicle elements can ensure vehicles display real-time information including current speed, appropriate gear selection and fuel efficiency.",
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Telecoms & ICT", "Transport"],
-            "ipcc adaptation category": ["Technological ", "Services", "Informational"]
+            "ipcc adaptation category": ["Technological ", "Services", "Informational"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1651,7 +1785,8 @@
                 "Behavioural",
                 "Laws and regulations",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -1664,7 +1799,8 @@
             "reference_id": ["206"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities"],
-            "ipcc adaptation category": ["Technological ", "Laws and regulations"]
+            "ipcc adaptation category": ["Technological ", "Laws and regulations"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1686,7 +1822,12 @@
                 "Pathogenic Marine Microorganisms Summary"
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas", "Community preparedness and response"],
-            "ipcc adaptation category": ["Ecosystem-based"]
+            "ipcc adaptation category": ["Ecosystem-based"],
+            "aggregated_layers": [
+                "Flooding and Drought",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
+            ]
         }
     },
     {
@@ -1699,7 +1840,8 @@
             "layer": ["Flooding and drought in full", "Drought summary", "Flooding summary"],
             "ccc adaptation theme": ["Health", "Community preparedness and response"],
             "ipcc adaptation category": ["Educational", "Government policies and programs"],
-            "case_studies": ["43", "69", "94"]
+            "case_studies": ["43", "69", "94"],
+            "aggregated_layers": ["Flooding and Drought"]
         }
     },
     {
@@ -1722,7 +1864,8 @@
                 "Services",
                 "Government policies and programs"
             ],
-            "case_studies": ["1445", "1543", "1546", "1551", "1552", "1553"]
+            "case_studies": ["1445", "1543", "1546", "1551", "1552", "1553"],
+            "aggregated_layers": ["Flooding and Drought", "Food and Personal Security"]
         }
     },
     {
@@ -1735,7 +1878,8 @@
             "description": "To reduce emissions within clean air zones, action could be undertaken to minimise congestion caused by delivery schedules.",
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities"],
-            "ipcc adaptation category": ["Behavioural", "Government policies and programs"]
+            "ipcc adaptation category": ["Behavioural", "Government policies and programs"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1748,7 +1892,8 @@
             "reference_id": ["206"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Energy", "Transport", "Towns and cities"],
-            "ipcc adaptation category": ["Engineered and built environment", "Government policies and programs"]
+            "ipcc adaptation category": ["Engineered and built environment", "Government policies and programs"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1782,6 +1927,12 @@
                 "Technological ",
                 "Services",
                 "Government policies and programs"
+            ],
+            "aggregated_layers": [
+                "Coastal Security",
+                "Flooding and Drought",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
             ]
         }
     },
@@ -1808,7 +1959,8 @@
                 "Food and personal security summary"
             ],
             "ccc adaptation theme": ["Health", "Community preparedness and response"],
-            "ipcc adaptation category": ["Educational"]
+            "ipcc adaptation category": ["Educational"],
+            "aggregated_layers": ["Flooding and Drought", "Food and Personal Security"]
         }
     },
     {
@@ -1826,7 +1978,8 @@
                 "Community preparedness and response",
                 "Business"
             ],
-            "ipcc adaptation category": ["Technological ", "Economic", "Government policies and programs"]
+            "ipcc adaptation category": ["Technological ", "Economic", "Government policies and programs"],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -1839,7 +1992,8 @@
             "reference_id": ["206"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities"],
-            "ipcc adaptation category": ["Behavioural", "Economic", "Government policies and programs"]
+            "ipcc adaptation category": ["Behavioural", "Economic", "Government policies and programs"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1882,7 +2036,8 @@
                 "Laws and regulations",
                 "Government policies and programs"
             ],
-            "case_studies": ["1428", "1429", "1430"]
+            "case_studies": ["1428", "1429", "1430"],
+            "aggregated_layers": ["Food and Personal Security", "Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -1901,7 +2056,8 @@
                 "Economic",
                 "Laws and regulations",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1934,7 +2090,8 @@
                 "Technological ",
                 "Services",
                 "Behavioural"
-            ]
+            ],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1967,7 +2124,13 @@
                 "Community preparedness and response"
             ],
             "ipcc adaptation category": ["Technological ", "Informational", "Government policies and programs"],
-            "case_studies": ["1351", "546", "1556"]
+            "case_studies": ["1351", "546", "1556"],
+            "aggregated_layers": [
+                "Coastal Security",
+                "Flooding and Drought",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
+            ]
         }
     },
     {
@@ -1980,7 +2143,8 @@
             "description": "The need for motorised travel could be reduced by considering the location and design of new estates, facilities and buildings when planning.",
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities", "Buildings", "Business"],
-            "ipcc adaptation category": ["Engineered and built environment", "Economic", "Laws and regulations"]
+            "ipcc adaptation category": ["Engineered and built environment", "Economic", "Laws and regulations"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -1992,7 +2156,8 @@
             "reference_id": ["110"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Towns and cities"],
-            "ipcc adaptation category": ["Engineered and built environment", "Technological "]
+            "ipcc adaptation category": ["Engineered and built environment", "Technological "],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -2017,7 +2182,8 @@
             "layer": ["Food and personal security in full", "Food and personal security summary"],
             "sector": ["Food Safety & Security", "Health & Social Care"],
             "ccc adaptation theme": ["Health", "Community preparedness and response"],
-            "ipcc adaptation category": ["Educational"]
+            "ipcc adaptation category": ["Educational"],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -2034,7 +2200,8 @@
                 "Community preparedness and response"
             ],
             "ipcc adaptation category": ["Informational", "Government policies and programs"],
-            "case_studies": ["554"]
+            "case_studies": ["554"],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -2047,7 +2214,8 @@
             "reference_id": ["206"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities"],
-            "ipcc adaptation category": ["Engineered and built environment", "Laws and regulations"]
+            "ipcc adaptation category": ["Engineered and built environment", "Laws and regulations"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -2060,7 +2228,8 @@
             "layer": ["Food and personal security in full", "Food and personal security summary"],
             "ccc adaptation theme": ["Energy"],
             "ipcc adaptation category": ["Technological ", "Government policies and programs"],
-            "case_studies": ["1554"]
+            "case_studies": ["1554"],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -2074,7 +2243,8 @@
             "ccc adaptation theme": ["Telecoms & ICT", "Community preparedness and response"],
             "main_adaptation": ["Accomodation approaches"],
             "ipcc adaptation category": ["Technological ", "Services", "Informational"],
-            "case_studies": ["542"]
+            "case_studies": ["542"],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -2096,7 +2266,13 @@
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas"],
             "ipcc adaptation category": ["Ecosystem-based"],
-            "case_studies": ["1526", "1550", "1567"]
+            "case_studies": ["1526", "1550", "1567"],
+            "aggregated_layers": [
+                "Extreme Storms",
+                "Coastal Security",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
+            ]
         }
     },
     {
@@ -2108,7 +2284,8 @@
             "description": "Cooling Centres are designated locations which provide people with a cool environment to escape the heat. Cooling centres may be air conditioned or passively cooled. Cooling shelters should be provided as a public health intervention to address heat risks within the community. Passive cooling shelters which do not rely on energy use should be selected where possible.",
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Towns and cities", "Health", "Community preparedness and response"],
-            "ipcc adaptation category": ["Engineered and built environment", "Services"]
+            "ipcc adaptation category": ["Engineered and built environment", "Services"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -2126,7 +2303,8 @@
                 "Business",
                 "Finance"
             ],
-            "ipcc adaptation category": ["Engineered and built environment", "Services", "Laws and regulations"]
+            "ipcc adaptation category": ["Engineered and built environment", "Services", "Laws and regulations"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -2139,7 +2317,8 @@
             "urban_rural": "Rural",
             "layer": ["Food and personal security in full", "Food and personal security summary"],
             "ccc adaptation theme": ["Working lands and seas", "Food security"],
-            "ipcc adaptation category": ["Ecosystem-based", "Behavioural", "Government policies and programs"]
+            "ipcc adaptation category": ["Ecosystem-based", "Behavioural", "Government policies and programs"],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -2164,7 +2343,8 @@
                 "Ecosystem-based",
                 "Laws and regulations",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -2186,7 +2366,8 @@
             ],
             "ccc adaptation theme": ["Transport", "Towns and cities", "Health", "Community preparedness and response"],
             "ipcc adaptation category": ["Educational", "Behavioural", "Government policies and programs"],
-            "case_studies": ["1491", "1492", "1493", "1494", "1495"]
+            "case_studies": ["1491", "1492", "1493", "1494", "1495"],
+            "aggregated_layers": ["Temperature", "Flooding and Drought", "Food and Personal Security"]
         }
     },
     {
@@ -2245,7 +2426,8 @@
                 "All"
             ],
             "ipcc adaptation category": ["Educational"],
-            "case_studies": ["1509"]
+            "case_studies": ["1509"],
+            "aggregated_layers": ["Food and Personal Security", "Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -2270,6 +2452,11 @@
                 "Engineered and built environment",
                 "Ecosystem-based",
                 "Government policies and programs"
+            ],
+            "aggregated_layers": [
+                "Flooding and Drought",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
             ]
         }
     },
@@ -2294,7 +2481,8 @@
                 "Community preparedness and response"
             ],
             "main_adaptation": ["Protection approaches"],
-            "ipcc adaptation category": ["Engineered and built environment", "Ecosystem-based"]
+            "ipcc adaptation category": ["Engineered and built environment", "Ecosystem-based"],
+            "aggregated_layers": ["Coastal Security", "Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -2307,7 +2495,8 @@
             "layer": ["Flooding and drought in full", "Flooding summary"],
             "ccc adaptation theme": ["Working lands and seas", "Towns and cities"],
             "ipcc adaptation category": ["Engineered and built environment"],
-            "case_studies": ["547", "548"]
+            "case_studies": ["547", "548"],
+            "aggregated_layers": ["Flooding and Drought"]
         }
     },
     {
@@ -2324,7 +2513,8 @@
                 "Flooding summary"
             ],
             "ccc adaptation theme": ["Towns and cities", "Buildings", "Health"],
-            "ipcc adaptation category": ["Engineered and built environment"]
+            "ipcc adaptation category": ["Engineered and built environment"],
+            "aggregated_layers": ["Extreme Storms", "Flooding and Drought"]
         }
     },
     {
@@ -2370,7 +2560,8 @@
                 "Economic",
                 "Laws and regulations",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -2404,7 +2595,8 @@
                 "Community preparedness and response",
                 "Business"
             ],
-            "ipcc adaptation category": ["Behavioural", "Government policies and programs"]
+            "ipcc adaptation category": ["Behavioural", "Government policies and programs"],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -2423,7 +2615,8 @@
                 "Community preparedness and response"
             ],
             "ipcc adaptation category": ["Services", "Informational", "Government policies and programs"],
-            "case_studies": ["1471", "1472"]
+            "case_studies": ["1471", "1472"],
+            "aggregated_layers": ["Extreme Storms", "Temperature"]
         }
     },
     {
@@ -2445,7 +2638,8 @@
                 "Informational",
                 "Behavioural",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -2457,7 +2651,8 @@
             "layer": ["Food and personal security in full", "Food and personal security summary"],
             "sector": ["Agriculture & Forestry", "Food Safety & Security", "Health & Social Care"],
             "ccc adaptation theme": ["Working lands and seas", "Food security", "Health"],
-            "ipcc adaptation category": ["Laws and regulations"]
+            "ipcc adaptation category": ["Laws and regulations"],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -2482,7 +2677,8 @@
                 "Health",
                 "Community preparedness and response"
             ],
-            "ipcc adaptation category": ["Technological ", "Informational"]
+            "ipcc adaptation category": ["Technological ", "Informational"],
+            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -2495,7 +2691,21 @@
             "reference_id": ["206"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities", "Community preparedness and response"],
-            "ipcc adaptation category": ["Behavioural", "Economic", "Government policies and programs"]
+            "ipcc adaptation category": ["Behavioural", "Economic", "Government policies and programs"],
+            "aggregated_layers": ["Temperature"]
+        }
+    },
+    {
+        "_id": "elem-dWvVTW1j",
+        "attributes": {
+            "label": "Sign up for the UKHSA Weather-Health Alerting System",
+            "description": "The Weather-Health Alert System was created by UK Health Security Agency and the Met Office. This system covers England and provides alerts for heat-health and cold-health concerns. \n\nThe system can be accessed here https://app.powerbi.com/view?r=eyJrIjoiZGI5MTA1NTEtZmE4NC00NTk3LTg5NjQtZjMyNDQ5YTgyMjI2IiwidCI6ImVlNGUxNDk5LTRhMzUtNGIyZS1hZDQ3LTVmM2NmOWRlODY2NiIsImMiOjh9",
+            "main impact": ["Temperature impact"],
+            "reference_id": ["1580"],
+            "ipcc adaptation category": ["Technological ", "Services", "Informational", "Behavioural"],
+            "ccc adaptation theme": ["Towns and cities", "Health", "Community preparedness and response"],
+            "layer": ["Extreme storms In Full", "Extreme storms Summary", "Temperature In Full", "Temperature Summary"],
+            "aggregated_layers": ["Extreme Storms", "Temperature"]
         }
     },
     {
@@ -2514,7 +2724,8 @@
                 "Community preparedness and response"
             ],
             "main_adaptation": ["Accomodation approaches"],
-            "ipcc adaptation category": ["Engineered and built environment", "Technological "]
+            "ipcc adaptation category": ["Engineered and built environment", "Technological "],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -2527,7 +2738,8 @@
             "layer": ["Extreme storms In Full", "Extreme storms Summary"],
             "ccc adaptation theme": ["Energy", "Towns and cities", "Community preparedness and response", "Finance"],
             "ipcc adaptation category": ["Economic", "Government policies and programs"],
-            "main_adaptation": ["Cold weather plans"]
+            "main_adaptation": ["Cold weather plans"],
+            "aggregated_layers": ["Extreme Storms"]
         }
     },
     {
@@ -2543,7 +2755,8 @@
                 "Towns and cities",
                 "Community preparedness and response"
             ],
-            "ipcc adaptation category": ["Engineered and built environment", "Government policies and programs"]
+            "ipcc adaptation category": ["Engineered and built environment", "Government policies and programs"],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -2585,7 +2798,8 @@
                 "Ecosystem-based",
                 "Laws and regulations",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -2611,7 +2825,8 @@
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas", "Health"],
             "ipcc adaptation category": ["Ecosystem-based", "Government policies and programs"],
-            "case_studies": ["1511", "1521"]
+            "case_studies": ["1511", "1521"],
+            "aggregated_layers": ["Coastal Security", "Flooding and Drought", "Food and Personal Security"]
         }
     },
     {
@@ -2624,7 +2839,8 @@
             "reference_id": ["206"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities", "Community preparedness and response"],
-            "ipcc adaptation category": ["Engineered and built environment"]
+            "ipcc adaptation category": ["Engineered and built environment"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -2653,7 +2869,8 @@
                 "Community preparedness and response",
                 "Business"
             ],
-            "ipcc adaptation category": ["Laws and regulations", "Government policies and programs"]
+            "ipcc adaptation category": ["Laws and regulations", "Government policies and programs"],
+            "aggregated_layers": ["Temperature", "Flooding and Drought", "Food and Personal Security"]
         }
     },
     {
@@ -2672,7 +2889,8 @@
             "reference_id": ["206"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Towns and cities", "Buildings"],
-            "ipcc adaptation category": ["Engineered and built environment"]
+            "ipcc adaptation category": ["Engineered and built environment"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -2685,7 +2903,8 @@
             "description": "Installing signs that display a driver's current speed can encourage a smoother style of driving, with less decelerations and accelerations.",
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Telecoms & ICT", "Transport"],
-            "ipcc adaptation category": ["Engineered and built environment", "Technological "]
+            "ipcc adaptation category": ["Engineered and built environment", "Technological "],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -2702,7 +2921,8 @@
                 "Towns and cities",
                 "Community preparedness and response"
             ],
-            "ipcc adaptation category": ["Informational", "Government policies and programs"]
+            "ipcc adaptation category": ["Informational", "Government policies and programs"],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -2714,7 +2934,8 @@
             "layer": ["Food and personal security in full", "Food and personal security summary"],
             "sector": ["Agriculture & Forestry", "Food Safety & Security", "International Factors"],
             "ccc adaptation theme": ["Working lands and seas", "Food security", "Transport", "Business"],
-            "ipcc adaptation category": ["Technological ", "Economic", "Laws and regulations"]
+            "ipcc adaptation category": ["Technological ", "Economic", "Laws and regulations"],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -2737,7 +2958,13 @@
             ],
             "ccc adaptation theme": ["Health", "Community preparedness and response"],
             "ipcc adaptation category": ["Services", "Government policies and programs"],
-            "case_studies": ["1575"]
+            "case_studies": ["1575"],
+            "aggregated_layers": [
+                "Extreme Storms",
+                "Coastal Security",
+                "Flooding and Drought",
+                "Food and Personal Security"
+            ]
         }
     },
     {
@@ -2764,7 +2991,8 @@
                 "Food and personal security summary"
             ],
             "ccc adaptation theme": ["Telecoms & ICT", "Health"],
-            "ipcc adaptation category": ["Technological ", "Informational"]
+            "ipcc adaptation category": ["Technological ", "Informational"],
+            "aggregated_layers": ["Extreme Storms", "Temperature", "Flooding and Drought", "Food and Personal Security"]
         }
     },
     {
@@ -2776,16 +3004,18 @@
             "description": "Exploring potential sustainable alternatives to plastics could reduce the abundance of plastics entering the environment.",
             "sector": ["Business & Industry"],
             "ccc adaptation theme": ["Business"],
-            "ipcc adaptation category": ["Technological "]
+            "ipcc adaptation category": ["Technological "],
+            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
         }
     },
     {
         "_id": "elem-h7Bokqnd",
         "attributes": {
             "label": "Early warning systems to inform the public of marine pathogens",
-            "layer": ["pathogenic Marine Microorganisms", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
             "reference_id": ["1354", "1355", "1356", "1282"],
-            "description": ""
+            "description": "",
+            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -2797,7 +3027,8 @@
             "reference_id": ["386", "388", "1579"],
             "layer": ["Flooding and drought in full", "Flooding summary"],
             "ccc adaptation theme": ["Health"],
-            "ipcc adaptation category": ["Services", "Government policies and programs"]
+            "ipcc adaptation category": ["Services", "Government policies and programs"],
+            "aggregated_layers": ["Flooding and Drought"]
         }
     },
     {
@@ -2820,7 +3051,8 @@
                 "Community preparedness and response",
                 "Business"
             ],
-            "ipcc adaptation category": ["Technological ", "Government policies and programs"]
+            "ipcc adaptation category": ["Technological ", "Government policies and programs"],
+            "aggregated_layers": ["Food and Personal Security", "Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -2832,7 +3064,8 @@
             "description": "A rapid disease risk assessment by a multi-agency group after a climate impact ensures that the damage and risk of affected individuals is accounted for so that they can be relocated or given appropriate relief and services. Specifically, disease risk assessment can prevent infectious disease, like those that occur after floods, from exacerbating the hazards of the climate impact as individuals recover.",
             "layer": ["Extreme storms In Full", "Extreme storms Summary"],
             "ccc adaptation theme": ["Health"],
-            "ipcc adaptation category": ["Services", "Informational", "Government policies and programs"]
+            "ipcc adaptation category": ["Services", "Informational", "Government policies and programs"],
+            "aggregated_layers": ["Extreme Storms"]
         }
     },
     {
@@ -2850,7 +3083,8 @@
             ],
             "ccc adaptation theme": ["Telecoms & ICT", "Health"],
             "ipcc adaptation category": ["Technological ", "Informational"],
-            "case_studies": ["1473", "1508", "1514", "1513"]
+            "case_studies": ["1473", "1508", "1514", "1513"],
+            "aggregated_layers": ["Temperature", "Food and Personal Security"]
         }
     },
     {
@@ -2863,7 +3097,8 @@
             "reference_id": ["206"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities", "Community preparedness and response"],
-            "ipcc adaptation category": ["Engineered and built environment", "Behavioural"]
+            "ipcc adaptation category": ["Engineered and built environment", "Behavioural"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -2881,7 +3116,8 @@
             ],
             "ccc adaptation theme": ["Working lands and seas", "Community preparedness and response"],
             "ipcc adaptation category": ["Ecosystem-based"],
-            "case_studies": ["1445", "1503", "1504", "1505", "1506", "1507"]
+            "case_studies": ["1445", "1503", "1504", "1505", "1506", "1507"],
+            "aggregated_layers": ["Flooding and Drought", "Food and Personal Security"]
         }
     },
     {
@@ -2894,7 +3130,8 @@
             "description": "The development of local parking plans can mitigate road-traffic-related air pollution.",
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities"],
-            "ipcc adaptation category": ["Engineered and built environment"]
+            "ipcc adaptation category": ["Engineered and built environment"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -2913,7 +3150,8 @@
                 "Community preparedness and response"
             ],
             "main_adaptation": ["Protection approaches"],
-            "ipcc adaptation category": ["Engineered and built environment"]
+            "ipcc adaptation category": ["Engineered and built environment"],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -2927,7 +3165,8 @@
             "reference_id": ["206"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities"],
-            "ipcc adaptation category": ["Engineered and built environment", "Laws and regulations"]
+            "ipcc adaptation category": ["Engineered and built environment", "Laws and regulations"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -2955,7 +3194,22 @@
                 "Information & Communication Technology",
                 "International Factors"
             ],
-            "ccc adaptation theme": ["All"],
+            "ccc adaptation theme": [
+                "Nature",
+                "Working lands and seas",
+                "Food security",
+                "Water supply",
+                "Energy",
+                "Telecoms & ICT",
+                "Transport",
+                "Towns and cities",
+                "Buildings",
+                "Health",
+                "Community preparedness and response",
+                "Business",
+                "Finance",
+                "All"
+            ],
             "ipcc adaptation category": [
                 "Engineered and built environment",
                 "Technological ",
@@ -2967,7 +3221,8 @@
                 "Economic",
                 "Laws and regulations",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -2985,7 +3240,8 @@
                 "Ecosystem-based",
                 "Behavioural",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -3052,7 +3308,15 @@
                 "Ecosystem-based",
                 "Government policies and programs"
             ],
-            "main_adaptation": ["Natural flood management strategies"]
+            "main_adaptation": ["Natural flood management strategies"],
+            "aggregated_layers": [
+                "Extreme Storms",
+                "Temperature",
+                "Coastal Security",
+                "Flooding and Drought",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
+            ]
         }
     },
     {
@@ -3077,7 +3341,8 @@
                 "Economic",
                 "Laws and regulations",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -3119,7 +3384,8 @@
                 "Community preparedness and response",
                 "Business"
             ],
-            "ipcc adaptation category": ["Behavioural", "Government policies and programs"]
+            "ipcc adaptation category": ["Behavioural", "Government policies and programs"],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -3132,7 +3398,8 @@
             "description": "Living accommodation should be sited away from roadsides when planning.",
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Towns and cities", "Buildings"],
-            "ipcc adaptation category": ["Engineered and built environment", "Laws and regulations"]
+            "ipcc adaptation category": ["Engineered and built environment", "Laws and regulations"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -3152,7 +3419,12 @@
                 "Pathogenic Marine Microorganisms Summary"
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas", "Water supply"],
-            "ipcc adaptation category": ["Technological ", "Services", "Informational"]
+            "ipcc adaptation category": ["Technological ", "Services", "Informational"],
+            "aggregated_layers": [
+                "Flooding and Drought",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
+            ]
         }
     },
     {
@@ -3164,7 +3436,8 @@
             "description": "Contingency planning for risks associated with emerging and novel pathogens can help to identify potential risks and plan for appropriate action.",
             "sector": ["\u00adBiodiversity & Natural Habitats", "Food Safety & Security", "Health & Social Care"],
             "ccc adaptation theme": ["Health"],
-            "ipcc adaptation category": ["Laws and regulations", "Government policies and programs"]
+            "ipcc adaptation category": ["Laws and regulations", "Government policies and programs"],
+            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -3184,7 +3457,8 @@
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas"],
             "ipcc adaptation category": ["Ecosystem-based"],
-            "case_studies": ["1566", "1565"]
+            "case_studies": ["1566", "1565"],
+            "aggregated_layers": ["Flooding and Drought", "Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -3202,7 +3476,8 @@
                 "Community preparedness and response"
             ],
             "main_adaptation": ["Protection approaches"],
-            "ipcc adaptation category": ["Engineered and built environment", "Economic", "Laws and regulations"]
+            "ipcc adaptation category": ["Engineered and built environment", "Economic", "Laws and regulations"],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -3215,7 +3490,8 @@
             "description": "Active travel should be supported through investment in strategies that increase opportunities for physical activity, such as developing green infrastructure and walking and cycling networks.",
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities", "Health"],
-            "ipcc adaptation category": ["Behavioural", "Government policies and programs"]
+            "ipcc adaptation category": ["Behavioural", "Government policies and programs"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -3252,7 +3528,12 @@
                 "Behavioural",
                 "Government policies and programs"
             ],
-            "case_studies": ["1497", "129"]
+            "case_studies": ["1497", "129"],
+            "aggregated_layers": [
+                "Flooding and Drought",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
+            ]
         }
     },
     {
@@ -3265,7 +3546,8 @@
             "reference_id": ["206"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Towns and cities", "Buildings"],
-            "ipcc adaptation category": ["Engineered and built environment"]
+            "ipcc adaptation category": ["Engineered and built environment"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -3277,7 +3559,8 @@
             "description": "External shutters are found to be very effective in decreasing overheating in buildings. However, they may not be practical in some houses because, in the UK, many windows open outwards.",
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Towns and cities", "Buildings"],
-            "ipcc adaptation category": ["Engineered and built environment"]
+            "ipcc adaptation category": ["Engineered and built environment"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -3324,7 +3607,8 @@
             ],
             "ccc adaptation theme": ["Telecoms & ICT", "Health", "Community preparedness and response"],
             "ipcc adaptation category": ["Technological ", "Informational", "Government policies and programs"],
-            "description": "Improved surveillance, horizon-scanning, and modelling capability through international collaboration is required for identification and management of emerging pathogens"
+            "description": "Improved surveillance, horizon-scanning, and modelling capability through international collaboration is required for identification and management of emerging pathogens",
+            "aggregated_layers": ["Food and Personal Security", "Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -3341,7 +3625,8 @@
                 "Health",
                 "Community preparedness and response"
             ],
-            "ipcc adaptation category": ["Informational", "Laws and regulations", "Government policies and programs"]
+            "ipcc adaptation category": ["Informational", "Laws and regulations", "Government policies and programs"],
+            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -3375,7 +3660,8 @@
             "reference_id": ["1289", "1320", "8"],
             "sector": ["Food Safety & Security", "Health & Social Care"],
             "ccc adaptation theme": ["Food security", "Health", "Community preparedness and response"],
-            "ipcc adaptation category": ["Educational", "Informational", "Behavioural", "Laws and regulations"]
+            "ipcc adaptation category": ["Educational", "Informational", "Behavioural", "Laws and regulations"],
+            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -3388,7 +3674,8 @@
             "sector": ["\u00adEducation Services", "Information & Communication Technology", "International Factors"],
             "ccc adaptation theme": ["Towns and cities", "Community preparedness and response"],
             "main_adaptation": ["Accomodation approaches", "Retreat approaches", "Protection approaches"],
-            "ipcc adaptation category": ["Educational", "Informational", "Behavioural"]
+            "ipcc adaptation category": ["Educational", "Informational", "Behavioural"],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -3444,7 +3731,13 @@
                 "Community preparedness and response"
             ],
             "ipcc adaptation category": ["Engineered and built environment", "Ecosystem-based"],
-            "main_adaptation": ["Natural flood management strategies"]
+            "main_adaptation": ["Natural flood management strategies"],
+            "aggregated_layers": [
+                "Extreme Storms",
+                "Coastal Security",
+                "Flooding and Drought",
+                "Food and Personal Security"
+            ]
         }
     },
     {
@@ -3463,7 +3756,8 @@
                 "Flooding summary"
             ],
             "ccc adaptation theme": ["Towns and cities", "Buildings", "Health"],
-            "ipcc adaptation category": ["Engineered and built environment", "Technological "]
+            "ipcc adaptation category": ["Engineered and built environment", "Technological "],
+            "aggregated_layers": ["Extreme Storms", "Temperature", "Flooding and Drought"]
         }
     },
     {
@@ -3489,7 +3783,8 @@
                 "Business",
                 "Finance"
             ],
-            "ipcc adaptation category": ["Educational", "Informational"]
+            "ipcc adaptation category": ["Educational", "Informational"],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -3501,7 +3796,8 @@
             "sector": ["Health & Social Care"],
             "layer": ["Flooding and drought in full", "Flooding summary"],
             "ccc adaptation theme": ["Health"],
-            "ipcc adaptation category": ["Informational", "Government policies and programs"]
+            "ipcc adaptation category": ["Informational", "Government policies and programs"],
+            "aggregated_layers": ["Flooding and Drought"]
         }
     },
     {
@@ -3518,7 +3814,8 @@
                 "Engineered and built environment",
                 "Economic",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -3541,7 +3838,13 @@
             "ccc adaptation theme": ["Telecoms & ICT", "Community preparedness and response"],
             "ipcc adaptation category": ["Technological ", "Services", "Informational"],
             "main_adaptation": ["Accomodation approaches"],
-            "case_studies": ["1524", "1525"]
+            "case_studies": ["1524", "1525"],
+            "aggregated_layers": [
+                "Extreme Storms",
+                "Coastal Security",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
+            ]
         }
     },
     {
@@ -3574,7 +3877,14 @@
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas", "Towns and cities"],
             "ipcc adaptation category": ["Ecosystem-based"],
-            "case_studies": ["1533", "1548", "1549", "1550"]
+            "case_studies": ["1533", "1548", "1549", "1550"],
+            "aggregated_layers": [
+                "Extreme Storms",
+                "Coastal Security",
+                "Flooding and Drought",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
+            ]
         }
     },
     {
@@ -3638,7 +3948,14 @@
                 "Behavioural",
                 "Government policies and programs"
             ],
-            "case_studies": ["1475", "1476", "1483", "1484", "1485", "1486"]
+            "case_studies": ["1475", "1476", "1483", "1484", "1485", "1486"],
+            "aggregated_layers": [
+                "Extreme Storms",
+                "Coastal Security",
+                "Flooding and Drought",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
+            ]
         }
     },
     {
@@ -3661,7 +3978,8 @@
                 "Community preparedness and response",
                 "Business"
             ],
-            "ipcc adaptation category": ["Behavioural", "Government policies and programs"]
+            "ipcc adaptation category": ["Behavioural", "Government policies and programs"],
+            "aggregated_layers": ["Food and Personal Security", "Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -3673,7 +3991,8 @@
             "layer": ["Food and personal security in full", "Food and personal security summary"],
             "sector": ["Agriculture & Forestry", "Food Safety & Security"],
             "ccc adaptation theme": ["Working lands and seas", "Food security", "Business"],
-            "ipcc adaptation category": ["Technological "]
+            "ipcc adaptation category": ["Technological "],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -3686,7 +4005,8 @@
             "sector": ["Food Safety & Security", "Health & Social Care", "Business & Industry"],
             "ccc adaptation theme": ["Food security", "Business"],
             "ipcc adaptation category": ["Laws and regulations"],
-            "case_studies": ["1489", "1490", "1496", "1499", "555"]
+            "case_studies": ["1489", "1490", "1496", "1499", "555"],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -3698,7 +4018,8 @@
             "description": "Internal blinds or curtains can be installed as a passive cooling measure to reduce internal heat.",
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Towns and cities", "Buildings"],
-            "ipcc adaptation category": ["Engineered and built environment"]
+            "ipcc adaptation category": ["Engineered and built environment"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -3711,7 +4032,8 @@
             "layer": ["Flooding and drought in full", "Drought summary"],
             "ccc adaptation theme": ["Water supply"],
             "ipcc adaptation category": ["Engineered and built environment", "Technological ", "Services"],
-            "case_studies": ["1522", "1523"]
+            "case_studies": ["1522", "1523"],
+            "aggregated_layers": ["Flooding and Drought"]
         }
     },
     {
@@ -3727,7 +4049,9 @@
                 "Engineered and built environment",
                 "Technological ",
                 "Government policies and programs"
-            ]
+            ],
+            "embedded category": "Adaptation",
+            "aggregated_layers": ["Flooding and Drought"]
         }
     },
     {
@@ -3744,7 +4068,8 @@
                 "Economic",
                 "Laws and regulations",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -3762,7 +4087,8 @@
             ],
             "main_adaptation": ["Protection approaches"],
             "ipcc adaptation category": ["Engineered and built environment"],
-            "case_studies": ["1560"]
+            "case_studies": ["1560"],
+            "aggregated_layers": ["Coastal Security"]
         }
     },
     {
@@ -3773,7 +4099,8 @@
             "description": "Risk identification before and after a climate impact ensures that vulnerable groups in the population are recognized, assisted, and receive adequate care. Community risk registers allow for those helping in recovery to deliver necessary services like medical care, equipment, or relocation of those most at risk.",
             "layer": ["Extreme storms In Full", "Extreme storms Summary"],
             "ccc adaptation theme": ["Health", "Community preparedness and response"],
-            "ipcc adaptation category": ["Government policies and programs"]
+            "ipcc adaptation category": ["Government policies and programs"],
+            "aggregated_layers": ["Extreme Storms"]
         }
     },
     {
@@ -3792,7 +4119,8 @@
             ],
             "ccc adaptation theme": ["Energy", "Buildings"],
             "ipcc adaptation category": ["Engineered and built environment", "Technological "],
-            "main_adaptation": ["Cold weather plans"]
+            "main_adaptation": ["Cold weather plans"],
+            "aggregated_layers": ["Extreme Storms", "Food and Personal Security"]
         }
     },
     {
@@ -3818,7 +4146,8 @@
                 "Towns and cities",
                 "Buildings"
             ],
-            "ipcc adaptation category": ["Engineered and built environment", "Ecosystem-based"]
+            "ipcc adaptation category": ["Engineered and built environment", "Ecosystem-based"],
+            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -3836,7 +4165,8 @@
                 "Community preparedness and response"
             ],
             "ipcc adaptation category": ["Informational", "Behavioural", "Government policies and programs"],
-            "case_studies": ["1445"]
+            "case_studies": ["1445"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -3848,7 +4178,8 @@
             "reference_id": ["97"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Energy", "Towns and cities", "Buildings", "Health"],
-            "ipcc adaptation category": ["Engineered and built environment", "Technological "]
+            "ipcc adaptation category": ["Engineered and built environment", "Technological "],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -3870,7 +4201,13 @@
             ],
             "ccc adaptation theme": ["Telecoms & ICT", "Towns and cities", "Community preparedness and response"],
             "ipcc adaptation category": ["Government policies and programs"],
-            "case_studies": ["1476", "1485", "1487", "1488", "1542"]
+            "case_studies": ["1476", "1485", "1487", "1488", "1542"],
+            "aggregated_layers": [
+                "Extreme Storms",
+                "Coastal Security",
+                "Flooding and Drought",
+                "Food and Personal Security"
+            ]
         }
     },
     {
@@ -3900,7 +4237,8 @@
                 "Economic",
                 "Laws and regulations",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Food and Personal Security"]
         }
     },
     {
@@ -3918,7 +4256,8 @@
                 "Behavioural",
                 "Economic",
                 "Government policies and programs"
-            ]
+            ],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -3928,7 +4267,8 @@
             "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
             "reference_id": ["1358", "1359", "1360"],
             "description": "People should be educated to increase their awareness of methods to prevent and limit infection during and after seawater exposure. Waterproof bandages can be used to cover open wounds, particularly in people who are old and immunocompromised. Once out of the water, skin and new wounds can be washed to remove marine pathogens.",
-            "sector": ["\u00adWater Supply & Quality", "Health & Social Care"]
+            "sector": ["\u00adWater Supply & Quality", "Health & Social Care"],
+            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -3951,7 +4291,8 @@
             ],
             "ccc adaptation theme": ["Health"],
             "ipcc adaptation category": ["Technological ", "Informational", "Government policies and programs"],
-            "case_studies": ["43", "69", "94"]
+            "case_studies": ["43", "69", "94"],
+            "aggregated_layers": ["Extreme Storms", "Temperature", "Flooding and Drought", "Food and Personal Security"]
         }
     },
     {
@@ -3964,7 +4305,8 @@
             "description": "Building in areas at risk of flooding increases people\u2019s exposure risk, particularly in areas such as floodplains. Avoiding building in areas with a history of flooding or at an increased future risk can limit exposure.",
             "ccc adaptation theme": ["Towns and cities", "Buildings"],
             "ipcc adaptation category": ["Engineered and built environment", "Ecosystem-based", "Laws and regulations"],
-            "case_studies": ["541"]
+            "case_studies": ["541"],
+            "aggregated_layers": ["Flooding and Drought"]
         }
     },
     {
@@ -3977,7 +4319,8 @@
             "reference_id": ["206"],
             "layer": ["Temperature In Full", "Temperature Summary"],
             "ccc adaptation theme": ["Transport", "Towns and cities", "Community preparedness and response"],
-            "ipcc adaptation category": ["Behavioural"]
+            "ipcc adaptation category": ["Behavioural"],
+            "aggregated_layers": ["Temperature"]
         }
     },
     {
@@ -3998,7 +4341,8 @@
                 "Pathogenic Marine Microorganisms Summary"
             ],
             "ccc adaptation theme": ["Towns and cities", "Buildings", "Community preparedness and response"],
-            "ipcc adaptation category": ["Engineered and built environment", "Technological ", "Ecosystem-based"]
+            "ipcc adaptation category": ["Engineered and built environment", "Technological ", "Ecosystem-based"],
+            "aggregated_layers": ["Temperature", "Flooding and Drought", "Pathogenic Marine Microorganisms"]
         }
     },
     {
@@ -4032,7 +4376,12 @@
                 "Finance"
             ],
             "ipcc adaptation category": ["Ecosystem-based", "Laws and regulations"],
-            "case_studies": ["544", "545", "546"]
+            "case_studies": ["544", "545", "546"],
+            "aggregated_layers": [
+                "Flooding and Drought",
+                "Food and Personal Security",
+                "Pathogenic Marine Microorganisms"
+            ]
         }
     }
 ]

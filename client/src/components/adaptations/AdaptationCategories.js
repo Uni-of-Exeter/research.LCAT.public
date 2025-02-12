@@ -45,3 +45,30 @@ export const IPCCCategories = [
     "Behavioural",
     "Informational",
 ];
+
+// This array contains aggregated filter names and categories
+export const adaptationFilters = [
+    { filterName: "No filter applied", category: "", displayName: "No filter applied" },
+    { filterName: "Nature", category: "ccc adaptation theme", displayName: "Nature" },
+    { filterName: "Working lands and seas", category: "ccc adaptation theme", displayName: "Working lands and seas" },
+    { filterName: "Towns and cities", category: "ccc adaptation theme", displayName: "Towns and cities" },
+    {
+        filterName: "Community preparedness and response",
+        category: "ccc adaptation theme",
+        displayName: "Community preparedness and response",
+    },
+    { filterName: "Health", category: "ccc adaptation theme", displayName: "Health" },
+    { filterName: "Energy", category: "ccc adaptation theme", displayName: "Energy" },
+    { filterName: "Transport", category: "ccc adaptation theme", displayName: "Transport" },
+    { filterName: "Buildings", category: "ccc adaptation theme", displayName: "Buildings" },
+    { filterName: "Food security", category: "ccc adaptation theme", displayName: "Food security" },
+    { filterName: "Telecoms & ICT", category: "ccc adaptation theme", displayName: "Telecoms & ICT" },
+    { filterName: "Business", category: "ccc adaptation theme", displayName: "Business" },
+    { filterName: "Finance", category: "ccc adaptation theme", displayName: "Finance" },
+    { filterName: "Water supply", category: "ccc adaptation theme", displayName: "Water supply" },
+    {
+        filterName: "Government policies and programs",
+        category: "ipcc adaptation category",
+        displayName: "Monitoring and management programmes",
+    },
+];
