@@ -119,6 +119,7 @@ const App = () => {
                         regions={regions}
                         selectedHazardName={selectedHazardName}
                         setSelectedHazardName={setSelectedHazardName}
+                        applyCoastalFilter={applyCoastalFilter}
                     />
                 </div>
             )}

@@ -15,14 +15,27 @@ import "./KumuImpactPathway.css";
 import React, { useEffect, useState } from "react";
 import { useCollapse } from "react-collapsed";
 
+import { defaultState } from "../../utils/defaultState.js";
 import { pathways } from "./ClimateImpactSummaryData";
 
-const KumuImpactPathway = (props) => {
+const KumuImpactPathway = ({ regions, selectedHazardName, setSelectedHazardName, applyCoastalFilter }) => {
     const [isExpanded, setExpanded] = useState(false);
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
-    const [whichPathway, setWhichPathway] = useState("summary");
 
-    const pathway = pathways.find((item) => item.name === props.selectedHazardName);
+    const [whichPathway, setWhichPathway] = useState("summary");
+    const [filteredPathwayData, setFilteredPathwayData] = useState(pathways);
+
+    // Filter pathways if coastal filter is applied
+    useEffect(() => {
+        if (applyCoastalFilter) {
+            setFilteredPathwayData(pathways.filter((pathway) => pathway.name !== "Coastal Security"));
+        } else {
+            setFilteredPathwayData(pathways);
+        }
+        setSelectedHazardName(defaultState.selectedHazardName);
+    }, [applyCoastalFilter, setSelectedHazardName]);
+
+    const pathway = filteredPathwayData.find((item) => item.name === selectedHazardName);
 
     let pathwayMap;
     switch (whichPathway) {
@@ -45,13 +58,13 @@ const KumuImpactPathway = (props) => {
         }
     };
 
-    useEffect(() => setExpanded(false), [props.regions]);
+    useEffect(() => setExpanded(false), [regions]);
 
     function handleOnClick() {
         setExpanded(!isExpanded);
     }
 
-    if (props.regions.length === 0) {
+    if (regions.length === 0) {
         return null;
     }
 
@@ -83,12 +96,12 @@ const KumuImpactPathway = (props) => {
                             </select>{" "}
                             climate impacts for{" "}
                             <select
-                                value={props.selectedHazardName}
+                                value={selectedHazardName}
                                 onChange={(e) => {
-                                    props.setSelectedHazardName(e.target.value);
+                                    setSelectedHazardName(e.target.value);
                                 }}
                             >
-                                {pathways.map((pathway) => (
+                                {filteredPathwayData.map((pathway) => (
                                     <option value={pathway.name} key={pathway.id}>
                                         {pathway.name}
                                     </option>
