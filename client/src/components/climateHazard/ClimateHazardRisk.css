@@ -4,6 +4,7 @@
     overflow-x: auto;
     flex-wrap: wrap;
     width: 100%;
+    justify-content: space-around;
 }
 
 .hazard-img {
