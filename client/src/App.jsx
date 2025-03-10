@@ -42,7 +42,7 @@ const App = () => {
     const [variable, setVariable] = useState(defaultState.variable);
     const [isPredictionLoading, setIsPredictionLoading] = useState(defaultState.isPredictionLoading);
     const [selectedHazardName, setSelectedHazardName] = useState(defaultState.selectedHazardName);
-    const [applyCoastalFilter, setApplyCoastalFilter] = useState(defaultState.applyCoastalFilter)
+    const [applyCoastalFilter, setApplyCoastalFilter] = useState(defaultState.applyCoastalFilter);
 
     return (
         <div className="App">
@@ -103,7 +103,7 @@ const App = () => {
 
             {regions.length > 0 && (
                 <div className="white-section">
-                    <ClimateHazardRisk applyCoastalFilter={applyCoastalFilter}/>
+                    <ClimateHazardRisk applyCoastalFilter={applyCoastalFilter} />
                 </div>
             )}
 
@@ -113,6 +113,7 @@ const App = () => {
                         loading={isPredictionLoading}
                         selectedHazardName={selectedHazardName}
                         setSelectedHazardName={setSelectedHazardName}
+                        applyCoastalFilter={applyCoastalFilter}
                     />
                     <KumuImpactPathway
                         regions={regions}
