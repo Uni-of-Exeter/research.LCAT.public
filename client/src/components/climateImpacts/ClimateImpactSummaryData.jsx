@@ -48,6 +48,7 @@ export const pathways = [
     {
         id: 0,
         name: "Extreme Storms",
+        isCoastal: false,
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Extreme Storms"
@@ -79,6 +80,7 @@ export const pathways = [
     {
         id: 1,
         name: "Coastal Security",
+        isCoastal: true,
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Coastal Security"
@@ -106,6 +108,7 @@ export const pathways = [
     {
         id: 2,
         name: "Flooding and Drought",
+        isCoastal: false,
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Flooding and Drought"
@@ -133,6 +136,7 @@ export const pathways = [
     {
         id: 3,
         name: "Food and Personal Security",
+        isCoastal: false,
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Food and Personal Security"
@@ -160,6 +164,7 @@ export const pathways = [
     {
         id: 4,
         name: "Pathogenic Marine Microorganisms",
+        isCoastal: true,
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Pathogenic Marine Microorganisms"
@@ -187,6 +192,7 @@ export const pathways = [
     {
         id: 5,
         name: "Temperature",
+        isCoastal: false,
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Temperature"

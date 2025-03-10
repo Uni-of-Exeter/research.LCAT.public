@@ -12,18 +12,31 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./ClimateImpactSummary.css";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import LoadingOverlay from "react-loading-overlay-ts";
 
+import { defaultState } from "../../utils/defaultState.js";
 import { communityImpacts, impacts, pathways } from "./ClimateImpactSummaryData.jsx";
 
-const ClimateImpactSummary = (props) => {
-    const selectedPathwayData = pathways.find((item) => item.name === props.selectedHazardName);
+const ClimateImpactSummary = ({ loading, selectedHazardName, setSelectedHazardName, applyCoastalFilter }) => {
+    const [filteredPathwayData, setFilteredPathwayData] = useState(pathways);
+
+    // Filter pathways if coastal filter is applied
+    useEffect(() => {
+        if (applyCoastalFilter) {
+            setFilteredPathwayData(pathways.filter((pathway) => !pathway.isCoastal));
+        } else {
+            setFilteredPathwayData(pathways);
+        }
+        setSelectedHazardName(defaultState.selectedHazardName);
+    }, [applyCoastalFilter, setSelectedHazardName]);
+
+    const selectedPathwayData = filteredPathwayData.find((item) => item.name === selectedHazardName);
     const filteredImpacts = impacts.filter((item) => item.inPathway.includes(selectedPathwayData.id));
     const filteredCommunityImpacts = communityImpacts.filter((item) => item.inPathway.includes(selectedPathwayData.id));
 
     return (
-        <LoadingOverlay active={props.loading} spinner text={"Loading impact summaries"}>
+        <LoadingOverlay active={loading} spinner text={"Loading impact summaries"}>
             <h1>Climate Impact Summary</h1>
 
             <p>
@@ -34,12 +47,12 @@ const ClimateImpactSummary = (props) => {
             <p>
                 You are viewing the <strong className="text-emphasis">climate</strong> impacts for&nbsp;
                 <select
-                    value={props.selectedHazardName}
+                    value={selectedHazardName}
                     onChange={(e) => {
-                        props.setSelectedHazardName(e.target.value);
+                        setSelectedHazardName(e.target.value);
                     }}
                 >
-                    {pathways.map((pathway) => (
+                    {filteredPathwayData.map((pathway) => (
                         <option value={pathway.name} key={pathway.id}>
                             {pathway.name}
                         </option>
@@ -59,8 +72,7 @@ const ClimateImpactSummary = (props) => {
             </p>
 
             <p>
-                You are viewing the climate impacts for{" "}
-                <strong className="text-emphasis">{props.selectedHazardName}</strong>.
+                You are viewing the climate impacts for <strong className="text-emphasis">{selectedHazardName}</strong>.
             </p>
 
             <div className="horiz-container-impact">
@@ -82,8 +94,7 @@ const ClimateImpactSummary = (props) => {
             </p>
 
             <p>
-                You are viewing the climate impacts for{" "}
-                <strong className="text-emphasis">{props.selectedHazardName}</strong>.
+                You are viewing the climate impacts for <strong className="text-emphasis">{selectedHazardName}</strong>.
             </p>
 
             <div className="horiz-container-impact">

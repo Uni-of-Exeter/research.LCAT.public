@@ -14,6 +14,7 @@ import "./App.css";
 
 import React, { useState } from "react";
 
+import CoastalFilter from "./components/adaptations/CoastalFilter";
 import StaticAdaptations from "./components/adaptations/StaticAdaptations";
 import ClimateHazardRisk from "./components/climateHazard/ClimateHazardRisk";
 import ClimateImpactSummary from "./components/climateImpacts/ClimateImpactSummary";
@@ -41,6 +42,7 @@ const App = () => {
     const [variable, setVariable] = useState(defaultState.variable);
     const [isPredictionLoading, setIsPredictionLoading] = useState(defaultState.isPredictionLoading);
     const [selectedHazardName, setSelectedHazardName] = useState(defaultState.selectedHazardName);
+    const [applyCoastalFilter, setApplyCoastalFilter] = useState(defaultState.applyCoastalFilter);
 
     return (
         <div className="App">
@@ -48,6 +50,7 @@ const App = () => {
             <Introduction />
 
             <AllRegionLoader regionType={regionType} setAllRegions={setAllRegions} />
+            <CoastalFilter regions={regions} setApplyCoastalFilter={setApplyCoastalFilter} />
 
             <ClimatePredictionLoader
                 regions={regions}
@@ -100,7 +103,7 @@ const App = () => {
 
             {regions.length > 0 && (
                 <div className="white-section">
-                    <ClimateHazardRisk loading={isPredictionLoading} />
+                    <ClimateHazardRisk applyCoastalFilter={applyCoastalFilter} />
                 </div>
             )}
 
@@ -110,11 +113,13 @@ const App = () => {
                         loading={isPredictionLoading}
                         selectedHazardName={selectedHazardName}
                         setSelectedHazardName={setSelectedHazardName}
+                        applyCoastalFilter={applyCoastalFilter}
                     />
                     <KumuImpactPathway
                         regions={regions}
                         selectedHazardName={selectedHazardName}
                         setSelectedHazardName={setSelectedHazardName}
+                        applyCoastalFilter={applyCoastalFilter}
                     />
                 </div>
             )}
@@ -130,6 +135,7 @@ const App = () => {
                     <StaticAdaptations
                         selectedHazardName={selectedHazardName}
                         setSelectedHazardName={setSelectedHazardName}
+                        applyCoastalFilter={applyCoastalFilter}
                     />
                 </div>
             )}

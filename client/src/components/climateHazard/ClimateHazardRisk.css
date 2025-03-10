@@ -4,6 +4,7 @@
     overflow-x: auto;
     flex-wrap: wrap;
     width: 100%;
+    justify-content: space-around;
 }
 
 .hazard-img {
@@ -40,6 +41,12 @@
 @media (min-width: 1000px) {
     .vert-container-hazard {
         width: 20%;
+    }
+}
+
+@media (max-width: 1000px) {
+    .horiz-container-hazard {
+        justify-content: flex-start;
     }
 }
 

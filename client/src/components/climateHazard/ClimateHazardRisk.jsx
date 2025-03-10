@@ -12,16 +12,22 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./ClimateHazardRisk.css";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { climateHazardsData } from "./ClimateHazardData";
 
-const ClimateHazardRisk = () => {
+const ClimateHazardRisk = ({ applyCoastalFilter }) => {
     const [selectedHazard, setSelectedHazard] = useState(null);
+    const [filteredClimateHazardData, setFilteredClimateHazardData] = useState([]);
 
-    const handleHazardClick = (hazard) => {
-        setSelectedHazard(hazard);
-    };
+    useEffect(() => {
+        if (applyCoastalFilter) {
+            setFilteredClimateHazardData(climateHazardsData.filter((hazard) => hazard.name !== "Coastal Erosion"));
+        } else {
+            setFilteredClimateHazardData(climateHazardsData);
+        }
+        setSelectedHazard(null);
+    }, [applyCoastalFilter]);
 
     return (
         <div>
@@ -34,11 +40,11 @@ const ClimateHazardRisk = () => {
             </p>
 
             <div className="horiz-container-hazard">
-                {climateHazardsData.map((hazard) => (
+                {filteredClimateHazardData.map((hazard) => (
                     <button
                         className="vert-container-hazard"
                         key={hazard.name}
-                        onClick={() => handleHazardClick(hazard.name)}
+                        onClick={() => setSelectedHazard(hazard.name)}
                     >
                         <div className="hazard-text">
                             <strong>{hazard.name}</strong>
@@ -51,7 +57,7 @@ const ClimateHazardRisk = () => {
             {selectedHazard ? (
                 <div className="selected-hazard-details">
                     <h2>{selectedHazard}</h2>
-                    {climateHazardsData.find((hazard) => hazard.name === selectedHazard)?.details}
+                    {filteredClimateHazardData.find((hazard) => hazard.name === selectedHazard)?.details}
                 </div>
             ) : (
                 <div className="details-placeholder">
