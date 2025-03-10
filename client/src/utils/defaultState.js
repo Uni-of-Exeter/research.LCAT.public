@@ -9,4 +9,5 @@ export const defaultState = {
     variable: "tas",
     isPredictionLoading: false,
     selectedHazardName: "Extreme Storms",
+    applyCoastalFilter: false,
 };

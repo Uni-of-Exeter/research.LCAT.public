@@ -59,6 +59,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
         const col = "#00000000";
         const gid = feature.properties.gid;
         const name = feature.properties.name;
+        const isCoastal = feature.properties.isCoastal;
 
         const isSelected = regions.some((e) => e.id === gid);
 
@@ -82,10 +83,10 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
             layer.setStyle({ weight: 3 });
         });
 
-        layer.on("click", () => toggleRegion(gid, name, layer));
+        layer.on("click", () => toggleRegion(gid, name, isCoastal, layer));
     };
 
-    const toggleRegion = (gid, name, layer = null) => {
+    const toggleRegion = (gid, name, isCoastal, layer = null) => {
         const col = "#00000000";
         const targetLayer = layer || layerMap.current.get(gid);
 
@@ -98,6 +99,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                     {
                         id: gid,
                         name: name,
+                        isCoastal: isCoastal,
                         clearMe: () => targetLayer && targetLayer.setStyle({ fillColor: col, fillOpacity: 1 }),
                     },
                 ];
@@ -242,7 +244,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                                                 type="checkbox"
                                                 id={checkboxId}
                                                 checked={isSelected}
-                                                onChange={() => toggleRegion(region.gid, region.name)}
+                                                onChange={() => toggleRegion(region.gid, region.name, region.isCoastal)}
                                             />
                                             <label htmlFor={checkboxId}>{region.name}</label>
                                         </div>
