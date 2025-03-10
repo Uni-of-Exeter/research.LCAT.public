@@ -28,7 +28,7 @@ const KumuImpactPathway = ({ regions, selectedHazardName, setSelectedHazardName,
     // Filter pathways if coastal filter is applied
     useEffect(() => {
         if (applyCoastalFilter) {
-            setFilteredPathwayData(pathways.filter((pathway) => pathway.name !== "Coastal Security"));
+            setFilteredPathwayData(pathways.filter((pathway) => !pathway.isCoastal));
         } else {
             setFilteredPathwayData(pathways);
         }

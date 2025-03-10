@@ -135,6 +135,7 @@ const App = () => {
                     <StaticAdaptations
                         selectedHazardName={selectedHazardName}
                         setSelectedHazardName={setSelectedHazardName}
+                        applyCoastalFilter={applyCoastalFilter}
                     />
                 </div>
             )}

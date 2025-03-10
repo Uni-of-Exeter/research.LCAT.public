@@ -14,12 +14,13 @@ import React, { useEffect, useState } from "react";
 import LoadingOverlay from "react-loading-overlay-ts";
 
 import adaptationData from "../../kumu/parsed/adaptation_data.json";
+import { defaultState } from "../../utils/defaultState";
 import { pathways } from "../climateImpacts/ClimateImpactSummaryData";
 import { adaptationFilters } from "./AdaptationCategories";
 import StaticAdaptation from "./StaticAdaptation";
 
 const StaticAdaptations = (props) => {
-    const { selectedHazardName, setSelectedHazardName } = props;
+    const { selectedHazardName, setSelectedHazardName, applyCoastalFilter } = props;
 
     const defaultFilterName = adaptationFilters[0].filterName;
     const defaultFilterCategory = adaptationFilters[0].category;
@@ -27,6 +28,18 @@ const StaticAdaptations = (props) => {
     const [filterName, setFilterName] = useState(defaultFilterName);
     const [filterCategory, setFilterCategory] = useState(defaultFilterCategory);
     const [loading, setLoading] = useState(false);
+
+    // Filter pathways if coastal filter is applied
+    const [filteredPathwayData, setFilteredPathwayData] = useState(pathways);
+
+    useEffect(() => {
+        if (applyCoastalFilter) {
+            setFilteredPathwayData(pathways.filter((pathway) => !pathway.isCoastal));
+        } else {
+            setFilteredPathwayData(pathways);
+        }
+        setSelectedHazardName(defaultState.selectedHazardName);
+    }, [applyCoastalFilter, setSelectedHazardName]);
 
     // Handle change in filter: set filterName and filterCategory when dropdown is used
     const handleFilterChange = (e) => {
@@ -76,7 +89,7 @@ const StaticAdaptations = (props) => {
                         setSelectedHazardName(e.target.value);
                     }}
                 >
-                    {pathways.map((pathway) => (
+                    {filteredPathwayData.map((pathway) => (
                         <option value={pathway.name} key={pathway.id}>
                             {pathway.name}
                         </option>
