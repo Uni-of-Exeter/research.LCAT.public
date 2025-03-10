@@ -44,6 +44,12 @@
     }
 }
 
+@media (max-width: 1000px) {
+    .horiz-container-hazard {
+        justify-content: flex-start;
+    }
+}
+
 .climate-hazard-emphasis {
     font-weight: bold;
     font-size: 1.3em;
