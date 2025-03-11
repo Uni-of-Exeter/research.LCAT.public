@@ -242,7 +242,7 @@ export const climateHazardsData = [
                     <li>
                         England{" - "}
                         <a
-                            href="https://environment.maps.arcgis.com/apps/webappviewer/index.html?id=9cef4a084bbb4954b970cd35b099d94c&marker=583422.9849116375%2C343036.013226925%2C27700%2C%2C%2C&markertemplate=%7B%22title%22%3A%22%22%2C%22x%22%3A583422.9849116375%2C%22y%22%3A343036.013226925%2C%22wkid%22%3A27700%2C%22isIncludeShareUrl%22%3Atrue%7D&level=14"
+                            href="https://environment.data.gov.uk/shoreline-planning/coastal-erosion"
                             target="_blank"
                             rel="noreferrer"
                         >
