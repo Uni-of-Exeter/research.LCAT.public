@@ -50,7 +50,6 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
     const [loading, setLoading] = useState(true);
     const [triggerLoadingIndicator, setTriggerLoadingIndicator] = useState(true);
     const [isDrawerOpen, setIsDrawerOpen] = useState(true);
-    const [selectAllToggleState, setSelectAllToggleState] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
 
     const layerMap = useRef(new Map());
@@ -60,7 +59,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
         const gid = feature.properties.gid;
         const name = feature.properties.name;
         const isCoastal = feature.properties.isCoastal;
-
+        const regionCenter = feature.properties.geometricCenter;
         const isSelected = regions.some((e) => e.id === gid);
 
         layer.bindTooltip(name);
@@ -83,10 +82,10 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
             layer.setStyle({ weight: 3 });
         });
 
-        layer.on("click", () => toggleRegion(gid, name, isCoastal, layer));
+        layer.on("click", () => toggleRegion(gid, name, isCoastal, regionCenter, layer));
     };
 
-    const toggleRegion = (gid, name, isCoastal, layer = null) => {
+    const toggleRegion = (gid, name, isCoastal, regionCenter, layer = null) => {
         const col = "#00000000";
         const targetLayer = layer || layerMap.current.get(gid);
 
@@ -100,6 +99,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                         id: gid,
                         name: name,
                         isCoastal: isCoastal,
+                        regionCenter: regionCenter,
                         clearMe: () => targetLayer && targetLayer.setStyle({ fillColor: col, fillOpacity: 1 }),
                     },
                 ];

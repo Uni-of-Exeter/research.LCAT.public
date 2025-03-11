@@ -28,6 +28,7 @@ import LCATHeader from "./components/header/Header";
 import Introduction from "./components/header/Introduction";
 import AllRegionLoader from "./components/loaders/AllRegionLoader";
 import ClimatePredictionLoader from "./components/loaders/ClimatePredictionLoader";
+import IMDMap from "./components/vulnerabilities/IMDMap";
 import PersonalSocialVulnerabilities from "./components/vulnerabilities/PersonalSocialVulnerabilities";
 import { defaultState } from "./utils/defaultState";
 
@@ -43,6 +44,7 @@ const App = () => {
     const [isPredictionLoading, setIsPredictionLoading] = useState(defaultState.isPredictionLoading);
     const [selectedHazardName, setSelectedHazardName] = useState(defaultState.selectedHazardName);
     const [applyCoastalFilter, setApplyCoastalFilter] = useState(defaultState.applyCoastalFilter);
+    const [mapCenter, setMapCenter] = useState(defaultState.mapCenter);
 
     return (
         <div className="App">
@@ -68,6 +70,7 @@ const App = () => {
                     allRegions={allRegions}
                     regionType={regionType}
                     setRegionType={setRegionType}
+                    setMapCenter={setMapCenter}
                 />
             </div>
 
@@ -132,6 +135,12 @@ const App = () => {
 
             {regions.length > 0 && (
                 <div className="grey-section">
+                    <IMDMap regions={regions} regionType={regionType} />
+                </div>
+            )}
+
+            {regions.length > 0 && (
+                <div className="white-section">
                     <StaticAdaptations
                         selectedHazardName={selectedHazardName}
                         setSelectedHazardName={setSelectedHazardName}

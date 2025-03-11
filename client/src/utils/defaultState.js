@@ -10,4 +10,5 @@ export const defaultState = {
     isPredictionLoading: false,
     selectedHazardName: "Extreme Storms",
     applyCoastalFilter: false,
+    mapCenter: {lat: 55.8, lng: -3.2},
 };

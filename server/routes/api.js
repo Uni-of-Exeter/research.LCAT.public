@@ -142,7 +142,8 @@ router.get("/region", async function (req, res) {
         const client = new Client(conString);
         await client.connect();
 
-        const props = ""; // Placeholder for additional properties
+        // Placeholder for additional properties
+        const props = ""; 
 
         // Query: Build GeoJSON object for the given bounding box
         const get_region_query = `
@@ -155,7 +156,11 @@ router.get("/region", async function (req, res) {
                             'gid', gid,
                             'isCoastal', is_coastal,
                             'name', ${boundaryDetails.name_col}
-                            ${props ? `, ${props}` : ""}
+                            ${props ? `, ${props}` : ""},
+                            'geometricCenter', json_build_object(
+                                'lat', ST_Y(ST_Transform(ST_Centroid(geom), 4326)),
+                                'lon', ST_X(ST_Transform(ST_Centroid(geom), 4326))
+                            )
                         ),
                         'geometry', ST_AsGeoJSON(
                             ST_Transform(
