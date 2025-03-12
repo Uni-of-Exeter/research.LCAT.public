@@ -8,6 +8,8 @@ import psycopg2
 import xarray as xr
 from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from matplotlib.path import Path
+from scipy.ndimage import binary_erosion, binary_fill_holes, convolve, label
+from scipy.ndimage import sum as ndi_sum
 from shapely.geometry import Polygon
 
 
@@ -17,6 +19,18 @@ class GridLoader:
     that the netcdf data are recorded on. The netcdf data are provided at points in time and space, on ESPG 27700.
     The grid table will contain the calculated boundaries of each cell that has a data point at its centre. Null
     data cells are not stored in the database table.
+
+    This class is responsible for creating a mask of bias and non-bias-corrected cells from the NetCDF files. We
+    select bias-corrected data where possible, and non-bias-corrected data for Northern Ireland and the Isles of
+    Scilly. There are some additional non-bias-corrected cells present around mainland UK: we discount these.
+
+    This class also identifies this data from the raw CHESS-SCAPE files, and stores it in a Postgres table. We store the
+    following data for each grid cell:
+
+        - grid_cell_id: primary key, integer
+        - geometry: geometry (postgis geometry type, 1km by 1km square)
+        - bias_corrected: boolean, whether the cell has bias-corrected data for it or not
+        - coastal_info: charvar, string to identify coastline, land, or 5*10km inwards bands
     """
 
     def __init__(self, config):
@@ -131,7 +145,14 @@ class GridLoader:
 
     def get_mask(self, bias_corrected_key):
         """
-        Get the mask for the required bias or non-bias corrected data (i.e. where the data is not nan).
+        Get the mask for the required bias or non-bias corrected data (i.e. where the data is not nan). For the bias
+        corrected data, we return the mask of where the NetCDF file is non-zero, i.e. where we have bias-corrected
+        data. For the non-bias-corrected data, we need to manually select the non-bias-corrected cells that we want
+        to keep.
+
+        Broadly, we want to keep the non bias-corrected data for Northern Ireland and the Isles of Scilly. There are
+        also some non-bias-corrected cells around the UK: we want to discount these. Hence we draw a polygon around
+        these two regions, selecting all non-bias-cells in these polygons, to create the non-bias-corrected mask.
         """
 
         data = self.data[bias_corrected_key]
@@ -174,7 +195,7 @@ class GridLoader:
 
     def cache_masks(self):
         """
-        Assuming two masks have been loaded, create and cache both.
+        Assuming two data files have been loaded, create and cache masks for both data files.
         """
 
         if len(self.data) != 2:
@@ -195,19 +216,144 @@ class GridLoader:
 
     def create_aggregated_labelled_mask(self):
         """
-        Create a labelled mask. False == 0, bias_corrected == 1, non_bias_corrected = 2.
+        Create a labelled mask. We use the following labels:
+
+            - False == 0
+            - bias_corrected == 1
+            - non_bias_corrected = 2
+
+        This is our final mask, and can be thought of as bias-corrected data where possible (England, Wales, Scotland),
+        but non-bias-corrected data over Northern Ireland and the Isles of Scilly.
         """
 
         self.masks["aggregated_labelled"] = self.masks["bias_corrected"].astype(int) + 2 * self.masks[
             "non_bias_corrected"
         ].astype(int)
 
+    def _create_filled_land_mask(self, land_mask, size_threshold=15):
+        """
+        Given a land mask, with some internal lakes, create a filled land mask (with small lakes filled).
+        """
+
+        # Previously:
+        # filled_land_mask = binary_fill_holes(land_mask)
+
+        # Now:
+        # Identify all holes (connected components of False inside True regions)
+        inverse_mask = ~land_mask
+        labeled_holes, num_holes = label(inverse_mask)
+
+        # Compute the size of each hole
+        hole_sizes = ndi_sum(inverse_mask, labeled_holes, index=range(1, num_holes + 1))
+
+        # Create a mask for small holes
+        small_holes_mask = np.isin(labeled_holes, np.where(hole_sizes <= size_threshold)[0] + 1)
+
+        # Fill only the small holes
+        filled_land_mask = land_mask | small_holes_mask
+
+        return filled_land_mask
+
+    def create_coastline_mask(self):
+        """
+        Create a coastline mask from a NetCDF dataset. We create a convolution, and count the number of cells around
+        each cell. A cell surrounded by land on all sides has a value of 9. An ocean cell surrounded by ocean on all
+        sides has a value of 0. We filter the convolved data: any cells in the land mask with a count greater than 0
+        and less than 9 are deemed coastline.
+        """
+        # Create boolean land mask (False where no data)
+        land_mask = self.masks["aggregated_labelled"].astype(bool)
+
+        # Create filled land mask
+        filled_land_mask = self._create_filled_land_mask(land_mask)
+
+        # Define 8-neighbor kernel
+        kernel = np.array([[1, 1, 1], [1, 1, 1], [1, 1, 1]])
+
+        # Count land cell neighbors for each cell
+        land_neighbours = convolve(filled_land_mask.astype(int), kernel, mode="constant", cval=0)
+
+        # Create coastline mask
+        coastline_mask = land_mask & (land_neighbours > 0) & (land_neighbours < 9)
+
+        self.masks["coastline"] = coastline_mask
+
+    def create_inland_mask(self, land_mask, filled_land_mask, radius):
+        """
+        Using a circular structuring element, create an inland mask from the edge of a given mask pair, using erosion.
+        """
+
+        y, x = np.ogrid[-radius : radius + 1, -radius : radius + 1]
+        circular_structure = (x**2 + y**2) <= radius**2
+
+        # Apply erosion to shrink the land mask inward by n cells
+        eroded_land_mask = binary_erosion(filled_land_mask, structure=circular_structure)
+
+        # Extract the n-cell inland boundary by subtracting the eroded mask from the original land mask
+        return land_mask & ~eroded_land_mask
+
+    def create_coastal_mask_with_inland_regions(self):
+        """
+        Create a coastline mask with inland regions a specified distance away from the coast tagged.
+        The following classifications are used:
+
+         - 0 = Ocean (or inland water body, not present in final database)
+         - 1 = Coastline
+         - 2 = Land
+         - 10 = Land (10km from the coast)
+         - 20 = Land (20km from the coast)
+         - 30 = Land (30km from the coast)
+         - 40 = Land (40km from the coast)
+         - 50 = Land (50km from the coast)
+        """
+
+        # Store the map for use later on
+        self.coastal_map = {
+            0: "ocean",
+            1: "coastline",
+            2: "land",
+            10: "10km from coast",
+            20: "20km from coast",
+            30: "30km from coast",
+            40: "40km from coast",
+            50: "50km from coast",
+        }
+
+        land_mask = self.masks["aggregated_labelled"].astype(bool)
+        filled_land_mask = binary_fill_holes(land_mask)
+
+        # Create a number of 10km bands
+        inward_10_mask = self.create_inland_mask(land_mask, filled_land_mask, 10)
+        inward_20_mask = self.create_inland_mask(land_mask, filled_land_mask, 20)
+        inward_30_mask = self.create_inland_mask(land_mask, filled_land_mask, 30)
+        inward_40_mask = self.create_inland_mask(land_mask, filled_land_mask, 40)
+        inward_50_mask = self.create_inland_mask(land_mask, filled_land_mask, 50)
+
+        # Initialize the final mask with 0 (ocean)
+        final_mask = np.zeros_like(land_mask, dtype=int)
+
+        # Set land cells to 2 (excluding coast and inward bands)
+        final_mask[land_mask] = 2
+
+        # Assign land masks from inside to outside
+        final_mask[inward_50_mask] = 50
+        final_mask[inward_40_mask] = 40
+        final_mask[inward_30_mask] = 30
+        final_mask[inward_20_mask] = 20
+        final_mask[inward_10_mask] = 10
+
+        # Finally assign coastline cells
+        coastline_mask = self.masks["coastline"]
+        final_mask[coastline_mask] = 1
+
+        self.masks["final_coastal_mask"] = final_mask
+
     def plot_mask(self, mask, key):
         """
         Plot mask with matplotlib. Note EPSG 27700 is used.
         """
 
-        plt.figure(figsize=(6, 8))
+        plt.figure(figsize=(40, 30))
         ax = plt.axes(projection=ccrs.epsg(27700), transform=ccrs.epsg(27700))
         ax.pcolormesh(mask)
         ax.set_title(f"CHESS-SCAPE grid: {key}")
@@ -252,7 +398,8 @@ class GridLoader:
         CREATE TABLE IF NOT EXISTS "{self.table_name}" (
             grid_cell_id INTEGER PRIMARY KEY,
             geometry GEOMETRY(POLYGON, 27700) NOT NULL,
-            bias_corrected BOOLEAN NOT NULL
+            bias_corrected BOOLEAN NOT NULL,
+            coastal_info VARCHAR(20)
         );
         """
 
@@ -273,7 +420,6 @@ class GridLoader:
         Note that similar logic is used in ChessScapeLoader to loop through the mask, and select climate data
         to load into the database.
         """
-
         x = self.data["bias_corrected"]["x"].values
         y = self.data["bias_corrected"]["y"].values
 
@@ -289,11 +435,19 @@ class GridLoader:
 
         # For each cell in the mask, check its value
         mask = self.masks["aggregated_labelled"]
+        coastal_mask = self.masks["final_coastal_mask"]
+
+        if mask.shape != coastal_mask.shape:
+            raise ValueError(f"Shape mismatch: mask shape {mask.shape} != coastal_mask shape {coastal_mask.shape}")
 
         for i, j in np.ndindex(mask.shape):
             # If mask cell has value of 0, skip
             if mask[i, j] == 0:
                 continue
+
+            # Get the coastal mask value for the cell, and the correct string label from the map
+            coastal_mask_value = coastal_mask[i, j]
+            coastal_label = self.coastal_map[coastal_mask_value]
 
             # If mask cell is 1 label as bias corrected ("TRUE"), if 2 label as non-bias corrected ("FALSE")
             tag = "TRUE" if mask[i, j] == 1 else "FALSE"
@@ -309,7 +463,7 @@ class GridLoader:
             )
 
             grid_cell_id = i * mask.shape[1] + j
-            rows.append((grid_cell_id, poly.wkt, tag))
+            rows.append((grid_cell_id, poly.wkt, tag, coastal_label))
 
         return rows
 
@@ -327,12 +481,12 @@ class GridLoader:
         output = io.StringIO()
 
         for row in rows:
-            output.write(f"{row[0]}\t{row[1]}\t{row[2]}\n")
+            output.write(f"{row[0]}\t{row[1]}\t{row[2]}\t{row[3]}\n")
 
         # Move cursor to start of buffer
         output.seek(0)
 
-        column_names = ["grid_cell_id", "geometry", "bias_corrected"]
+        column_names = ["grid_cell_id", "geometry", "bias_corrected", "coastal_info"]
         self.cur.copy_from(output, self.table_name, sep="\t", columns=column_names)
 
         self.conn.commit()
@@ -352,6 +506,8 @@ class GridLoader:
         self.cache_masks()
         self.aggregate_cached_masks()
         self.create_aggregated_labelled_mask()
+        self.create_coastline_mask()
+        self.create_coastal_mask_with_inland_regions()
 
         print("### Mask creation complete.")
         print("############################\n")
