@@ -106,6 +106,73 @@ class DBPlotter:
 
         plt.show()
 
+    def plot_boundary_coloured_by_coastal(self, boundary_identifier, lines=None):
+        """
+        Get boundary geometry from the database, create a GeoDataFrame for fast plotting, and create a plot.
+        Regions are colored based on the 'is_coastal' column (True/False).
+        """
+
+        # Get boundary geometry
+        boundary_geometry = self.get_boundary_geometry(boundary_identifier)
+
+        # Query to get 'is_coastal' data for each region
+        query = f"""
+            SELECT gid, is_coastal FROM boundary_{boundary_identifier};
+        """
+
+        self.cur.execute(query)
+        coastal_data = self.cur.fetchall()
+
+        # Convert coastal_data into a dictionary for easy lookup
+        coastal_dict = {row[0]: row[1] for row in coastal_data}
+
+        # Prepare GeoDataFrame
+        data = []
+        for row in boundary_geometry:
+            row_gid = row[0]
+            geom = wkb.loads(row[1], hex=True)
+            is_coastal = coastal_dict.get(row_gid)  # Get coastal status
+
+            data.append({"id": row_gid, "geometry": geom, "is_coastal": is_coastal})
+
+        gdf = gpd.GeoDataFrame(data, geometry="geometry")
+
+        # Define cmap: Coastal = Blue, Non-coastal = Gray, Unknown = White
+        cmap = ListedColormap(["gray", "blue", "white"])
+        colors = gdf["is_coastal"].map({False: 0, True: 1, None: 2})
+
+        # Create plot
+        fig, ax = plt.subplots(figsize=(10, 10))
+
+        # Plot regions colored by is_coastal
+        gdf.plot(
+            ax=ax,
+            color=[cmap(c) for c in colors],
+            edgecolor="black",
+            linewidth=0.5 if lines else 0,
+        )
+
+        # Create legend manually
+        from matplotlib.patches import Patch
+
+        legend_patches = [
+            Patch(color="gray", label="Non-coastal"),
+            Patch(color="blue", label="Coastal"),
+            Patch(color="white", label="Unknown"),
+        ]
+        ax.legend(handles=legend_patches, title="Region Type")
+
+        # Customize the plot
+        ax.set_title(f"{self.clean_boundary_names[boundary_identifier]}: Coastal vs Non-Coastal", fontsize=12)
+        ax.set_xlabel("Eastings", fontsize=14)
+        ax.set_ylabel("Northings", fontsize=14)
+        ax.set_facecolor("white")
+        ax.xaxis.set_major_formatter(plt.ScalarFormatter(useMathText=True))
+        ax.yaxis.set_major_formatter(plt.ScalarFormatter(useMathText=True))
+        ax.ticklabel_format(style="sci", axis="both", scilimits=(0, 0))
+
+        plt.show()
+
     #########################################################################
     ### CHESS-SCAPE grid cells
     #########################################################################
@@ -118,7 +185,7 @@ class DBPlotter:
         table_name = "chess_scape_grid"
 
         grid_cell_query = f"""
-        SELECT grid_cell_id, geometry, bias_corrected FROM "{table_name}"
+        SELECT grid_cell_id, geometry, bias_corrected, coastal_info FROM "{table_name}"
         """
 
         self.cur.execute(grid_cell_query)
@@ -273,6 +340,61 @@ class DBPlotter:
         ax.set_ylabel("Northings", fontsize=14)
         ax.xaxis.set_major_formatter(mpl.ticker.ScalarFormatter(useMathText=True))
         ax.yaxis.set_major_formatter(mpl.ticker.ScalarFormatter(useMathText=True))
+        ax.ticklabel_format(style="sci", axis="both", scilimits=(0, 0))
+
+        plt.show()
+
+    def plot_chess_grid_cells_coloured_by_coastal(self, merged=True, viewbox=None):
+        """
+        Merge and then plot the CHESS-SCAPE grid, coloured by coastal proximity.
+        """
+
+        grid_geometry = self.get_grid_geometry()
+
+        data = []
+        for row in grid_geometry:
+            geom = wkb.loads(row[1], hex=True)
+            data.append(
+                {
+                    "id": row[0],
+                    "geometry": geom,
+                    "bias_corrected": row[2],
+                    "coastal_info": row[3],
+                }
+            )
+
+        gdf = gpd.GeoDataFrame(data, geometry="geometry")
+
+        if merged:
+            grouped = gdf.groupby("coastal_info")["geometry"].apply(
+                lambda x: unary_union(x)
+            )
+            gdf = gpd.GeoDataFrame(grouped, geometry="geometry").reset_index()
+
+        gdf.sort_values(by=["coastal_info"], inplace=True)
+
+        # Create plot
+        fig, ax = plt.subplots(figsize=(40, 30))
+        gdf.plot(
+            ax=ax,
+            column="coastal_info",
+            cmap="viridis",
+            legend=True,
+        )
+
+        # Change viewbox if supplied
+        if viewbox:
+            x_min, x_max, y_min, y_max = viewbox
+            ax.set_xlim([x_min, x_max])
+            ax.set_ylim([y_min, y_max])
+
+        ax.set_title(
+            "CHESS-SCAPE Grid Cells (coloured by coastal proximity)", fontsize=14
+        )
+        ax.set_xlabel("Eastings", fontsize=14)
+        ax.set_ylabel("Northings", fontsize=14)
+        ax.xaxis.set_major_formatter(ScalarFormatter(useMathText=True))
+        ax.yaxis.set_major_formatter(ScalarFormatter(useMathText=True))
         ax.ticklabel_format(style="sci", axis="both", scilimits=(0, 0))
 
         plt.show()
