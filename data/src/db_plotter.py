@@ -366,9 +366,7 @@ class DBPlotter:
         gdf = gpd.GeoDataFrame(data, geometry="geometry")
 
         if merged:
-            grouped = gdf.groupby("coastal_info")["geometry"].apply(
-                lambda x: unary_union(x)
-            )
+            grouped = gdf.groupby("coastal_info")["geometry"].apply(lambda x: unary_union(x))
             gdf = gpd.GeoDataFrame(grouped, geometry="geometry").reset_index()
 
         gdf.sort_values(by=["coastal_info"], inplace=True)
@@ -388,9 +386,7 @@ class DBPlotter:
             ax.set_xlim([x_min, x_max])
             ax.set_ylim([y_min, y_max])
 
-        ax.set_title(
-            "CHESS-SCAPE Grid Cells (coloured by coastal proximity)", fontsize=14
-        )
+        ax.set_title("CHESS-SCAPE Grid Cells (coloured by coastal proximity)", fontsize=14)
         ax.set_xlabel("Eastings", fontsize=14)
         ax.set_ylabel("Northings", fontsize=14)
         ax.xaxis.set_major_formatter(ScalarFormatter(useMathText=True))
@@ -461,7 +457,7 @@ class DBPlotter:
         chess_grid_table_name = "chess_scape_grid"
 
         get_overlap_query = f"""
-        SELECT o.grid_cell_id, g.geometry, g.bias_corrected, o.is_overlap
+        SELECT o.grid_cell_id, g.geometry, g.bias_corrected, o.is_overlap, g.coastal_info
         FROM "{overlap_table_name}" AS o
         JOIN "{chess_grid_table_name}" AS g
         ON o.grid_cell_id = g.grid_cell_id
@@ -556,9 +552,169 @@ class DBPlotter:
 
         plt.show()
 
+    def plot_region_and_overlapping_cells_coloured_by_coastal(self, boundary_identifier, region_gid):
+        """
+        Plot a region from a boundary, and its overlapping grid cells, coloured by the coastal_info column.
+        """
+
+        # Get data to do with region
+        region_geometry = self.get_geometry_by_gid(boundary_identifier, region_gid)
+        region_name = self.get_region_name_by_gid(boundary_identifier, region_gid)
+
+        data = []
+        for row in region_geometry:
+            geom = wkb.loads(row[1], hex=True)
+            data.append({"id": row[0], "geometry": geom})
+
+        gdf = gpd.GeoDataFrame(data, geometry="geometry")
+
+        # Get overlapping cell data
+        cell_geometry = self.get_overlapping_cells(boundary_identifier, region_gid)
+
+        data = []
+        for row in cell_geometry:
+            geom = wkb.loads(row[1], hex=True)
+            data.append(
+                {"id": row[0], "geometry": geom, "bias_corrected": row[2], "is_overlap": row[3], "coastal_info": row[4]}
+            )
+
+        cell_gdf = gpd.GeoDataFrame(data, geometry="geometry")
+
+        # Create plot
+        fig, ax = plt.subplots(figsize=(10, 10))
+
+        # Plot GeoDataFrame with color based on 'coastal_info'
+        cell_gdf.plot(
+            ax=ax, column="coastal_info", cmap="viridis", legend=True, linewidth=0.5, edgecolor="black", alpha=0.5
+        )
+        gdf.plot(ax=ax, color="none", edgecolor="black")
+
+        # Other things
+        ax.set_title(
+            f"Overlapping grid cells coloured by coastal proximity: {self.clean_boundary_names[boundary_identifier]} - {region_gid}, {region_name}",
+            fontsize=14,
+        )
+        ax.set_xlabel("Eastings", fontsize=14)
+        ax.set_ylabel("Northings", fontsize=14)
+        ax.xaxis.set_major_formatter(ScalarFormatter(useMathText=True))
+        ax.yaxis.set_major_formatter(ScalarFormatter(useMathText=True))
+        ax.ticklabel_format(style="sci", axis="both", scilimits=(0, 0))
+
+        plt.show()
+
     def plot_region_and_overlapping_cells_with_colour(
         self, boundary_identifier, region_gid, rcp, season, variable, decade
     ):
+        """
+        Plot a region from a boundary, and its overlapping grid cells, colored by the data values
+        for a specified variable, season, and decade.
+        """
+
+        # Get data to do with region
+        region_geometry = self.get_geometry_by_gid(boundary_identifier, region_gid)
+        region_name = self.get_region_name_by_gid(boundary_identifier, region_gid)
+
+        region_data = []
+        for row in region_geometry:
+            geom = wkb.loads(row[1], hex=True)
+            region_data.append({"id": row[0], "geometry": geom})
+
+        region_gdf = gpd.GeoDataFrame(region_data, geometry="geometry")
+
+        # Get overlapping cell data
+        cell_geometry = self.get_overlapping_cells(boundary_identifier, region_gid)
+        chess_data = self.get_chess_data(rcp, season, variable, decade)
+
+        # Convert chess_data into a dictionary for easy lookup
+        chess_data_dict = {row[0]: row[1] for row in chess_data}
+
+        cell_data = []
+        for row in cell_geometry:
+            grid_cell_id = row[0]
+            geom = wkb.loads(row[1], hex=True)
+            data_value = chess_data_dict.get(grid_cell_id, np.nan)  # Get the data value, default to NaN if not present
+            cell_data.append(
+                {
+                    "id": grid_cell_id,
+                    "geometry": geom,
+                    "data_value": data_value,
+                    "is_overlap": row[3],
+                }
+            )
+
+        cell_gdf = gpd.GeoDataFrame(cell_data, geometry="geometry")
+
+        # Sort GeoDataFrame by data_value
+        cell_gdf.sort_values(by="data_value", inplace=True)
+
+        # Normalize the data for the color map
+        norm = Normalize(vmin=cell_gdf["data_value"].min(), vmax=cell_gdf["data_value"].max())
+
+        # Choose cmap
+        cmap = plt.cm.viridis
+
+        # Create plot
+        fig, ax = plt.subplots(figsize=(10, 10))
+
+        # Plot the overlapping cells colored by data_value
+        cell_gdf.plot(
+            ax=ax,
+            column="data_value",
+            cmap=cmap,
+            legend=False,
+            edgecolor="black",
+            linewidth=0,
+            alpha=1,
+            norm=norm,
+        )
+
+        # Add color bar
+
+        variable_units = {
+            "pr": "mm/day",
+            "sfcWind": "m/s",
+            "rsds": "W/m^2",
+            "tas": "degrees Celsius",
+            "tasmin": "degrees Celsius",
+            "tasmax": "degrees Celsius",
+        }
+
+        sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+        sm.set_array(cell_gdf["data_value"])
+        cbar = fig.colorbar(sm, ax=ax)
+        cbar.set_label(f"{variable_units[variable]}")
+
+        # Plot the region geometry
+        region_gdf.plot(ax=ax, color="none", edgecolor="black", linewidth=2)
+
+        # If there is a single cell, draw a line between the region and the grid cell
+        if len(cell_gdf) == 1 and not cell_gdf["is_overlap"].iloc[0]:
+            geom_centroid = region_gdf.unary_union.centroid
+            cell_centroid = cell_gdf.unary_union.centroid
+            line_geom = LineString([geom_centroid, cell_centroid])
+            line_gdf = gpd.GeoDataFrame(geometry=[line_geom])
+            grid_cell_id = cell_gdf["id"].iloc[0]
+
+            line_gdf.plot(ax=ax, color="pink", linestyle="--")
+            ax.legend(
+                handles=[Patch(color="pink", label=f"Closest cell: {grid_cell_id}")],
+                loc="upper right",
+            )
+
+        # Add title and labels
+        ax.set_title(
+            f"Overlapping grid cells: {self.clean_boundary_names[boundary_identifier]} - {region_gid}, {region_name}",
+            fontsize=14,
+        )
+        ax.set_xlabel("Eastings", fontsize=14)
+        ax.set_ylabel("Northings", fontsize=14)
+        ax.xaxis.set_major_formatter(plt.ScalarFormatter(useMathText=True))
+        ax.yaxis.set_major_formatter(plt.ScalarFormatter(useMathText=True))
+        ax.ticklabel_format(style="sci", axis="both", scilimits=(0, 0))
+
+        plt.show()
+
+    def plot_region_and_overlapping_cells_with_coastal_colour(self, boundary_identifier, region_gid):
         """
         Plot a region from a boundary, and its overlapping grid cells, colored by the data values
         for a specified variable, season, and decade.
