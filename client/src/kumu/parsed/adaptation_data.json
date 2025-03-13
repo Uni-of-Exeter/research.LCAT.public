@@ -116,8 +116,8 @@
             "layer": [
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "sector": ["\u00adBiodiversity & Natural Habitats", "Agriculture & Forestry", "Food Safety & Security"],
             "urban_rural": "Rural",
@@ -129,7 +129,7 @@
             ],
             "ipcc adaptation category": ["Ecosystem-based", "Government policies and programs"],
             "case_studies": ["552", "553"],
-            "aggregated_layers": ["Food and Personal Security", "Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Food and Personal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -178,14 +178,14 @@
             "layer": [
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "sector": ["Food Safety & Security"],
             "ccc adaptation theme": ["Health", "Community preparedness and response"],
             "ipcc adaptation category": ["Educational"],
             "description": "An increase in temperature and humidity can increase food-related safety risks associated with climate change. Measures to increase education on food handling and safety can reduce the food safety risks. Additionally, increasing education on food preparation can increase people\u2019s ability to change their diets to healthier and more sustainable options. \n\nIncreasing skills and education on safe seafood handling, preparation and cooking, as well as the risks associated with toxins and viral and bacterial infections, can help to reduce the risk of exposure. Methods such as washing hands and surfaces thoroughly can also reduce the exposure risk associated with handling.",
-            "aggregated_layers": ["Food and Personal Security", "Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Food and Personal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -198,8 +198,8 @@
             "layer": [
                 "Coastal security In Full",
                 "Coastal security Summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "sector": ["\u00adBiodiversity & Natural Habitats"],
             "ccc adaptation theme": [
@@ -215,7 +215,7 @@
                 "Government policies and programs"
             ],
             "urban_rural": "Coastal",
-            "aggregated_layers": ["Coastal Security", "Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Coastal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -267,8 +267,8 @@
                 "Flooding summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas", "Food security"],
             "ipcc adaptation category": ["Ecosystem-based", "Behavioural", "Government policies and programs"],
@@ -276,7 +276,7 @@
             "aggregated_layers": [
                 "Flooding and Drought",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -285,14 +285,14 @@
         "attributes": {
             "label": "Adapt water quality monitoring techniques to encompass a wide range of pathogenic organisms",
             "reference_id": ["1256", "1278", "1295", "1300", "1291"],
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Marine Health Hazards In Full", "Marine Health Hazards Summary"],
             "description": "Certain microorganisms such as Escherichia coli and Enterococci species are commonly used to test water quality, however, although they may be low in abundance, other microorganisms may be present which are not tested for. Therefore, testing for additional microorganisms, including those emerging through climate change, can provide a more accurate measure of water quality. Water testing should include a wide range of microorganisms and consider factors such as seasons, species and weather events such as flooding.",
             "sector": [
                 "\u00adBiodiversity & Natural Habitats",
                 "\u00adWater Supply & Quality",
                 "Food Safety & Security"
             ],
-            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Marine Health Hazards"]
         }
     },
     {
@@ -310,8 +310,8 @@
                 "Flooding summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas", "Food security", "Health", "Business"],
             "ipcc adaptation category": ["Services", "Laws and regulations", "Government policies and programs"],
@@ -319,7 +319,7 @@
                 "Extreme Storms",
                 "Flooding and Drought",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -327,13 +327,13 @@
         "_id": "elem-4zea07k3",
         "attributes": {
             "label": "Organise beach cleans and implement methods for removing plastics and pollution sources from marine environments",
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Marine Health Hazards In Full", "Marine Health Hazards Summary"],
             "reference_id": ["1366", "1367", "1368", "1375", "1443"],
             "description": "Due to the hazardous nature of microplastics and chemical pollutants, methods to manage and remove plastic waste and litter from the environment are required. \n\nBeach cleans can help to reduce the abundance of litter within the environment. Additionally, removal of plastics from surface waters could help to limit the associated health impacts.",
             "sector": ["\u00adBiodiversity & Natural Habitats"],
             "ccc adaptation theme": ["Community preparedness and response"],
             "ipcc adaptation category": ["Behavioural"],
-            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Marine Health Hazards"]
         }
     },
     {
@@ -397,8 +397,8 @@
                 "Coastal security Summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "sector": ["\u00adBiodiversity & Natural Habitats", "Food Safety & Security", "International Factors"],
             "ccc adaptation theme": [
@@ -410,7 +410,7 @@
             ],
             "ipcc adaptation category": ["Technological ", "Behavioural", "Government policies and programs"],
             "case_studies": ["1124"],
-            "aggregated_layers": ["Coastal Security", "Food and Personal Security", "Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Coastal Security", "Food and Personal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -422,14 +422,14 @@
             "layer": [
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "sector": ["Agriculture & Forestry", "Food Safety & Security"],
             "urban_rural": "Rural",
             "ccc adaptation theme": ["Working lands and seas", "Food security"],
             "ipcc adaptation category": ["Technological ", "Educational", "Behavioural"],
-            "aggregated_layers": ["Food and Personal Security", "Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Food and Personal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -515,8 +515,8 @@
                 "Flooding summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "thematic areas for adaptation action": [],
             "ccc adaptation theme": ["Towns and cities", "Buildings", "Health", "Community preparedness and response"],
@@ -527,7 +527,7 @@
                 "Coastal Security",
                 "Flooding and Drought",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -762,7 +762,7 @@
         "_id": "elem-BW70Ibz4",
         "attributes": {
             "label": "Improve legislation to control the production and disposal of plastic and plastic waste",
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Marine Health Hazards In Full", "Marine Health Hazards Summary"],
             "reference_id": ["1366", "1379", "1380", "1441", "1442"],
             "description": "Improving legislation on the production and disposal of plastic and plastic waste can ensure that plastic is only produced when necessary and plastic waste is recycled or disposed appropriately.",
             "sector": ["Business & Industry", "International Factors"],
@@ -773,7 +773,7 @@
                 "Laws and regulations",
                 "Government policies and programs"
             ],
-            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Marine Health Hazards"]
         }
     },
     {
@@ -981,13 +981,13 @@
         "_id": "elem-Hh3a5jsc",
         "attributes": {
             "label": "Routine monitoring and treatment of seafood",
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Marine Health Hazards In Full", "Marine Health Hazards Summary"],
             "reference_id": ["1268", "1292", "1363", "1392", "8", "1410"],
             "description": "Regulatory control measures should be used to monitor water quality in seafood harvest waters and high risk seafood such as oysters through microbiological analysis. Methods to minimise pathogens within shellfish can reduce the risk of infection.",
             "sector": ["\u00adBiodiversity & Natural Habitats", "Food Safety & Security"],
             "ccc adaptation theme": ["Working lands and seas", "Food security"],
             "ipcc adaptation category": ["Laws and regulations"],
-            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Marine Health Hazards"]
         }
     },
     {
@@ -1033,8 +1033,8 @@
                 "Flooding summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": ["Health", "Community preparedness and response"],
             "ipcc adaptation category": ["Informational", "Behavioural", "Government policies and programs"],
@@ -1044,7 +1044,7 @@
                 "Temperature",
                 "Flooding and Drought",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -1084,8 +1084,8 @@
                 "Flooding summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": [
                 "Nature",
@@ -1100,7 +1100,7 @@
                 "Coastal Security",
                 "Flooding and Drought",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -1168,8 +1168,8 @@
                 "Temperature Summary",
                 "Flooding and drought in full",
                 "Flooding summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": ["Towns and cities"],
             "ipcc adaptation category": ["Engineered and built environment", "Technological "],
@@ -1177,7 +1177,7 @@
                 "Extreme Storms",
                 "Temperature",
                 "Flooding and Drought",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -1244,8 +1244,8 @@
             "layer": [
                 "Coastal security In Full",
                 "Coastal security Summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas", "Energy", "Business", "Finance"],
             "ipcc adaptation category": [
@@ -1256,7 +1256,7 @@
                 "Government policies and programs"
             ],
             "urban_rural": "Coastal",
-            "aggregated_layers": ["Coastal Security", "Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Coastal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -1315,8 +1315,8 @@
                 "Flooding summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": ["Telecoms & ICT", "Health"],
             "ipcc adaptation category": ["Technological ", "Informational"],
@@ -1324,7 +1324,7 @@
             "aggregated_layers": [
                 "Flooding and Drought",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -1587,8 +1587,8 @@
                 "Flooding summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": [
                 "Nature",
@@ -1604,7 +1604,7 @@
                 "Coastal Security",
                 "Flooding and Drought",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -1648,15 +1648,15 @@
                 "Coastal security Summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "sector": ["\u00adBiodiversity & Natural Habitats"],
             "ccc adaptation theme": ["Nature", "Working lands and seas", "Food security"],
             "ipcc adaptation category": ["Ecosystem-based", "Laws and regulations"],
             "case_studies": ["1440", "1445", "1559"],
             "urban_rural": "Coastal",
-            "aggregated_layers": ["Coastal Security", "Food and Personal Security", "Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Coastal Security", "Food and Personal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -1708,7 +1708,7 @@
         "_id": "elem-Sp4ccppg",
         "attributes": {
             "label": "Increase knowledge and understanding of health outcomes associated with pathogenic marine microorganisms",
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Marine Health Hazards In Full", "Marine Health Hazards Summary"],
             "description": "Improving knowledge of pathogenic microorganisms in marine environments and associated pathologies can enable doctors and healthcare staff to identify and apply appropriate treatment.\nImproved public awareness, including the use of citizen science, can also increase people\u2019s ability to take appropriate action to pathogenic microorganisms within the marine environment.",
             "reference_id": ["1256", "1346", "1353", "1354", "681", "8", "967", "1361"],
             "sector": [
@@ -1721,7 +1721,7 @@
             ],
             "ccc adaptation theme": ["Food security", "Health", "Community preparedness and response"],
             "ipcc adaptation category": ["Educational", "Informational"],
-            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Marine Health Hazards"]
         }
     },
     {
@@ -1770,7 +1770,7 @@
         "_id": "elem-THLExCZN",
         "attributes": {
             "label": "Temporary restriction of beach access",
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Marine Health Hazards In Full", "Marine Health Hazards Summary"],
             "reference_id": ["1354", "1410"],
             "description": "Temporary restriction of access to beaches when harmful algal blooms and a high abundance of bacteria are present can reduce the number of people exposed and limit the risk of infection.",
             "sector": [
@@ -1786,7 +1786,7 @@
                 "Laws and regulations",
                 "Government policies and programs"
             ],
-            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Marine Health Hazards"]
         }
     },
     {
@@ -1818,15 +1818,15 @@
                 "Flooding summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas", "Community preparedness and response"],
             "ipcc adaptation category": ["Ecosystem-based"],
             "aggregated_layers": [
                 "Flooding and Drought",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -1911,8 +1911,8 @@
                 "Flooding summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": [
                 "Nature",
@@ -1932,7 +1932,7 @@
                 "Coastal Security",
                 "Flooding and Drought",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -2018,8 +2018,8 @@
             "layer": [
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "sector": ["Agriculture & Forestry", "Food Safety & Security"],
             "urban_rural": "Rural",
@@ -2037,7 +2037,7 @@
                 "Government policies and programs"
             ],
             "case_studies": ["1428", "1429", "1430"],
-            "aggregated_layers": ["Food and Personal Security", "Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Food and Personal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -2114,8 +2114,8 @@
                 "Flooding summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": [
                 "Nature",
@@ -2129,7 +2129,7 @@
                 "Coastal Security",
                 "Flooding and Drought",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -2261,8 +2261,8 @@
                 "Coastal security Summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas"],
             "ipcc adaptation category": ["Ecosystem-based"],
@@ -2271,7 +2271,7 @@
                 "Extreme Storms",
                 "Coastal Security",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -2406,8 +2406,8 @@
             "layer": [
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": [
                 "Nature",
@@ -2427,7 +2427,7 @@
             ],
             "ipcc adaptation category": ["Educational"],
             "case_studies": ["1509"],
-            "aggregated_layers": ["Food and Personal Security", "Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Food and Personal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -2444,8 +2444,8 @@
                 "Flooding summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": ["Nature", "Transport", "Towns and cities", "Community preparedness and response"],
             "ipcc adaptation category": [
@@ -2456,7 +2456,7 @@
             "aggregated_layers": [
                 "Flooding and Drought",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -2470,8 +2470,8 @@
             "layer": [
                 "Coastal security In Full",
                 "Coastal security Summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "sector": ["\u00adBiodiversity & Natural Habitats"],
             "ccc adaptation theme": [
@@ -2482,7 +2482,7 @@
             ],
             "main_adaptation": ["Protection approaches"],
             "ipcc adaptation category": ["Engineered and built environment", "Ecosystem-based"],
-            "aggregated_layers": ["Coastal Security", "Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Coastal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -2522,7 +2522,7 @@
         "attributes": {
             "label": "Promote sustainable production and consumption of goods",
             "reference_id": ["1375", "1377", "1378", "1441"],
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Marine Health Hazards In Full", "Marine Health Hazards Summary"],
             "description": "A shift in societal habits and behaviours towards sustainable production and consumption is required for a cleaner environment, because many production practices across a wide range of industries result in pollution which eventually enters  ecosystems and the ocean. A change in behaviour requires an increase in awareness of the impacts of unsustainable consumption.",
             "sector": [
                 "Agriculture & Forestry",
@@ -2561,7 +2561,7 @@
                 "Laws and regulations",
                 "Government policies and programs"
             ],
-            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Marine Health Hazards"]
         }
     },
     {
@@ -2624,7 +2624,7 @@
         "attributes": {
             "label": "Increase awareness and knowledge of antimicrobial resistance",
             "reference_id": ["1320", "1411", "1412", "1413", "1584"],
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Marine Health Hazards In Full", "Marine Health Hazards Summary"],
             "description": "Awareness campaigns and training should be undertaken to increase people\u2019s understanding of the risks associated with antimicrobial resistance and increase knowledge on how they can reduce the impacts.\nHealthcare staff should be provided with education and training to increase their knowledge and enable them to manage antimicrobial resistance effectively.",
             "sector": [
                 "\u00adBiodiversity & Natural Habitats",
@@ -2639,7 +2639,7 @@
                 "Behavioural",
                 "Government policies and programs"
             ],
-            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Marine Health Hazards"]
         }
     },
     {
@@ -2660,7 +2660,7 @@
         "attributes": {
             "label": "Access to international surveillance of pathogenic marine microorganisms",
             "reference_id": ["1256", "1354", "1357", "1388", "681", "8", "1292"],
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Marine Health Hazards In Full", "Marine Health Hazards Summary"],
             "description": "Improved surveillance and monitoring of pathogens can enable appropriate measure to be undertaken to limit exposure. Strategies to measure sea surface temperature can be employed to identify  and forecast areas at risk of an increase in bacterial abundance such as Vibrio spp., thereby enabling appropriate measures such as early warning systems to be applied to reduce and prevent infection. The European Centre for Disease Prevention and Control has developed a global Vibrio spp. tool that provides 24-hour updated mapping data.",
             "sector": [
                 "\u00adBiodiversity & Natural Habitats",
@@ -2678,7 +2678,7 @@
                 "Community preparedness and response"
             ],
             "ipcc adaptation category": ["Technological ", "Informational"],
-            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Marine Health Hazards"]
         }
     },
     {
@@ -2763,7 +2763,7 @@
         "_id": "elem-elAhOeaG",
         "attributes": {
             "label": "Use methods to limit pathogens in sewage and agricultural and urban runoff from entering the environment and coastal waters",
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Marine Health Hazards In Full", "Marine Health Hazards Summary"],
             "reference_id": ["1246", "1282", "1364", "1373", "1376", "1404"],
             "description": "Methods should be employed to prevent and reduce urban and agricultural runoff from entering aquatic environments including:\n- increased efficiency of farming and the use of fertilisers and pesticides.\n- improved management of wastewater.\n- implementation of natural flood management strategies that limit the flow of water during heavy rainfall events.",
             "sector": [
@@ -2799,7 +2799,7 @@
                 "Laws and regulations",
                 "Government policies and programs"
             ],
-            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Marine Health Hazards"]
         }
     },
     {
@@ -2999,23 +2999,23 @@
         "_id": "elem-h6T5vU4G",
         "attributes": {
             "label": "Identify alternatives to plastic products",
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Marine Health Hazards In Full", "Marine Health Hazards Summary"],
             "reference_id": ["1380", "1381"],
             "description": "Exploring potential sustainable alternatives to plastics could reduce the abundance of plastics entering the environment.",
             "sector": ["Business & Industry"],
             "ccc adaptation theme": ["Business"],
             "ipcc adaptation category": ["Technological "],
-            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Marine Health Hazards"]
         }
     },
     {
         "_id": "elem-h7Bokqnd",
         "attributes": {
             "label": "Early warning systems to inform the public of marine pathogens",
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Marine Health Hazards In Full", "Marine Health Hazards Summary"],
             "reference_id": ["1354", "1355", "1356", "1282"],
             "description": "",
-            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Marine Health Hazards"]
         }
     },
     {
@@ -3040,8 +3040,8 @@
             "layer": [
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "sector": ["Agriculture & Forestry", "Food Safety & Security"],
             "urban_rural": "Rural",
@@ -3052,7 +3052,7 @@
                 "Business"
             ],
             "ipcc adaptation category": ["Technological ", "Government policies and programs"],
-            "aggregated_layers": ["Food and Personal Security", "Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Food and Personal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -3173,7 +3173,7 @@
         "_id": "elem-lmcqSQQQ",
         "attributes": {
             "label": "Improve disposal and recycling of plastic waste",
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Marine Health Hazards In Full", "Marine Health Hazards Summary"],
             "reference_id": ["1323", "1380", "1441"],
             "description": "Methods for collecting and recycling plastic waste should be improved to ensure a higher volume of plastic waste can be reused. Where it is not possible to recycle plastics, appropriate methods of disposal should be employed.",
             "sector": [
@@ -3222,7 +3222,7 @@
                 "Laws and regulations",
                 "Government policies and programs"
             ],
-            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Marine Health Hazards"]
         }
     },
     {
@@ -3291,8 +3291,8 @@
                 "Flooding summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": [
                 "Nature",
@@ -3315,7 +3315,7 @@
                 "Coastal Security",
                 "Flooding and Drought",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -3415,15 +3415,15 @@
                 "Flooding summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas", "Water supply"],
             "ipcc adaptation category": ["Technological ", "Services", "Informational"],
             "aggregated_layers": [
                 "Flooding and Drought",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -3431,13 +3431,13 @@
         "_id": "elem-om2xEM4o",
         "attributes": {
             "label": "Contingency planning for risks associated with emerging and novel pathogens",
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Marine Health Hazards In Full", "Marine Health Hazards Summary"],
             "reference_id": ["1414", "681", "1415"],
             "description": "Contingency planning for risks associated with emerging and novel pathogens can help to identify potential risks and plan for appropriate action.",
             "sector": ["\u00adBiodiversity & Natural Habitats", "Food Safety & Security", "Health & Social Care"],
             "ccc adaptation theme": ["Health"],
             "ipcc adaptation category": ["Laws and regulations", "Government policies and programs"],
-            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Marine Health Hazards"]
         }
     },
     {
@@ -3452,13 +3452,13 @@
                 "Flooding and drought in full",
                 "Drought summary",
                 "Flooding summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas"],
             "ipcc adaptation category": ["Ecosystem-based"],
             "case_studies": ["1566", "1565"],
-            "aggregated_layers": ["Flooding and Drought", "Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Flooding and Drought", "Marine Health Hazards"]
         }
     },
     {
@@ -3512,8 +3512,8 @@
                 "Flooding summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": [
                 "Nature",
@@ -3532,7 +3532,7 @@
             "aggregated_layers": [
                 "Flooding and Drought",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -3584,8 +3584,8 @@
             "layer": [
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "sector": [
                 "\u00adBiodiversity & Natural Habitats",
@@ -3608,7 +3608,7 @@
             "ccc adaptation theme": ["Telecoms & ICT", "Health", "Community preparedness and response"],
             "ipcc adaptation category": ["Technological ", "Informational", "Government policies and programs"],
             "description": "Improved surveillance, horizon-scanning, and modelling capability through international collaboration is required for identification and management of emerging pathogens",
-            "aggregated_layers": ["Food and Personal Security", "Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Food and Personal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -3616,7 +3616,7 @@
         "attributes": {
             "label": "Poor water quality warning systems and pollution alerts",
             "reference_id": ["1282", "1300", "1354", "1355", "1356", "8", "1369"],
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Marine Health Hazards In Full", "Marine Health Hazards Summary"],
             "description": "Certain microorganisms that are pathogenic to humans, such as many algae and bacteria, play an important role in nitrogen and carbon cycling and are primarily endemic in aquatic environments, therefore, it is not feasible to eradicate them to reduce infection risk. \n\nMonitoring and early warning systems can be used to predict outbreaks and ensure appropriate action is undertaken. The posting of beach warnings after heavy rainfall events could also limit exposure to contaminated water from land runoff, waterways and sewage discharge.",
             "sector": ["Health & Social Care", "Information & Communication Technology"],
             "ccc adaptation theme": [
@@ -3626,7 +3626,7 @@
                 "Community preparedness and response"
             ],
             "ipcc adaptation category": ["Informational", "Laws and regulations", "Government policies and programs"],
-            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Marine Health Hazards"]
         }
     },
     {
@@ -3655,13 +3655,13 @@
         "_id": "elem-s3kAKJNx",
         "attributes": {
             "label": "Increase sanitation and infection control measures",
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Marine Health Hazards In Full", "Marine Health Hazards Summary"],
             "description": "Increasing sanitation, hygiene and infection control measures can reduce the risks associated with emerging diseases and antimicrobial resistant microorganisms.",
             "reference_id": ["1289", "1320", "8"],
             "sector": ["Food Safety & Security", "Health & Social Care"],
             "ccc adaptation theme": ["Food security", "Health", "Community preparedness and response"],
             "ipcc adaptation category": ["Educational", "Informational", "Behavioural", "Laws and regulations"],
-            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Marine Health Hazards"]
         }
     },
     {
@@ -3831,8 +3831,8 @@
                 "Coastal security Summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "sector": ["Information & Communication Technology", "International Factors"],
             "ccc adaptation theme": ["Telecoms & ICT", "Community preparedness and response"],
@@ -3843,7 +3843,7 @@
                 "Extreme Storms",
                 "Coastal Security",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -3872,8 +3872,8 @@
                 "Flooding summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas", "Towns and cities"],
             "ipcc adaptation category": ["Ecosystem-based"],
@@ -3883,7 +3883,7 @@
                 "Coastal Security",
                 "Flooding and Drought",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -3921,8 +3921,8 @@
                 "Flooding summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": [
                 "Nature",
@@ -3954,7 +3954,7 @@
                 "Coastal Security",
                 "Flooding and Drought",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     },
@@ -3967,8 +3967,8 @@
             "layer": [
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "sector": ["Food Safety & Security", "Health & Social Care", "\u00adEducation Services"],
             "ccc adaptation theme": [
@@ -3979,7 +3979,7 @@
                 "Business"
             ],
             "ipcc adaptation category": ["Behavioural", "Government policies and programs"],
-            "aggregated_layers": ["Food and Personal Security", "Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Food and Personal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -4127,7 +4127,7 @@
         "_id": "elem-wjvhr3Lg",
         "attributes": {
             "label": "Use constructed wetlands for water pollution control",
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Marine Health Hazards In Full", "Marine Health Hazards Summary"],
             "reference_id": ["1376", "1383", "1402", "1403", "1404"],
             "description": "Constructed wetlands are artificial wetlands which are designed to used natural ecosystem services to treat stormwater runoff, wastewater and sewage.",
             "sector": [
@@ -4147,7 +4147,7 @@
                 "Buildings"
             ],
             "ipcc adaptation category": ["Engineered and built environment", "Ecosystem-based"],
-            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Marine Health Hazards"]
         }
     },
     {
@@ -4264,11 +4264,11 @@
         "_id": "elem-z3gfyWH9",
         "attributes": {
             "label": "Increase awareness of hygiene methods to reduce infection during and after seawater exposure",
-            "layer": ["Pathogenic Marine Microorganisms In Full", "Pathogenic Marine Microorganisms Summary"],
+            "layer": ["Marine Health Hazards In Full", "Marine Health Hazards Summary"],
             "reference_id": ["1358", "1359", "1360"],
             "description": "People should be educated to increase their awareness of methods to prevent and limit infection during and after seawater exposure. Waterproof bandages can be used to cover open wounds, particularly in people who are old and immunocompromised. Once out of the water, skin and new wounds can be washed to remove marine pathogens.",
             "sector": ["\u00adWater Supply & Quality", "Health & Social Care"],
-            "aggregated_layers": ["Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Marine Health Hazards"]
         }
     },
     {
@@ -4337,12 +4337,12 @@
                 "Flooding and drought in full",
                 "Drought summary",
                 "Flooding summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": ["Towns and cities", "Buildings", "Community preparedness and response"],
             "ipcc adaptation category": ["Engineered and built environment", "Technological ", "Ecosystem-based"],
-            "aggregated_layers": ["Temperature", "Flooding and Drought", "Pathogenic Marine Microorganisms"]
+            "aggregated_layers": ["Temperature", "Flooding and Drought", "Marine Health Hazards"]
         }
     },
     {
@@ -4358,8 +4358,8 @@
                 "Flooding summary",
                 "Food and personal security in full",
                 "Food and personal security summary",
-                "Pathogenic Marine Microorganisms In Full",
-                "Pathogenic Marine Microorganisms Summary"
+                "Marine Health Hazards In Full",
+                "Marine Health Hazards Summary"
             ],
             "ccc adaptation theme": [
                 "Nature",
@@ -4380,7 +4380,7 @@
             "aggregated_layers": [
                 "Flooding and Drought",
                 "Food and Personal Security",
-                "Pathogenic Marine Microorganisms"
+                "Marine Health Hazards"
             ]
         }
     }
