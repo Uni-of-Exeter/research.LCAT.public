@@ -163,25 +163,25 @@ export const pathways = [
     },
     {
         id: 4,
-        name: "Pathogenic Marine Microorganisms",
+        name: "Marine Health Hazards",
         isCoastal: true,
         summaryPathwayMap: (
             <iframe
-                title="Summary Pathway Map for Pathogenic Marine Microorganisms"
+                title="Summary Pathway Map for Marine Health Hazards"
                 src="https://embed.kumu.io/b98a88bb34cc4f0cbf0d2315f7adb5e9"
                 style={{ border: "none" }}
             />
         ),
         completePathwayMap: (
             <iframe
-                title="Complete Pathway Map for Pathogenic Marine Microorganisms"
+                title="Complete Pathway Map for Marine Health Hazards"
                 src="https://embed.kumu.io/e0f8b44984fb5985fe3023d68638ac27"
                 style={{ border: "none" }}
             />
         ),
         completePathwayMapWithAdaptations: (
             <iframe
-                title="Complete Pathway Map (with adaptations) for Pathogenic Marine Microorganisms"
+                title="Complete Pathway Map (with adaptations) for Marine Health Hazards"
                 src="https://embed.kumu.io/de2ec4681a20dcbd6def8ace6eed135c"
                 style={{
                     border: "none",
