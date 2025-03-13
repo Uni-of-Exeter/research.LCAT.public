@@ -42,6 +42,18 @@ class ProcessKumu:
             if "layer" in element["attributes"]
         ]
 
+    def update_layer_names(self):
+        """
+        We need to update one layer name: Pathogenic Marine Microorganisms -> Marine Health Hazards.
+        """
+
+        for adaptation in self.filtered_data:
+            layer_data = adaptation["attributes"]["layer"]
+
+            for i, layer in enumerate(layer_data):
+                if "Pathogenic Marine Microorganisms" in layer:
+                    layer_data[i] = layer.replace("Pathogenic Marine Microorganisms", "Marine Health Hazards")
+
     def _capitalise_except_and(self, text):
         """
         Capitalise words except "and".
