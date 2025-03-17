@@ -94,7 +94,7 @@ const Graph = (props) => {
             let label = [];
             let av = [];
             let avlabel = [];
-            if (climatePrediction[0][variable + "_1980"] != null) {
+            if (climatePrediction[0][variable + "_1980_mean"] != null) {
                 for (let year of [1980, 2030, 2040, 2050, 2060, 2070]) {
                     let label_year = "" + year;
                     let v = variable;
@@ -104,8 +104,8 @@ const Graph = (props) => {
                     let offset = 0;
                     if (showAverage) offset = 2;
 
-                    out.push({ x: label_year, y: climatePrediction[0][variable + "_" + year] });
-                    label.push({ x: label_year, y: climatePrediction[0][variable + "_" + year], xOffset: -offset });
+                    out.push({ x: label_year, y: climatePrediction[0][variable + "_" + year + "_mean"] });
+                    label.push({ x: label_year, y: climatePrediction[0][variable + "_" + year + "_mean"], xOffset: -offset });
 
                     av.push({ x: label_year, y: climateAverages[avkey] });
                     avlabel.push({ x: label_year, y: climateAverages[avkey], xOffset: offset });
