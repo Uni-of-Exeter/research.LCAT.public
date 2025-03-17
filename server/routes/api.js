@@ -254,6 +254,7 @@ function is_valid_boundary(tableName) {
     ].includes(tableName);
 }
 
+// Route to get the CHESS-SCAPE climate prediction
 router.get("/chess_scape", async (req, res) => {
     try {
         const locations = Array.isArray(req.query.locations) ? req.query.locations : [req.query.locations];
@@ -299,6 +300,54 @@ router.get("/chess_scape", async (req, res) => {
     } catch (err) {
         console.error("Error while executing query:", err);
         res.status(500).send({ error: "An error occurred" });
+    }
+});
+
+// Route to get the CHESS-SCAPE UK averages
+router.get("/chess_scape_uk_averages", async (req, res) => {
+    try {
+        // Query parameters
+        const isBiasCorrected = req.query.is_bias_corrected;
+        const rcp = req.query.rcp;
+        const season = req.query.season;
+        const variable = req.query.variable;
+
+        const decades = ["1980", "1990", "2000", "2010", "2020", "2030", "2040", "2050", "2060", "2070"];
+
+        // Construct query
+        const query = `
+            SELECT decade, mean 
+            FROM chess_scape_uk_averages
+            WHERE is_bias_corrected = $1
+            AND rcp = $2
+            AND season = $3
+            AND variable = $4
+            AND decade IN (${decades.map((_, i) => `$${i + 5}`).join(", ")})
+            ORDER BY decade;
+        `;
+
+        // Query parameters
+        const queryParams = [
+            isBiasCorrected,
+            rcp,
+            season,
+            variable,
+            ...decades
+        ];
+
+        // Connect and execute
+        const client = new Client(conString);
+        await client.connect();
+
+        const result = await client.query(query, queryParams);
+        await client.end();
+
+        const formattedData = Object.fromEntries(result.rows.map(row => [row.decade, row.mean]));
+        res.json(formattedData);
+
+    } catch (err) {
+        console.error("Error while executing query:", err);
+        res.status(500).json({ error: "An error occurred" });
     }
 });
 
