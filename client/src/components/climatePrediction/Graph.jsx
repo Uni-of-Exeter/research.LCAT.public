@@ -91,39 +91,38 @@ const Graph = (props) => {
     console.log(climatePrediction);
 
     useEffect(() => {
-        if (climatePrediction.length > 0) {
-            let out = [];
-            let label = [];
-            let av = [];
-            let avlabel = [];
-            if (climatePrediction[0][variable + "_1980_mean"] != null) {
-                for (let year of [1980, 2030, 2040, 2050, 2060, 2070]) {
-                    let label_year = "" + year;
-                    let avkey = label_year;
-                    if (year == 1980) label_year = "1980 baseline";
-
-                    let offset = 0;
-                    if (showAverage) offset = 2;
-
-                    out.push({ x: label_year, y: climatePrediction[0][variable + "_" + year + "_mean"] });
-                    label.push({
-                        x: label_year,
-                        y: climatePrediction[0][variable + "_" + year + "_mean"],
-                        xOffset: -offset,
-                    });
-
-                    av.push({ x: label_year, y: climateAverages[avkey] });
-                    avlabel.push({ x: label_year, y: climateAverages[avkey], xOffset: offset });
-                }
-                setAvg(av);
-                setAvgLabel(avlabel);
-                setData(out);
-                setLabelData(label);
-            }
-        }
+        if (climatePrediction.length === 0 || climatePrediction[0][`${variable}_1980_mean`] == null) return;
+    
+        const years = [1980, 2030, 2040, 2050, 2060, 2070];
+        const offset = showAverage ? 2 : 0;
+    
+        const out = years.map(year => {
+            const labelYear = year === 1980 ? "1980 baseline" : `${year}`;
+            const meanValue = climatePrediction[0][`${variable}_${year}_mean`];
+    
+            return { x: labelYear, y: meanValue };
+        });
+    
+        const label = out.map(({ x, y }) => ({ x, y, xOffset: -offset }));
+    
+        const av = years.map(year => ({ x: year === 1980 ? "1980 baseline" : `${year}`, y: climateAverages[year] }));
+        const avlabel = av.map(({ x, y }) => ({ x, y, xOffset: offset }));
+    
+        setAvg(av);
+        setAvgLabel(avlabel);
+        setData(out);
+        setLabelData(label);
     }, [climatePrediction, rcp, season, showAverage, variable, climateAverages]);
 
-    useEffect(() => setExpanded(false), [regions]);
+    useEffect(() => {
+        if (regions.length === 0) {
+            setExpanded(false);
+            setAvg([]);
+            setAvgLabel([]);
+            setData([]);
+            setLabelData([]);
+        }
+    }, [regions]);
 
     const handleOnClick = () => {
         setExpanded(!isExpanded);
