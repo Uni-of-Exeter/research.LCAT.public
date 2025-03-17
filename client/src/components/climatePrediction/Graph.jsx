@@ -17,7 +17,6 @@ import React, { useEffect, useState } from "react";
 import { useCollapse } from "react-collapsed";
 import { ChartLabel, LabelSeries, makeWidthFlexible, VerticalBarSeries, XAxis, XYPlot, YAxis } from "react-vis";
 
-import { climateAverages } from "../../core/climate";
 import { andify } from "../../utils/utils";
 
 const FlexibleXYPlot = makeWidthFlexible(XYPlot);
@@ -27,7 +26,8 @@ const selectedRegionCol = "#216331";
 const averageRegionCol = "#48b961";
 
 const Graph = (props) => {
-    const { regions, season, rcp, setSeason, setRcp, climatePrediction, variable, setVariable } = props;
+    const { regions, season, rcp, setSeason, setRcp, climatePrediction, climateAverages, variable, setVariable } =
+        props;
 
     const [data, setData] = useState([]);
     const [avg, setAvg] = useState([]);
@@ -88,6 +88,8 @@ const Graph = (props) => {
         return v.toFixed(2);
     };
 
+    console.log(climatePrediction);
+
     useEffect(() => {
         if (climatePrediction.length > 0) {
             let out = [];
@@ -97,15 +99,18 @@ const Graph = (props) => {
             if (climatePrediction[0][variable + "_1980_mean"] != null) {
                 for (let year of [1980, 2030, 2040, 2050, 2060, 2070]) {
                     let label_year = "" + year;
-                    let v = variable;
-                    let avkey = "chess_scape_" + rcp + "_" + season + "_" + v + "_" + year;
+                    let avkey = label_year;
                     if (year == 1980) label_year = "1980 baseline";
 
                     let offset = 0;
                     if (showAverage) offset = 2;
 
                     out.push({ x: label_year, y: climatePrediction[0][variable + "_" + year + "_mean"] });
-                    label.push({ x: label_year, y: climatePrediction[0][variable + "_" + year + "_mean"], xOffset: -offset });
+                    label.push({
+                        x: label_year,
+                        y: climatePrediction[0][variable + "_" + year + "_mean"],
+                        xOffset: -offset,
+                    });
 
                     av.push({ x: label_year, y: climateAverages[avkey] });
                     avlabel.push({ x: label_year, y: climateAverages[avkey], xOffset: offset });
@@ -116,7 +121,7 @@ const Graph = (props) => {
                 setLabelData(label);
             }
         }
-    }, [climatePrediction, rcp, season, showAverage, variable]);
+    }, [climatePrediction, rcp, season, showAverage, variable, climateAverages]);
 
     useEffect(() => setExpanded(false), [regions]);
 
