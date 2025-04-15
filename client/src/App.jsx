@@ -28,6 +28,7 @@ import LCATHeader from "./components/header/Header";
 import Introduction from "./components/header/Introduction";
 import AllRegionLoader from "./components/loaders/AllRegionLoader";
 import ClimatePredictionLoader from "./components/loaders/ClimatePredictionLoader";
+import IMDMap from "./components/vulnerabilities/IMDMap";
 import PersonalSocialVulnerabilities from "./components/vulnerabilities/PersonalSocialVulnerabilities";
 import { defaultState } from "./utils/defaultState";
 
@@ -127,6 +128,7 @@ const App = () => {
             {regions.length > 0 && (
                 <div className="white-section">
                     <PersonalSocialVulnerabilities />
+                    <IMDMap regions={regions} regionType={regionType} />
                 </div>
             )}
 
