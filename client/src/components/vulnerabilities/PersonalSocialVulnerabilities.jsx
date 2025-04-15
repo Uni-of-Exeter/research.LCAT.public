@@ -44,9 +44,9 @@ const PersonalSocialVulnerabilities = () => {
             </p>
 
             <p>
-                Click below to explore a shortlist of personal and social vulnerabilities to consider for your local
-                area. Each provide a link to Climate Just’s data mapping tool so you can explore localised
-                vulnerabilities.
+                <strong className="text-emphasis">Click on the icons below</strong> to explore a shortlist of personal
+                and social vulnerabilities to consider for your local area. Each provide a link to Climate Just’s data
+                mapping tool so you can explore localised vulnerabilities.
             </p>
 
             <div className="horiz-container-vulnerability">
@@ -72,7 +72,7 @@ const PersonalSocialVulnerabilities = () => {
                     <div>{selectedVulnerabilityDetails.details}</div>
                 </div>
             ) : (
-                <div className="details-placeholder">
+                <div className="details-placeholder text-emphasis">
                     <p>Please click a vulnerability icon to view details.</p>
                 </div>
             )}
