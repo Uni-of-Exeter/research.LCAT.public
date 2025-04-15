@@ -67,22 +67,25 @@ const PersonalSocialVulnerabilities = () => {
             </div>
 
             {selectedVulnerability ? (
-                <div className="selected-vulnerability-details">
-                    <h2 className="vulnerability-information">{selectedVulnerability}</h2>
-                    <div>{selectedVulnerabilityDetails.details}</div>
+                <div>
+                    <div className="selected-vulnerability-details">
+                        <h2 className="vulnerability-information">{selectedVulnerability}</h2>
+                        <div>{selectedVulnerabilityDetails.details}</div>
+                    </div>
+                    <div>
+                        <p className="note">
+                            Data source:{" "}
+                            <a href="https://climatejust.org.uk" target="_blank" rel="noreferrer">
+                                A selection of vulnerability insight, by theme, from ClimateJust.
+                            </a>
+                        </p>
+                    </div>
                 </div>
             ) : (
                 <div className="details-placeholder text-emphasis">
                     <p>Please click a vulnerability icon to view details.</p>
                 </div>
             )}
-
-            <p className="note">
-                Data source:{" "}
-                <a href="https://climatejust.org.uk" target="_blank" rel="noreferrer">
-                    A selection of vulnerability insight, by theme, from ClimateJust.
-                </a>
-            </p>
         </div>
     );
 };
