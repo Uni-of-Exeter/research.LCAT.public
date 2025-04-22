@@ -53,6 +53,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
     const [searchTerm, setSearchTerm] = useState("");
 
     const layerMap = useRef(new Map());
+    const [gidToFeatureMap, setGidToFeatureMap] = useState(new Map());
 
     const onEachFeature = (feature, layer) => {
         const col = "#00000000";
@@ -118,7 +119,15 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
     };
 
     const handleSetGeojson = (data) => {
-        setGeojson(data.features ? data : { features: [] });
+        const geojsonData = data.features ? data : { features: [] };
+
+        const map = new Map();
+        geojsonData.features.forEach((f) => {
+            map.set(f.properties.gid, f);
+        });
+
+        setGeojson(geojsonData);
+        setGidToFeatureMap(map);
         setGeojsonKey((prev) => prev + 1);
         setTriggerLoadingIndicator(false);
     };
@@ -136,28 +145,6 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
     const toggleDrawer = () => {
         setIsDrawerOpen(!isDrawerOpen);
     };
-
-    // Potential feature to select a number of regions at once
-    // const handleToggleSelectAll = () => {
-    //     if (selectAllToggleState) {
-    //         // Deselect all
-    //         filteredRegions.forEach((region) => {
-    //             const isSelected = regions.some((r) => r.id === region.gid);
-    //             if (isSelected) {
-    //                 toggleRegion(region.gid, region.name);
-    //             }
-    //         });
-    //     } else {
-    //         // Select all
-    //         filteredRegions.forEach((region) => {
-    //             const isSelected = regions.some((r) => r.id === region.gid);
-    //             if (!isSelected) {
-    //                 toggleRegion(region.gid, region.name);
-    //             }
-    //         });
-    //     }
-    //     setSelectAllToggleState(!selectAllToggleState);
-    // };
 
     // Hide search drawer in map if window becomes narrow (or vice versa)
     useEffect(() => {
@@ -244,20 +231,18 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                                                 type="checkbox"
                                                 id={checkboxId}
                                                 checked={isSelected}
-                                                onChange={() => toggleRegion(region.gid, region.name, region.isCoastal)}
+                                                onChange={() => {
+                                                    const feature = gidToFeatureMap.get(region.gid);
+                                                    const isCoastal = feature?.properties?.isCoastal;
+                                                    const regionCenter = feature?.properties?.geometricCenter;
+                                                    toggleRegion(region.gid, region.name, isCoastal, regionCenter);
+                                                }}
                                             />
                                             <label htmlFor={checkboxId}>{region.name}</label>
                                         </div>
                                     );
                                 })}
                             </div>
-                            {/* {filteredRegions.length <= 30 && regionsToShowToggle.includes(mapping[regionType]) && (
-                                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                    <button onClick={handleToggleSelectAll}>
-                                        {selectAllToggleState ? "Clear selection" : "Select all"}
-                                    </button>
-                                </div>
-                            )} */}
                         </div>
                     )}
                 </div>
