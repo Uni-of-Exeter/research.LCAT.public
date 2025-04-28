@@ -200,11 +200,7 @@ router.get("/region", async function (req, res) {
                         'properties', json_build_object(
                             'gid', gid,
                             'name', ${boundaryDetails.name_col}
-                            ${props ? `, ${props}` : ""},
-                            'geometricCenter', json_build_object(
-                                'lat', ST_Y(ST_Transform(ST_Centroid(geom), 4326)),
-                                'lon', ST_X(ST_Transform(ST_Centroid(geom), 4326))
-                            )
+                            ${props ? `, ${props}` : ""}
                         ),
                         'geometry', ST_AsGeoJSON(
                             ST_Transform(
