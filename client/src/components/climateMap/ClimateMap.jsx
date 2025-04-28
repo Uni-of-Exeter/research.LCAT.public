@@ -53,14 +53,11 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
     const [searchTerm, setSearchTerm] = useState("");
 
     const layerMap = useRef(new Map());
-    const [gidToFeatureMap, setGidToFeatureMap] = useState(new Map());
 
     const onEachFeature = (feature, layer) => {
         const col = "#00000000";
         const gid = feature.properties.gid;
         const name = feature.properties.name;
-        const isCoastal = feature.properties.isCoastal;
-        const regionCenter = feature.properties.geometricCenter;
         const isSelected = regions.some((e) => e.id === gid);
 
         layer.bindTooltip(name);
@@ -83,10 +80,10 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
             layer.setStyle({ weight: 3 });
         });
 
-        layer.on("click", () => toggleRegion(gid, name, isCoastal, regionCenter, layer));
+        layer.on("click", () => toggleRegion(gid, name, layer));
     };
 
-    const toggleRegion = (gid, name, isCoastal, regionCenter, layer = null) => {
+    const toggleRegion = (gid, name, layer = null) => {
         const col = "#00000000";
         const targetLayer = layer || layerMap.current.get(gid);
 
@@ -99,8 +96,6 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                     {
                         id: gid,
                         name: name,
-                        isCoastal: isCoastal,
-                        regionCenter: regionCenter,
                         clearMe: () => targetLayer && targetLayer.setStyle({ fillColor: col, fillOpacity: 1 }),
                     },
                 ];
@@ -127,7 +122,6 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
         });
 
         setGeojson(geojsonData);
-        setGidToFeatureMap(map);
         setGeojsonKey((prev) => prev + 1);
         setTriggerLoadingIndicator(false);
     };
@@ -232,10 +226,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                                                 id={checkboxId}
                                                 checked={isSelected}
                                                 onChange={() => {
-                                                    const feature = gidToFeatureMap.get(region.gid);
-                                                    const isCoastal = feature?.properties?.isCoastal;
-                                                    const regionCenter = feature?.properties?.geometricCenter;
-                                                    toggleRegion(region.gid, region.name, isCoastal, regionCenter);
+                                                    toggleRegion(region.gid, region.name);
                                                 }}
                                             />
                                             <label htmlFor={checkboxId}>{region.name}</label>

@@ -112,6 +112,51 @@ router.get("/all_regions", async function (req, res) {
     }
 });
 
+// Check if any gids in a boundary are coastal or not
+router.post("/are_gids_coastal", async function (req, res) {
+    try {
+        const { boundary, gids } = req.body;
+
+        if (!boundary) {
+            return res.status(400).send({ error: "Missing 'boundary' parameter" });
+        }
+
+        if (!Array.isArray(gids) || gids.length === 0) {
+            return res.status(400).send({ error: "Missing or invalid 'gids' array" });
+        }
+
+        if (Object.keys(all_boundary_details).length === 0) {
+            await initialiseBoundaryDetails();
+        }
+
+        const boundaryDetails = all_boundary_details[boundary];
+        if (!boundaryDetails) {
+            return res.status(400).send({ error: "Invalid boundary table" });
+        }
+
+        const query = `
+            SELECT EXISTS (
+                SELECT 1
+                FROM ${boundary}
+                WHERE gid = ANY($1) AND is_coastal = true
+            );
+        `;
+
+        const client = new Client(conString);
+        await client.connect();
+
+        try {
+            const result = await client.query(query, [gids]);
+            res.json(result.rows[0].exists);
+        } finally {
+            await client.end();
+        }
+    } catch (err) {
+        console.error("Error:", err.message || err);
+        res.status(500).send({ error: "Internal Server Error" });
+    }
+});
+
 // Get GeoJSONs of regions given a bounding box and detail
 // Tolerance from zoom level
 router.get("/region", async function (req, res) {
@@ -143,7 +188,7 @@ router.get("/region", async function (req, res) {
         await client.connect();
 
         // Placeholder for additional properties
-        const props = ""; 
+        const props = "";
 
         // Query: Build GeoJSON object for the given bounding box
         const get_region_query = `
@@ -154,13 +199,8 @@ router.get("/region", async function (req, res) {
                         'type', 'Feature',
                         'properties', json_build_object(
                             'gid', gid,
-                            'isCoastal', is_coastal,
                             'name', ${boundaryDetails.name_col}
-                            ${props ? `, ${props}` : ""},
-                            'geometricCenter', json_build_object(
-                                'lat', ST_Y(ST_Transform(ST_Centroid(geom), 4326)),
-                                'lon', ST_X(ST_Transform(ST_Centroid(geom), 4326))
-                            )
+                            ${props ? `, ${props}` : ""}
                         ),
                         'geometry', ST_AsGeoJSON(
                             ST_Transform(
@@ -191,6 +231,57 @@ router.get("/region", async function (req, res) {
         await client.end();
     } catch (err) {
         console.error("Error:", err);
+        res.status(500).send({ error: "Internal Server Error" });
+    }
+});
+
+// Get the geometric centre of a number of regions
+router.post("/gids_centre", async function (req, res) {
+    try {
+        const { boundary, gids } = req.body;
+
+        if (!boundary) {
+            return res.status(400).send({ error: "Missing 'boundary' parameter" });
+        }
+
+        if (!Array.isArray(gids) || gids.length === 0) {
+            return res.status(400).send({ error: "Missing or invalid 'gids' array" });
+        }
+
+        if (Object.keys(all_boundary_details).length === 0) {
+            await initialiseBoundaryDetails();
+        }
+
+        const boundaryDetails = all_boundary_details[boundary];
+        if (!boundaryDetails) {
+            return res.status(400).send({ error: "Invalid boundary table" });
+        }
+
+        const query = `
+            SELECT 
+                ST_X(ST_Centroid(ST_Transform(ST_Union(geom), 4326))) AS lon,
+                ST_Y(ST_Centroid(ST_Transform(ST_Union(geom), 4326))) AS lat
+            FROM ${boundary}
+            WHERE gid = ANY($1)
+        `;
+
+        const client = new Client(conString);
+        await client.connect();
+
+        try {
+            const result = await client.query(query, [gids]);
+            if (result.rows.length === 0 || result.rows[0].lon === null || result.rows[0].lat === null) {
+                return res.status(404).send({ error: "No geometries found for provided gids" });
+            }
+            res.json({
+                lat: result.rows[0].lat,
+                lon: result.rows[0].lon,
+            });
+        } finally {
+            await client.end();
+        }
+    } catch (err) {
+        console.error("Error:", err.message || err);
         res.status(500).send({ error: "Internal Server Error" });
     }
 });

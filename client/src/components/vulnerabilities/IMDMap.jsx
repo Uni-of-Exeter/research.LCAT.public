@@ -15,6 +15,7 @@ import { useCollapse } from "react-collapsed";
 
 import { defaultState } from "../../utils/defaultState";
 import { andify } from "../../utils/utils";
+import RegionCentreLoader from "../loaders/RegionCentreLoader";
 import LinkOutIcon from "./LinkOutIcon";
 
 const zoomLevels = {
@@ -31,37 +32,16 @@ const zoomLevels = {
 const IMDMap = ({ regions, regionType }) => {
     const [isExpanded, setExpanded] = useState(false);
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
-    const [averageCenter, setAverageCenter] = useState(defaultState.mapCenter);
+    const [regionsCentre, setRegionsCentre] = useState(defaultState.mapCenter);
     const [zoomLevel, setZoomLevel] = useState(8);
 
-    const calculateAverageCenter = (regions) => {
-        if (!regions?.length) return null;
-
-        let totalLat = 0;
-        let totalLon = 0;
-
-        regions.forEach(({ regionCenter }) => {
-            totalLat += regionCenter.lat;
-            totalLon += regionCenter.lon;
-        });
-
-        return {
-            lat: totalLat / regions.length,
-            lon: totalLon / regions.length,
-        };
-    };
-
     useEffect(() => {
-        // Recalculate the average center of selected regions
-        const average = calculateAverageCenter(regions);
-        if (average) setAverageCenter(average);
-
         // Set zoom level based on region type
         setZoomLevel(zoomLevels[regionType]);
-    }, [regions, regionType]);
+    }, [regionType]);
 
     // Construct link to CDRC page
-    const mapUrl = `https://mapmaker.cdrc.ac.uk/#/index-of-multiple-deprivation?d=01111100&m=imdh19_dc&lon=${averageCenter.lon}&lat=${averageCenter.lat}&zoom=${zoomLevel}`;
+    const mapUrl = `https://mapmaker.cdrc.ac.uk/#/index-of-multiple-deprivation?d=01111100&m=imdh19_dc&lon=${regionsCentre.lon}&lat=${regionsCentre.lat}&zoom=${zoomLevel}`;
 
     useEffect(() => setExpanded(false), [regions]);
 
@@ -80,6 +60,13 @@ const IMDMap = ({ regions, regionType }) => {
                     {isExpanded ? "Hide" : "Explore"} local deprivation data
                 </div>
                 <div {...getCollapseProps()}>
+                    {isExpanded && (
+                        <RegionCentreLoader
+                            regionType={regionType}
+                            regions={regions}
+                            setRegionsCentre={setRegionsCentre}
+                        />
+                    )}
                     <div>
                         <h1>Local Index of Multiple Deprivation Data</h1>
                         <p>
