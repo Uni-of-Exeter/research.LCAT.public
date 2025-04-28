@@ -239,6 +239,57 @@ router.get("/region", async function (req, res) {
     }
 });
 
+// Get the geometric centre of a number of regions
+router.post("/gids_centre", async function (req, res) {
+    try {
+        const { boundary, gids } = req.body;
+
+        if (!boundary) {
+            return res.status(400).send({ error: "Missing 'boundary' parameter" });
+        }
+
+        if (!Array.isArray(gids) || gids.length === 0) {
+            return res.status(400).send({ error: "Missing or invalid 'gids' array" });
+        }
+
+        if (Object.keys(all_boundary_details).length === 0) {
+            await initialiseBoundaryDetails();
+        }
+
+        const boundaryDetails = all_boundary_details[boundary];
+        if (!boundaryDetails) {
+            return res.status(400).send({ error: "Invalid boundary table" });
+        }
+
+        const query = `
+            SELECT 
+                ST_X(ST_Centroid(ST_Transform(ST_Union(geom), 4326))) AS lon,
+                ST_Y(ST_Centroid(ST_Transform(ST_Union(geom), 4326))) AS lat
+            FROM ${boundary}
+            WHERE gid = ANY($1)
+        `;
+
+        const client = new Client(conString);
+        await client.connect();
+
+        try {
+            const result = await client.query(query, [gids]);
+            if (result.rows.length === 0 || result.rows[0].lon === null || result.rows[0].lat === null) {
+                return res.status(404).send({ error: "No geometries found for provided gids" });
+            }
+            res.json({
+                lat: result.rows[0].lat,
+                lon: result.rows[0].lon,
+            });
+        } finally {
+            await client.end();
+        }
+    } catch (err) {
+        console.error("Error:", err.message || err);
+        res.status(500).send({ error: "Internal Server Error" });
+    }
+});
+
 /// GET CHESS-SCAPE CLIMATE DATA FROM DB ///
 
 // CHESS-SCAPE helper function: generate climate column SQL
