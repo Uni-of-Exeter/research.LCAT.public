@@ -28,7 +28,6 @@ import Introduction from "./components/header/Introduction";
 import AllRegionLoader from "./components/loaders/AllRegionLoader";
 import ClimatePredictionLoader from "./components/loaders/ClimatePredictionLoader";
 import IsCoastalLoader from "./components/loaders/CoastalFilterLoader";
-import RegionCentreLoader from "./components/loaders/RegionCentreLoader";
 import IMDMap from "./components/vulnerabilities/IMDMap";
 import PersonalSocialVulnerabilities from "./components/vulnerabilities/PersonalSocialVulnerabilities";
 import { defaultState } from "./utils/defaultState";
@@ -37,7 +36,6 @@ const App = () => {
     const [regions, setRegions] = useState(defaultState.regions);
     const [regionType, setRegionType] = useState(defaultState.regionType);
     const [allRegions, setAllRegions] = useState(defaultState.allRegions);
-    const [regionsCentre, setRegionsCentre] = useState(defaultState.mapCenter)
     const [climatePrediction, setClimatePrediction] = useState(defaultState.climatePrediction);
     const [season, setSeason] = useState(defaultState.season);
     const [rcp, setRcp] = useState(defaultState.rcp);
@@ -54,7 +52,6 @@ const App = () => {
 
             <AllRegionLoader regionType={regionType} setAllRegions={setAllRegions} />
             <IsCoastalLoader regionType={regionType} regions={regions} setApplyCoastalFilter={setApplyCoastalFilter} />
-            <RegionCentreLoader regionType={regionType} regions={regions} setRegionsCentre={setRegionsCentre} />
 
             <ClimatePredictionLoader
                 regions={regions}
@@ -131,7 +128,7 @@ const App = () => {
             {regions.length > 0 && (
                 <div className="white-section">
                     <PersonalSocialVulnerabilities />
-                    <IMDMap regions={regions} regionType={regionType} regionsCentre={regionsCentre} />
+                    <IMDMap regions={regions} regionType={regionType} />
                 </div>
             )}
 

@@ -15,6 +15,7 @@ import { useCollapse } from "react-collapsed";
 
 import { defaultState } from "../../utils/defaultState";
 import { andify } from "../../utils/utils";
+import RegionCentreLoader from "../loaders/RegionCentreLoader";
 import LinkOutIcon from "./LinkOutIcon";
 
 const zoomLevels = {
@@ -28,9 +29,10 @@ const zoomLevels = {
     boundary_iom: 8,
 };
 
-const IMDMap = ({ regions, regionType, regionsCentre }) => {
+const IMDMap = ({ regions, regionType }) => {
     const [isExpanded, setExpanded] = useState(false);
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
+    const [regionsCentre, setRegionsCentre] = useState(defaultState.mapCenter);
     const [zoomLevel, setZoomLevel] = useState(8);
 
     useEffect(() => {
@@ -58,6 +60,13 @@ const IMDMap = ({ regions, regionType, regionsCentre }) => {
                     {isExpanded ? "Hide" : "Explore"} local deprivation data
                 </div>
                 <div {...getCollapseProps()}>
+                    {isExpanded && (
+                        <RegionCentreLoader
+                            regionType={regionType}
+                            regions={regions}
+                            setRegionsCentre={setRegionsCentre}
+                        />
+                    )}
                     <div>
                         <h1>Local Index of Multiple Deprivation Data</h1>
                         <p>
