@@ -125,15 +125,6 @@ router.post("/are_gids_coastal", async function (req, res) {
             return res.status(400).send({ error: "Missing or invalid 'gids' array" });
         }
 
-        if (Object.keys(all_boundary_details).length === 0) {
-            await initialiseBoundaryDetails();
-        }
-
-        const boundaryDetails = all_boundary_details[boundary];
-        if (!boundaryDetails) {
-            return res.status(400).send({ error: "Invalid boundary table" });
-        }
-
         const query = `
             SELECT EXISTS (
                 SELECT 1
@@ -248,21 +239,18 @@ router.post("/gids_centre", async function (req, res) {
             return res.status(400).send({ error: "Missing or invalid 'gids' array" });
         }
 
-        if (Object.keys(all_boundary_details).length === 0) {
-            await initialiseBoundaryDetails();
-        }
-
-        const boundaryDetails = all_boundary_details[boundary];
-        if (!boundaryDetails) {
-            return res.status(400).send({ error: "Invalid boundary table" });
-        }
-
         const query = `
+            WITH centroids AS (
+                SELECT 
+                    ST_X(ST_Centroid(ST_Transform(geom, 4326))) AS lon,
+                    ST_Y(ST_Centroid(ST_Transform(geom, 4326))) AS lat
+                FROM ${boundary}
+                WHERE gid = ANY($1)
+            )
             SELECT 
-                ST_X(ST_Centroid(ST_Transform(ST_Union(geom), 4326))) AS lon,
-                ST_Y(ST_Centroid(ST_Transform(ST_Union(geom), 4326))) AS lat
-            FROM ${boundary}
-            WHERE gid = ANY($1)
+                AVG(lon) AS lon,
+                AVG(lat) AS lat
+            FROM centroids
         `;
 
         const client = new Client(conString);
