@@ -41,7 +41,6 @@ const StaticAdaptation = ({ adaptation, selectedHazardName }) => {
                     <b className="static-adaptation-emphasis">Description:</b>
                     <p>{attributes.description || "No description available"}</p>
                     <b className="static-adaptation-emphasis">Related impact pathways:</b>
-                    <p>This adaptation is also relevant to the following climate impact pathways:</p>
                     <ul>
                         {aggregatedLayers
                             .filter((item) => item !== selectedHazardName)
