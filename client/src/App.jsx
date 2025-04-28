@@ -128,7 +128,7 @@ const App = () => {
             {regions.length > 0 && (
                 <div className="white-section">
                     <PersonalSocialVulnerabilities />
-                    <IMDMap regions={regions} regionType={regionType} />
+                    {regionType !== "boundary_iom" && <IMDMap regions={regions} regionType={regionType} />}
                 </div>
             )}
 
