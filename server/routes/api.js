@@ -199,7 +199,6 @@ router.get("/region", async function (req, res) {
                         'type', 'Feature',
                         'properties', json_build_object(
                             'gid', gid,
-                            'isCoastal', is_coastal,
                             'name', ${boundaryDetails.name_col}
                             ${props ? `, ${props}` : ""},
                             'geometricCenter', json_build_object(
