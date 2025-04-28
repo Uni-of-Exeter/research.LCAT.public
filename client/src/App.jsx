@@ -14,7 +14,6 @@ import "./App.css";
 
 import React, { useState } from "react";
 
-import CoastalFilter from "./components/adaptations/CoastalFilter";
 import StaticAdaptations from "./components/adaptations/StaticAdaptations";
 import ClimateHazardRisk from "./components/climateHazard/ClimateHazardRisk";
 import ClimateImpactSummary from "./components/climateImpacts/ClimateImpactSummary";
@@ -28,6 +27,7 @@ import LCATHeader from "./components/header/Header";
 import Introduction from "./components/header/Introduction";
 import AllRegionLoader from "./components/loaders/AllRegionLoader";
 import ClimatePredictionLoader from "./components/loaders/ClimatePredictionLoader";
+import IsCoastalLoader from "./components/loaders/CoastalFilterLoader";
 import IMDMap from "./components/vulnerabilities/IMDMap";
 import PersonalSocialVulnerabilities from "./components/vulnerabilities/PersonalSocialVulnerabilities";
 import { defaultState } from "./utils/defaultState";
@@ -51,7 +51,7 @@ const App = () => {
             <Introduction />
 
             <AllRegionLoader regionType={regionType} setAllRegions={setAllRegions} />
-            <CoastalFilter regions={regions} setApplyCoastalFilter={setApplyCoastalFilter} />
+            <IsCoastalLoader regionType={regionType} regions={regions} setApplyCoastalFilter={setApplyCoastalFilter} />
 
             <ClimatePredictionLoader
                 regions={regions}
