@@ -14,6 +14,7 @@ import "./StaticReferences.css";
 
 import { useState } from "react";
 import { useCollapse } from "react-collapsed";
+import LinkOutIcon from "../vulnerabilities/LinkOutIcon";
 
 // Function to format authors
 const formatAuthors = (authorsString) => {
@@ -41,37 +42,34 @@ const Reference = ({ link, title, type, article_id, authors, journal, issue, dat
 
     return (
         <div className="reference-container" onClick={handleToggle}>
-            <div className="reference-title" {...getToggleProps({})}>
-                {title || `${link.substring(0, 40)}...`}
+            <div className="reference-title" {...getToggleProps()}>
+                {title || `${link.slice(0, 40)}...`}
             </div>
             <div {...getCollapseProps()}>
-                <div>
-                    <p>
-                        {type && (
-                            <>
-                                <b>Type & ID: </b>
-                                {type} - {article_id}
-                                <br />
-                            </>
-                        )}
-                        {authors && (
-                            <>
-                                <b>Authors: </b>
-                                {formatAuthors(authors)}
-                                <br />
-                            </>
-                        )}
-                        {journal && (
-                            <>
-                                <b>Journal/Issue: </b>
-                                {journal} {issue} {date}
-                                <br />
-                            </>
-                        )}
-                        <b>Source: </b>
-                        {baseURL(link, article_id)}
-                    </p>
-                </div>
+                <p>
+                    {type && (
+                        <div>
+                            <b>Type & ID:</b> {type} - {article_id}
+                        </div>
+                    )}
+                    {authors && (
+                        <div>
+                            <b>Authors:</b> {formatAuthors(authors)}
+                        </div>
+                    )}
+                    {journal && (
+                        <div>
+                            <b>Journal/Issue:</b> {journal} {issue} {date}
+                        </div>
+                    )}
+                    <div>
+                        <b>Source:</b>{" "}
+                        <a href={link} target="_blank" rel="noopener noreferrer">
+                            {baseURL(link, article_id)}
+                            <LinkOutIcon size="1.2em" colour="black" />
+                        </a>
+                    </div>
+                </p>
             </div>
         </div>
     );
