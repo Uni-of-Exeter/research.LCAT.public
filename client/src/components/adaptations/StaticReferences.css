@@ -1,11 +1,11 @@
 .reference-container {
     margin-top: 1em;
+    margin-top: 0.5em;
     padding-inline: 1em;
     background-color: white;
 }
 
 .reference-info {
-    margin-top: 0.5em;
     padding-inline: 0.5em;
 }
 
