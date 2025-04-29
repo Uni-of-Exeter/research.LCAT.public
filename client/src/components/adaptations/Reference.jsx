@@ -14,6 +14,7 @@ import "./StaticReferences.css";
 
 import { useState } from "react";
 import { useCollapse } from "react-collapsed";
+
 import LinkOutIcon from "../vulnerabilities/LinkOutIcon";
 
 // Function to format authors
