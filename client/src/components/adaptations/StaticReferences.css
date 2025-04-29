@@ -4,6 +4,11 @@
     background-color: white;
 }
 
+.reference-info {
+    margin-top: 0.5em;
+    padding-inline: 0.5em;
+}
+
 .reference-container:hover {
     background-color: #f0f4f8;
 }
