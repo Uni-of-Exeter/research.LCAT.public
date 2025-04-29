@@ -78,8 +78,8 @@ const StaticAdaptations = (props) => {
             <p>
                 Based on the expected climate change and resulting impacts in the UK, the following adaptations should
                 be considered. These adaptations were identified to reduce risk to humans and the environment while
-                providing co-benefits where possible. Use the dropdown options to view adaptations by climate impact
-                pathway, adaptation theme, and activity type.
+                providing co-benefits where possible. Use the icons to filter adaptations by climate impact pathway.
+                Further filtering by adaptation theme is also possible.
             </p>
             <p>
                 <b className="static-adaptation-emphasis">Selected climate impact pathway: </b>
