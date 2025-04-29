@@ -49,6 +49,7 @@ export const pathways = [
         id: 0,
         name: "Extreme Storms",
         isCoastal: false,
+        emoji: "\u26c8\ufe0f",
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Extreme Storms"
@@ -81,6 +82,7 @@ export const pathways = [
         id: 1,
         name: "Coastal Security",
         isCoastal: true,
+        emoji: "\ud83c\udf0a",
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Coastal Security"
@@ -109,6 +111,7 @@ export const pathways = [
         id: 2,
         name: "Flooding and Drought",
         isCoastal: false,
+        emoji: "\ud83d\udca7\ud83c\udf35",
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Flooding and Drought"
@@ -137,6 +140,7 @@ export const pathways = [
         id: 3,
         name: "Food and Personal Security",
         isCoastal: false,
+        emoji: "\ud83c\udf3d",
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Food and Personal Security"
@@ -164,6 +168,7 @@ export const pathways = [
     {
         id: 4,
         name: "Marine Health Hazards",
+        emoji: "\ud83e\udeb8",
         isCoastal: true,
         summaryPathwayMap: (
             <iframe
@@ -193,6 +198,7 @@ export const pathways = [
         id: 5,
         name: "Temperature",
         isCoastal: false,
+        emoji: "\ud83c\udf21\ufe0f",
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Temperature"

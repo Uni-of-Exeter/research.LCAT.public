@@ -81,21 +81,39 @@ const StaticAdaptations = (props) => {
                 providing co-benefits where possible. Use the icons to filter adaptations by climate impact pathway.
                 Further filtering by adaptation theme is also possible.
             </p>
-            <p>
-                <b className="static-adaptation-emphasis">Selected climate impact pathway: </b>
-                <select
-                    value={selectedHazardName}
-                    onChange={(e) => {
-                        setSelectedHazardName(e.target.value);
+            <div style={{ display: "flex", justifyContent: "center" }}>
+                <div
+                    style={{
+                        display: "flex",
+                        gap: "1rem",
+                        width: "90%",
+                        justifyContent: "space-between",
                     }}
                 >
                     {filteredPathwayData.map((pathway) => (
-                        <option value={pathway.name} key={pathway.id}>
-                            {pathway.name}
-                        </option>
+                        <button
+                            key={pathway.id}
+                            onClick={() => setSelectedHazardName(pathway.name)}
+                            style={{
+                                flex: "1",
+                                background: selectedHazardName === pathway.name ? "#e6eced" : "white",
+                                border: "1px solid #ccc",
+                                borderRadius: "8px",
+                                padding: "0.5rem",
+                                cursor: "pointer",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                minWidth: "0",
+                            }}
+                        >
+                            <div style={{ fontSize: "48px" }}>{pathway.emoji}</div>
+                            <div style={{ fontSize: "12px" }}>{pathway.name}</div>
+                        </button>
                     ))}
-                </select>
-            </p>
+                </div>
+            </div>
             <ul>
                 <li>
                     {filteredAdaptations.length} climate adaptation
