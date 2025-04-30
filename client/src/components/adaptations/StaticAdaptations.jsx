@@ -82,19 +82,19 @@ const StaticAdaptations = (props) => {
         }
     };
 
-    // Filter adaptations using filterName and filterCategory
+    // Filter adaptations based on the selectedHazards array and the filterName
     const filteredAdaptations = adaptationData.filter((adaptation) => {
-        const hazardName = selectedHazardName.toLowerCase();
         const layers = adaptation.attributes.layer.map((layer) => layer.toLowerCase());
         const adaptationCategories = adaptation.attributes[filterCategory] || [];
 
+        const matchesHazard = layers.some((layer) =>
+            selectedHazards.some((hazard) => layer.includes(hazard.toLowerCase() + " in full")),
+        );
+
         if (filterName === defaultFilterName) {
-            return layers.some((layer) => layer.includes(hazardName + " in full"));
+            return matchesHazard;
         } else {
-            return (
-                layers.some((layer) => layer.includes(hazardName + " in full")) &&
-                adaptationCategories.includes(filterName)
-            );
+            return matchesHazard && adaptationCategories.includes(filterName);
         }
     });
 
