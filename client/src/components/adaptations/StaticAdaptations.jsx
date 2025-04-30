@@ -11,10 +11,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
 import React, { useEffect, useState } from "react";
-import LoadingOverlay from "react-loading-overlay-ts";
 
 import adaptationData from "../../kumu/parsed/adaptation_data.json";
-import { defaultState } from "../../utils/defaultState";
 import { pathways } from "../climateImpacts/ClimateImpactSummaryData";
 import { adaptationFilters } from "./AdaptationCategories";
 import StaticAdaptation from "./StaticAdaptation";
@@ -22,37 +20,36 @@ import StaticAdaptation from "./StaticAdaptation";
 const StaticAdaptations = (props) => {
     const { selectedHazardName, applyCoastalFilter } = props;
 
+    // Load filter options
     const defaultFilterName = adaptationFilters[0].filterName;
     const defaultFilterCategory = adaptationFilters[0].category;
-
     const [filterName, setFilterName] = useState(defaultFilterName);
     const [filterCategory, setFilterCategory] = useState(defaultFilterCategory);
-    const [loading, setLoading] = useState(false);
 
     // Filter pathways if coastal filter is applied
     const [filteredPathwayData, setFilteredPathwayData] = useState(pathways);
 
-    // Track array of selected hazards
+    // Track array of selected hazards (controlled via buttons)
     const [selectedHazards, setSelectedHazards] = useState([selectedHazardName]);
 
-    // Function for clicking on filter buttons
+    // Function for clicking on filter buttons: adding and removing hazards to array
     const toggleHazardSelection = (hazardName) => {
-        setSelectedHazards((prevSelected) => {
+        setSelectedHazards((prev) => {
             // Check to see if new hazardName is selected
-            const isSelected = prevSelected.includes(hazardName);
+            const isSelected = prev.includes(hazardName);
 
             // If hazardName is selected and removing it wont empty array, remove it
-            if (isSelected && prevSelected.length > 1) {
-                return prevSelected.filter((n) => n !== hazardName);
+            if (isSelected && prev.length > 1) {
+                return prev.filter((n) => n !== hazardName);
             }
 
             // If not selected, add it to array
             if (!isSelected) {
-                return [...prevSelected, hazardName];
+                return [...prev, hazardName];
             }
 
             // If selected and the only one do nothing
-            return prevSelected;
+            return prev;
         });
     };
 
@@ -71,8 +68,8 @@ const StaticAdaptations = (props) => {
         setSelectedHazards([selectedHazardName]);
     }, [selectedHazardName]);
 
-    // Handle change in filter: set filterName and filterCategory when dropdown is used
-    const handleFilterChange = (e) => {
+    // Handle button change: set filterName and filterCategory when dropdown is used
+    const handleButtonChange = (e) => {
         const selectedFilterName = e.target.value;
         const selectedFilter = adaptationFilters.find((filter) => filter.filterName === selectedFilterName);
 
@@ -103,7 +100,7 @@ const StaticAdaptations = (props) => {
     }
 
     return (
-        <LoadingOverlay active={loading} spinner text={"Loading adaptations"}>
+        <div>
             <h1>Adaptations</h1>
             <p>
                 Based on the expected climate change and resulting impacts in the UK, the following adaptations should
@@ -150,8 +147,8 @@ const StaticAdaptations = (props) => {
                     {filteredAdaptations.length === 1 ? " was" : "s were"} found
                 </li>
                 <li>
-                    These adaptations can be filtered by theme:{"  "}
-                    <select value={filterName} onChange={handleFilterChange}>
+                    These adaptations can be filtered further by theme:{"  "}
+                    <select value={filterName} onChange={handleButtonChange}>
                         {adaptationFilters.map((filter, index) => (
                             <option value={filter.filterName} key={index}>
                                 {filter.displayName}
@@ -180,7 +177,7 @@ const StaticAdaptations = (props) => {
                 Data source: The adaptation data is based on published scientific literature and reports. You can see
                 the references used by expanding each adaptation.
             </p>
-        </LoadingOverlay>
+        </div>
     );
 };
 
