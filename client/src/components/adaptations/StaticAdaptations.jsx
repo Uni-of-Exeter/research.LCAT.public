@@ -20,7 +20,7 @@ import { adaptationFilters } from "./AdaptationCategories";
 import StaticAdaptation from "./StaticAdaptation";
 
 const StaticAdaptations = (props) => {
-    const { selectedHazardName, setSelectedHazardName, applyCoastalFilter } = props;
+    const { selectedHazardName, applyCoastalFilter } = props;
 
     const defaultFilterName = adaptationFilters[0].filterName;
     const defaultFilterCategory = adaptationFilters[0].category;
@@ -32,14 +32,44 @@ const StaticAdaptations = (props) => {
     // Filter pathways if coastal filter is applied
     const [filteredPathwayData, setFilteredPathwayData] = useState(pathways);
 
+    // Track array of selected hazards
+    const [selectedHazards, setSelectedHazards] = useState([selectedHazardName]);
+
+    // Function for clicking on filter buttons
+    const toggleHazardSelection = (hazardName) => {
+        setSelectedHazards((prevSelected) => {
+            // Check to see if new hazardName is selected
+            const isSelected = prevSelected.includes(hazardName);
+
+            // If hazardName is selected and removing it wont empty array, remove it
+            if (isSelected && prevSelected.length > 1) {
+                return prevSelected.filter((n) => n !== hazardName);
+            }
+
+            // If not selected, add it to array
+            if (!isSelected) {
+                return [...prevSelected, hazardName];
+            }
+
+            // If selected and the only one do nothing
+            return prevSelected;
+        });
+    };
+
+    // When coastal filter is applied, filter pathways and reset selectedHazards
     useEffect(() => {
         if (applyCoastalFilter) {
             setFilteredPathwayData(pathways.filter((pathway) => !pathway.isCoastal));
         } else {
             setFilteredPathwayData(pathways);
         }
-        setSelectedHazardName(defaultState.selectedHazardName);
-    }, [applyCoastalFilter, setSelectedHazardName]);
+        setSelectedHazards([selectedHazardName]);
+    }, [applyCoastalFilter, selectedHazardName]);
+
+    // When a new selectedHazardName is applied, reset the list of hazards
+    useEffect(() => {
+        setSelectedHazards([selectedHazardName]);
+    }, [selectedHazardName]);
 
     // Handle change in filter: set filterName and filterCategory when dropdown is used
     const handleFilterChange = (e) => {
@@ -93,10 +123,10 @@ const StaticAdaptations = (props) => {
                     {filteredPathwayData.map((pathway) => (
                         <button
                             key={pathway.id}
-                            onClick={() => setSelectedHazardName(pathway.name)}
+                            onClick={() => toggleHazardSelection(pathway.name)}
                             style={{
                                 flex: "1",
-                                background: selectedHazardName === pathway.name ? "#e6eced" : "white",
+                                background: selectedHazards.includes(pathway.name) ? "#e6eced" : "white",
                                 border: "1px solid #ccc",
                                 borderRadius: "8px",
                                 padding: "0.5rem",
