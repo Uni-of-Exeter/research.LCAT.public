@@ -63,13 +63,13 @@ const StaticAdaptations = (props) => {
         setSelectedHazards([selectedHazardName]);
     }, [applyCoastalFilter, selectedHazardName]);
 
-    // When a new selectedHazardName is applied, reset the list of hazards
+    // When a new selectedHazardName is applied, reset the array of hazards
     useEffect(() => {
         setSelectedHazards([selectedHazardName]);
     }, [selectedHazardName]);
 
     // Handle button change: set filterName and filterCategory when dropdown is used
-    const handleButtonChange = (e) => {
+    const handleDropdownChange = (e) => {
         const selectedFilterName = e.target.value;
         const selectedFilter = adaptationFilters.find((filter) => filter.filterName === selectedFilterName);
 
@@ -148,7 +148,7 @@ const StaticAdaptations = (props) => {
                 </li>
                 <li>
                     These adaptations can be filtered further by theme:{"  "}
-                    <select value={filterName} onChange={handleButtonChange}>
+                    <select value={filterName} onChange={handleDropdownChange}>
                         {adaptationFilters.map((filter, index) => (
                             <option value={filter.filterName} key={index}>
                                 {filter.displayName}
