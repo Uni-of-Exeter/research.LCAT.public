@@ -84,14 +84,16 @@ const StaticAdaptations = (props) => {
         const layers = adaptation.attributes.layer.map((layer) => layer.toLowerCase());
         const adaptationCategories = adaptation.attributes[filterCategory] || [];
 
-        const matchesHazard = layers.some((layer) =>
-            selectedHazards.some((hazard) => layer.includes(hazard.toLowerCase() + " in full")),
+        // First check that the adaptation contains every hazard in the array of selectedHazards
+        const matchesAllHazards = selectedHazards.every((hazard) =>
+            layers.some((layer) => layer.includes(hazard.toLowerCase() + " in full")),
         );
 
+        // Then check if the adaptation category includes the category filter name
         if (filterName === defaultFilterName) {
-            return matchesHazard;
+            return matchesAllHazards;
         } else {
-            return matchesHazard && adaptationCategories.includes(filterName);
+            return matchesAllHazards && adaptationCategories.includes(filterName);
         }
     });
 
@@ -142,10 +144,13 @@ const StaticAdaptations = (props) => {
                 </div>
             </div>
             <ul>
-                <li>
-                    {filteredAdaptations.length} climate adaptation
-                    {filteredAdaptations.length === 1 ? " was" : "s were"} found
-                </li>
+                {filteredAdaptations.length > 0 && (
+                    <li>
+                        {filteredAdaptations.length} climate adaptation
+                        {filteredAdaptations.length === 1 ? " was" : "s were"} found
+                    </li>
+                )}
+
                 <li>
                     These adaptations can be filtered further by theme:{"  "}
                     <select value={filterName} onChange={handleDropdownChange}>
@@ -169,7 +174,7 @@ const StaticAdaptations = (props) => {
                         );
                     })
                 ) : (
-                    <h3>No adaptations found</h3>
+                    <h3 style={{ textAlign: "center" }}>No adaptations found</h3>
                 )}
             </div>
 
