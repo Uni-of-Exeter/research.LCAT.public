@@ -143,6 +143,20 @@ const StaticAdaptations = (props) => {
                     ))}
                 </div>
             </div>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+                <button
+                    onClick={() => setSelectedHazards([selectedHazardName])}
+                    style={{
+                        borderRadius: "8px",
+                        padding: "1rem",
+                        cursor: "pointer",
+                        flexDirection: "column",
+                        margin: "1em",
+                    }}
+                >
+                    <div style={{ fontSize: "12px" }}>Reset adaptation filters</div>
+                </button>
+            </div>
             <ul>
                 {filteredAdaptations.length > 0 && (
                     <li>
