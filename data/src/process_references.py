@@ -7,12 +7,11 @@ from src import scrape_doi
 
 class ProcessReferences:
     """
-    Class to perform processing of the references from the .CSV Google Sheets.
+    Class to perform processing of the references from the .CSV Google Sheets to a .json file.
     """
 
     def __init__(self, csv_filepath):
         self.df = None
-        self.bad_references = {}
         self.doi_lookups = {}
         self.failed_doi_lookups = []
         self.processed_references = {}
@@ -21,22 +20,14 @@ class ProcessReferences:
 
     def load_references(self, csv_filepath):
         """
-        Load references from CSV file.
+        Load references from CSV file. This should be downloaded from Google Sheets.
         """
 
         self.df = pd.read_csv(csv_filepath)
 
-    def load_bad_references(self, bad_references):
-        """
-        Load bad reference list.
-        """
-
-        self.bad_references = bad_references
-
     def clean_references(self):
         """
-        Clean up reference type column to ensure correct filtering by
-        reference type.
+        Clean up reference type column to ensure correct filtering by reference type.
         """
 
         dirty_reference_types = self.df["Reference_Type"].unique().tolist()
@@ -52,14 +43,14 @@ class ProcessReferences:
 
         self.df["Reference_Type"] = self.df["Reference_Type"].map(string_mapping)
 
-        # Finally clean title, DOI replacement URL columns for later
-        self.df["Title for website/report/article"] = self.df["Title for website/report/article"].fillna("")
-        self.df["Replacement_URL"] = self.df["Replacement_URL"].fillna("")
-        self.df["DOI"] = self.df["DOI"].fillna("")
+        # Finally replace NaNs with ""
+        self.df.fillna("", inplace=True)
 
     def doi_lookup_row(self, row):
         """
-        Perform DOI lookup & parsing for reference row. This is brittle.
+        Perform DOI lookup & parsing for reference row. This scraping is brittle. Failed lookups are stored
+        only for investigation: they are not used later on. If successful scraping occurs, the data is stored
+        in self.doi_lookups, keyed by row_id, and
         """
 
         row_type = row["Reference_Type"]
@@ -90,36 +81,30 @@ class ProcessReferences:
             print("Neither Journal Article nor Book found: no DOI lookup performed")
             return
 
-    def perform_doi_lookups(self):
+    def perform_doi_lookups(self, scrape_all_rows=False):
         """
-        Perform DOI lookups for all rows, considering bad references. Only references
-        with DOIs will be processed.
+        Perform DOI lookups. Set scrape_all_rows to True to scrape all rows (with DOIs) from scratch, which would
+        take a while. If set to False, only rows with no titles are scraped.
         """
 
-        doi_references_df = self.df.loc[~self.df["DOI"].isna()]
+        # Perform scraping for all rows with a DOI, even if they have data already
+        if scrape_all_rows:
+            rows_to_scrape_df = self.df.loc[self.df["DOI"] != ""]
 
-        print(f"{len(doi_references_df)} references with DOIs found\n")
+        # Perform scraping only for rows with a DOI with no title
+        else:
+            rows_to_scrape_df = self.df.loc[(self.df["DOI"] != "") & (self.df["Title"] == "")]
 
-        for index, row in doi_references_df.iterrows():
-            print(f"DOI lookup: {index} / {len(doi_references_df)}")
+        print(f"{len(rows_to_scrape_df)} references found for scraping\n")
 
-            row_id = row["Reference_ID"]
-            row_type = row["Reference_Type"]
-
-            if row_type not in self.bad_references:
-                print(f"Reference type {row_type} not included in bad_references. Attempting DOI lookup.")
-                self.doi_lookup_row(row)
-
-            else:
-                if row_id in self.bad_references[row_type]:
-                    print(f"Reference {row_id} is a bad reference: no lookup will be performed.")
-
-                else:
-                    self.doi_lookup_row(row)
+        for index, row in rows_to_scrape_df.iterrows():
+            print(f"DOI lookup: {index} / {len(rows_to_scrape_df)}")
+            self.doi_lookup_row(row)
 
     def process_references(self):
         """
-        Process all rows, using DOI lookups if available.
+        Process all rows, using DOI lookups if available. Remember that if the the titles and DOIs are
+        present, no scraping will occur, and the original rows will be used.
         """
 
         for _, row in self.df.iterrows():
@@ -135,19 +120,21 @@ class ProcessReferences:
                     "article_id": row_id,
                     "link": row["URL"],
                     "link_replacement": row["Replacement_URL"],
-                    "title": row["Title for website/report/article"],
-                    "authors": "",
-                    "date": "",
-                    "journal": "",
-                    "issue": "",
+                    "title": row["Title"],
+                    "authors": row["Authors"],
+                    "date": row["Date"],
+                    "journal": row["Journal"],
+                    "issue": row["Volume/Issue"],
                 }
 
                 self.processed_references[row_id] = ref
+
+        print(f"{len(self.processed_references)} references will be saved in the json.")
 
     def save_json(self, output_filename):
         """
         Save the processed references to json.
         """
 
-        with open(output_filename, "w") as f:
-            json.dump(self.processed_references, f, indent=4)
+        with open(output_filename, "w", encoding="utf-8") as f:
+            json.dump(self.processed_references, f, ensure_ascii=False, indent=4)
