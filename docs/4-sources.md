@@ -124,7 +124,7 @@ chess-scape
 
 ## References and Kumu export
 
-LCAT serves the user references, articles, and other pieces of research related to the options they have selected in the tool. These have been aggregated by the LCAT team, and can be found [here](https://docs.google.com/spreadsheets/d/18c_5SSG9VmagkX3bdC_F2eDtzFz9oQJvPQbhEfwmUNc/edit?gid=0#gid=0). They are reviewed periodically by the team.
+LCAT serves the user references, articles, and other pieces of research related to the options they have selected in the tool. These have been aggregated by the LCAT team, and can be found [here](https://docs.google.com/spreadsheets/d/1rrfPiOEN28adM5KZRx97NYg87LztP0t3Qrwl-8TDb9k/edit?gid=0#gid=0). They are reviewed periodically by the team.
 
 A Kumu export is also required. This is a `.json` representation of the climate pathway maps that link climate hazards, adaptations, and more.
 

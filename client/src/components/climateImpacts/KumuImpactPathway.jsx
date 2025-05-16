@@ -116,7 +116,7 @@ const KumuImpactPathway = ({ regions, selectedHazardName, setSelectedHazardName,
                 <p className="note">
                     Data source: The impact pathway data is based on published scientific literature and reports.{" "}
                     <a
-                        href="https://docs.google.com/spreadsheets/d/18c_5SSG9VmagkX3bdC_F2eDtzFz9oQJvPQbhEfwmUNc/edit?usp=sharing"
+                        href="https://docs.google.com/spreadsheets/d/1rrfPiOEN28adM5KZRx97NYg87LztP0t3Qrwl-8TDb9k/edit?gid=0#gid=0"
                         target="_blank"
                         rel="noreferrer"
                     >
