@@ -196,7 +196,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                         </MapContainer>
                     </LoadingOverlay>
 
-                    {regionsToShowSearch.includes(regionType) && (
+                    {/* {regionsToShowSearch.includes(regionType) && (
                         <>
                             <button
                                 className="drawer-toggle-button"
@@ -238,7 +238,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                                 </div>
                             )}
                         </>
-                    )}
+                    )} */}
                 </div>
 
                 <div className="map-selection">
