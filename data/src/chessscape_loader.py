@@ -23,26 +23,42 @@ def timefn(fn):
 class ChessScapeLoader:
     """
     Class to load data from CHESS-SCAPE netcdf files into database. The class determines which data (i.e. bias or
-    non-bias corrected) to load from the labelled mask which must be provided on instantiation.
+    non-bias corrected) to load from the labelled mask, which must be provided on instantiation. This mask tells this
+    class that data for Northern Ireland and the Isles of Scilly is non-bias corrected, whilst data for the rest of
+    the UK is.
+
+    The general process for data extraction and loading is as follows:
+
+        1. Initialise class with config and a labelled grid (i.e. a mask with bias and non bias grid cell locations)
+        2. Connect to database
+        3. Loop through all climate variables, opening up the relevant pair of netcdf files (bias and non bias data)
+        4. Open the data with xarray and get decade mean, min and max data, performing transformations if required
+        5. For each climate variable, create database table and insert data
+        6. Aggregate multiple tables and clean up
     """
 
     def __init__(self, config, mask):
         self.conf = config
+
+        # psycopg2 connection and db cursor
         self.conn = None
         self.cur = None
+
         self.data_location = None
         self.mask = None
-        self.data_keys = []
+        self.bias_corrected_keys = []
 
-        self.data = {}
-        self.data_means = {}
+        # currently loaded CHESS-SCAPE file and associated extracted data
+        self.current_netcdf_data = {}
+        self.extracted_data = {}
 
+        # current parameters
         self.season = None
         self.rcp = None
         self.variable = None
         self.table_name = None
-
         self.transform_performed = False
+
         self.set_data_location()
         self.load_mask(mask)
 
@@ -68,10 +84,10 @@ class ChessScapeLoader:
         self.mask = mask
 
         if 1 in mask:
-            self.data_keys.append("bias_corrected")
+            self.bias_corrected_keys.append("bias_corrected")
 
         if 2 in mask:
-            self.data_keys.append("non_bias_corrected")
+            self.bias_corrected_keys.append("non_bias_corrected")
 
     def connect_to_db(self, host=None, dbname=None, user=None, password=None):
         """
@@ -107,7 +123,7 @@ class ChessScapeLoader:
         Close netcdf files and release any resources associated with them.
         """
 
-        for file in self.data.values():
+        for file in self.current_netcdf_data.values():
             file.close()
 
     def load_netcdf(self, season, rcp, bias_corrected_key, variable):
@@ -131,7 +147,7 @@ class ChessScapeLoader:
         # Clear other variables
         self.transform_performed = False
         # Ensure data means are removed
-        self.data_means[bias_corrected_key] = {}
+        self.extracted_data[bias_corrected_key] = {}
 
         # Create filepath folder adjustments
         bias_corrected_folder = "_bias-corrected" if bias_corrected_key == "bias_corrected" else ""
@@ -146,45 +162,57 @@ class ChessScapeLoader:
 
         # Load netcdf file
         if os.path.exists(filepath):
-            self.data[bias_corrected_key] = self.open_netcdf_file(filepath)
+            self.current_netcdf_data[bias_corrected_key] = self.open_netcdf_file(filepath)
 
         else:
             print(f"Incorrect filepath: {filepath}")
 
     def load_all_netcdf(self, season, rcp, variable):
         """
-        Load the correct data sets, given the labels in the mask.
+        Load the correct data sets for the current parameters, given the labels in the mask.
         """
 
-        for bias_corrected_key in self.data_keys:
+        for bias_corrected_key in self.bias_corrected_keys:
             self.load_netcdf(season, rcp, bias_corrected_key, variable)
 
-        print(f"Loaded {len(self.data_keys)} netcdf files into xarray.")
+        print(f"Loaded {len(self.bias_corrected_keys)} netcdf files into xarray.")
 
-    def create_mean(self, data, lower_bound, higher_bound, step):
+    def calculate_min_mean_max(self, data, lower_bound, higher_bound, step):
         """
-        Calculate mean values of netcdf file in time dimension.
+        Calculate min, mean, and max values of netcdf file in time dimension, with upper and lower bounds.
         """
 
-        # Perform some checks
+        # Slice the time dimension only to perform some checks
         time_slice = data.time[lower_bound:higher_bound:step].values
 
-        # Check we always take mean over 10 years
+        # Check we always take mean, min and max over 10 year slice
         if len(time_slice) != 10:
             raise ValueError("Dataset slice does not contain 10 values.")
 
-        # Check we always only select time points in Jan and Jul in our time slice
+        # Check we always only select time points in Jan and Jul in our seasonal time slice
         if self.season != "annual":
             month_check = 1 if self.season == "winter" else 7
 
             if not np.all(np.array([date.month for date in time_slice]) == month_check):
                 raise ValueError("Different months identified in time slice")
 
-        return data[self.variable][lower_bound:higher_bound:step].mean(dim="time")
+        # Perform the same slicing operation on the data itself
+        data_slice = data[self.variable][lower_bound:higher_bound:step]
 
-    def create_means(self, data):
+        return {
+            "min": data_slice.min(dim="time"),
+            "mean": data_slice.mean(dim="time"),
+            "max": data_slice.max(dim="time"),
+        }
+
+    def process_decade(self, data):
         """
-        Process means for netcdf files. Means are taken across decades.
+        Process NetCDF files by decade. Mins, means, and maxes are taken across decades.
+        We perform this operation manually, rather than using xarray.resample.
+        This means that our decades might by off by 1 year (1981 to 1991), but we can use
+        the same approach for the seasonal dataset (which is more strongly binned into
+        3 month seasons). More details are as follows (with the mean given as an example)
+
           * Annual file time dim is 100, with 1 data point per year.
             Means are averaging every 10 years, i.e. 10 chunks of 10 points.
             Slice for first decade would be dataset[0:10:1]
@@ -206,26 +234,26 @@ class ChessScapeLoader:
         # Get total years from the dataset
         stop = len(data.time)
 
-        # Create all data means
-        data_means = {}
+        # Create all data values
+        data_by_decade = {}
 
         # Get lower and higher slice bounds
         for lower_bound in range(start, stop, period):
             higher_bound = int(lower_bound + period)
             decade_tag = 1980 + int(lower_bound / step)
 
-            data_mean = self.create_mean(data, lower_bound, higher_bound, step)
-            data_means[decade_tag] = data_mean
+            # Get extracted data dict containing min, mean and max and key by decade
+            data_by_decade[decade_tag] = self.calculate_min_mean_max(data, lower_bound, higher_bound, step)
 
-        return data_means
+        return data_by_decade
 
-    def create_all_means(self):
+    def process_bias_keys(self):
         """
-        Create means for all data required by the mask.
+        Extract data for each decade in bias and non bias corrected cases.
         """
 
-        for bias_corrected_key in self.data_keys:
-            self.data_means[bias_corrected_key] = self.create_means(self.data[bias_corrected_key])
+        for bias_corrected_key in self.bias_corrected_keys:
+            self.extracted_data[bias_corrected_key] = self.process_decade(self.current_netcdf_data[bias_corrected_key])
 
     def transform_dataset(self, data):
         """
@@ -246,15 +274,16 @@ class ChessScapeLoader:
 
     def transform_all_means(self):
         """
-        Perform transformations on data means away from SI units where required.
+        Perform transformations on data values away from SI units, where required.
         """
 
         if self.transform_performed:
-            raise ValueError("Transforms already performed on mean values.")
+            raise ValueError("Transforms already performed on values.")
 
-        for data_means_dict in self.data_means.values():
-            for data_mean in data_means_dict.values():
-                self.transform_dataset(data_mean)
+        for bias_key, data_by_decade in self.extracted_data.items():
+            for decade, min_mean_max_dict in data_by_decade.items():
+                for key, value in min_mean_max_dict.items():
+                    self.transform_dataset(value)
 
         # Flag that transforms have been performed
         self.transform_performed = True
@@ -307,12 +336,21 @@ class ChessScapeLoader:
     def insert_data_multiple_decades(self):
         """
         Bulk insert multiple columns of data (i.e. all decades for a variable). Note that this loads bias corrected
-        and non-bias corrected into the same table.
+        and non-bias corrected into the same table (deliberately).
         """
 
-        # Add columns to database in one go
-        any_key = self.data_keys[0]
-        new_column_names = [f"{self.variable}_{decade}" for decade in self.data_means[any_key]]
+        # Get a bias key
+        bias_key = self.bias_corrected_keys[0]
+
+        new_column_names = []
+        for decade, min_mean_max_dict in self.extracted_data[bias_key].items():
+            for key in min_mean_max_dict:
+                if key not in ["min", "mean", "max"]:
+                    raise ValueError("Column names incorrect")
+
+                new_column_name = f"{self.variable}_{decade}_{key}"
+                new_column_names.append(new_column_name)
+
         self.add_multiple_columns(new_column_names)
 
         # Create string buffer
@@ -334,8 +372,9 @@ class ChessScapeLoader:
 
             # Get correct climate data row with key
             climate_data = [
-                self.data_means[bias_corrected_key][decade_key].values[i, j]
-                for decade_key in self.data_means[bias_corrected_key]
+                self.extracted_data[bias_corrected_key][decade_key][key].values[i, j]
+                for decade_key in self.extracted_data[bias_corrected_key]
+                for key in ["min", "mean", "max"]
             ]
 
             # Get grid cell ID
@@ -388,14 +427,14 @@ class ChessScapeLoader:
         variables = ["pr", "rsds", "sfcWind", "tas", "tasmax", "tasmin"]
 
         print("############################")
-        print(f"### Data to be processed: {self.data_keys}")
+        print(f"### Data to be processed: {self.bias_corrected_keys}")
         print(f"### Processing all variables for dataset: {season}, rcp{rcp}.\n")
 
         for variable in variables:
             print(f"### Processing variable: {variable}")
 
             self.load_all_netcdf(season, rcp, variable)
-            self.create_all_means()
+            self.process_bias_keys()
             self.transform_all_means()
             self.drop_table()
             self.create_table()
