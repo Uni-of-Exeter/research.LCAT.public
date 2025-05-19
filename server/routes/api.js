@@ -284,7 +284,7 @@ function buildAvgClimateCols() {
 
     for (const variable of variables) {
         for (const decade of decades) {
-            averageClimateColNames.push(`AVG("${variable}_${decade}") as "${variable}_${decade}"`);
+            averageClimateColNames.push(`AVG("${variable}_${decade}_mean") as "${variable}_${decade}_mean"`);
         }
     }
 
