@@ -37,12 +37,7 @@ const mapping = {
     boundary_iom: "Isle of Man",
 };
 
-const regionsToShowToggle = [
-    "MSOA (Eng/Wales)",
-    "Parishes (Eng/Wales)",
-    "Data Zones (Scotland)",
-    "Data Zones (Northern Ireland)",
-];
+const regionsToShowSearch = ["boundary_uk_counties", "boundary_la_districts"];
 
 const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType }) => {
     const [geojsonKey, setGeojsonKey] = useState(0);
@@ -201,40 +196,48 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                         </MapContainer>
                     </LoadingOverlay>
 
-                    <button className="drawer-toggle-button" onClick={toggleDrawer} aria-label="Toggle Search Drawer">
-                        {isDrawerOpen ? "→" : "←"}
-                    </button>
+                    {regionsToShowSearch.includes(regionType) && (
+                        <>
+                            <button
+                                className="drawer-toggle-button"
+                                onClick={toggleDrawer}
+                                aria-label="Toggle Search Drawer"
+                            >
+                                {isDrawerOpen ? "→" : "←"}
+                            </button>
 
-                    {isDrawerOpen && (
-                        <div className="climate-map-search-container">
-                            <div className="climate-map-search">
-                                <input
-                                    type="text"
-                                    placeholder="Search regions..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                />
-                            </div>
-                            <div className="climate-map-checkbox-list">
-                                {filteredRegions.map((region) => {
-                                    const isSelected = regions.some((r) => r.id === region.gid);
-                                    const checkboxId = `checkbox-${region.gid}`;
-                                    return (
-                                        <div key={region.gid}>
-                                            <input
-                                                type="checkbox"
-                                                id={checkboxId}
-                                                checked={isSelected}
-                                                onChange={() => {
-                                                    toggleRegion(region.gid, region.name);
-                                                }}
-                                            />
-                                            <label htmlFor={checkboxId}>{region.name}</label>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
+                            {isDrawerOpen && (
+                                <div className="climate-map-search-container">
+                                    <div className="climate-map-search">
+                                        <input
+                                            type="text"
+                                            placeholder="Search regions..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                        />
+                                    </div>
+
+                                    <div className="climate-map-checkbox-list">
+                                        {filteredRegions.map((region) => {
+                                            const isSelected = regions.some((r) => r.id === region.gid);
+                                            const checkboxId = `checkbox-${region.gid}`;
+
+                                            return (
+                                                <div key={region.gid}>
+                                                    <input
+                                                        type="checkbox"
+                                                        id={checkboxId}
+                                                        checked={isSelected}
+                                                        onChange={() => toggleRegion(region.gid, region.name)}
+                                                    />
+                                                    <label htmlFor={checkboxId}>{region.name}</label>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
 
