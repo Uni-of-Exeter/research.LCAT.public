@@ -17,7 +17,6 @@ import React, { useEffect, useState } from "react";
 import { useCollapse } from "react-collapsed";
 import { ChartLabel, LabelSeries, makeWidthFlexible, VerticalBarSeries, XAxis, XYPlot, YAxis } from "react-vis";
 
-import { climateAverages } from "../../core/climate";
 import { andify } from "../../utils/utils";
 
 const FlexibleXYPlot = makeWidthFlexible(XYPlot);
