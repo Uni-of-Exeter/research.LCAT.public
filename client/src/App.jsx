@@ -105,6 +105,7 @@ const App = () => {
                         setSeason={setSeason}
                         setRcp={setRcp}
                         climatePrediction={climatePrediction}
+                        climateAverages={climateAverages}
                         variable={variable}
                         setVariable={setVariable}
                     />
