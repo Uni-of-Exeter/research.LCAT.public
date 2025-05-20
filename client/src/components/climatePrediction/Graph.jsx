@@ -134,13 +134,13 @@ const Graph = (props) => {
     }
 
     return (
-        <LoadingOverlay active={loading} spinner text="Loading climate data">
-            <div>
-                <div className="collapsible">
-                    <div className="header" style={{ margin: "1em" }} {...getToggleProps({ onClick: handleOnClick })}>
-                        {isExpanded ? "Hide" : "Explore"} climate details
-                    </div>
-                    <div {...getCollapseProps()}>
+        <div>
+            <div className="collapsible">
+                <div className="header" style={{ margin: "1em" }} {...getToggleProps({ onClick: handleOnClick })}>
+                    {isExpanded ? "Hide" : "Explore"} climate details
+                </div>
+                <div {...getCollapseProps()}>
+                    <LoadingOverlay active={loading} spinner text="Loading climate data">
                         <div className="content">
                             <h1>Climate details</h1>
                             <p>
@@ -247,30 +247,30 @@ const Graph = (props) => {
                             </div>
                             {/* <div className="graph-x-axis">Decades</div> */}
                         </div>
-                    </div>
+                    </LoadingOverlay>
                 </div>
-                <p className="note">
-                    Data source: The current iteration of the tool uses climate data from the{" "}
-                    <a
-                        href="https://catalogue.ceda.ac.uk/uuid/8194b416cbee482b89e0dfbe17c5786c"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        CHESS-SCAPE
-                    </a>{" "}
-                    dataset. CHESS-SCAPE provides bias-corrected data for England, Scotland, Wales, and the Isle of Man.
-                    CHESS-SCAPE provides non bias-corrected data for Northern Ireland and the Isles of Scilly. The tool
-                    displays RCP 6.0 and RCP 8.5. For more information, please see the{" "}
-                    <a
-                        href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Autumn-24.pdf"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        LCAT User Guide.
-                    </a>
-                </p>
             </div>
-        </LoadingOverlay>
+            <p className="note">
+                Data source: The current iteration of the tool uses climate data from the{" "}
+                <a
+                    href="https://catalogue.ceda.ac.uk/uuid/8194b416cbee482b89e0dfbe17c5786c"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    CHESS-SCAPE
+                </a>{" "}
+                dataset. CHESS-SCAPE provides bias-corrected data for England, Scotland, Wales, and the Isle of Man.
+                CHESS-SCAPE provides non bias-corrected data for Northern Ireland and the Isles of Scilly. The tool
+                displays RCP 6.0 and RCP 8.5. For more information, please see the{" "}
+                <a
+                    href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Autumn-24.pdf"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    LCAT User Guide.
+                </a>
+            </p>
+        </div>
     );
 };
 
