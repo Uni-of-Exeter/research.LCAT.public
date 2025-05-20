@@ -107,6 +107,7 @@ const App = () => {
                         setSeason={setSeason}
                         setRcp={setRcp}
                         climatePrediction={climatePrediction}
+                        loading={isPredictionLoading}
                         variable={variable}
                         setVariable={setVariable}
                     />
