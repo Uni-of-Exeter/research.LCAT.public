@@ -15,6 +15,7 @@ import "./Graph.css";
 
 import React, { useEffect, useState } from "react";
 import { useCollapse } from "react-collapsed";
+import LoadingOverlay from "react-loading-overlay-ts";
 import { ChartLabel, LabelSeries, makeWidthFlexible, VerticalBarSeries, XAxis, XYPlot, YAxis } from "react-vis";
 
 import { climateAverages } from "../../core/climate";
@@ -27,7 +28,7 @@ const selectedRegionCol = "#216331";
 const averageRegionCol = "#48b961";
 
 const Graph = (props) => {
-    const { regions, season, rcp, setSeason, setRcp, climatePrediction, variable, setVariable } = props;
+    const { regions, season, rcp, setSeason, setRcp, loading, climatePrediction, variable, setVariable } = props;
 
     const [data, setData] = useState([]);
     const [avg, setAvg] = useState([]);
@@ -105,7 +106,11 @@ const Graph = (props) => {
                     if (showAverage) offset = 2;
 
                     out.push({ x: label_year, y: climatePrediction[0][variable + "_" + year + "_mean"] });
-                    label.push({ x: label_year, y: climatePrediction[0][variable + "_" + year + "_mean"], xOffset: -offset });
+                    label.push({
+                        x: label_year,
+                        y: climatePrediction[0][variable + "_" + year + "_mean"],
+                        xOffset: -offset,
+                    });
 
                     av.push({ x: label_year, y: climateAverages[avkey] });
                     avlabel.push({ x: label_year, y: climateAverages[avkey], xOffset: offset });
@@ -129,141 +134,143 @@ const Graph = (props) => {
     }
 
     return (
-        <div>
-            <div className="collapsible">
-                <div className="header" style={{ margin: "1em" }} {...getToggleProps({ onClick: handleOnClick })}>
-                    {isExpanded ? "Hide" : "Explore"} climate details
-                </div>
-                <div {...getCollapseProps()}>
-                    <div className="content">
-                        <h1>Climate details</h1>
-                        <p>
-                            The graph below shows the future climate change expected in&nbsp;
-                            <span className={"projected-regions"}>{andify(regions.map((e) => e.name))}</span>
-                            &nbsp;under&nbsp;
-                            <select
-                                value={rcp}
-                                onChange={(e) => {
-                                    setRcp(e.target.value);
-                                }}
-                            >
-                                <option value="rcp60">existing global policies</option>
-                                <option value="rcp85">worst case scenario</option>
-                            </select>
-                            &nbsp;
-                            {rcp == "rcp60" && (
-                                <span>(equivalent to global warming level of 2.0-3.7C which is RCP 6.0)</span>
-                            )}
-                            {rcp == "rcp85" && (
-                                <span>(equivalent to global warming level of 3.2-5.4C which is RCP 8.5)</span>
-                            )}
-                            ,&nbsp;and shows the&nbsp;
-                            <select
-                                value={season}
-                                onChange={(e) => {
-                                    setSeason(e.target.value);
-                                }}
-                            >
-                                <option value="annual">yearly</option>
-                                <option value="summer">summer</option>
-                                <option value="winter">winter</option>
-                            </select>
-                            &nbsp;averages for&nbsp;
-                            <select
-                                onChange={(e) => {
-                                    setVariable(e.target.value);
-                                }}
-                            >
-                                <option value="tas">temperature</option>
-                                <option value="pr">rain</option>
-                                <option value="sfcWind">wind</option>
-                                <option value="rsds">cloudiness</option>
-                            </select>
-                            &nbsp;for&nbsp;
-                            <select
-                                onChange={(e) => {
-                                    setShowAverage(e.target.value === "1");
-                                }}
-                            >
-                                <option value="0">your selected areas only</option>
-                                <option value="1">your areas vs the UK</option>
-                            </select>
-                        </p>
-                        {showAverage && (
+        <LoadingOverlay active={loading} spinner text="Loading climate data">
+            <div>
+                <div className="collapsible">
+                    <div className="header" style={{ margin: "1em" }} {...getToggleProps({ onClick: handleOnClick })}>
+                        {isExpanded ? "Hide" : "Explore"} climate details
+                    </div>
+                    <div {...getCollapseProps()}>
+                        <div className="content">
+                            <h1>Climate details</h1>
                             <p>
-                                Key: <span className="key-regional">Your area</span>{" "}
-                                <span className="key-average">UK average</span>
-                            </p>
-                        )}
-
-                        <div className="graph-horiz-container">
-                            {/* <div className="graph-y-axis">{getYAxis()}</div> */}
-                            <FlexibleXYPlot
-                                height={margin.height}
-                                margin={{ bottom: margin.bottom, left: margin.left, right: 0, top: 10 }}
-                                xType="ordinal"
-                            >
-                                <ChartLabel
-                                    text="Decades"
-                                    className="graph-axes-label"
-                                    includeMargin={false}
-                                    xPercent={0.45}
-                                    yPercent={1.3}
-                                />
-                                <ChartLabel
-                                    text={getYAxis()}
-                                    className="graph-axes-label"
-                                    includeMargin={false}
-                                    xPercent={-0.07}
-                                    yPercent={0.25}
-                                    style={{
-                                        transform: "rotate(-90)",
-                                        textAnchor: "end",
+                                The graph below shows the future climate change expected in&nbsp;
+                                <span className={"projected-regions"}>{andify(regions.map((e) => e.name))}</span>
+                                &nbsp;under&nbsp;
+                                <select
+                                    value={rcp}
+                                    onChange={(e) => {
+                                        setRcp(e.target.value);
                                     }}
-                                />
-                                <XAxis />
-                                <YAxis />
-                                <VerticalBarSeries color={selectedRegionCol} data={data} />
-                                <LabelSeries
-                                    data={labelData}
-                                    labelAnchorX={showAverage ? "end" : "middle"}
-                                    getLabel={(d) => getLabel(d.y)}
-                                />
-                                {showAverage && <VerticalBarSeries color={averageRegionCol} data={avg} />}
-                                {showAverage && (
+                                >
+                                    <option value="rcp60">existing global policies</option>
+                                    <option value="rcp85">worst case scenario</option>
+                                </select>
+                                &nbsp;
+                                {rcp == "rcp60" && (
+                                    <span>(equivalent to global warming level of 2.0-3.7C which is RCP 6.0)</span>
+                                )}
+                                {rcp == "rcp85" && (
+                                    <span>(equivalent to global warming level of 3.2-5.4C which is RCP 8.5)</span>
+                                )}
+                                ,&nbsp;and shows the&nbsp;
+                                <select
+                                    value={season}
+                                    onChange={(e) => {
+                                        setSeason(e.target.value);
+                                    }}
+                                >
+                                    <option value="annual">yearly</option>
+                                    <option value="summer">summer</option>
+                                    <option value="winter">winter</option>
+                                </select>
+                                &nbsp;averages for&nbsp;
+                                <select
+                                    onChange={(e) => {
+                                        setVariable(e.target.value);
+                                    }}
+                                >
+                                    <option value="tas">temperature</option>
+                                    <option value="pr">rain</option>
+                                    <option value="sfcWind">wind</option>
+                                    <option value="rsds">cloudiness</option>
+                                </select>
+                                &nbsp;for&nbsp;
+                                <select
+                                    onChange={(e) => {
+                                        setShowAverage(e.target.value === "1");
+                                    }}
+                                >
+                                    <option value="0">your selected areas only</option>
+                                    <option value="1">your areas vs the UK</option>
+                                </select>
+                            </p>
+                            {showAverage && (
+                                <p>
+                                    Key: <span className="key-regional">Your area</span>{" "}
+                                    <span className="key-average">UK average</span>
+                                </p>
+                            )}
+
+                            <div className="graph-horiz-container">
+                                {/* <div className="graph-y-axis">{getYAxis()}</div> */}
+                                <FlexibleXYPlot
+                                    height={margin.height}
+                                    margin={{ bottom: margin.bottom, left: margin.left, right: 0, top: 10 }}
+                                    xType="ordinal"
+                                >
+                                    <ChartLabel
+                                        text="Decades"
+                                        className="graph-axes-label"
+                                        includeMargin={false}
+                                        xPercent={0.45}
+                                        yPercent={1.3}
+                                    />
+                                    <ChartLabel
+                                        text={getYAxis()}
+                                        className="graph-axes-label"
+                                        includeMargin={false}
+                                        xPercent={-0.07}
+                                        yPercent={0.25}
+                                        style={{
+                                            transform: "rotate(-90)",
+                                            textAnchor: "end",
+                                        }}
+                                    />
+                                    <XAxis />
+                                    <YAxis />
+                                    <VerticalBarSeries color={selectedRegionCol} data={data} />
                                     <LabelSeries
-                                        data={avgLabel}
-                                        labelAnchorX={"right"}
+                                        data={labelData}
+                                        labelAnchorX={showAverage ? "end" : "middle"}
                                         getLabel={(d) => getLabel(d.y)}
                                     />
-                                )}
-                            </FlexibleXYPlot>
+                                    {showAverage && <VerticalBarSeries color={averageRegionCol} data={avg} />}
+                                    {showAverage && (
+                                        <LabelSeries
+                                            data={avgLabel}
+                                            labelAnchorX={"right"}
+                                            getLabel={(d) => getLabel(d.y)}
+                                        />
+                                    )}
+                                </FlexibleXYPlot>
+                            </div>
+                            {/* <div className="graph-x-axis">Decades</div> */}
                         </div>
-                        {/* <div className="graph-x-axis">Decades</div> */}
                     </div>
                 </div>
+                <p className="note">
+                    Data source: The current iteration of the tool uses climate data from the{" "}
+                    <a
+                        href="https://catalogue.ceda.ac.uk/uuid/8194b416cbee482b89e0dfbe17c5786c"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        CHESS-SCAPE
+                    </a>{" "}
+                    dataset. CHESS-SCAPE provides bias-corrected data for England, Scotland, Wales, and the Isle of Man.
+                    CHESS-SCAPE provides non bias-corrected data for Northern Ireland and the Isles of Scilly. The tool
+                    displays RCP 6.0 and RCP 8.5. For more information, please see the{" "}
+                    <a
+                        href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Autumn-24.pdf"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        LCAT User Guide.
+                    </a>
+                </p>
             </div>
-            <p className="note">
-                Data source: The current iteration of the tool uses climate data from the{" "}
-                <a
-                    href="https://catalogue.ceda.ac.uk/uuid/8194b416cbee482b89e0dfbe17c5786c"
-                    target="_blank"
-                    rel="noreferrer"
-                >
-                    CHESS-SCAPE
-                </a>{" "}
-                dataset. CHESS-SCAPE provides bias-corrected data for England, Scotland, Wales, and the Isle of Man.
-                CHESS-SCAPE provides non bias-corrected data for Northern Ireland and the Isles of Scilly. The tool
-                displays RCP 6.0 and RCP 8.5. For more information, please see the{" "}
-                <a
-                    href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Autumn-24.pdf"
-                    target="_blank"
-                    rel="noreferrer"
-                >
-                    LCAT User Guide.
-                </a>
-            </p>
-        </div>
+        </LoadingOverlay>
     );
 };
 

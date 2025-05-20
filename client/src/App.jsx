@@ -12,7 +12,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./App.css";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import StaticAdaptations from "./components/adaptations/StaticAdaptations";
 import ClimateHazardRisk from "./components/climateHazard/ClimateHazardRisk";
@@ -44,6 +44,17 @@ const App = () => {
     const [isPredictionLoading, setIsPredictionLoading] = useState(defaultState.isPredictionLoading);
     const [selectedHazardName, setSelectedHazardName] = useState(defaultState.selectedHazardName);
     const [applyCoastalFilter, setApplyCoastalFilter] = useState(defaultState.applyCoastalFilter);
+
+    useEffect(() => {
+        if (regions.length === 0) {
+            setSeason(defaultState.season);
+            setRcp(defaultState.rcp);
+            setVariable(defaultState.variable);
+            setClimatePrediction(defaultState.climatePrediction)
+            setSelectedHazardName(defaultState.selectedHazardName)
+            setApplyCoastalFilter(defaultState.applyCoastalFilter)
+        }
+    }, [regions]);
 
     return (
         <div className="App">
