@@ -88,8 +88,6 @@ const Graph = (props) => {
         return v.toFixed(2);
     };
 
-    console.log(climatePrediction);
-
     useEffect(() => {
         if (climatePrediction.length === 0 || climatePrediction[0][`${variable}_1980_mean`] == null) return;
 
