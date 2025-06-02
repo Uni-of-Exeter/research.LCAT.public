@@ -13,7 +13,7 @@ Common Good Public License Beta 1.0 for more details. */
 import "../../../node_modules/react-vis/dist/style.css";
 import "./Graph.css";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useCollapse } from "react-collapsed";
 import LoadingOverlay from "react-loading-overlay-ts";
 import { ChartLabel, LabelSeries, makeWidthFlexible, VerticalBarSeries, XAxis, XYPlot, YAxis } from "react-vis";
@@ -263,11 +263,11 @@ const Graph = (props) => {
                 CHESS-SCAPE provides non bias-corrected data for Northern Ireland and the Isles of Scilly. The tool
                 displays RCP 6.0 and RCP 8.5. For more information, please see the{" "}
                 <a
-                    href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Autumn-24.pdf"
+                    href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE-June-2025-update.pdf"
                     target="_blank"
                     rel="noreferrer"
                 >
-                    LCAT User Guide.
+                    LCAT Handbook.
                 </a>
             </p>
         </div>
