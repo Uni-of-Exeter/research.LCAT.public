@@ -16,14 +16,14 @@ import AdaptationGuide from "./AdaptationGuide";
 import ContactUs from "./ContactUs";
 import FooterLogos from "./FooterLogos";
 import FooterText from "./FooterText";
-import UserGuide from "./UserGuide";
+import Handbook from "./Handbook";
 
 const Footer = () => {
     return (
         <div>
             <div className="contact-footer">
                 <ContactUs />
-                <UserGuide />
+                <Handbook />
                 <AdaptationGuide />
             </div>
             <FooterLogos />
