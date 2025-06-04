@@ -12,7 +12,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./App.css";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import StaticAdaptations from "./components/adaptations/StaticAdaptations";
 import ClimateHazardRisk from "./components/climateHazard/ClimateHazardRisk";
@@ -117,6 +117,7 @@ const App = () => {
                         setSeason={setSeason}
                         setRcp={setRcp}
                         climatePrediction={climatePrediction}
+                        loading={isPredictionLoading}
                         climateAverages={climateAverages}
                         variable={variable}
                         setVariable={setVariable}
