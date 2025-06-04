@@ -18,7 +18,6 @@ import { useCollapse } from "react-collapsed";
 import LoadingOverlay from "react-loading-overlay-ts";
 import { ChartLabel, LabelSeries, makeWidthFlexible, VerticalBarSeries, XAxis, XYPlot, YAxis } from "react-vis";
 
-import { climateAverages } from "../../core/climate";
 import { andify } from "../../utils/utils";
 
 const FlexibleXYPlot = makeWidthFlexible(XYPlot);
@@ -28,7 +27,8 @@ const selectedRegionCol = "#216331";
 const averageRegionCol = "#48b961";
 
 const Graph = (props) => {
-    const { regions, season, rcp, setSeason, setRcp, loading, climatePrediction, variable, setVariable } = props;
+    const { regions, season, rcp, setSeason, setRcp, loading, climatePrediction, climateAverages, variable, setVariable } =
+        props;
 
     const [data, setData] = useState([]);
     const [avg, setAvg] = useState([]);
@@ -90,40 +90,38 @@ const Graph = (props) => {
     };
 
     useEffect(() => {
-        if (climatePrediction.length > 0) {
-            let out = [];
-            let label = [];
-            let av = [];
-            let avlabel = [];
-            if (climatePrediction[0][variable + "_1980_mean"] != null) {
-                for (let year of [1980, 2030, 2040, 2050, 2060, 2070]) {
-                    let label_year = "" + year;
-                    let v = variable;
-                    let avkey = "chess_scape_" + rcp + "_" + season + "_" + v + "_" + year;
-                    if (year == 1980) label_year = "1980 baseline";
+        if (climatePrediction.length === 0 || climatePrediction[0][`${variable}_1980_mean`] == null) return;
 
-                    let offset = 0;
-                    if (showAverage) offset = 2;
+        const years = [1980, 2030, 2040, 2050, 2060, 2070];
+        const offset = showAverage ? 2 : 0;
 
-                    out.push({ x: label_year, y: climatePrediction[0][variable + "_" + year + "_mean"] });
-                    label.push({
-                        x: label_year,
-                        y: climatePrediction[0][variable + "_" + year + "_mean"],
-                        xOffset: -offset,
-                    });
+        const out = years.map((year) => {
+            const labelYear = year === 1980 ? "1980 baseline" : `${year}`;
+            const meanValue = climatePrediction[0][`${variable}_${year}_mean`];
 
-                    av.push({ x: label_year, y: climateAverages[avkey] });
-                    avlabel.push({ x: label_year, y: climateAverages[avkey], xOffset: offset });
-                }
-                setAvg(av);
-                setAvgLabel(avlabel);
-                setData(out);
-                setLabelData(label);
-            }
+            return { x: labelYear, y: meanValue };
+        });
+
+        const label = out.map(({ x, y }) => ({ x, y, xOffset: -offset }));
+
+        const av = years.map((year) => ({ x: year === 1980 ? "1980 baseline" : `${year}`, y: climateAverages[year] }));
+        const avlabel = av.map(({ x, y }) => ({ x, y, xOffset: offset }));
+
+        setAvg(av);
+        setAvgLabel(avlabel);
+        setData(out);
+        setLabelData(label);
+    }, [climatePrediction, rcp, season, showAverage, variable, climateAverages]);
+
+    useEffect(() => {
+        if (regions.length === 0) {
+            setExpanded(false);
+            setAvg([]);
+            setAvgLabel([]);
+            setData([]);
+            setLabelData([]);
         }
-    }, [climatePrediction, rcp, season, showAverage, variable]);
-
-    useEffect(() => setExpanded(false), [regions]);
+    }, [regions]);
 
     const handleOnClick = () => {
         setExpanded(!isExpanded);

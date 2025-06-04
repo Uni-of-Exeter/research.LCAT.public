@@ -3,6 +3,7 @@ export const defaultState = {
     allRegions: [],
     regionType: "boundary_uk_counties",
     climatePrediction: [],
+    climateAverages: {},
     season: "annual",
     rcp: "rcp60",
     year: 2070,
