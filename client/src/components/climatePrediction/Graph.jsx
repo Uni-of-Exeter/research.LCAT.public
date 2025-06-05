@@ -126,11 +126,13 @@ const Graph = (props) => {
     {
       x: xValues,
       y: yValues,
-      type: "bar",
+      type: "scatter",
+      mode: "lines+markers",
       name: "Your area",
       marker: { color: selectedRegionCol },
+      line: { color: selectedRegionCol, width: 3 },
       text: labelData.map((d) => d.labelText),
-      textposition: "auto",
+      textposition: "top center",
     },
   ];
 
@@ -138,17 +140,19 @@ const Graph = (props) => {
     traces.push({
       x: xValues,
       y: avgY,
-      type: "bar",
+      type: "scatter",
+      mode: "lines+markers",
       name: "UK average",
       marker: { color: averageRegionCol },
+      line: { color: averageRegionCol, width: 3, dash: "dash" },
       text: avgLabel.map((d) => d.labelText),
-      textposition: "auto",
+      textposition: "top center",
     });
   }
 
   // Layout with dynamic margins & axis labels
   const layout = {
-    barmode: showAverage ? "group" : "overlay",
+    // Remove barmode for line chart
     margin: { l: 60, r: 20, b: 60, t: 10 },
     xaxis: {
       title: { text: "Decades", font: { size: 18 } },
@@ -160,7 +164,7 @@ const Graph = (props) => {
       automargin: true,
       tickfont: { size: 18 },
     },
-    font: { size: 18 }, // general font size for values, legend, etc
+    font: { size: 18 },
     height: 400, // fixed height for consistent appearance
     width: containerWidth, // let Plotly fill the container width
     paper_bgcolor: "rgba(0,0,0,0)", // transparent background
