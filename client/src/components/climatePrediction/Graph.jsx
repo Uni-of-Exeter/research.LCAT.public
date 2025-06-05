@@ -28,13 +28,13 @@ const Graph = (props) => {
 
     const [data, setData] = useState([]);
     const [avg, setAvg] = useState([]);
-    const [labelData, setLabelData] = useState([]);
-    const [avgLabel, setAvgLabel] = useState([]);
     const [showAverage, setShowAverage] = useState(false);
     const [isExpanded, setExpanded] = useState(false);
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
     const graphContainerRef = useRef(null);
     const [containerWidth, setContainerWidth] = useState(undefined);
+    const [avgMin, setAvgMin] = useState([]);
+    const [avgMax, setAvgMax] = useState([]);
 
     useEffect(() => {
         if (!graphContainerRef.current) return;
@@ -67,44 +67,32 @@ const Graph = (props) => {
     };
 
     useEffect(() => {
-        if (climatePrediction.length === 0 || climatePrediction[0][`${variable}_1980_mean`] == null) return;
+        if (climatePrediction.length === 0 || !climatePrediction[0][`${variable}_1980_mean`]) return;
 
         const years = [1980, 2030, 2040, 2050, 2060, 2070];
-        const offset = showAverage ? 2 : 0;
 
-        const out = years.map((year) => {
-            const labelYear = year === 1980 ? "1980 baseline" : `${year}`;
-            const meanValue = climatePrediction[0][`${variable}_${year}_mean`];
-
-            return { x: labelYear, y: meanValue };
-        });
-
-        const label = out.map(({ x, y }) => ({
-            x,
-            y,
-            labelText: getLabel(y),
+        const data = years.map((year) => ({
+            x: year === 1980 ? "1980 baseline" : `${year}`,
+            y: climatePrediction[0]?.[`${variable}_${year}_mean`] ?? null,
+            min: climatePrediction[0]?.[`${variable}_${year}_min`] ?? null,
+            max: climatePrediction[0]?.[`${variable}_${year}_max`] ?? null,
         }));
 
-        const av = years.map((year) => ({ x: year === 1980 ? "1980 baseline" : `${year}`, y: climateAverages[year] }));
-        const avlabel = av.map(({ x, y }) => ({
-            x,
-            y,
-            labelText: getLabel(y),
-        }));
+        const av = years.map((year) => ({ x: year === 1980 ? "1980 baseline" : `${year}`, y: climateAverages[year]?.mean ?? null }));
+        const avMin = years.map((year) => climateAverages[year]?.min ?? null);
+        const avMax = years.map((year) => climateAverages[year]?.max ?? null);
 
         setAvg(av);
-        setAvgLabel(avlabel);
-        setData(out);
-        setLabelData(label);
+        setData(data);
+        setAvgMin(avMin);
+        setAvgMax(avMax);
     }, [climatePrediction, rcp, season, showAverage, variable, climateAverages]);
 
     useEffect(() => {
         if (regions.length === 0) {
             setExpanded(false);
             setAvg([]);
-            setAvgLabel([]);
             setData([]);
-            setLabelData([]);
         }
     }, [regions]);
 
@@ -119,6 +107,8 @@ const Graph = (props) => {
       // Extract arrays for Plotly
   const xValues = data.map((d) => d.x);
   const yValues = data.map((d) => d.y);
+  const minY = data.map((d) => d.min);
+  const maxY = data.map((d) => d.max);
   const avgY = avg.map((d) => d.y);
 
   // Build traces
@@ -128,13 +118,42 @@ const Graph = (props) => {
       y: yValues,
       type: "scatter",
       mode: "lines+markers",
-      name: "Your area",
+      name: "Your area (mean)",
       marker: { color: selectedRegionCol },
       line: { color: selectedRegionCol, width: 3 },
-      text: labelData.map((d) => d.labelText),
       textposition: "top center",
     },
   ];
+
+  // Add min/max lines if any data present
+  if (minY.some((v) => v !== null)) {
+    traces.push({
+      x: xValues,
+      y: minY,
+      type: "scatter",
+      mode: "lines+markers",
+      name: "Your area (min)",
+      marker: { color: selectedRegionCol, symbol: "circle-open" },
+      line: { color: selectedRegionCol, width: 2, dash: "dot" },
+      opacity: 0.5,
+      hoverinfo: "y",
+      showlegend: true,
+    });
+  }
+  if (maxY.some((v) => v !== null)) {
+    traces.push({
+      x: xValues,
+      y: maxY,
+      type: "scatter",
+      mode: "lines+markers",
+      name: "Your area (max)",
+      marker: { color: selectedRegionCol, symbol: "circle-open" },
+      line: { color: selectedRegionCol, width: 2, dash: "dot" },
+      opacity: 0.5,
+      hoverinfo: "y",
+      showlegend: true,
+    });
+  }
 
   if (showAverage) {
     traces.push({
@@ -142,17 +161,45 @@ const Graph = (props) => {
       y: avgY,
       type: "scatter",
       mode: "lines+markers",
-      name: "UK average",
+      name: "UK average (mean)",
       marker: { color: averageRegionCol },
       line: { color: averageRegionCol, width: 3, dash: "dash" },
-      text: avgLabel.map((d) => d.labelText),
       textposition: "top center",
     });
+
+    // Add UK average min/max if present
+    if (showAverage && avgMin.length && avgMin.some((v) => v !== null)) {
+      traces.push({
+        x: xValues,
+        y: avgMin,
+        type: "scatter",
+        mode: "lines+markers",
+        name: "UK average (min)",
+        marker: { color: averageRegionCol, symbol: "circle-open" },
+        line: { color: averageRegionCol, width: 2, dash: "dot" },
+        opacity: 0.5,
+        hoverinfo: "y",
+        showlegend: true,
+      });
+    }
+    if (showAverage && avgMax.length && avgMax.some((v) => v !== null)) {
+      traces.push({
+        x: xValues,
+        y: avgMax,
+        type: "scatter",
+        mode: "lines+markers",
+        name: "UK average (max)",
+        marker: { color: averageRegionCol, symbol: "circle-open" },
+        line: { color: averageRegionCol, width: 2, dash: "dot" },
+        opacity: 0.5,
+        hoverinfo: "y",
+        showlegend: true,
+      });
+    }
   }
 
   // Layout with dynamic margins & axis labels
   const layout = {
-    // Remove barmode for line chart
     margin: { l: 60, r: 20, b: 60, t: 10 },
     xaxis: {
       title: { text: "Decades", font: { size: 18 } },
