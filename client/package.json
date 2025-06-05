@@ -15,12 +15,13 @@
     "dependencies": {
         "colormap": "^2.3.2",
         "leaflet": "^1.9.4",
+        "plotly.js": "^3.0.1",
         "react": "^18.2.0",
         "react-collapsed": "^4.1.2",
         "react-dom": "^18.2.0",
         "react-leaflet": "^4.2.1",
         "react-loading-overlay-ts": "^2.0.2",
-        "react-vis": "^1.12.1",
+        "react-plotly.js": "^2.6.0",
         "semantic-release": "^24.0.0",
         "vite-plugin-commonjs": "^0.10.1",
         "vite-plugin-svgr": "^4.2.0"

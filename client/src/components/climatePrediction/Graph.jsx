@@ -10,17 +10,13 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
-import "../../../node_modules/react-vis/dist/style.css";
-import "./Graph.css";
-
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCollapse } from "react-collapsed";
 import LoadingOverlay from "react-loading-overlay-ts";
-import { ChartLabel, LabelSeries, makeWidthFlexible, VerticalBarSeries, XAxis, XYPlot, YAxis } from "react-vis";
+import Plot from "react-plotly.js";
 
 import { andify } from "../../utils/utils";
 
-const FlexibleXYPlot = makeWidthFlexible(XYPlot);
 const winterCol = "#a4f9c8";
 const summerCol = "#4c9f70";
 const selectedRegionCol = "#216331";
@@ -35,43 +31,24 @@ const Graph = (props) => {
     const [labelData, setLabelData] = useState([]);
     const [avgLabel, setAvgLabel] = useState([]);
     const [showAverage, setShowAverage] = useState(false);
-    const [margin, setMargin] = useState({
-        bottom: undefined,
-        left: undefined,
-        height: 300,
-    });
-
     const [isExpanded, setExpanded] = useState(false);
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
+    const graphContainerRef = useRef(null);
+    const [containerWidth, setContainerWidth] = useState(undefined);
 
     useEffect(() => {
-        function handleResize() {
-            // ridiculous (fix, and that margins are defined in pixels)
-            if (window.innerWidth < 700) {
-                setMargin({
-                    bottom: 30,
-                    left: 50,
-                    height: 300,
-                });
-            } else {
-                if (window.innerWidth > 1300) {
-                    setMargin({
-                        bottom: 200,
-                        left: 200,
-                        height: 700,
-                    });
-                } else {
-                    setMargin({
-                        bottom: 100,
-                        left: 100,
-                        height: 450,
-                    });
+        if (!graphContainerRef.current) return;
+        const observer = new window.ResizeObserver((entries) => {
+            for (let entry of entries) {
+                if (entry.contentRect) {
+                    setContainerWidth(entry.contentRect.width);
                 }
             }
-        }
-
-        window.addEventListener("resize", handleResize);
-        handleResize();
+        });
+        observer.observe(graphContainerRef.current);
+        // Set initial width
+        setContainerWidth(graphContainerRef.current.offsetWidth);
+        return () => observer.disconnect();
     }, []);
 
     const getYAxis = () => {
@@ -102,10 +79,18 @@ const Graph = (props) => {
             return { x: labelYear, y: meanValue };
         });
 
-        const label = out.map(({ x, y }) => ({ x, y, xOffset: -offset }));
+        const label = out.map(({ x, y }) => ({
+            x,
+            y,
+            labelText: getLabel(y),
+        }));
 
         const av = years.map((year) => ({ x: year === 1980 ? "1980 baseline" : `${year}`, y: climateAverages[year] }));
-        const avlabel = av.map(({ x, y }) => ({ x, y, xOffset: offset }));
+        const avlabel = av.map(({ x, y }) => ({
+            x,
+            y,
+            labelText: getLabel(y),
+        }));
 
         setAvg(av);
         setAvgLabel(avlabel);
@@ -130,6 +115,62 @@ const Graph = (props) => {
     if (regions.length === 0) {
         return null;
     }
+
+      // Extract arrays for Plotly
+  const xValues = data.map((d) => d.x);
+  const yValues = data.map((d) => d.y);
+  const avgY = avg.map((d) => d.y);
+
+  // Build traces
+  const traces = [
+    {
+      x: xValues,
+      y: yValues,
+      type: "bar",
+      name: "Your area",
+      marker: { color: selectedRegionCol },
+      text: labelData.map((d) => d.labelText),
+      textposition: "auto",
+    },
+  ];
+
+  if (showAverage) {
+    traces.push({
+      x: xValues,
+      y: avgY,
+      type: "bar",
+      name: "UK average",
+      marker: { color: averageRegionCol },
+      text: avgLabel.map((d) => d.labelText),
+      textposition: "auto",
+    });
+  }
+
+  // Layout with dynamic margins & axis labels
+  const layout = {
+    barmode: showAverage ? "group" : "overlay",
+    margin: { l: 60, r: 20, b: 60, t: 10 },
+    xaxis: {
+      title: { text: "Decades", font: { size: 18 } },
+      type: "category",
+      tickfont: { size: 18 },
+    },
+    yaxis: {
+      title: { text: getYAxis(), font: { size: 18 } },
+      automargin: true,
+      tickfont: { size: 18 },
+    },
+    font: { size: 18 }, // general font size for values, legend, etc
+    height: 400, // fixed height for consistent appearance
+    width: containerWidth, // let Plotly fill the container width
+    paper_bgcolor: "rgba(0,0,0,0)", // transparent background
+    plot_bgcolor: "rgba(0,0,0,0)",  // transparent plot area
+  };
+
+  const config = {
+    responsive: true,
+    displayModeBar: false,
+  };
 
     return (
         <div>
@@ -193,57 +234,14 @@ const Graph = (props) => {
                                     <option value="1">your areas vs the UK</option>
                                 </select>
                             </p>
-                            {showAverage && (
-                                <p>
-                                    Key: <span className="key-regional">Your area</span>{" "}
-                                    <span className="key-average">UK average</span>
-                                </p>
-                            )}
-
-                            <div className="graph-horiz-container">
-                                {/* <div className="graph-y-axis">{getYAxis()}</div> */}
-                                <FlexibleXYPlot
-                                    height={margin.height}
-                                    margin={{ bottom: margin.bottom, left: margin.left, right: 0, top: 10 }}
-                                    xType="ordinal"
-                                >
-                                    <ChartLabel
-                                        text="Decades"
-                                        className="graph-axes-label"
-                                        includeMargin={false}
-                                        xPercent={0.45}
-                                        yPercent={1.3}
-                                    />
-                                    <ChartLabel
-                                        text={getYAxis()}
-                                        className="graph-axes-label"
-                                        includeMargin={false}
-                                        xPercent={-0.07}
-                                        yPercent={0.25}
-                                        style={{
-                                            transform: "rotate(-90)",
-                                            textAnchor: "end",
-                                        }}
-                                    />
-                                    <XAxis />
-                                    <YAxis />
-                                    <VerticalBarSeries color={selectedRegionCol} data={data} />
-                                    <LabelSeries
-                                        data={labelData}
-                                        labelAnchorX={showAverage ? "end" : "middle"}
-                                        getLabel={(d) => getLabel(d.y)}
-                                    />
-                                    {showAverage && <VerticalBarSeries color={averageRegionCol} data={avg} />}
-                                    {showAverage && (
-                                        <LabelSeries
-                                            data={avgLabel}
-                                            labelAnchorX={"right"}
-                                            getLabel={(d) => getLabel(d.y)}
-                                        />
-                                    )}
-                                </FlexibleXYPlot>
+                            <div className="graph-horiz-container" ref={graphContainerRef}>
+                <Plot
+                  data={traces}
+                  layout={layout}
+                  config={config}
+                  style={{ width: "100%" }}
+                />
                             </div>
-                            {/* <div className="graph-x-axis">Decades</div> */}
                         </div>
                     </LoadingOverlay>
                 </div>

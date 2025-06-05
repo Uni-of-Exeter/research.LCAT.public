@@ -39,8 +39,8 @@ jobs:
       - name: Setup Client
         run: |
           cd client
-          npm install --legacy-peer-deps
-          npm ci --legacy-peer-deps
+          npm install
+          npm ci
           echo Installed Client Packages on `date`
 
       - name: Run Semantic Versioning
