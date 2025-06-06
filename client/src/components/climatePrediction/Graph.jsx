@@ -264,7 +264,7 @@ const Graph = (props) => {
                                     <option value="summer">summer</option>
                                     <option value="winter">winter</option>
                                 </select>
-                                &nbsp;averages for&nbsp;
+                                &nbsp;minimum, maximum and average values for&nbsp;
                                 <select
                                     onChange={(e) => {
                                         setVariable(e.target.value);
