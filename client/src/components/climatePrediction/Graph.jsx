@@ -19,8 +19,11 @@ import { andify } from "../../utils/utils";
 
 const winterCol = "#a4f9c8";
 const summerCol = "#4c9f70";
-const selectedRegionCol = "#216331";
-const averageRegionCol = "#48b961";
+// Define graph colours
+const selectedRegionsLine = "rgba(33,99,49,1)";
+const selectedRegionsShade = "rgba(33,99,49,0.15)";
+const averageUKLine = getComputedStyle(document.documentElement).getPropertyValue('--color-button-hover').trim();
+const averageUKShade = "rgba(245,130,31,0.15)"; // averageUKLine with 15% opacity
 
 const Graph = (props) => {
     const { regions, season, rcp, setSeason, setRcp, loading, climatePrediction, climateAverages, variable, setVariable } =
@@ -56,14 +59,6 @@ const Graph = (props) => {
         if (variable == "pr") return "Rainfall (mm/day)";
         if (variable == "sfcWind") return "Wind (m/s)";
         return "Cloudiness (W/m²)";
-    };
-
-    const getLabel = (v) => {
-        /*if (variable=="tas") return v.toFixed(2)+'°C';
-        if (variable=="pr") return v.toFixed(2)+' mm/day';
-        if (variable=="sfcWind") return v.toFixed(2)+' m/s';
-        return v.toFixed(2)+' W/m²';*/
-        return v.toFixed(2);
     };
 
     useEffect(() => {
@@ -111,91 +106,144 @@ const Graph = (props) => {
   const maxY = data.map((d) => d.max);
   const avgY = avg.map((d) => d.y);
 
-  // Build traces
   const traces = [
+    // Max line
+    {
+      x: xValues,
+      y: maxY,
+      type: "scatter",
+      mode: "lines+markers",
+      name: "Your areas (max)",
+      marker: { color: selectedRegionsLine, symbol: "circle-open" },
+      line: { color: selectedRegionsLine, width: 2, dash: "dot" },
+      opacity: 0.5,
+      hoverinfo: "y",
+      legendgroup: "your-areas-max",
+      showlegend: true,
+    },
+    // Shading between mean and max (linked to max line)
+    {
+      x: [...xValues, ...xValues.slice().reverse()],
+      y: [...yValues, ...maxY.slice().reverse()],
+      fill: "toself",
+      fillcolor: selectedRegionsShade,
+      line: { color: "rgba(0,0,0,0)" },
+      hoverinfo: "skip",
+      name: "Your areas (mean-max range)",
+      showlegend: false,
+      legendgroup: "your-areas-max",
+      visible: true,
+    },
+    // Mean line
     {
       x: xValues,
       y: yValues,
       type: "scatter",
       mode: "lines+markers",
-      name: "Your area (mean)",
-      marker: { color: selectedRegionCol },
-      line: { color: selectedRegionCol, width: 3 },
+      name: "Your areas (mean)",
+      marker: { color: selectedRegionsLine },
+      line: { color: selectedRegionsLine, width: 3 },
+      legendgroup: "your-areas-mean",
       textposition: "top center",
+      showlegend: true,
     },
-  ];
-
-  // Add min/max lines if any data present
-  if (minY.some((v) => v !== null)) {
-    traces.push({
+    // Shading between min and mean (linked to min line)
+    {
+      x: [...xValues, ...xValues.slice().reverse()],
+      y: [...minY, ...yValues.slice().reverse()],
+      fill: "toself",
+      fillcolor: selectedRegionsShade,
+      line: { color: "rgba(0,0,0,0)" },
+      hoverinfo: "skip",
+      name: "Your areas (min-mean range)",
+      showlegend: false,
+      legendgroup: "your-areas-min",
+      visible: true,
+    },
+    // Min line
+    {
       x: xValues,
       y: minY,
       type: "scatter",
       mode: "lines+markers",
-      name: "Your area (min)",
-      marker: { color: selectedRegionCol, symbol: "circle-open" },
-      line: { color: selectedRegionCol, width: 2, dash: "dot" },
+      name: "Your areas (min)",
+      marker: { color: selectedRegionsLine, symbol: "circle-open" },
+      line: { color: selectedRegionsLine, width: 2, dash: "dot" },
       opacity: 0.5,
       hoverinfo: "y",
+      legendgroup: "your-areas-min",
       showlegend: true,
-    });
-  }
-  if (maxY.some((v) => v !== null)) {
-    traces.push({
-      x: xValues,
-      y: maxY,
-      type: "scatter",
-      mode: "lines+markers",
-      name: "Your area (max)",
-      marker: { color: selectedRegionCol, symbol: "circle-open" },
-      line: { color: selectedRegionCol, width: 2, dash: "dot" },
-      opacity: 0.5,
-      hoverinfo: "y",
-      showlegend: true,
-    });
-  }
+    },
+  ];
 
   if (showAverage) {
+    // UK max line
+    traces.push({
+      x: xValues,
+      y: avgMax,
+      type: "scatter",
+      mode: "lines+markers",
+      name: "UK average (max)",
+      marker: { color: averageUKLine, symbol: "circle-open" },
+      line: { color: averageUKLine, width: 2, dash: "dot" },
+      opacity: 0.5,
+      hoverinfo: "y",
+      legendgroup: "uk-average-max",
+      showlegend: true,
+    });
+    // Shading between UK mean and max (linked to max line)
+    traces.push({
+      x: [...xValues, ...xValues.slice().reverse()],
+      y: [...avgY, ...avgMax.slice().reverse()],
+      fill: "toself",
+      fillcolor: averageUKShade,
+      line: { color: "rgba(0,0,0,0)" },
+      hoverinfo: "skip",
+      name: "UK average (mean-max range)",
+      showlegend: false,
+      legendgroup: "uk-average-max",
+      visible: true,
+    });
+    // UK mean line
     traces.push({
       x: xValues,
       y: avgY,
       type: "scatter",
       mode: "lines+markers",
       name: "UK average (mean)",
-      marker: { color: averageRegionCol },
-      line: { color: averageRegionCol, width: 3, dash: "dash" },
+      marker: { color: averageUKLine },
+      line: { color: averageUKLine, width: 3, dash: "dash" },
+      legendgroup: "uk-average-mean",
       textposition: "top center",
+      showlegend: true,
     });
-
-    // Add UK average min/max if present
-    if (showAverage && avgMin.length && avgMin.some((v) => v !== null)) {
-      traces.push({
-        x: xValues,
-        y: avgMin,
-        type: "scatter",
-        mode: "lines+markers",
-        name: "UK average (min)",
-        marker: { color: averageRegionCol, symbol: "circle-open" },
-        line: { color: averageRegionCol, width: 2, dash: "dot" },
-        opacity: 0.5,
-        hoverinfo: "y",
-        showlegend: true,
-      });
-    }
-    if (showAverage && avgMax.length && avgMax.some((v) => v !== null)) {
-      traces.push({
-        x: xValues,
-        y: avgMax,
-        type: "scatter",
-        mode: "lines+markers",
-        name: "UK average (max)",
-        marker: { color: averageRegionCol, symbol: "circle-open" },
-        line: { color: averageRegionCol, width: 2, dash: "dot" },
-        opacity: 0.5,
-        hoverinfo: "y",
-        showlegend: true,
-      });
-    }
+    // Shading between UK min and mean (linked to min line)
+    traces.push({
+      x: [...xValues, ...xValues.slice().reverse()],
+      y: [...avgMin, ...avgY.slice().reverse()],
+      fill: "toself",
+      fillcolor: averageUKShade,
+      line: { color: "rgba(0,0,0,0)" },
+      hoverinfo: "skip",
+      name: "UK average (min-mean range)",
+      showlegend: false,
+      legendgroup: "uk-average-min",
+      visible: true,
+    });
+    // UK min line
+    traces.push({
+      x: xValues,
+      y: avgMin,
+      type: "scatter",
+      mode: "lines+markers",
+      name: "UK average (min)",
+      marker: { color: averageUKLine, symbol: "circle-open" },
+      line: { color: averageUKLine, width: 2, dash: "dot" },
+      opacity: 0.5,
+      hoverinfo: "y",
+      legendgroup: "uk-average-min",
+      showlegend: true,
+    });
   }
 
   // Layout with dynamic margins & axis labels
