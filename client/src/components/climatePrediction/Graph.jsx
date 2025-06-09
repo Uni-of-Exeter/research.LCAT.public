@@ -246,6 +246,14 @@ const Graph = (props) => {
     });
   }
 
+  // Temporary hardcoded y-axis ranges
+  const yAxisRanges = {
+    pr: [0, 35],
+    tas: [-5, 25],
+    sfcWind: [0, 16],
+    rsds: [0, 325],
+  };
+
   // Layout with dynamic margins & axis labels
   const layout = {
     margin: { l: 60, r: 20, b: 60, t: 10 },
@@ -258,6 +266,7 @@ const Graph = (props) => {
       title: { text: getYAxis(), font: { size: 18 } },
       automargin: true,
       tickfont: { size: 18 },
+      range: yAxisRanges[variable],
     },
     font: { size: 18 },
     height: 400, // fixed height for consistent appearance
