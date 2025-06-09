@@ -116,7 +116,7 @@
     flex-shrink: 0;
 }
 
-.climate-map-checkbox-list div:hover {
+.checkbox-row:hover {
     background-color: rgba(0, 123, 255, 0.1);
 }
 
