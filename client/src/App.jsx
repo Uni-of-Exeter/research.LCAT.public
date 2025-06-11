@@ -159,7 +159,6 @@ const App = () => {
                 <div className="grey-section">
                     <StaticAdaptations
                         selectedHazardName={selectedHazardName}
-                        setSelectedHazardName={setSelectedHazardName}
                         applyCoastalFilter={applyCoastalFilter}
                     />
                 </div>

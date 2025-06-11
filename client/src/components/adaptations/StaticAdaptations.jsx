@@ -11,38 +11,65 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
 import React, { useEffect, useState } from "react";
-import LoadingOverlay from "react-loading-overlay-ts";
 
 import adaptationData from "../../kumu/parsed/adaptation_data.json";
-import { defaultState } from "../../utils/defaultState";
 import { pathways } from "../climateImpacts/ClimateImpactSummaryData";
 import { adaptationFilters } from "./AdaptationCategories";
 import StaticAdaptation from "./StaticAdaptation";
 
 const StaticAdaptations = (props) => {
-    const { selectedHazardName, setSelectedHazardName, applyCoastalFilter } = props;
+    const { selectedHazardName, applyCoastalFilter } = props;
 
+    // Load filter options
     const defaultFilterName = adaptationFilters[0].filterName;
     const defaultFilterCategory = adaptationFilters[0].category;
-
     const [filterName, setFilterName] = useState(defaultFilterName);
     const [filterCategory, setFilterCategory] = useState(defaultFilterCategory);
-    const [loading, setLoading] = useState(false);
 
     // Filter pathways if coastal filter is applied
     const [filteredPathwayData, setFilteredPathwayData] = useState(pathways);
 
+    // Track array of selected hazards (controlled via buttons)
+    const [selectedHazards, setSelectedHazards] = useState([selectedHazardName]);
+
+    // Function for clicking on filter buttons: adding and removing hazards to array
+    const toggleHazardSelection = (hazardName) => {
+        setSelectedHazards((prev) => {
+            // Check to see if new hazardName is selected
+            const isSelected = prev.includes(hazardName);
+
+            // If hazardName is selected and removing it wont empty array, remove it
+            if (isSelected && prev.length > 1) {
+                return prev.filter((n) => n !== hazardName);
+            }
+
+            // If not selected, add it to array
+            if (!isSelected) {
+                return [...prev, hazardName];
+            }
+
+            // If selected and the only one do nothing
+            return prev;
+        });
+    };
+
+    // When coastal filter is applied, filter pathways and reset selectedHazards
     useEffect(() => {
         if (applyCoastalFilter) {
             setFilteredPathwayData(pathways.filter((pathway) => !pathway.isCoastal));
         } else {
             setFilteredPathwayData(pathways);
         }
-        setSelectedHazardName(defaultState.selectedHazardName);
-    }, [applyCoastalFilter, setSelectedHazardName]);
+        setSelectedHazards([selectedHazardName]);
+    }, [applyCoastalFilter, selectedHazardName]);
 
-    // Handle change in filter: set filterName and filterCategory when dropdown is used
-    const handleFilterChange = (e) => {
+    // When a new selectedHazardName is applied, reset the array of hazards
+    useEffect(() => {
+        setSelectedHazards([selectedHazardName]);
+    }, [selectedHazardName]);
+
+    // Handle button change: set filterName and filterCategory when dropdown is used
+    const handleDropdownChange = (e) => {
         const selectedFilterName = e.target.value;
         const selectedFilter = adaptationFilters.find((filter) => filter.filterName === selectedFilterName);
 
@@ -52,19 +79,21 @@ const StaticAdaptations = (props) => {
         }
     };
 
-    // Filter adaptations using filterName and filterCategory
+    // Filter adaptations based on the selectedHazards array and the filterName
     const filteredAdaptations = adaptationData.filter((adaptation) => {
-        const hazardName = selectedHazardName.toLowerCase();
         const layers = adaptation.attributes.layer.map((layer) => layer.toLowerCase());
         const adaptationCategories = adaptation.attributes[filterCategory] || [];
 
+        // First check that the adaptation contains every hazard in the array of selectedHazards
+        const matchesAllHazards = selectedHazards.every((hazard) =>
+            layers.some((layer) => layer.includes(hazard.toLowerCase() + " in full")),
+        );
+
+        // Then check if the adaptation category includes the category filter name
         if (filterName === defaultFilterName) {
-            return layers.some((layer) => layer.includes(hazardName + " in full"));
+            return matchesAllHazards;
         } else {
-            return (
-                layers.some((layer) => layer.includes(hazardName + " in full")) &&
-                adaptationCategories.includes(filterName)
-            );
+            return matchesAllHazards && adaptationCategories.includes(filterName);
         }
     });
 
@@ -73,37 +102,72 @@ const StaticAdaptations = (props) => {
     }
 
     return (
-        <LoadingOverlay active={loading} spinner text={"Loading adaptations"}>
+        <div>
             <h1>Adaptations</h1>
             <p>
                 Based on the expected climate change and resulting impacts in the UK, the following adaptations should
                 be considered. These adaptations were identified to reduce risk to humans and the environment while
-                providing co-benefits where possible. Use the dropdown options to view adaptations by climate impact
-                pathway, adaptation theme, and activity type.
+                providing co-benefits where possible. Use the icons to filter adaptations by climate impact pathway.
+                Further filtering by adaptation theme is also possible.
             </p>
-            <p>
-                <b className="static-adaptation-emphasis">Selected climate impact pathway: </b>
-                <select
-                    value={selectedHazardName}
-                    onChange={(e) => {
-                        setSelectedHazardName(e.target.value);
+            <div style={{ display: "flex", justifyContent: "center" }}>
+                <div
+                    style={{
+                        display: "flex",
+                        gap: "1rem",
+                        width: "90%",
+                        justifyContent: "space-between",
                     }}
                 >
                     {filteredPathwayData.map((pathway) => (
-                        <option value={pathway.name} key={pathway.id}>
-                            {pathway.name}
-                        </option>
+                        <button
+                            key={pathway.id}
+                            onClick={() => toggleHazardSelection(pathway.name)}
+                            style={{
+                                flex: "1",
+                                background: selectedHazards.includes(pathway.name) ? "#e6eced" : "white",
+                                border: "1px solid #ccc",
+                                borderRadius: "8px",
+                                padding: "0.5rem",
+                                cursor: "pointer",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                minWidth: "0",
+                            }}
+                        >
+                            <div style={{ fontSize: "48px" }}>{pathway.emoji}</div>
+                            <div style={{ fontSize: "12px" }}>{pathway.name}</div>
+                        </button>
                     ))}
-                </select>
-            </p>
+                </div>
+            </div>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+                <button
+                    onClick={() => setSelectedHazards([selectedHazardName])}
+                    style={{
+                        borderRadius: "8px",
+                        padding: "1rem",
+                        cursor: "pointer",
+                        flexDirection: "column",
+                        margin: "1em",
+                    }}
+                >
+                    <div style={{ fontSize: "12px" }}>Reset adaptation filters</div>
+                </button>
+            </div>
             <ul>
+                {filteredAdaptations.length > 0 && (
+                    <li>
+                        {filteredAdaptations.length} climate adaptation
+                        {filteredAdaptations.length === 1 ? " was" : "s were"} found
+                    </li>
+                )}
+
                 <li>
-                    {filteredAdaptations.length} climate adaptation
-                    {filteredAdaptations.length === 1 ? " was" : "s were"} found
-                </li>
-                <li>
-                    These adaptations can be filtered by theme:{"  "}
-                    <select value={filterName} onChange={handleFilterChange}>
+                    These adaptations can be filtered further by theme:{"  "}
+                    <select value={filterName} onChange={handleDropdownChange}>
                         {adaptationFilters.map((filter, index) => (
                             <option value={filter.filterName} key={index}>
                                 {filter.displayName}
@@ -124,7 +188,7 @@ const StaticAdaptations = (props) => {
                         );
                     })
                 ) : (
-                    <h3>No adaptations found</h3>
+                    <h3 style={{ textAlign: "center" }}>No adaptations found</h3>
                 )}
             </div>
 
@@ -132,7 +196,7 @@ const StaticAdaptations = (props) => {
                 Data source: The adaptation data is based on published scientific literature and reports. You can see
                 the references used by expanding each adaptation.
             </p>
-        </LoadingOverlay>
+        </div>
     );
 };
 
