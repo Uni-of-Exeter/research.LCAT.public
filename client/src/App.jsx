@@ -22,6 +22,7 @@ import ClimateMap from "./components/climateMap/ClimateMap";
 import ClimateSettings from "./components/climatePrediction/ClimateSettings";
 import ClimateSummary from "./components/climatePrediction/ClimateSummary";
 import Graph from "./components/climatePrediction/Graph";
+import CookieConsent from "./components/CookieConsent";
 import Footer from "./components/footer/Footer";
 import LCATHeader from "./components/header/Header";
 import Introduction from "./components/header/Introduction";
@@ -60,113 +61,116 @@ const App = () => {
     }, [regions]);
 
     return (
-        <div className="App">
-            <LCATHeader />
-            <Introduction />
+        <>
+            <div className="App">
+                <LCATHeader />
+                <Introduction />
 
-            <AllRegionLoader regionType={regionType} setAllRegions={setAllRegions} />
-            <IsCoastalLoader regionType={regionType} regions={regions} setApplyCoastalFilter={setApplyCoastalFilter} />
+                <AllRegionLoader regionType={regionType} setAllRegions={setAllRegions} />
+                <IsCoastalLoader regionType={regionType} regions={regions} setApplyCoastalFilter={setApplyCoastalFilter} />
 
-            <ClimatePredictionLoader
-                regions={regions}
-                season={season}
-                rcp={rcp}
-                regionType={regionType}
-                setClimatePrediction={setClimatePrediction}
-                setIsPredictionLoading={setIsPredictionLoading}
-            />
-
-            <ClimateAveragesLoader
-                rcp={rcp}
-                season={season}
-                variable={variable}
-                setClimateAverages={setClimateAverages}
-            />
-
-            <div className="white-section">
-                <ClimateMap
+                <ClimatePredictionLoader
                     regions={regions}
-                    setRegions={setRegions}
-                    allRegions={allRegions}
+                    season={season}
+                    rcp={rcp}
                     regionType={regionType}
-                    setRegionType={setRegionType}
+                    setClimatePrediction={setClimatePrediction}
+                    setIsPredictionLoading={setIsPredictionLoading}
                 />
+
+                <ClimateAveragesLoader
+                    rcp={rcp}
+                    season={season}
+                    variable={variable}
+                    setClimateAverages={setClimateAverages}
+                />
+
+                <div className="white-section">
+                    <ClimateMap
+                        regions={regions}
+                        setRegions={setRegions}
+                        allRegions={allRegions}
+                        regionType={regionType}
+                        setRegionType={setRegionType}
+                    />
+                </div>
+
+                {regions.length > 0 && (
+                    <div className="grey-section">
+                        <ClimateSettings
+                            regions={regions}
+                            season={season}
+                            rcp={rcp}
+                            setRcp={setRcp}
+                            setSeason={setSeason}
+                        />
+
+                        <ClimateSummary
+                            climatePrediction={climatePrediction}
+                            year={year}
+                            regions={regions}
+                            loading={isPredictionLoading}
+                        />
+
+                        <Graph
+                            regions={regions}
+                            season={season}
+                            rcp={rcp}
+                            setSeason={setSeason}
+                            setRcp={setRcp}
+                            climatePrediction={climatePrediction}
+                            loading={isPredictionLoading}
+                            climateAverages={climateAverages}
+                            variable={variable}
+                            setVariable={setVariable}
+                        />
+                    </div>
+                )}
+
+                {regions.length > 0 && (
+                    <div className="white-section">
+                        <ClimateHazardRisk applyCoastalFilter={applyCoastalFilter} />
+                    </div>
+                )}
+
+                {regions.length > 0 && (
+                    <div className="grey-section">
+                        <ClimateImpactSummary
+                            loading={isPredictionLoading}
+                            selectedHazardName={selectedHazardName}
+                            setSelectedHazardName={setSelectedHazardName}
+                            applyCoastalFilter={applyCoastalFilter}
+                        />
+                        <KumuImpactPathway
+                            regions={regions}
+                            selectedHazardName={selectedHazardName}
+                            setSelectedHazardName={setSelectedHazardName}
+                            applyCoastalFilter={applyCoastalFilter}
+                        />
+                    </div>
+                )}
+
+                {regions.length > 0 && (
+                    <div className="white-section">
+                        <PersonalSocialVulnerabilities />
+                        {regionType !== "boundary_iom" && <IMDMap regions={regions} regionType={regionType} />}
+                    </div>
+                )}
+
+                {regions.length > 0 && (
+                    <div className="grey-section">
+                        <StaticAdaptations
+                            selectedHazardName={selectedHazardName}
+                            setSelectedHazardName={setSelectedHazardName}
+                            applyCoastalFilter={applyCoastalFilter}
+                        />
+                    </div>
+                )}
+
+                <Footer />
             </div>
-
-            {regions.length > 0 && (
-                <div className="grey-section">
-                    <ClimateSettings
-                        regions={regions}
-                        season={season}
-                        rcp={rcp}
-                        setRcp={setRcp}
-                        setSeason={setSeason}
-                    />
-
-                    <ClimateSummary
-                        climatePrediction={climatePrediction}
-                        year={year}
-                        regions={regions}
-                        loading={isPredictionLoading}
-                    />
-
-                    <Graph
-                        regions={regions}
-                        season={season}
-                        rcp={rcp}
-                        setSeason={setSeason}
-                        setRcp={setRcp}
-                        climatePrediction={climatePrediction}
-                        loading={isPredictionLoading}
-                        climateAverages={climateAverages}
-                        variable={variable}
-                        setVariable={setVariable}
-                    />
-                </div>
-            )}
-
-            {regions.length > 0 && (
-                <div className="white-section">
-                    <ClimateHazardRisk applyCoastalFilter={applyCoastalFilter} />
-                </div>
-            )}
-
-            {regions.length > 0 && (
-                <div className="grey-section">
-                    <ClimateImpactSummary
-                        loading={isPredictionLoading}
-                        selectedHazardName={selectedHazardName}
-                        setSelectedHazardName={setSelectedHazardName}
-                        applyCoastalFilter={applyCoastalFilter}
-                    />
-                    <KumuImpactPathway
-                        regions={regions}
-                        selectedHazardName={selectedHazardName}
-                        setSelectedHazardName={setSelectedHazardName}
-                        applyCoastalFilter={applyCoastalFilter}
-                    />
-                </div>
-            )}
-
-            {regions.length > 0 && (
-                <div className="white-section">
-                    <PersonalSocialVulnerabilities />
-                    {regionType !== "boundary_iom" && <IMDMap regions={regions} regionType={regionType} />}
-                </div>
-            )}
-
-            {regions.length > 0 && (
-                <div className="grey-section">
-                    <StaticAdaptations
-                        selectedHazardName={selectedHazardName}
-                        setSelectedHazardName={setSelectedHazardName}
-                        applyCoastalFilter={applyCoastalFilter}
-                    />
-                </div>
-            )}
-
-            <Footer />
-        </div>
+            <CookieConsent />
+        </>
     );
 };
 
