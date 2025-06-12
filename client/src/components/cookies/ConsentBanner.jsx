@@ -85,8 +85,16 @@ export default function CookieConsent() {
                     aria-haspopup="dialog"
                     aria-controls="cookie-policy-modal"
                 >
-                    Cookie Policy
-                </button>.
+                    cookie policy
+                </button> and {" "}
+                <a 
+                    href="https://www.ecehh.org/privacy/" 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    style={{color: "#0071c1"}}
+                >
+                    ECEHH privacy policy
+                </a>.
                 <div style={{ marginTop: "0.5em" }}>
                     <button
                         onClick={accept}
