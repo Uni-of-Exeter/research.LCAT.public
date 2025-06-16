@@ -106,6 +106,9 @@ const Graph = (props) => {
   const maxY = data.map((d) => d.max);
   const avgY = avg.map((d) => d.y);
 
+  const formatHover = (y) => (y == null ? '' : Number(y).toFixed(2));
+  const hoverTemplate = '%{customdata}<extra></extra>';
+
   const traces = [
     // Max line
     {
@@ -120,6 +123,8 @@ const Graph = (props) => {
       hoverinfo: "y",
       legendgroup: "your-areas-max",
       showlegend: true,
+      customdata: maxY.map(formatHover),
+      hovertemplate: hoverTemplate,
     },
     // Shading between mean and max (linked to max line)
     {
@@ -146,6 +151,8 @@ const Graph = (props) => {
       legendgroup: "your-areas-mean",
       textposition: "top center",
       showlegend: true,
+      customdata: yValues.map(formatHover),
+      hovertemplate: hoverTemplate,
     },
     // Shading between min and mean (linked to min line)
     {
@@ -173,6 +180,8 @@ const Graph = (props) => {
       hoverinfo: "y",
       legendgroup: "your-areas-min",
       showlegend: true,
+      customdata: minY.map(formatHover),
+      hovertemplate: hoverTemplate,
     },
   ];
 
@@ -191,6 +200,8 @@ const Graph = (props) => {
       legendgroup: "uk-average-max",
       showlegend: true,
       visible: "legendonly",
+      customdata: avgMax.map(formatHover),
+      hovertemplate: hoverTemplate,
     });
     // Shading between UK mean and max (linked to max line)
     traces.push({
@@ -217,6 +228,8 @@ const Graph = (props) => {
       legendgroup: "uk-average-mean",
       textposition: "top center",
       showlegend: true,
+      customdata: avgY.map(formatHover),
+      hovertemplate: hoverTemplate,
     });
     // Shading between UK min and mean (linked to min line)
     traces.push({
@@ -245,6 +258,8 @@ const Graph = (props) => {
       legendgroup: "uk-average-min",
       showlegend: true,
       visible: "legendonly",
+      customdata: avgMin.map(formatHover),
+      hovertemplate: hoverTemplate,
     });
   }
 
