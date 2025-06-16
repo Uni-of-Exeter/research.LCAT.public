@@ -190,6 +190,7 @@ const Graph = (props) => {
       hoverinfo: "y",
       legendgroup: "uk-average-max",
       showlegend: true,
+      visible: "legendonly",
     });
     // Shading between UK mean and max (linked to max line)
     traces.push({
@@ -202,7 +203,7 @@ const Graph = (props) => {
       name: "UK average (mean-max range)",
       showlegend: false,
       legendgroup: "uk-average-max",
-      visible: true,
+      visible: "legendonly",
     });
     // UK mean line
     traces.push({
@@ -228,7 +229,7 @@ const Graph = (props) => {
       name: "UK average (min-mean range)",
       showlegend: false,
       legendgroup: "uk-average-min",
-      visible: true,
+      visible: "legendonly",
     });
     // UK min line
     traces.push({
@@ -243,6 +244,7 @@ const Graph = (props) => {
       hoverinfo: "y",
       legendgroup: "uk-average-min",
       showlegend: true,
+      visible: "legendonly",
     });
   }
 
