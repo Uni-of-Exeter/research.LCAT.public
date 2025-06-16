@@ -17,8 +17,6 @@ import Plot from "react-plotly.js";
 
 import { andify } from "../../utils/utils";
 
-const winterCol = "#a4f9c8";
-const summerCol = "#4c9f70";
 // Define graph colours
 const selectedRegionsLine = "rgba(33,99,49,1)";
 const selectedRegionsShade = "rgba(33,99,49,0.15)";
@@ -26,7 +24,7 @@ const averageUKLine = getComputedStyle(document.documentElement).getPropertyValu
 const averageUKShade = "rgba(245,130,31,0.15)"; // averageUKLine with 15% opacity
 
 const Graph = (props) => {
-    const { regions, season, rcp, setSeason, setRcp, loading, climatePrediction, climateAverages, variable, setVariable } =
+    const { regions, season, rcp, setSeason, setRcp, loading, climatePrediction, climateAverages, climateAverageRanges, variable, setVariable } =
         props;
 
     const [data, setData] = useState([]);
@@ -263,13 +261,15 @@ const Graph = (props) => {
     });
   }
 
-  // Temporary hardcoded y-axis ranges
-  const yAxisRanges = {
-    pr: [0, 35],
-    tas: [-5, 25],
-    sfcWind: [0, 16],
-    rsds: [0, 325],
-  };
+
+  // Pad by 5% either side
+  const variableRange = climateAverageRanges[variable];
+    const paddedRange = variableRange
+        ? [
+            variableRange[0] - 0.05 * (variableRange[1] - variableRange[0]),
+            variableRange[1] + 0.05 * (variableRange[1] - variableRange[0])
+        ]
+        : undefined;
 
   // Layout with dynamic margins & axis labels
   const layout = {
@@ -283,7 +283,7 @@ const Graph = (props) => {
       title: { text: getYAxis(), font: { size: 18 } },
       automargin: true,
       tickfont: { size: 18 },
-      range: yAxisRanges[variable],
+      range: paddedRange,
     },
     font: { size: 18 },
     height: 400, // fixed height for consistent appearance
