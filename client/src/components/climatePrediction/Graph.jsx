@@ -357,6 +357,10 @@ const Graph = (props) => {
                 </div>
             </div>
             <p className="note">
+                You can hover over points to see their values. Use the legend to show or hide lines, or double-click to focus on a single line.  
+                Adjust the axes by dragging, or zoom in by drawing a box around an area of interest.  
+                Double-click the graph to reset the view.
+                <br /><br />
                 Data source: The current iteration of the tool uses climate data from the{" "}
                 <a
                     href="https://catalogue.ceda.ac.uk/uuid/8194b416cbee482b89e0dfbe17c5786c"
