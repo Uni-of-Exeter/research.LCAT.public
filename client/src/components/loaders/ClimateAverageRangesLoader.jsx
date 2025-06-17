@@ -10,7 +10,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import { useEffect } from "react";
 
-const ClimateAverageRangesLoader = ({ variable, setClimateAverageRanges }) => {
+const ClimateAverageRangesLoader = ({ setClimateAverageRanges }) => {
     useEffect(() => {
         const fetchClimateAverageRanges = async () => {
             try {
@@ -19,7 +19,6 @@ const ClimateAverageRangesLoader = ({ variable, setClimateAverageRanges }) => {
                 // Construct query params
                 const queryParams = new URLSearchParams({
                     is_bias_corrected: JSON.stringify(true),
-                    variable,
                 });
 
                 const url = `${prepend}/api/chess_scape_uk_variable_ranges?${queryParams}`;
@@ -36,12 +35,12 @@ const ClimateAverageRangesLoader = ({ variable, setClimateAverageRanges }) => {
                 // Store fetched data in state
                 setClimateAverageRanges(data);
             } catch (error) {
-                console.error("Error fetching climate averages:", error);
+                console.error("Error fetching climate average ranges:", error);
             }
         };
 
         fetchClimateAverageRanges();
-    }, [variable, setClimateAverageRanges]);
+    }, [setClimateAverageRanges]);
 
     return null;
 };

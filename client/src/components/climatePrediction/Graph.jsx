@@ -61,7 +61,6 @@ const Graph = (props) => {
 
     useEffect(() => {
         if (climatePrediction.length === 0 || !climatePrediction[0][`${variable}_1980_mean`]) return;
-        console.log(climateAverageRanges)
         const years = [1980, 2030, 2040, 2050, 2060, 2070];
 
         const data = years.map((year) => ({
@@ -79,7 +78,7 @@ const Graph = (props) => {
         setData(data);
         setAvgMin(avMin);
         setAvgMax(avMax);
-    }, [climatePrediction, rcp, season, showAverage, variable, climateAverages]);
+    }, [climatePrediction, rcp, season, showAverage, variable, climateAverages, climateAverageRanges]);
 
     useEffect(() => {
         if (regions.length === 0) {
@@ -263,7 +262,7 @@ const Graph = (props) => {
 
 
   // Pad by 5% either side
-  const variableRange = climateAverageRanges[variable];
+  const variableRange = climateAverageRanges && climateAverageRanges[variable];
     const paddedRange = variableRange
         ? [
             variableRange[0] - 0.05 * (variableRange[1] - variableRange[0]),
