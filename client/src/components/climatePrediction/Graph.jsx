@@ -17,8 +17,6 @@ import Plot from "react-plotly.js";
 
 import { andify } from "../../utils/utils";
 
-const winterCol = "#a4f9c8";
-const summerCol = "#4c9f70";
 // Define graph colours
 const selectedRegionsLine = "rgba(33,99,49,1)";
 const selectedRegionsShade = "rgba(33,99,49,0.15)";
@@ -26,7 +24,7 @@ const averageUKLine = getComputedStyle(document.documentElement).getPropertyValu
 const averageUKShade = "rgba(245,130,31,0.15)"; // averageUKLine with 15% opacity
 
 const Graph = (props) => {
-    const { regions, season, rcp, setSeason, setRcp, loading, climatePrediction, climateAverages, variable, setVariable } =
+    const { regions, season, rcp, setSeason, setRcp, loading, climatePrediction, climateAverages, climateAverageRanges, variable, setVariable } =
         props;
 
     const [data, setData] = useState([]);
@@ -63,7 +61,7 @@ const Graph = (props) => {
 
     useEffect(() => {
         if (climatePrediction.length === 0 || !climatePrediction[0][`${variable}_1980_mean`]) return;
-
+        console.log(climateAverageRanges)
         const years = [1980, 2030, 2040, 2050, 2060, 2070];
 
         const data = years.map((year) => ({
@@ -106,6 +104,9 @@ const Graph = (props) => {
   const maxY = data.map((d) => d.max);
   const avgY = avg.map((d) => d.y);
 
+  const formatHover = (y) => (y == null ? '' : Number(y).toFixed(2));
+  const hoverTemplate = '%{customdata}<extra></extra>';
+
   const traces = [
     // Max line
     {
@@ -120,6 +121,8 @@ const Graph = (props) => {
       hoverinfo: "y",
       legendgroup: "your-areas-max",
       showlegend: true,
+      customdata: maxY.map(formatHover),
+      hovertemplate: hoverTemplate,
     },
     // Shading between mean and max (linked to max line)
     {
@@ -146,6 +149,8 @@ const Graph = (props) => {
       legendgroup: "your-areas-mean",
       textposition: "top center",
       showlegend: true,
+      customdata: yValues.map(formatHover),
+      hovertemplate: hoverTemplate,
     },
     // Shading between min and mean (linked to min line)
     {
@@ -173,6 +178,8 @@ const Graph = (props) => {
       hoverinfo: "y",
       legendgroup: "your-areas-min",
       showlegend: true,
+      customdata: minY.map(formatHover),
+      hovertemplate: hoverTemplate,
     },
   ];
 
@@ -190,6 +197,9 @@ const Graph = (props) => {
       hoverinfo: "y",
       legendgroup: "uk-average-max",
       showlegend: true,
+      visible: "legendonly",
+      customdata: avgMax.map(formatHover),
+      hovertemplate: hoverTemplate,
     });
     // Shading between UK mean and max (linked to max line)
     traces.push({
@@ -202,7 +212,7 @@ const Graph = (props) => {
       name: "UK average (mean-max range)",
       showlegend: false,
       legendgroup: "uk-average-max",
-      visible: true,
+      visible: "legendonly",
     });
     // UK mean line
     traces.push({
@@ -216,6 +226,8 @@ const Graph = (props) => {
       legendgroup: "uk-average-mean",
       textposition: "top center",
       showlegend: true,
+      customdata: avgY.map(formatHover),
+      hovertemplate: hoverTemplate,
     });
     // Shading between UK min and mean (linked to min line)
     traces.push({
@@ -228,7 +240,7 @@ const Graph = (props) => {
       name: "UK average (min-mean range)",
       showlegend: false,
       legendgroup: "uk-average-min",
-      visible: true,
+      visible: "legendonly",
     });
     // UK min line
     traces.push({
@@ -243,16 +255,21 @@ const Graph = (props) => {
       hoverinfo: "y",
       legendgroup: "uk-average-min",
       showlegend: true,
+      visible: "legendonly",
+      customdata: avgMin.map(formatHover),
+      hovertemplate: hoverTemplate,
     });
   }
 
-  // Temporary hardcoded y-axis ranges
-  const yAxisRanges = {
-    pr: [0, 35],
-    tas: [-5, 25],
-    sfcWind: [0, 16],
-    rsds: [0, 325],
-  };
+
+  // Pad by 5% either side
+  const variableRange = climateAverageRanges[variable];
+    const paddedRange = variableRange
+        ? [
+            variableRange[0] - 0.05 * (variableRange[1] - variableRange[0]),
+            variableRange[1] + 0.05 * (variableRange[1] - variableRange[0])
+        ]
+        : undefined;
 
   // Layout with dynamic margins & axis labels
   const layout = {
@@ -266,13 +283,28 @@ const Graph = (props) => {
       title: { text: getYAxis(), font: { size: 18 } },
       automargin: true,
       tickfont: { size: 18 },
-      range: yAxisRanges[variable],
+      range: paddedRange,
     },
     font: { size: 18 },
     height: 400, // fixed height for consistent appearance
     width: containerWidth, // let Plotly fill the container width
     paper_bgcolor: "rgba(0,0,0,0)", // transparent background
     plot_bgcolor: "rgba(0,0,0,0)",  // transparent plot area
+    // Vertical grey bar to indicate x axis discontinuity
+    shapes: [
+        {
+        type: "rect",
+        xref: "x",
+        yref: "paper",
+        x0: 0.46,
+        x1: 0.54,
+        y0: 0,
+        y1: 1,
+        fillcolor: "rgba(120,120,120,0.3)",
+        line: { width: 0 },
+        layer: "above"
+        }
+    ]
   };
 
   const config = {
@@ -355,6 +387,12 @@ const Graph = (props) => {
                 </div>
             </div>
             <p className="note">
+                You can hover over points to see their values. Use the legend to show or hide lines, or double-click to focus on a single line.  
+                Adjust the axes by dragging, or zoom in by drawing a box around an area of interest.  
+                Double-click the graph to reset the view.
+                <br />
+                Note: The vertical grey bar indicates a 50-year gap between the 1980 baseline and 2030 data points.
+                <br /><br />
                 Data source: The current iteration of the tool uses climate data from the{" "}
                 <a
                     href="https://catalogue.ceda.ac.uk/uuid/8194b416cbee482b89e0dfbe17c5786c"
