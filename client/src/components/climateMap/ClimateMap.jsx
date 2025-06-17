@@ -12,7 +12,8 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./ClimateMap.css";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { useEffect, useRef, useState } from "react";
 import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
 import LoadingOverlay from "react-loading-overlay-ts";
 
@@ -37,8 +38,6 @@ const mapping = {
     boundary_iom: "Isle of Man",
 };
 
-const regionsToShowSearch = ["boundary_uk_counties", "boundary_la_districts"];
-
 const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType }) => {
     const [geojsonKey, setGeojsonKey] = useState(0);
     const [geojson, setGeojson] = useState(false);
@@ -48,6 +47,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
     const [searchTerm, setSearchTerm] = useState("");
 
     const layerMap = useRef(new Map());
+    const parentRef = useRef(null);
 
     const onEachFeature = (feature, layer) => {
         const col = "#00000000";
@@ -135,6 +135,14 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
         setIsDrawerOpen(!isDrawerOpen);
     };
 
+    // Virtualizer for the checkbox list
+    const rowVirtualizer = useVirtualizer({
+        count: filteredRegions.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 36,
+        overscan: 10,
+    });
+
     // Hide search drawer in map if window becomes narrow (or vice versa)
     useEffect(() => {
         const handleResize = () => {
@@ -195,35 +203,57 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                             <TileLayer {...tileLayer} />
                         </MapContainer>
                     </LoadingOverlay>
+                    <>
+                        <button
+                            className="drawer-toggle-button"
+                            onClick={toggleDrawer}
+                            aria-label="Toggle Search Drawer"
+                        >
+                            {isDrawerOpen ? "→" : "←"}
+                        </button>
 
-                    {/* {regionsToShowSearch.includes(regionType) && (
-                        <>
-                            <button
-                                className="drawer-toggle-button"
-                                onClick={toggleDrawer}
-                                aria-label="Toggle Search Drawer"
-                            >
-                                {isDrawerOpen ? "→" : "←"}
-                            </button>
+                        {isDrawerOpen && (
+                            <div className="climate-map-search-container">
+                                <div className="climate-map-search">
+                                    <input
+                                        type="text"
+                                        placeholder="Search regions..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                    />
+                                </div>
 
-                            {isDrawerOpen && (
-                                <div className="climate-map-search-container">
-                                    <div className="climate-map-search">
-                                        <input
-                                            type="text"
-                                            placeholder="Search regions..."
-                                            value={searchTerm}
-                                            onChange={(e) => setSearchTerm(e.target.value)}
-                                        />
-                                    </div>
-
-                                    <div className="climate-map-checkbox-list">
-                                        {filteredRegions.map((region) => {
+                                <div
+                                    className="climate-map-checkbox-list"
+                                    ref={parentRef}
+                                    style={{ height: 400, overflow: "auto", position: "relative" }}
+                                >
+                                    <div
+                                        style={{
+                                            height: `${rowVirtualizer.getTotalSize()}px`,
+                                            width: "100%",
+                                            position: "relative",
+                                        }}
+                                    >
+                                        {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                                            const region = filteredRegions[virtualRow.index];
                                             const isSelected = regions.some((r) => r.id === region.gid);
                                             const checkboxId = `checkbox-${region.gid}`;
-
                                             return (
-                                                <div key={region.gid}>
+                                                <div
+                                                    key={region.gid}
+                                                    className="checkbox-row"
+                                                    style={{
+                                                        position: "absolute",
+                                                        top: 0,
+                                                        left: 0,
+                                                        width: "100%",
+                                                        height: `${virtualRow.size}px`,
+                                                        transform: `translateY(${virtualRow.start}px)`,
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                    }}
+                                                >
                                                     <input
                                                         type="checkbox"
                                                         id={checkboxId}
@@ -236,9 +266,9 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                                         })}
                                     </div>
                                 </div>
-                            )}
-                        </>
-                    )} */}
+                            </div>
+                        )}
+                    </>
                 </div>
 
                 <div className="map-selection">

@@ -60,7 +60,7 @@ The front end is built in [React](https://react.dev/), using [Vite](https://vite
 
 ```bash
 cd client
-npm install --legacy-peer-deps
+npm install
 ```
 
 To launch the Vite development server, run:
