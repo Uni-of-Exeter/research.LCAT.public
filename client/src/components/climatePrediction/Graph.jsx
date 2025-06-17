@@ -61,7 +61,7 @@ const Graph = (props) => {
 
     useEffect(() => {
         if (climatePrediction.length === 0 || !climatePrediction[0][`${variable}_1980_mean`]) return;
-
+        console.log(climateAverageRanges)
         const years = [1980, 2030, 2040, 2050, 2060, 2070];
 
         const data = years.map((year) => ({
@@ -290,6 +290,21 @@ const Graph = (props) => {
     width: containerWidth, // let Plotly fill the container width
     paper_bgcolor: "rgba(0,0,0,0)", // transparent background
     plot_bgcolor: "rgba(0,0,0,0)",  // transparent plot area
+    // Vertical grey bar to indicate x axis discontinuity
+    shapes: [
+        {
+        type: "rect",
+        xref: "x",
+        yref: "paper",
+        x0: 0.46,
+        x1: 0.54,
+        y0: 0,
+        y1: 1,
+        fillcolor: "rgba(120,120,120,0.3)",
+        line: { width: 0 },
+        layer: "above"
+        }
+    ]
   };
 
   const config = {
@@ -375,6 +390,8 @@ const Graph = (props) => {
                 You can hover over points to see their values. Use the legend to show or hide lines, or double-click to focus on a single line.  
                 Adjust the axes by dragging, or zoom in by drawing a box around an area of interest.  
                 Double-click the graph to reset the view.
+                <br />
+                Note: The vertical grey bar indicates a 50-year gap between the 1980 baseline and 2030 data points.
                 <br /><br />
                 Data source: The current iteration of the tool uses climate data from the{" "}
                 <a
