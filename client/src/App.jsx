@@ -56,7 +56,6 @@ const App = () => {
             setVariable(defaultState.variable);
             setClimatePrediction(defaultState.climatePrediction)
             setClimateAverages(defaultState.climateAverages)
-            setClimateAverageRanges(defaultState.climateAverageRanges)
             setSelectedHazardName(defaultState.selectedHazardName)
             setApplyCoastalFilter(defaultState.applyCoastalFilter)
         }
@@ -87,7 +86,6 @@ const App = () => {
             />
 
              <ClimateAverageRangesLoader
-                variable={variable}
                 setClimateAverageRanges={setClimateAverageRanges}
             />
 
