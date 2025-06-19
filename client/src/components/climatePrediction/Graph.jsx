@@ -33,9 +33,18 @@ const Graph = (props) => {
     const [isExpanded, setExpanded] = useState(false);
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
     const graphContainerRef = useRef(null);
+    const [isMobile, setIsMobile] = useState(false);
     const [containerWidth, setContainerWidth] = useState(undefined);
     const [avgMin, setAvgMin] = useState([]);
     const [avgMax, setAvgMax] = useState([]);
+
+    useEffect(() => {
+        // Responsive layout for mobile devices
+        const checkMobile = () => setIsMobile(window.innerWidth < 600);
+        checkMobile();
+        window.addEventListener("resize", checkMobile);
+        return () => window.removeEventListener("resize", checkMobile);
+    }, []);
 
     useEffect(() => {
         if (!graphContainerRef.current) return;
@@ -270,21 +279,23 @@ const Graph = (props) => {
         ]
         : undefined;
 
-  // Layout with dynamic margins & axis labels
   const layout = {
-    margin: { l: 60, r: 20, b: 60, t: 10 },
+    legend: isMobile
+        ? { orientation: "h", x: 0, y: -0.3, }
+        : { orientation: "v", x: 1.02, y: 1 },
+    margin: isMobile 
+        ? { l: 0, r: 10, b: 60, t: 10 }
+        : { l: 60, r: 20, b: 60, t: 10 },
     xaxis: {
-      title: { text: "Decades", font: { size: 18 } },
+      title: { text: "Decades" },
       type: "category",
-      tickfont: { size: 18 },
     },
     yaxis: {
-      title: { text: getYAxis(), font: { size: 18 } },
+      title: { text: getYAxis(), standoff: isMobile ? 10 : 40 },
       automargin: true,
-      tickfont: { size: 18 },
       range: paddedRange,
     },
-    font: { size: 18 },
+    font: isMobile ? { size: 12 } : { size: 18 },
     height: 400, // fixed height for consistent appearance
     width: containerWidth, // let Plotly fill the container width
     paper_bgcolor: "rgba(0,0,0,0)", // transparent background
@@ -304,11 +315,6 @@ const Graph = (props) => {
         layer: "above"
         }
     ]
-  };
-
-  const config = {
-    responsive: true,
-    displayModeBar: false,
   };
 
     return (
@@ -373,13 +379,13 @@ const Graph = (props) => {
                                     <option value="1">your areas vs the UK</option>
                                 </select>
                             </p>
-                            <div className="graph-horiz-container" ref={graphContainerRef}>
-                <Plot
-                  data={traces}
-                  layout={layout}
-                  config={config}
-                  style={{ width: "100%" }}
-                />
+                            <div ref={graphContainerRef} style={{position: "relative", width: "100%", minHeight: "400px", overflow: "visible"}}>
+                                <Plot
+                                    data={traces}
+                                    layout={{ ...layout, width: undefined, height: 400, autosize: true }}
+                                    config={{ displayModeBar: false, responsive: true }}
+                                    style={{ width: "100%", height: "100%", minWidth: 0 }}
+                                />
                             </div>
                         </div>
                     </LoadingOverlay>
