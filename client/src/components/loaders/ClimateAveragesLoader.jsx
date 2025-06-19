@@ -10,9 +10,12 @@ Common Good Public License Beta 1.0 for more details. */
 
 import { useEffect } from "react";
 
-const ClimateAveragesLoader = ({ rcp, season, variable, setClimateAverages }) => {
+const ClimateAveragesLoader = ({ rcp, season, variable, setClimateAverages, setAreAveragesLoading }) => {
     useEffect(() => {
         const fetchClimateAverages = async () => {
+            // Set loading state to true before starting the fetch
+            setAreAveragesLoading(true);
+
             try {
                 const prepend = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "";
 
@@ -39,11 +42,14 @@ const ClimateAveragesLoader = ({ rcp, season, variable, setClimateAverages }) =>
                 setClimateAverages(data);
             } catch (error) {
                 console.error("Error fetching climate averages:", error);
+            } finally {
+                // Set loading state to false after fetch completes
+                setAreAveragesLoading(false);
             }
         };
 
         fetchClimateAverages();
-    }, [rcp, season, variable, setClimateAverages]);
+    }, [rcp, season, variable, setClimateAverages, setAreAveragesLoading]);
 
     return null;
 };
