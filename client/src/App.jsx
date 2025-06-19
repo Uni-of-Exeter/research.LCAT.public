@@ -46,6 +46,7 @@ const App = () => {
     const [year] = useState(defaultState.year);
     const [variable, setVariable] = useState(defaultState.variable);
     const [isPredictionLoading, setIsPredictionLoading] = useState(defaultState.isPredictionLoading);
+    const [areAveragesLoading, setAreAveragesLoading] = useState(defaultState.areAveragesLoading);
     const [selectedHazardName, setSelectedHazardName] = useState(defaultState.selectedHazardName);
     const [applyCoastalFilter, setApplyCoastalFilter] = useState(defaultState.applyCoastalFilter);
 
@@ -83,6 +84,7 @@ const App = () => {
                 season={season}
                 variable={variable}
                 setClimateAverages={setClimateAverages}
+                setAreAveragesLoading={setAreAveragesLoading}
             />
 
              <ClimateAverageRangesLoader
@@ -123,7 +125,7 @@ const App = () => {
                         setSeason={setSeason}
                         setRcp={setRcp}
                         climatePrediction={climatePrediction}
-                        loading={isPredictionLoading}
+                        loading={isPredictionLoading || areAveragesLoading}
                         climateAverages={climateAverages}
                         climateAverageRanges={climateAverageRanges}
                         variable={variable}
