@@ -27,6 +27,7 @@ import Footer from "./components/footer/Footer";
 import LCATHeader from "./components/header/Header";
 import Introduction from "./components/header/Introduction";
 import AllRegionLoader from "./components/loaders/AllRegionLoader";
+import ClimateAverageRangesLoader from "./components/loaders/ClimateAverageRangesLoader";
 import ClimateAveragesLoader from "./components/loaders/ClimateAveragesLoader";
 import ClimatePredictionLoader from "./components/loaders/ClimatePredictionLoader";
 import IsCoastalLoader from "./components/loaders/CoastalFilterLoader";
@@ -40,11 +41,13 @@ const App = () => {
     const [allRegions, setAllRegions] = useState(defaultState.allRegions);
     const [climatePrediction, setClimatePrediction] = useState(defaultState.climatePrediction);
     const [climateAverages, setClimateAverages] = useState(defaultState.climateAverages);
+    const [climateAverageRanges, setClimateAverageRanges] = useState(defaultState.climateAverageRanges);
     const [season, setSeason] = useState(defaultState.season);
     const [rcp, setRcp] = useState(defaultState.rcp);
     const [year] = useState(defaultState.year);
     const [variable, setVariable] = useState(defaultState.variable);
     const [isPredictionLoading, setIsPredictionLoading] = useState(defaultState.isPredictionLoading);
+    const [areAveragesLoading, setAreAveragesLoading] = useState(defaultState.areAveragesLoading);
     const [selectedHazardName, setSelectedHazardName] = useState(defaultState.selectedHazardName);
     const [applyCoastalFilter, setApplyCoastalFilter] = useState(defaultState.applyCoastalFilter);
 
@@ -78,12 +81,17 @@ const App = () => {
                     setIsPredictionLoading={setIsPredictionLoading}
                 />
 
-                <ClimateAveragesLoader
-                    rcp={rcp}
-                    season={season}
-                    variable={variable}
-                    setClimateAverages={setClimateAverages}
-                />
+            <ClimateAveragesLoader
+                rcp={rcp}
+                season={season}
+                variable={variable}
+                setClimateAverages={setClimateAverages}
+                setAreAveragesLoading={setAreAveragesLoading}
+            />
+
+             <ClimateAverageRangesLoader
+                setClimateAverageRanges={setClimateAverageRanges}
+            />
 
                 <div className="white-section">
                     <ClimateMap
@@ -112,20 +120,21 @@ const App = () => {
                             loading={isPredictionLoading}
                         />
 
-                        <Graph
-                            regions={regions}
-                            season={season}
-                            rcp={rcp}
-                            setSeason={setSeason}
-                            setRcp={setRcp}
-                            climatePrediction={climatePrediction}
-                            loading={isPredictionLoading}
-                            climateAverages={climateAverages}
-                            variable={variable}
-                            setVariable={setVariable}
-                        />
-                    </div>
-                )}
+                    <Graph
+                        regions={regions}
+                        season={season}
+                        rcp={rcp}
+                        setSeason={setSeason}
+                        setRcp={setRcp}
+                        climatePrediction={climatePrediction}
+                        loading={isPredictionLoading || areAveragesLoading}
+                        climateAverages={climateAverages}
+                        climateAverageRanges={climateAverageRanges}
+                        variable={variable}
+                        setVariable={setVariable}
+                    />
+                </div>
+            )}
 
                 {regions.length > 0 && (
                     <div className="white-section">

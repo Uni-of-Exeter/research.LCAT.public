@@ -9,6 +9,7 @@ export const defaultState = {
     year: 2070,
     variable: "tas",
     isPredictionLoading: false,
+    areAveragesLoading: false,
     selectedHazardName: "Extreme Storms",
     applyCoastalFilter: false,
     mapCenter: {lat: 55.8, lng: -3.2},

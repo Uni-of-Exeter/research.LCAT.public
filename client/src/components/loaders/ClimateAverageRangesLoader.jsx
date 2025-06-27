@@ -10,24 +10,18 @@ Common Good Public License Beta 1.0 for more details. */
 
 import { useEffect } from "react";
 
-const ClimateAveragesLoader = ({ rcp, season, variable, setClimateAverages, setAreAveragesLoading }) => {
+const ClimateAverageRangesLoader = ({ setClimateAverageRanges }) => {
     useEffect(() => {
-        const fetchClimateAverages = async () => {
-            // Set loading state to true before starting the fetch
-            setAreAveragesLoading(true);
-
+        const fetchClimateAverageRanges = async () => {
             try {
                 const prepend = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "";
 
                 // Construct query params
                 const queryParams = new URLSearchParams({
                     is_bias_corrected: JSON.stringify(true),
-                    rcp,
-                    season,
-                    variable,
                 });
 
-                const url = `${prepend}/api/chess_scape_uk_averages?${queryParams}`;
+                const url = `${prepend}/api/chess_scape_uk_variable_ranges?${queryParams}`;
 
                 // Fetch data
                 const response = await fetch(url);
@@ -39,19 +33,16 @@ const ClimateAveragesLoader = ({ rcp, season, variable, setClimateAverages, setA
                 const data = await response.json();
 
                 // Store fetched data in state
-                setClimateAverages(data);
+                setClimateAverageRanges(data);
             } catch (error) {
-                console.error("Error fetching climate averages:", error);
-            } finally {
-                // Set loading state to false after fetch completes
-                setAreAveragesLoading(false);
+                console.error("Error fetching climate average ranges:", error);
             }
         };
 
-        fetchClimateAverages();
-    }, [rcp, season, variable, setClimateAverages, setAreAveragesLoading]);
+        fetchClimateAverageRanges();
+    }, [setClimateAverageRanges]);
 
     return null;
 };
 
-export default ClimateAveragesLoader;
+export default ClimateAverageRangesLoader;
