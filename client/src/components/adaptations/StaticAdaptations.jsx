@@ -137,7 +137,7 @@ const StaticAdaptations = (props) => {
                         margin: "1em",
                     }}
                 >
-                    <div style={{ fontSize: "12px" }}>Reset adaptation filters</div>
+                    <div style={{ fontSize: "0.8em" }}>Reset adaptation filters</div>
                 </button>
             </div>
             <ul>
@@ -147,10 +147,9 @@ const StaticAdaptations = (props) => {
                         {filteredAdaptations.length === 1 ? " was" : "s were"} found
                     </li>
                 )}
-
                 <li>
                     These adaptations can be filtered further by theme:{"  "}
-                    <select value={filterName} onChange={handleDropdownChange}>
+                    <select value={filterName} className="adaptation-theme-select" onChange={handleDropdownChange}>
                         {adaptationFilters.map((filter, index) => (
                             <option value={filter.filterName} key={index}>
                                 {filter.displayName}
