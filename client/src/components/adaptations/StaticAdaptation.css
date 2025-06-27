@@ -1,3 +1,55 @@
+.horiz-container-pathway {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.pathway-img {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.vert-container-pathway {
+    all: unset;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 75%;
+    width: 16.66%;
+    box-sizing: border-box;
+    margin-bottom: 1.5em;
+    line-height: 1.6;
+    justify-content: space-between;
+}
+
+.vert-container-pathway:hover {
+    background: none;
+    color: inherit;
+    border: none;
+}
+
+.pathway-text {
+    padding: 1em;
+    font-size: 120%;
+}
+
+@media (min-width: 1000px) {
+    .vert-container-pathway {
+        width: 16.66%;
+    }
+}
+
+@media (max-width: 1000px) {
+    .horiz-container-pathway {
+        justify-content: flex-start;
+    }
+}
+
 .adaptation .content {
     background-color: #e6eced;
     padding: 1em;

@@ -11,6 +11,12 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
 // General impact icons for impacts data structure
+import SvgCoastalSecurity from "../../images/adaptations/CoastalSecurity.jsx";
+import SvgFloodingAndDrought from "../../images/adaptations/FloodingAndDrought.jsx";
+import SvgFoodAndPersonalSecurity from "../../images/adaptations/FoodAndPersonalSecurity.jsx";
+import SvgMarineHealth from "../../images/adaptations/MarineHealth.jsx";
+import SvgStorm from "../../images/adaptations/Storm.jsx";
+import SvgTemperature from "../../images/adaptations/Temperature.jsx";
 import SvgAdaptationAndOrMutationOfMicroorganisms from "../../images/impacts/community/AdaptationAndOrMutationOfMicroorganisms";
 // Community impact icons for communityImpacts data structure
 import SvgBiodiversityAndEcologicalBalanceDisruption from "../../images/impacts/community/BiodiversityAndEcologicalBalanceDisruption";
@@ -49,7 +55,7 @@ export const pathways = [
         id: 0,
         name: "Extreme Storms",
         isCoastal: false,
-        emoji: "\u26c8\ufe0f",
+        icon: <SvgStorm className="pathway-img" />,
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Extreme Storms"
@@ -82,7 +88,7 @@ export const pathways = [
         id: 1,
         name: "Coastal Security",
         isCoastal: true,
-        emoji: "\ud83c\udf0a",
+        icon: <SvgCoastalSecurity className="pathway-img" />,
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Coastal Security"
@@ -111,7 +117,7 @@ export const pathways = [
         id: 2,
         name: "Flooding and Drought",
         isCoastal: false,
-        emoji: "\ud83d\udca7\ud83c\udf35",
+        icon: <SvgFloodingAndDrought className="pathway-img" />,
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Flooding and Drought"
@@ -140,7 +146,7 @@ export const pathways = [
         id: 3,
         name: "Food and Personal Security",
         isCoastal: false,
-        emoji: "\ud83c\udf3d",
+        icon: <SvgFoodAndPersonalSecurity className="pathway-img" />,
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Food and Personal Security"
@@ -168,7 +174,7 @@ export const pathways = [
     {
         id: 4,
         name: "Marine Health Hazards",
-        emoji: "\ud83e\udeb8",
+        icon: <SvgMarineHealth className="pathway-img" />,
         isCoastal: true,
         summaryPathwayMap: (
             <iframe
@@ -198,7 +204,7 @@ export const pathways = [
         id: 5,
         name: "Temperature",
         isCoastal: false,
-        emoji: "\ud83c\udf21\ufe0f",
+        icon: <SvgTemperature className="pathway-img" />,
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Temperature"

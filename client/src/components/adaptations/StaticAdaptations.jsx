@@ -110,38 +110,21 @@ const StaticAdaptations = (props) => {
                 providing co-benefits where possible. Use the icons to filter adaptations by climate impact pathway.
                 Further filtering by adaptation theme is also possible.
             </p>
-            <div style={{ display: "flex", justifyContent: "center" }}>
-                <div
-                    style={{
-                        display: "flex",
-                        gap: "1rem",
-                        width: "90%",
-                        justifyContent: "space-between",
-                    }}
-                >
-                    {filteredPathwayData.map((pathway) => (
-                        <button
-                            key={pathway.id}
-                            onClick={() => toggleHazardSelection(pathway.name)}
-                            style={{
-                                flex: "1",
-                                background: selectedHazards.includes(pathway.name) ? "#e6eced" : "white",
-                                border: "1px solid #ccc",
-                                borderRadius: "8px",
-                                padding: "0.5rem",
-                                cursor: "pointer",
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                minWidth: "0",
-                            }}
-                        >
-                            <div style={{ fontSize: "48px" }}>{pathway.emoji}</div>
-                            <div style={{ fontSize: "12px" }}>{pathway.name}</div>
-                        </button>
-                    ))}
-                </div>
+            <div className="horiz-container-pathway">
+                {filteredPathwayData.map((pathway) => (
+                    <button
+                        className="vert-container-pathway"
+                        key={pathway.id}
+                        onClick={() => toggleHazardSelection(pathway.name)}
+                    >
+                        <div className="pathway-text">
+                            <strong>{pathway.name}</strong>
+                        </div>
+                        <div className="pathway-img">
+                            {React.cloneElement(pathway.icon, { selectedHazard: selectedHazards.includes(pathway.name) })}
+                        </div>
+                    </button>
+                ))}
             </div>
             <div style={{ display: "flex", justifyContent: "center" }}>
                 <button
