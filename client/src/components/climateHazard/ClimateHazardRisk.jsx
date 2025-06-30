@@ -49,7 +49,7 @@ const ClimateHazardRisk = ({ applyCoastalFilter }) => {
                         <div className="hazard-text">
                             <strong>{hazard.name}</strong>
                         </div>
-                        <div className="hazard-img">{React.cloneElement(hazard.icon, { selectedHazard })}</div>
+                        <div className="icon">{React.cloneElement(hazard.icon, { selectedHazard })}</div>
                     </button>
                 ))}
             </div>

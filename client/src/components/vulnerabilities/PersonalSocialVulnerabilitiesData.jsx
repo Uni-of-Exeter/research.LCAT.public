@@ -23,7 +23,7 @@ import SvgUnderFives from "../../images/vulnerabilities/UnderFives.jsx";
 export const vulnerabilityData = [
     {
         name: "Older people",
-        icon: <SvgOlderPeople className="vulnerability-img" />,
+        icon: <SvgOlderPeople className="icon" />,
         details: (
             <div>
                 <p>
@@ -88,7 +88,7 @@ export const vulnerabilityData = [
     },
     {
         name: "Under 5s",
-        icon: <SvgUnderFives className="vulnerability-img" />,
+        icon: <SvgUnderFives className="icon" />,
         details: (
             <div>
                 <p>
@@ -144,7 +144,7 @@ export const vulnerabilityData = [
     },
     {
         name: "People with health conditions",
-        icon: <SvgHealthConditions className="vulnerability-img" />,
+        icon: <SvgHealthConditions className="icon" />,
         details: (
             <div>
                 <p>
@@ -208,7 +208,7 @@ export const vulnerabilityData = [
     },
     {
         name: "People on low incomes",
-        icon: <SvgLowIncomes className="vulnerability-img" />,
+        icon: <SvgLowIncomes className="icon" />,
         details: (
             <div>
                 <p>
@@ -272,7 +272,7 @@ export const vulnerabilityData = [
     },
     {
         name: "Tenants in private or social housing",
-        icon: <SvgPrivateSocialHousing className="vulnerability-img" />,
+        icon: <SvgPrivateSocialHousing className="icon" />,
         details: (
             <div>
                 <p>
@@ -342,7 +342,7 @@ export const vulnerabilityData = [
     },
     {
         name: "People living in area for a short time",
-        icon: <SvgLowLocalKnowledge className="vulnerability-img" />,
+        icon: <SvgLowLocalKnowledge className="icon" />,
         details: (
             <div>
                 <p>
@@ -403,7 +403,7 @@ export const vulnerabilityData = [
     },
     {
         name: "People who are socially isolated",
-        icon: <SvgSociallyIsolated className="vulnerability-img" />,
+        icon: <SvgSociallyIsolated className="icon" />,
         details: (
             <div>
                 <p>
@@ -466,7 +466,7 @@ export const vulnerabilityData = [
     },
     {
         name: "People with low personal mobility",
-        icon: <SvgLowMobility className="vulnerability-img" />,
+        icon: <SvgLowMobility className="icon" />,
         details: (
             <div>
                 <p>

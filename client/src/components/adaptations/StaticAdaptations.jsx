@@ -10,6 +10,8 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+import "./StaticAdaptations.css";
+
 import React, { useEffect, useState } from "react";
 
 import adaptationData from "../../kumu/parsed/adaptation_data.json";
@@ -120,7 +122,7 @@ const StaticAdaptations = (props) => {
                         <div className="pathway-text">
                             <strong>{pathway.name}</strong>
                         </div>
-                        <div className="pathway-img">
+                        <div className="icon">
                             {React.cloneElement(pathway.icon, { selectedHazard: selectedHazards.includes(pathway.name) })}
                         </div>
                     </button>

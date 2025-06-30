@@ -55,7 +55,7 @@ export const pathways = [
         id: 0,
         name: "Extreme Storms",
         isCoastal: false,
-        icon: <SvgStorm className="pathway-img" />,
+        icon: <SvgStorm className="icon" />,
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Extreme Storms"
@@ -88,7 +88,7 @@ export const pathways = [
         id: 1,
         name: "Coastal Security",
         isCoastal: true,
-        icon: <SvgCoastalSecurity className="pathway-img" />,
+        icon: <SvgCoastalSecurity className="icon" />,
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Coastal Security"
@@ -117,7 +117,7 @@ export const pathways = [
         id: 2,
         name: "Flooding and Drought",
         isCoastal: false,
-        icon: <SvgFloodingAndDrought className="pathway-img" />,
+        icon: <SvgFloodingAndDrought className="icon" />,
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Flooding and Drought"
@@ -146,7 +146,7 @@ export const pathways = [
         id: 3,
         name: "Food and Personal Security",
         isCoastal: false,
-        icon: <SvgFoodAndPersonalSecurity className="pathway-img" />,
+        icon: <SvgFoodAndPersonalSecurity className="icon" />,
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Food and Personal Security"
@@ -174,7 +174,7 @@ export const pathways = [
     {
         id: 4,
         name: "Marine Health Hazards",
-        icon: <SvgMarineHealth className="pathway-img" />,
+        icon: <SvgMarineHealth className="icon" />,
         isCoastal: true,
         summaryPathwayMap: (
             <iframe
@@ -204,7 +204,7 @@ export const pathways = [
         id: 5,
         name: "Temperature",
         isCoastal: false,
-        icon: <SvgTemperature className="pathway-img" />,
+        icon: <SvgTemperature className="icon" />,
         summaryPathwayMap: (
             <iframe
                 title="Summary Pathway Map for Temperature"
@@ -236,57 +236,57 @@ export const impacts = [
         id: 0,
         name: "Respiratory diseases",
         inPathway: [0, 2, 3, 4, 5],
-        icon: <SvgRespiratoryDiseases className="impact-img" />,
+        icon: <SvgRespiratoryDiseases className="icon" />,
     },
     {
         id: 1,
         name: "Injury",
         inPathway: [0, 1, 5],
-        icon: <SvgInjuries className="impact-img" />,
+        icon: <SvgInjuries className="icon" />,
     },
     {
         id: 2,
         name: "Infections caused by bacteria, viruses, fungi, and worms",
         inPathway: [0, 2, 3, 4, 5],
-        icon: <SvgInfectionsCausedByPathogenicOrganisms className="impact-img" />,
+        icon: <SvgInfectionsCausedByPathogenicOrganisms className="icon" />,
     },
     {
         id: 3,
         name: "Illness or injury caused by exposure to chemicals, heavy metals, and microplastics",
         inPathway: [0, 1, 2],
         icon: (
-            <SvgAdverseHealthOutcomesAssociatedWithExposureToChemicalsHeavyMetalsAndMicroplastics className="impact-img" />
+            <SvgAdverseHealthOutcomesAssociatedWithExposureToChemicalsHeavyMetalsAndMicroplastics className="icon" />
         ),
     },
     {
         id: 4,
         name: "Illness and mortality due to damp",
         inPathway: [1],
-        icon: <SvgIllnessAndMortalityDueToDampBuildingFabrics className="impact-img" />,
+        icon: <SvgIllnessAndMortalityDueToDampBuildingFabrics className="icon" />,
     },
     {
         id: 5,
         name: "Vector-borne diseases",
         inPathway: [1, 3, 5],
-        icon: <SvgVectorBorneDiseases className="impact-img" />,
+        icon: <SvgVectorBorneDiseases className="icon" />,
     },
     {
         id: 6,
         name: "Drowning or flood-related accidents",
         inPathway: [2],
-        icon: <SvgDrowningOrFloodRelatedAccidents className="impact-img" />,
+        icon: <SvgDrowningOrFloodRelatedAccidents className="icon" />,
     },
     {
         id: 7,
         name: "Adverse health outcomes and malnutrition associated with an unhealthy diet",
         inPathway: [3],
-        icon: <SvgAdverseHealthOutcomesAndMalnutritionAssociatedWithAnUnhealthyDiet className="impact-img" />,
+        icon: <SvgAdverseHealthOutcomesAndMalnutritionAssociatedWithAnUnhealthyDiet className="icon" />,
     },
     {
         id: 8,
         name: "Antimicrobial resistance",
         inPathway: [4],
-        icon: <SvgAntimicrobialResistance className="impact-img" />,
+        icon: <SvgAntimicrobialResistance className="icon" />,
     },
     {
         id: 9,
@@ -298,13 +298,13 @@ export const impacts = [
         id: 10,
         name: "Fertility and endocrine function",
         inPathway: [4],
-        icon: <SvgAdversePregnancyOutcomes className="impact-img" />,
+        icon: <SvgAdversePregnancyOutcomes className="icon" />,
     },
     {
         id: 11,
         name: "Cardiovascular diseases",
         inPathway: [5],
-        icon: <SvgCardiovascularDiseases className="impact-img" />,
+        icon: <SvgCardiovascularDiseases className="icon" />,
     },
 ];
 
@@ -313,108 +313,108 @@ export const communityImpacts = [
         id: 0,
         name: "Damage or loss of possessions and/or home",
         inPathway: [0],
-        icon: <SvgDamageOrLossOfPossessionsOrHome className="impact-img" />,
+        icon: <SvgDamageOrLossOfPossessionsOrHome className="icon" />,
     },
     {
         id: 1,
         name: "Damage or loss of coastal defences",
         inPathway: [0, 1],
-        icon: <SvgDamageOrLossOfCoastalDefences className="impact-img" />,
+        icon: <SvgDamageOrLossOfCoastalDefences className="icon" />,
     },
     {
         id: 2,
         name: "Damage or loss of the built and natural environment",
         inPathway: [0, 1],
-        icon: <SvgDamageOrLossOfTheBuiltAndNaturalEnvironment className="impact-img" />,
+        icon: <SvgDamageOrLossOfTheBuiltAndNaturalEnvironment className="icon" />,
     },
     {
         id: 3,
         name: "People requiring care to maintain wellbeing",
         inPathway: [0],
-        icon: <SvgPeopleRequiringCare className="impact-img" />,
+        icon: <SvgPeopleRequiringCare className="icon" />,
     },
     {
         id: 4,
         name: "Marine and coastal biodiversity and ecological balance disruption",
         inPathway: [1, 4],
-        icon: <SvgMarineAndCoastalBiodiversityAndEcologicalBalanceDisruption className="impact-img" />,
+        icon: <SvgMarineAndCoastalBiodiversityAndEcologicalBalanceDisruption className="icon" />,
     },
     {
         id: 5,
         name: "Damage to local economy",
         inPathway: [1, 4],
-        icon: <SvgDamageToLocalEconomy className="impact-img" />,
+        icon: <SvgDamageToLocalEconomy className="icon" />,
     },
     {
         id: 6,
         name: "Reduction in water availability and quality",
         inPathway: [2, 3, 4],
-        icon: <SvgReductionInWaterQuality className="impact-img" />,
+        icon: <SvgReductionInWaterQuality className="icon" />,
     },
     {
         id: 7,
         name: "Transport disruption",
         inPathway: [2],
-        icon: <SvgTransportDisruption className="impact-img" />,
+        icon: <SvgTransportDisruption className="icon" />,
     },
     {
         id: 8,
         name: "Building and structural damage",
         inPathway: [2],
-        icon: <SvgBuildingAndStructuralDamage className="impact-img" />,
+        icon: <SvgBuildingAndStructuralDamage className="icon" />,
     },
     {
         id: 9,
         name: "Biodiversity and ecological balance disruption",
         inPathway: [2],
-        icon: <SvgBiodiversityAndEcologicalBalanceDisruption className="impact-img" />,
+        icon: <SvgBiodiversityAndEcologicalBalanceDisruption className="icon" />,
     },
     {
         id: 10,
         name: "Food security",
         inPathway: [3],
-        icon: <SvgFoodSecurity className="impact-img" />,
+        icon: <SvgFoodSecurity className="icon" />,
     },
     {
         id: 11,
         name: "Negative impacts on agricultural and livestock production",
         inPathway: [3],
-        icon: <SvgNegativeImpactsOnAgriculturalAndLivestockProduction className="impact-img" />,
+        icon: <SvgNegativeImpactsOnAgriculturalAndLivestockProduction className="icon" />,
     },
     {
         id: 12,
         name: "Negative impacts on the fishing industry",
         inPathway: [3],
-        icon: <SvgNegativeImpactOnTheFishingIndustry className="impact-img" />,
+        icon: <SvgNegativeImpactOnTheFishingIndustry className="icon" />,
     },
     {
         id: 13,
         name: "Adaptation and/or mutation of microorganisms to antibiotics, chemicals and environmental stressors",
         inPathway: [4],
-        icon: <SvgAdaptationAndOrMutationOfMicroorganisms className="impact-img" />,
+        icon: <SvgAdaptationAndOrMutationOfMicroorganisms className="icon" />,
     },
     {
         id: 14,
         name: "Public transport disruption",
         inPathway: [5],
-        icon: <SvgPublicTransportDisruption className="impact-img" />,
+        icon: <SvgPublicTransportDisruption className="icon" />,
     },
     {
         id: 15,
         name: "Urban Heat Island effect",
         inPathway: [5],
-        icon: <SvgUrbanHeatIslandEffect className="impact-img" />,
+        icon: <SvgUrbanHeatIslandEffect className="icon" />,
     },
     {
         id: 16,
         name: "Building performance",
         inPathway: [5],
-        icon: <SvgBuildingPerformance className="impact-img" />,
+        icon: <SvgBuildingPerformance className="icon" />,
     },
     {
         id: 17,
         name: "Outdoor air quality",
         inPathway: [5],
-        icon: <SvgOutdoorAirQuality className="impact-img" />,
+        icon: <SvgOutdoorAirQuality className="icon" />,
     },
 ];
