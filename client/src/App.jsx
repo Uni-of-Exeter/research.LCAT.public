@@ -12,7 +12,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./App.css";
 
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 
 import StaticAdaptations from "./components/adaptations/StaticAdaptations";
 import ClimateHazardRisk from "./components/climateHazard/ClimateHazardRisk";
@@ -26,6 +26,8 @@ import Footer from "./components/footer/Footer";
 import LCATHeader from "./components/header/Header";
 import Introduction from "./components/header/Introduction";
 import AllRegionLoader from "./components/loaders/AllRegionLoader";
+import ClimateAverageRangesLoader from "./components/loaders/ClimateAverageRangesLoader";
+import ClimateAveragesLoader from "./components/loaders/ClimateAveragesLoader";
 import ClimatePredictionLoader from "./components/loaders/ClimatePredictionLoader";
 import IsCoastalLoader from "./components/loaders/CoastalFilterLoader";
 import IMDMap from "./components/vulnerabilities/IMDMap";
@@ -37,13 +39,28 @@ const App = () => {
     const [regionType, setRegionType] = useState(defaultState.regionType);
     const [allRegions, setAllRegions] = useState(defaultState.allRegions);
     const [climatePrediction, setClimatePrediction] = useState(defaultState.climatePrediction);
+    const [climateAverages, setClimateAverages] = useState(defaultState.climateAverages);
+    const [climateAverageRanges, setClimateAverageRanges] = useState(defaultState.climateAverageRanges);
     const [season, setSeason] = useState(defaultState.season);
     const [rcp, setRcp] = useState(defaultState.rcp);
     const [year] = useState(defaultState.year);
     const [variable, setVariable] = useState(defaultState.variable);
     const [isPredictionLoading, setIsPredictionLoading] = useState(defaultState.isPredictionLoading);
+    const [areAveragesLoading, setAreAveragesLoading] = useState(defaultState.areAveragesLoading);
     const [selectedHazardName, setSelectedHazardName] = useState(defaultState.selectedHazardName);
     const [applyCoastalFilter, setApplyCoastalFilter] = useState(defaultState.applyCoastalFilter);
+
+    useEffect(() => {
+        if (regions.length === 0) {
+            setSeason(defaultState.season);
+            setRcp(defaultState.rcp);
+            setVariable(defaultState.variable);
+            setClimatePrediction(defaultState.climatePrediction)
+            setClimateAverages(defaultState.climateAverages)
+            setSelectedHazardName(defaultState.selectedHazardName)
+            setApplyCoastalFilter(defaultState.applyCoastalFilter)
+        }
+    }, [regions]);
 
     return (
         <div className="App">
@@ -60,6 +77,18 @@ const App = () => {
                 regionType={regionType}
                 setClimatePrediction={setClimatePrediction}
                 setIsPredictionLoading={setIsPredictionLoading}
+            />
+
+            <ClimateAveragesLoader
+                rcp={rcp}
+                season={season}
+                variable={variable}
+                setClimateAverages={setClimateAverages}
+                setAreAveragesLoading={setAreAveragesLoading}
+            />
+
+             <ClimateAverageRangesLoader
+                setClimateAverageRanges={setClimateAverageRanges}
             />
 
             <div className="white-section">
@@ -96,6 +125,9 @@ const App = () => {
                         setSeason={setSeason}
                         setRcp={setRcp}
                         climatePrediction={climatePrediction}
+                        loading={isPredictionLoading || areAveragesLoading}
+                        climateAverages={climateAverages}
+                        climateAverageRanges={climateAverageRanges}
                         variable={variable}
                         setVariable={setVariable}
                     />

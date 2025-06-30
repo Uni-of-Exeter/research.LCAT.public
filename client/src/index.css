@@ -35,7 +35,7 @@ h1 {
 
 h2 {
     font-family: "Montserrat-SemiBold", Arial, Helvetica, sans-serif;
-    border-bottom: 3px solid #f5821fff;
+    border-bottom: 3px solid var(--color-button-hover);
     text-transform: uppercase;
 }
 
@@ -65,7 +65,7 @@ select option {
 }
 
 select:hover {
-    background: #f5821fff;
+    background: var(--color-button-hover);
 }
 
 a {
@@ -81,7 +81,7 @@ button {
 }
 
 button:hover {
-    background: #f5821fff;
+    background: var(--color-button-hover);
 }
 
 /* Style the button that is used to open and close the collapsible content */
@@ -107,7 +107,7 @@ button:hover {
 }
 
 .collapsible .header:hover {
-    background: #f5821fff;
+    background: var(--color-button-hover);
 }
 
 /* Style the collapsible content. Note: hidden by default */
@@ -177,4 +177,8 @@ button:hover {
 
 .text-emphasis {
     font-family: "Montserrat-SemiBold", Arial, Helvetica, sans-serif;
+}
+
+:root {
+  --color-button-hover: rgba(245,130,31,1);
 }

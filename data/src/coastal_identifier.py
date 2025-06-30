@@ -73,6 +73,7 @@ class CoastalIdentifier:
                     SET is_coastal = TRUE;
                 """
                 self.cur.execute(update_query)
+                self.conn.commit()
 
             else:
                 # Make coastal values a tuple
@@ -89,8 +90,8 @@ class CoastalIdentifier:
                     );
                 """
                 self.cur.execute(update_query, (coastal_values,))
+                self.conn.commit()
 
-            self.conn.commit()
             print(f"Boundary {boundary_identifier} processed successfully.")
 
         except psycopg2.Error as e:

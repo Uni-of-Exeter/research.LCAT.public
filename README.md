@@ -27,7 +27,7 @@ Common Good Public License Beta 1.0 for more details.
 
 Boundary data for England, Wales, Scotland, and Northern Ireland are used in this tool:
 
-- Source: Office for National Statistics licensed under the Open Government Licence v.3.0.
-- Contains OS data © Crown copyright and database right 2024.
+- Source: Office for National Statistics licensed under the Open Government Licence v.3.0
+- Contains OS data © Crown copyright and database right 2024
 
 For more details, please view the sources document at [docs/4-sources.md](docs/4-sources.md).

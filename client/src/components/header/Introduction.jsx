@@ -49,11 +49,11 @@ const Introduction = () => {
                 </li>
                 <li>
                     <a
-                        href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE_FINAL-Autumn-24.pdf"
+                        href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE-June-2025-update.pdf"
                         target="_blank"
                         rel="noreferrer"
                     >
-                        LCAT User Guide
+                        LCAT Handbook
                     </a>
                 </li>
                 <li>

@@ -4,6 +4,8 @@ import psycopg2
 class CacheClimate:
     """
     Class to cache the climate data, based on region gid, its overlapping cells, and the relevant CHESS-SCAPE data.
+    Note that not all regions use the cache method (and the cache tables) in the app. See the docs for more information
+    about the cell method and the cache method.
     """
 
     def __init__(self, config):
@@ -108,38 +110,26 @@ class CacheClimate:
         except Exception as e:
             print(f"Error creating CHESS-SCAPE table: {e}")
 
-    def cache_climate_data(self, gid):
-        """
-        Given a region gid in the loaded boundary table, select the overlapping grid cells, get the
-        climate data associated with these grid cells, average it, and store it in the new cache table.
-        This creates a single row per gid in the cache table.
-        """
-
-        column_names = self.get_climate_column_names()
-
-        select_clause = ", ".join([f'AVG("{col}") AS {col}' for col in column_names])
-        insert_clause = ", ".join([f'"{col}"' for col in column_names])
-
-        cache_query = f"""
-        INSERT INTO "{self.cache_table}" (gid, {insert_clause})
-        SELECT ot.gid, {select_clause}
-        FROM "{self.overlap_table}" ot
-        JOIN "{self.climate_table}" ct ON ot.grid_cell_id = ct.grid_cell_id
-        WHERE ot.gid = %s
-        GROUP BY ot.gid
-        """
-
-        self.cur.execute(cache_query, (gid,))
-        self.conn.commit()
-
     def cache_all_gids(self):
         """
         Select all gids in the loaded boundary and cache their climate data.
         """
 
+        # Get all column names in climate table
         column_names = self.get_climate_column_names()
 
-        select_clause = ", ".join([f'AVG("{col}") AS {col}' for col in column_names])
+        # Take the min of the min cells, mean of the mean cells, max of the max cells
+        select_clause = ", ".join(
+            [
+                f'MIN("{col}") AS "{col}"'
+                if col.endswith("_min")
+                else f'AVG("{col}") AS "{col}"'
+                if col.endswith("_mean")
+                else f'MAX("{col}") AS "{col}"'
+                for col in column_names
+            ]
+        )
+
         insert_clause = ", ".join([f'"{col}"' for col in column_names])
 
         cache_all_query = f"""
