@@ -310,7 +310,7 @@ const Graph = (props) => {
         x1: 0.54,
         y0: 0,
         y1: 1,
-        fillcolor: "rgba(120,120,120,0.3)",
+        fillcolor: "rgb(165, 162, 162)",
         line: { width: 0 },
         layer: "above"
         }
