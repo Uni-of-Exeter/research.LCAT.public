@@ -76,6 +76,19 @@ const FooterText = () => {
                 <br />
                 Development from 2024 Copyright © University of Exeter
             </p>
+
+            <p>
+                <button
+                    type="button"
+                    style={{ background: "none", border: "none", color: "#115158ff", textDecoration: "underline", cursor: "pointer", padding: 0, font: "inherit", marginRight: "1em" }}
+                    onClick={() => window.dispatchEvent(new Event('open_cookie_banner'))}
+                >
+                    Manage cookies
+                </button>
+                <a href="https://www.ecehh.org/privacy/" target="_blank" rel="noreferrer">
+                    ECEHH privacy policy
+                </a>
+            </p>
         </div>
     );
 };
