@@ -40,8 +40,8 @@ const StaticAdaptations = (props) => {
             // Check to see if new hazardName is selected
             const isSelected = prev.includes(hazardName);
 
-            // If hazardName is selected and removing it wont empty array, remove it
-            if (isSelected && prev.length > 1) {
+            // If hazardName is selected, remove it
+            if (isSelected) {
                 return prev.filter((n) => n !== hazardName);
             }
 
@@ -130,7 +130,7 @@ const StaticAdaptations = (props) => {
             </div>
             <div style={{ display: "flex", justifyContent: "center" }}>
                 <button
-                    onClick={() => setSelectedHazards([selectedHazardName])}
+                    onClick={() => setSelectedHazards([])}
                     style={{
                         borderRadius: "8px",
                         padding: "1rem",
