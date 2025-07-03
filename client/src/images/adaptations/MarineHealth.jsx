@@ -28,7 +28,7 @@ const SvgMarineHealth = ({ selectedHazard, ...rest }) => {
                     r={15.429}
                     style={{
                         opacity: 1,
-                        fill: "#227b9f",
+                        fill: "#115158",
                         fillOpacity: 1,
                         stroke: "none",
                         strokeWidth: 0.5,
