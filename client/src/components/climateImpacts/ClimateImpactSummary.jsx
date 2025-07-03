@@ -78,7 +78,7 @@ const ClimateImpactSummary = ({ loading, selectedHazardName, setSelectedHazardNa
             <div className="horiz-container-impact">
                 {filteredImpacts.map((impact) => (
                     <div className="vert-container-impact" key={impact.id}>
-                        <div className="impact-img">{impact.icon}</div>
+                        <div className="icon">{impact.icon}</div>
                         <div className="impact-text">{impact.name}</div>
                     </div>
                 ))}
@@ -100,7 +100,7 @@ const ClimateImpactSummary = ({ loading, selectedHazardName, setSelectedHazardNa
             <div className="horiz-container-impact">
                 {filteredCommunityImpacts.map((impact) => (
                     <div className="vert-container-impact" key={impact.id}>
-                        <div className="impact-img">{impact.icon}</div>
+                        <div className="icon">{impact.icon}</div>
                         <div className="impact-text">{impact.name}</div>
                     </div>
                 ))}

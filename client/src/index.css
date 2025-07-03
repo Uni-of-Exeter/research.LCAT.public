@@ -148,6 +148,13 @@ button:hover {
     font-family: "Montserrat-SemiBold", Arial, Helvetica, sans-serif;
 }
 
+.icon {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
 .white-section {
     background: #ffffff;
     padding-top: 0.5em;

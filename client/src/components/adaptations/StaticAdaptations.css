@@ -1,4 +1,4 @@
-.horiz-container-hazard {
+.horiz-container-pathway {
     display: flex;
     flex-direction: row;
     overflow-x: auto;
@@ -7,43 +7,53 @@
     justify-content: space-around;
 }
 
-.vert-container-hazard {
+.vert-container-pathway {
     all: unset;
     display: flex;
     flex-direction: column;
     text-align: center;
     font-size: 75%;
-    width: 33.33%;
+    width: 33.3%;
     box-sizing: border-box;
     margin-bottom: 1.5em;
     line-height: 1.6;
     justify-content: space-between;
 }
 
-.vert-container-hazard:hover {
+.vert-container-pathway:hover {
     background: none;
     color: inherit;
     border: none;
 }
 
-.hazard-text {
+.pathway-text {
     padding: 1em;
     font-size: 120%;
 }
 
 @media (min-width: 1000px) {
-    .vert-container-hazard {
-        width: 20%;
+    .vert-container-pathway {
+        width: 16.66%;
     }
 }
 
 @media (max-width: 1000px) {
-    .horiz-container-hazard {
+    .horiz-container-pathway {
         justify-content: flex-start;
     }
 }
 
-.climate-hazard-emphasis {
-    font-weight: bold;
-    font-size: 1.3em;
+@media (max-width: 450px) {
+  .adaptation-theme-select {
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 1em;
+  }
+}
+
+@media (max-width: 600px) {
+  ul {
+    padding-left: 1em;
+  }
 }

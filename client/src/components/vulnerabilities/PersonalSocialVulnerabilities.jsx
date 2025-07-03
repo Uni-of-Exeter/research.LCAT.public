@@ -59,7 +59,7 @@ const PersonalSocialVulnerabilities = () => {
                         <div className="vulnerability-text">
                             <strong>{vulnerability.name}</strong>
                         </div>
-                        <div className="vulnerability-img">
+                        <div className="icon">
                             {React.cloneElement(vulnerability.icon, { selectedVulnerability })}
                         </div>
                     </button>

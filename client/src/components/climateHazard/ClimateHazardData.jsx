@@ -20,7 +20,7 @@ import WildfiresSvg from "../../images/hazards/Wildfires.jsx";
 export const climateHazardsData = [
     {
         name: "Heatwaves",
-        icon: <HeatwaveSvg className="hazard-img" />,
+        icon: <HeatwaveSvg className="icon" />,
         details: (
             <div>
                 <p>
@@ -59,7 +59,7 @@ export const climateHazardsData = [
     },
     {
         name: "Wildfires",
-        icon: <WildfiresSvg className="hazard-img" />,
+        icon: <WildfiresSvg className="icon" />,
         details: (
             <div>
                 <p>
@@ -87,7 +87,7 @@ export const climateHazardsData = [
     },
     {
         name: "Air Quality",
-        icon: <AirPollutionSvg className="hazard-img" />,
+        icon: <AirPollutionSvg className="icon" />,
         details: (
             <div>
                 <p>Indoor and outdoor air quality in the UK are affected by climate change.</p>
@@ -142,7 +142,7 @@ export const climateHazardsData = [
     },
     {
         name: "Flooding",
-        icon: <FloodSvg className="hazard-img" />,
+        icon: <FloodSvg className="icon" />,
         details: (
             <div>
                 <p>
@@ -209,7 +209,7 @@ export const climateHazardsData = [
     },
     {
         name: "Coastal Erosion",
-        icon: <CoastalErosionSvg className="hazard-img" />,
+        icon: <CoastalErosionSvg className="icon" />,
         details: (
             <div>
                 <p>Coastal erosion is increasing across the UK due to several interacting issues:</p>
