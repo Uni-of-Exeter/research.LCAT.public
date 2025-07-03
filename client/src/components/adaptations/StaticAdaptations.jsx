@@ -40,8 +40,8 @@ const StaticAdaptations = (props) => {
             // Check to see if new hazardName is selected
             const isSelected = prev.includes(hazardName);
 
-            // If hazardName is selected and removing it wont empty array, remove it
-            if (isSelected && prev.length > 1) {
+            // If hazardName is selected, remove it
+            if (isSelected) {
                 return prev.filter((n) => n !== hazardName);
             }
 
@@ -110,6 +110,7 @@ const StaticAdaptations = (props) => {
                 Based on the expected climate change and resulting impacts in the UK, the following adaptations should
                 be considered. These adaptations were identified to reduce risk to humans and the environment while
                 providing co-benefits where possible. Use the icons to filter adaptations by climate impact pathway.
+                More than one icon can be selected to see the adaptations relevant to multiple pathways.
                 Further filtering by adaptation theme is also possible.
             </p>
             <div className="horiz-container-pathway">
@@ -130,7 +131,7 @@ const StaticAdaptations = (props) => {
             </div>
             <div style={{ display: "flex", justifyContent: "center" }}>
                 <button
-                    onClick={() => setSelectedHazards([selectedHazardName])}
+                    onClick={() => setSelectedHazards([])}
                     style={{
                         borderRadius: "8px",
                         padding: "1rem",
