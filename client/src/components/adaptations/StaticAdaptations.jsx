@@ -10,9 +10,11 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+/* global gtag */
+
 import "./StaticAdaptations.css";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import adaptationData from "../../kumu/parsed/adaptation_data.json";
 import { pathways } from "../climateImpacts/ClimateImpactSummaryData";
@@ -27,6 +29,7 @@ const StaticAdaptations = (props) => {
     const defaultFilterCategory = adaptationFilters[0].category;
     const [filterName, setFilterName] = useState(defaultFilterName);
     const [filterCategory, setFilterCategory] = useState(defaultFilterCategory);
+    const hasTrackedAdaptationClick = useRef(false);
 
     // Filter pathways if coastal filter is applied
     const [filteredPathwayData, setFilteredPathwayData] = useState(pathways);
@@ -53,6 +56,12 @@ const StaticAdaptations = (props) => {
             // If selected and the only one do nothing
             return prev;
         });
+
+        // Track first adaptation click
+        if (!hasTrackedAdaptationClick.current && typeof gtag !== 'undefined') {
+            gtag('event', 'adaptation_icon_clicked');
+            hasTrackedAdaptationClick.current = true;
+        }
     };
 
     // When coastal filter is applied, filter pathways and reset selectedHazards
