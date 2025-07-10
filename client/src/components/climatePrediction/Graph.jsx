@@ -10,6 +10,8 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+/* global gtag */
+
 import { useEffect, useRef, useState } from "react";
 import { useCollapse } from "react-collapsed";
 import LoadingOverlay from "react-loading-overlay-ts";
@@ -35,6 +37,7 @@ const Graph = (props) => {
     const graphContainerRef = useRef(null);
     const [isMobile, setIsMobile] = useState(false);
     const [containerWidth, setContainerWidth] = useState(undefined);
+    const hasTrackedCollapsibleOpen = useRef(false);
     // const [avgMin, setAvgMin] = useState([]);
     // const [avgMax, setAvgMax] = useState([]);
 
@@ -94,10 +97,19 @@ const Graph = (props) => {
             setExpanded(false);
             setAvg([]);
             setData([]);
+            // Reset tracking flag when no regions selected  
+            hasTrackedCollapsibleOpen.current = false;
         }
     }, [regions]);
 
     const handleOnClick = () => {
+        // Track first-time opening of collapsible
+        if (!isExpanded && !hasTrackedCollapsibleOpen.current && typeof gtag !== 'undefined') {
+            gtag('event', 'collapsible_open', {
+                section: 'climate_details'
+            });
+            hasTrackedCollapsibleOpen.current = true;
+        }
         setExpanded(!isExpanded);
     };
 

@@ -10,9 +10,11 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+/* global gtag */
+
 import "./KumuImpactPathway.css";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useRef,useState } from "react";
 import { useCollapse } from "react-collapsed";
 
 import { defaultState } from "../../utils/defaultState.js";
@@ -21,6 +23,7 @@ import { pathways } from "./ClimateImpactSummaryData";
 const KumuImpactPathway = ({ regions, selectedHazardName, setSelectedHazardName, applyCoastalFilter }) => {
     const [isExpanded, setExpanded] = useState(false);
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
+    const hasTrackedCollapsibleOpen = useRef(false);
 
     const [whichPathway, setWhichPathway] = useState("summary");
     const [filteredPathwayData, setFilteredPathwayData] = useState(pathways);
@@ -58,9 +61,18 @@ const KumuImpactPathway = ({ regions, selectedHazardName, setSelectedHazardName,
         }
     };
 
-    useEffect(() => setExpanded(false), [regions]);
+    useEffect(() => {
+        setExpanded(false);
+        // Reset tracking when regions change
+        hasTrackedCollapsibleOpen.current = false;
+    }, [regions]);
 
     function handleOnClick() {
+        // Track first-time opening of collapsible
+        if (!isExpanded && !hasTrackedCollapsibleOpen.current && typeof gtag !== 'undefined') {
+            gtag('event', 'impact_details_opened');
+            hasTrackedCollapsibleOpen.current = true;
+        } 
         setExpanded(!isExpanded);
     }
 

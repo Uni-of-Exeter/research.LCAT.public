@@ -10,9 +10,11 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+/* global gtag */
+
 import "./ClimateImpactSummary.css";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useRef,useState } from "react";
 import LoadingOverlay from "react-loading-overlay-ts";
 
 import { defaultState } from "../../utils/defaultState.js";
@@ -20,6 +22,7 @@ import { communityImpacts, impacts, pathways } from "./ClimateImpactSummaryData.
 
 const ClimateImpactSummary = ({ loading, selectedHazardName, setSelectedHazardName, applyCoastalFilter }) => {
     const [filteredPathwayData, setFilteredPathwayData] = useState(pathways);
+    const hasTrackedHazardSelection = useRef(false);
 
     // Filter pathways if coastal filter is applied
     useEffect(() => {
@@ -31,6 +34,17 @@ const ClimateImpactSummary = ({ loading, selectedHazardName, setSelectedHazardNa
         setSelectedHazardName(defaultState.selectedHazardName);
     }, [applyCoastalFilter, setSelectedHazardName]);
 
+    const handleHazardChange = (e) => {
+        const newHazardName = e.target.value;
+        
+        // Track first-time hazard selection change
+        if (!hasTrackedHazardSelection.current && typeof gtag !== 'undefined') {
+            gtag('event', 'hazard_dropdown_used');
+            hasTrackedHazardSelection.current = true;
+        }
+        
+        setSelectedHazardName(newHazardName);
+    };
     const selectedPathwayData = filteredPathwayData.find((item) => item.name === selectedHazardName);
     const filteredImpacts = impacts.filter((item) => item.inPathway.includes(selectedPathwayData.id));
     const filteredCommunityImpacts = communityImpacts.filter((item) => item.inPathway.includes(selectedPathwayData.id));
@@ -48,9 +62,7 @@ const ClimateImpactSummary = ({ loading, selectedHazardName, setSelectedHazardNa
                 You are viewing the <strong className="text-emphasis">climate</strong> impacts for&nbsp;
                 <select
                     value={selectedHazardName}
-                    onChange={(e) => {
-                        setSelectedHazardName(e.target.value);
-                    }}
+                    onChange={handleHazardChange}
                 >
                     {filteredPathwayData.map((pathway) => (
                         <option value={pathway.name} key={pathway.id}>
