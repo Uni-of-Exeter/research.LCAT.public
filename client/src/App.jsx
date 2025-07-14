@@ -40,29 +40,48 @@ const useScrollTracking = () => {
     const sectionsRef = useRef(new Set());
     
     useEffect(() => {
+        // Debug: Check if gtag is available
+        console.log('gtag available:', typeof gtag !== 'undefined');
+        console.log('Scroll tracking initialized');
+        
         const handleScroll = () => {
             const sections = document.querySelectorAll('[data-section]');
+            console.log('Scroll event triggered, found sections:', sections.length);
+            
             sections.forEach(section => {
                 const rect = section.getBoundingClientRect();
                 const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
                 
+                console.log(`Section ${section.dataset.section}: visible=${isVisible}, top=${rect.top}, bottom=${rect.bottom}`);
+                
                 if (isVisible && !sectionsRef.current.has(section.dataset.section)) {
+                    console.log('Tracking section view for:', section.dataset.section);
+                    
                     // Track section view
                     if (typeof gtag !== 'undefined') {
+                        console.log('Sending GA event for section:', section.dataset.section);
                         gtag('event', 'section_view', {
                             section_name: section.dataset.section,
                             timestamp: Date.now()
                         });
+                    } else {
+                        console.log('gtag not available for section tracking');
                     }
+                    
                     sectionsRef.current.add(section.dataset.section);
+                    console.log('Added section to tracked set. Total tracked:', sectionsRef.current.size);
                 }
             });
         };
 
         window.addEventListener('scroll', handleScroll);
         handleScroll(); // Check initial state
+        console.log('Scroll listener added and initial check completed');
         
-        return () => window.removeEventListener('scroll', handleScroll);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            console.log('Scroll listener removed');
+        };
     }, []);
 };
 
