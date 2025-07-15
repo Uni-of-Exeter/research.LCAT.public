@@ -13,7 +13,6 @@ Common Good Public License Beta 1.0 for more details. */
 import "./ClimateSummary.css";
 
 import LoadingOverlay from "react-loading-overlay-ts";
-import { forwardRef } from "react";
 
 import DecreaseSvg from "../../images/buttons/decrease";
 import IncreaseSvg from "../../images/buttons/increase";
@@ -21,7 +20,16 @@ import CloudSvg from "../../images/climate/CloudCover";
 import RainSvg from "../../images/climate/Rain";
 import TempSvg from "../../images/climate/Temperature";
 import WindSvg from "../../images/climate/WindSpeed";
-import { climateChange, formatClimateData } from "../../utils/climateUtils";
+
+// Function to parse the float values from the prediction
+const climateChange = (prediction, variable, year) => {
+    if (prediction.length > 0) {
+        const baseline = parseFloat(prediction[0][`${variable}_1980_mean`]);
+        const predict = parseFloat(prediction[0][`${variable}_${year}_mean`]);
+        return baseline != null && predict != null ? predict - baseline : null;
+    }
+    return null;
+};
 
 // Function to render an arrow pointing up or down
 const renderArrow = (value, variable) => {
@@ -33,10 +41,23 @@ const renderArrow = (value, variable) => {
 
 // Component to create summary text for each climate variable
 const PredictionSummary = ({ prediction, year, variable, name, units }) => {
-    const climateData = formatClimateData(prediction, variable, name, units, year);
+    const value = climateChange(prediction, variable, year);
+    if (value == null) {
+        return <span>No data yet for this area, coming soon.</span>;
+    }
+    const adjustedValue = variable === "rsds" ? -value : value;
+    const absoluteValue = Math.abs(adjustedValue).toFixed(2);
+    const direction = adjustedValue === 0 ? "No change in" : adjustedValue > 0 ? "increases" : "decreases";
+
     return (
         <div className="summary-text">
-            {climateData.change}
+            {adjustedValue === 0 ? (
+                `${direction} ${name}`
+            ) : (
+                <>
+                    {name} {direction} by {absoluteValue} {units}
+                </>
+            )}
         </div>
     );
 };
@@ -55,12 +76,12 @@ const ClimateVariable = ({ prediction, year, variable, name, units, Icon }) => {
 };
 
 // Final component for climate summary section
-const ClimateSummary = forwardRef(({ regions, loading, climatePrediction, year }, ref) => {
+const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
     if (regions.length === 0) return null;
 
     return (
         <LoadingOverlay active={loading} spinner text="Loading climate data">
-            <div className="climate-summary" ref={ref} id="climate-summary-capture">
+            <div className="climate-summary">
                 <div className="horiz-container">
                     <ClimateVariable
                         prediction={climatePrediction}
@@ -102,8 +123,6 @@ const ClimateSummary = forwardRef(({ regions, loading, climatePrediction, year }
             </div>
         </LoadingOverlay>
     );
-});
-
-ClimateSummary.displayName = 'ClimateSummary';
+};
 
 export default ClimateSummary;
