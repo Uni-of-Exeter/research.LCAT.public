@@ -371,6 +371,7 @@ class ChessScapeLoader:
                 bias_corrected_key = "non_bias_corrected"
 
             # Get correct climate data row with key
+            # TODO may have to change key below
             climate_data = [
                 self.extracted_data[bias_corrected_key][decade_key][key].values[i, j]
                 for decade_key in self.extracted_data[bias_corrected_key]
@@ -424,7 +425,15 @@ class ChessScapeLoader:
         Create a table of data for a single variable, containing an ID column and 10 decade averaged columns.
         """
 
-        variables = ["pr", "rsds", "sfcWind", "tas", "tasmax", "tasmin"]
+        # variables in original chess_scape data
+        source_variables = ["pr", "rsds", "sfcWind", "tas", "tasmax", "tasmin"]
+
+        # also derived variables
+        variables = [
+            *source_variables,
+            "sfcWind_99_percentile",
+            "sfcWind_95_percentile",
+        ]
 
         print("############################")
         print(f"### Data to be processed: {self.bias_corrected_keys}")
@@ -434,9 +443,10 @@ class ChessScapeLoader:
             print(f"### Processing variable: {variable}")
 
             self.load_all_netcdf(season, rcp, variable)
-            self.process_bias_keys()
-            self.transform_all_means()
-            self.drop_table()
+            if variable in source_variables:
+                self.process_bias_keys()
+                self.transform_all_means()
+            # self.drop_table() NOTE we don't want to delete anything while messing aroung
             self.create_table()
             self.insert_data_multiple_decades()
             self.close_netcdf_files()
