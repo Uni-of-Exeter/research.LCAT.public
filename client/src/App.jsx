@@ -101,6 +101,9 @@ const App = () => {
     const [selectedHazardName, setSelectedHazardName] = useState(defaultState.selectedHazardName);
     const [applyCoastalFilter, setApplyCoastalFilter] = useState(defaultState.applyCoastalFilter);
 
+    // Ref for climate summary component
+    const climateSummaryRef = useRef();
+
     useScrollTracking();
 
     useEffect(() => {
@@ -166,6 +169,7 @@ const App = () => {
                         />
 
                         <ClimateSummary
+                            ref={climateSummaryRef}
                             climatePrediction={climatePrediction}
                             year={year}
                             regions={regions}
@@ -227,7 +231,13 @@ const App = () => {
                     </div>
                 )}
 
-                <Footer />
+                <Footer 
+                    regions={regions}
+                    climatePrediction={climatePrediction}
+                    selectedHazardName={selectedHazardName}
+                    year={year}
+                    climateSummaryRef={climateSummaryRef}
+                />
             </div>
             <CookieConsent />
         </>
