@@ -227,7 +227,12 @@ const App = () => {
                     </div>
                 )}
 
-                <Footer />
+                <Footer 
+                    regions={regions}
+                    climatePrediction={climatePrediction}
+                    selectedHazardName={selectedHazardName}
+                    year={year}
+                />
             </div>
             <CookieConsent />
         </>
