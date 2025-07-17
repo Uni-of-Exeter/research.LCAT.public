@@ -33,16 +33,9 @@ const ClimateHazardRisk = ({ applyCoastalFilter }) => {
     }, [applyCoastalFilter]);
 
     const handleHazardClick = (hazardName) => {
-        // Track first hazard click
-        console.log('handling hazard click')
         if (!hasTrackedHazardClick.current && typeof gtag !== 'undefined') {
-            console.log('Sending GA event for hazards'); // Debug log
             gtag('event', 'hazard_icon_clicked');
             hasTrackedHazardClick.current = true;
-        } else if (typeof gtag === 'undefined') {
-            console.log('gtag not available');
-        } else {
-            console.log('Already tracked hazard click this session');
         }
         
         setSelectedHazard(hazardName);
