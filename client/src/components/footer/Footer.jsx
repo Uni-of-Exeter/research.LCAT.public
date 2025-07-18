@@ -24,7 +24,7 @@ import FooterLogos from "./FooterLogos";
 import FooterText from "./FooterText";
 import Handbook from "./Handbook";
 
-const Footer = ({ regions, climatePrediction, selectedHazardName, year = 2050 }) => {
+const Footer = ({ regions, climatePrediction, selectedHazardName, rcp, season }) => {
     const handleReportClick = () => {
         console.log('PDF button clicked');
         // Track PDF download event
@@ -34,7 +34,9 @@ const Footer = ({ regions, climatePrediction, selectedHazardName, year = 2050 })
                 'event_label': 'climate_report',
                 'regions_count': regions?.length || 0,
                 'has_climate_data': climatePrediction?.length > 0,
-                'selected_hazard': selectedHazardName || 'none'
+                'selected_hazard': selectedHazardName || 'none',
+                'rcp': rcp || 'none',
+                'season': season || 'none'
             });
         }
     };
@@ -51,7 +53,8 @@ const Footer = ({ regions, climatePrediction, selectedHazardName, year = 2050 })
                             regions={regions} 
                             climatePrediction={climatePrediction} 
                             selectedHazardName={selectedHazardName}
-                            year={year}
+                            rcp={rcp}
+                            season={season}
                         />}
                         fileName="climate-risk-assessment-report.pdf"
                         style={{

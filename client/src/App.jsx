@@ -231,7 +231,8 @@ const App = () => {
                     regions={regions}
                     climatePrediction={climatePrediction}
                     selectedHazardName={selectedHazardName}
-                    year={year}
+                    rcp={rcp}
+                    season={season}
                 />
             </div>
             <CookieConsent />
