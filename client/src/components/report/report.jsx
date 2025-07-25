@@ -278,9 +278,7 @@ const ClimateReport = ({ regions = [], climatePrediction = null, selectedHazardN
                         ))}
                     </View>
                     <Text style={styles.text}>
-                        The following information was taken from LCAT on {new Date().toLocaleDateString()} 
-                        and is a summary based on your unique search selection. <Link src="https://lcat.uk/">Visit LCAT</Link> 
-                        for more information, including for different locations, impacts or adaptation topic areas.  
+                        The following information was taken from LCAT on {new Date().toLocaleDateString()} and is a summary based on your unique search selection. <Link src="https://lcat.uk/">Visit LCAT</Link> for more information, including for different locations, impacts or adaptation topic areas.  
                     </Text>
                 </View>
             </Page>
