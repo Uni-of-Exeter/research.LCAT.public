@@ -24,8 +24,8 @@ import WindSvg from "../../images/climate/WindSpeed";
 // Function to parse the float values from the prediction
 const climateChange = (prediction, variable, year) => {
     if (prediction.length > 0) {
-        const baseline = parseFloat(prediction[0][`${variable}_1980_mean`]);
-        const predict = parseFloat(prediction[0][`${variable}_${year}_mean`]);
+        const baseline = parseFloat(prediction[0][`${variable}_1980`]);
+        const predict = parseFloat(prediction[0][`${variable}_${year}`]);
         return baseline != null && predict != null ? predict - baseline : null;
     }
     return null;

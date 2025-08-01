@@ -141,9 +141,9 @@ class ChessScapeAveragesLoader:
         else:
             print(f"Incorrect filepath: {filepath}")
 
-    def calculate_uk_averages_min_mean_max(self, data, lower_bound, higher_bound, step):
+    def calculate_uk_averages_mean(self, data, lower_bound, higher_bound, step):
         """
-        Calculate min, mean, and max values of netcdf file in time dimension, and then in spatial dimensions (i, j).
+        Calculate mean values of netcdf file in time dimension, and then in spatial dimensions (i, j).
         """
 
         # Slice the time dimension only to perform some checks
@@ -161,14 +161,9 @@ class ChessScapeAveragesLoader:
                 raise ValueError("Different months identified in time slice")
 
         # Perform the same slicing operation on the data itself
-        data_slice = data[self.variable][lower_bound:higher_bound:step]
-
-        # Return dict of three scalar values
-        return {
-            "min": data_slice.min(dim="time").min(),
-            "mean": data_slice.mean(dim="time").mean(),
-            "max": data_slice.max(dim="time").max(),
-        }
+        return (
+            data[self.variable][lower_bound:higher_bound:step].mean(dim="time").mean()
+        )
 
     def process_decade(self, data):
         """
@@ -207,8 +202,10 @@ class ChessScapeAveragesLoader:
             higher_bound = int(lower_bound + period)
             decade_tag = 1980 + int(lower_bound / step)
 
-            # Get extracted data dict containing min, mean and max and key by decade
-            data_by_decade[decade_tag] = self.calculate_uk_averages_min_mean_max(data, lower_bound, higher_bound, step)
+            # Get extracted data dict containing mean and key by decade
+            data_by_decade[decade_tag] = self.calculate_uk_averages_mean(
+                data, lower_bound, higher_bound, step
+            )
 
         self.extracted_data = data_by_decade
 
@@ -237,9 +234,8 @@ class ChessScapeAveragesLoader:
         if self.transform_performed:
             raise ValueError("Transforms already performed on values.")
 
-        for decade, min_mean_max_dict in self.extracted_data.items():
-            for key, value in min_mean_max_dict.items():
-                self.transform_dataset(value)
+        for data_by_decade in self.extracted_data.values():
+            self.transform_dataset(data_by_decade)
 
         # Flag that transforms have been performed
         self.transform_performed = True
@@ -257,9 +253,7 @@ class ChessScapeAveragesLoader:
             season VARCHAR(10),
             variable VARCHAR(10),
             decade INTEGER,
-            min FLOAT,
-            mean FLOAT,
-            max FLOAT
+            mean FLOAT
         );
         """
 
@@ -291,11 +285,7 @@ class ChessScapeAveragesLoader:
         output = io.StringIO()
 
         try:
-            for decade, min_mean_max_dict in self.extracted_data.items():
-                min_val = min_mean_max_dict["min"].values
-                mean_val = min_mean_max_dict["mean"].values
-                max_val = min_mean_max_dict["max"].values
-
+            for decade, data_array in self.extracted_data.items():
                 # Prepare row and convert to string format
                 row = [
                     self.row_id,
@@ -304,9 +294,7 @@ class ChessScapeAveragesLoader:
                     self.season,
                     self.variable,
                     decade,
-                    min_val,
-                    mean_val,
-                    max_val,
+                    data_array.to_numpy(),
                 ]
                 output.write(",".join(map(str, row)) + "\n")
 
@@ -316,7 +304,15 @@ class ChessScapeAveragesLoader:
             # Move cursor to start of buffer
             output.seek(0)
 
-            column_names = ["row_id", "is_bias_corrected", "rcp", "season", "variable", "decade", "min", "mean", "max"]
+            column_names = [
+                "row_id",
+                "is_bias_corrected",
+                "rcp",
+                "season",
+                "variable",
+                "decade",
+                "mean",
+            ]
 
             self.cur.copy_from(output, self.table_name, sep=",", columns=column_names)
             self.conn.commit()

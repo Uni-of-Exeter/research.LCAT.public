@@ -37,7 +37,7 @@ class ChessScapeLoader:
         6. Aggregate multiple tables and clean up
     """
 
-    def __init__(self, config, mask):
+    def __init__(self, config: dict, mask: np.ndarray) -> None:
         self.conf = config
 
         # psycopg2 connection and db cursor
@@ -62,7 +62,7 @@ class ChessScapeLoader:
         self.set_data_location()
         self.load_mask(mask)
 
-    def set_data_location(self, filepath=None):
+    def set_data_location(self, filepath: str | None = None) -> None:
         """
         Set the location of the CHESS-SCAPE netcdf data folder.
         """
@@ -73,7 +73,7 @@ class ChessScapeLoader:
 
         self.data_location = filepath
 
-    def load_mask(self, mask):
+    def load_mask(self, mask: np.ndarray) -> None:
         """
         Load a given mask, and determine what data will be needed (i.e. bias corrected or non-bias corrected, or both).
         """
@@ -89,7 +89,13 @@ class ChessScapeLoader:
         if 2 in mask:
             self.bias_corrected_keys.append("non_bias_corrected")
 
-    def connect_to_db(self, host=None, dbname=None, user=None, password=None):
+    def connect_to_db(
+        self,
+        host: str | None = None,
+        dbname: str | None = None,
+        user: str | None = None,
+        password: str | None = None,
+    ) -> None:
         """
         Connect to database with provided credentials, or those in config file.
         """
@@ -107,7 +113,7 @@ class ChessScapeLoader:
 
         print("Connection successful.")
 
-    def open_netcdf_file(self, filepath):
+    def open_netcdf_file(self, filepath: str) -> xr.Dataset | None:
         """
         Lazy load a netcdf file with xarray and return.
         """
@@ -118,7 +124,7 @@ class ChessScapeLoader:
         except Exception as e:
             print(f"netcdf file open failed with error: {e}")
 
-    def close_netcdf_files(self):
+    def close_netcdf_files(self) -> None:
         """
         Close netcdf files and release any resources associated with them.
         """
@@ -126,7 +132,9 @@ class ChessScapeLoader:
         for file in self.current_netcdf_data.values():
             file.close()
 
-    def load_netcdf(self, season, rcp, bias_corrected_key, variable):
+    def load_netcdf(
+        self, season: str, rcp: int, bias_corrected_key: str, variable: str
+    ) -> None:
         """
         Given parameters and data required by mask, load the correct netcdf filse, and set some variables.
         Note that folder structure matches raw data in repository.
@@ -167,7 +175,7 @@ class ChessScapeLoader:
         else:
             print(f"Incorrect filepath: {filepath}")
 
-    def load_all_netcdf(self, season, rcp, variable):
+    def load_all_netcdf(self, season: str, rcp: int, variable: str) -> None:
         """
         Load the correct data sets for the current parameters, given the labels in the mask.
         """
@@ -177,15 +185,17 @@ class ChessScapeLoader:
 
         print(f"Loaded {len(self.bias_corrected_keys)} netcdf files into xarray.")
 
-    def calculate_min_mean_max(self, data, lower_bound, higher_bound, step):
+    def calculate_mean(
+        self, data: xr.Dataset, lower_bound: int, higher_bound: int, step: int
+    ) -> xr.DataArray:
         """
-        Calculate min, mean, and max values of netcdf file in time dimension, with upper and lower bounds.
+        Calculate mean values of netcdf file in time dimension.
         """
 
         # Slice the time dimension only to perform some checks
         time_slice = data.time[lower_bound:higher_bound:step].values
 
-        # Check we always take mean, min and max over 10 year slice
+        # Check we always take mean over 10 year slice
         if len(time_slice) != 10:
             raise ValueError("Dataset slice does not contain 10 values.")
 
@@ -197,15 +207,63 @@ class ChessScapeLoader:
                 raise ValueError("Different months identified in time slice")
 
         # Perform the same slicing operation on the data itself
-        data_slice = data[self.variable][lower_bound:higher_bound:step]
+        return data[self.variable][lower_bound:higher_bound:step].mean(dim="time")
 
-        return {
-            "min": data_slice.min(dim="time"),
-            "mean": data_slice.mean(dim="time"),
-            "max": data_slice.max(dim="time"),
+    def process_derived_variable(self, variable: str) -> None:
+        """
+        Process derived variables like tasmax_99_percentile and tasmin_1_percentile that have pre-computed data
+        with decade coordinates that need to be mapped to actual years.
+        """
+        print(f"### Processing derived variable: {variable}")
+        self.extracted_data = {}
+
+        # Map variable names to their data keys
+        quantile_mapping = {
+            "tasmax_99_percentile": "quantile_99",
+            "tasmin_1_percentile": "quantile_1",
         }
 
-    def process_decade(self, data):
+        if variable not in quantile_mapping:
+            raise ValueError(f"Unknown derived variable: {variable}")
+
+        quantile_key = quantile_mapping[variable]
+
+        for bias_corrected_key in self.bias_corrected_keys:
+            # Get the quantile data using the mapped key
+            quantile_data = self.current_netcdf_data[bias_corrected_key][quantile_key]
+
+            # Debug: check the decade coordinate
+            print(
+                f"### Available decade coordinates: {quantile_data.decade.to_numpy()}"
+            )
+
+            # Create the decade structure to match expected format
+            decade_dict = {}
+
+            # Map the decade coordinate values to actual years
+            # [0,5,6,7,8,9] -> [1980,2030,2040,2050,2060,2070]
+            decade_mapping = {0: 1980, 5: 2030, 6: 2040, 7: 2050, 8: 2060, 9: 2070}
+
+            # Extract data for each available decade
+            for decade_coord in quantile_data.decade.to_numpy():
+                if decade_coord in decade_mapping:
+                    decade_year = decade_mapping[decade_coord]
+                    # Select the data for this specific decade coordinate
+                    decade_data = quantile_data.sel(decade=decade_coord)
+                    decade_dict[decade_year] = decade_data
+                    print(
+                        f"### Mapped decade coord {decade_coord} -> year {decade_year}"
+                    )
+                else:
+                    print(f"### WARNING: Unknown decade coordinate: {decade_coord}")
+
+            self.extracted_data[bias_corrected_key] = decade_dict
+
+            print(
+                f"### Final decade structure for {variable}: {sorted(decade_dict.keys())}"
+            )
+
+    def process_decade(self, data: xr.Dataset) -> dict[int, xr.DataArray]:
         """
         Process NetCDF files by decade. Mins, means, and maxes are taken across decades.
         We perform this operation manually, rather than using xarray.resample.
@@ -242,12 +300,14 @@ class ChessScapeLoader:
             higher_bound = int(lower_bound + period)
             decade_tag = 1980 + int(lower_bound / step)
 
-            # Get extracted data dict containing min, mean and max and key by decade
-            data_by_decade[decade_tag] = self.calculate_min_mean_max(data, lower_bound, higher_bound, step)
+            # Get extracted data dict containing mean and key by decade
+            data_by_decade[decade_tag] = self.calculate_mean(
+                data, lower_bound, higher_bound, step
+            )
 
         return data_by_decade
 
-    def process_bias_keys(self):
+    def process_bias_keys(self) -> None:
         """
         Extract data for each decade in bias and non bias corrected cases.
         """
@@ -255,7 +315,7 @@ class ChessScapeLoader:
         for bias_corrected_key in self.bias_corrected_keys:
             self.extracted_data[bias_corrected_key] = self.process_decade(self.current_netcdf_data[bias_corrected_key])
 
-    def transform_dataset(self, data):
+    def transform_dataset(self, data: xr.DataArray) -> xr.DataArray:
         """
         Perform any transformations necessary on a dataset.
         """
@@ -272,7 +332,7 @@ class ChessScapeLoader:
 
         return data
 
-    def transform_all_means(self):
+    def transform_all_means(self) -> None:
         """
         Perform transformations on data values away from SI units, where required.
         """
@@ -280,15 +340,14 @@ class ChessScapeLoader:
         if self.transform_performed:
             raise ValueError("Transforms already performed on values.")
 
-        for bias_key, data_by_decade in self.extracted_data.items():
-            for decade, min_mean_max_dict in data_by_decade.items():
-                for key, value in min_mean_max_dict.items():
-                    self.transform_dataset(value)
+        for data_by_decade in self.extracted_data.values():
+            for value in data_by_decade.values():
+                self.transform_dataset(value)
 
         # Flag that transforms have been performed
         self.transform_performed = True
 
-    def create_table(self):
+    def create_table(self) -> None:
         """
         Create table if it does not already exist.
         """
@@ -306,7 +365,7 @@ class ChessScapeLoader:
         except Exception as e:
             print(f"Error creating CHESS-SCAPE table: {e}")
 
-    def drop_table(self, table_name=None):
+    def drop_table(self, table_name: str | None = None) -> None:
         """
         Drop the table associated with the current variables if it exists.
         """
@@ -322,7 +381,7 @@ class ChessScapeLoader:
         except Exception as e:
             print(f"Error dropping CHESS-SCAPE table: {e}")
 
-    def add_multiple_columns(self, column_names):
+    def add_multiple_columns(self, column_names: list[str]) -> None:
         """
         Given a list of columns, add these to the database if they do not already exist.
         """
@@ -333,7 +392,7 @@ class ChessScapeLoader:
 
         self.conn.commit()
 
-    def insert_data_multiple_decades(self):
+    def insert_data_multiple_decades(self) -> None:
         """
         Bulk insert multiple columns of data (i.e. all decades for a variable). Note that this loads bias corrected
         and non-bias corrected into the same table (deliberately).
@@ -342,14 +401,12 @@ class ChessScapeLoader:
         # Get a bias key
         bias_key = self.bias_corrected_keys[0]
 
-        new_column_names = []
-        for decade, min_mean_max_dict in self.extracted_data[bias_key].items():
-            for key in min_mean_max_dict:
-                if key not in ["min", "mean", "max"]:
-                    raise ValueError("Column names incorrect")
-
-                new_column_name = f"{self.variable}_{decade}_{key}"
-                new_column_names.append(new_column_name)
+        # Add columns to database in one go
+        if self.extracted_data[bias_key] == {}:
+            print("### WARNING: No data extracted for this variable.")
+        new_column_names = [
+            f"{self.variable}_{decade}" for decade in self.extracted_data[bias_key]
+        ]
 
         self.add_multiple_columns(new_column_names)
 
@@ -373,11 +430,9 @@ class ChessScapeLoader:
             # Get correct climate data row with key
             # TODO may have to change key below
             climate_data = [
-                self.extracted_data[bias_corrected_key][decade_key][key].values[i, j]
+                self.extracted_data[bias_corrected_key][decade_key].values[i, j]
                 for decade_key in self.extracted_data[bias_corrected_key]
-                for key in ["min", "mean", "max"]
             ]
-
             # Get grid cell ID
             grid_cell_id = i * self.mask.shape[1] + j
 
@@ -394,7 +449,7 @@ class ChessScapeLoader:
         self.conn.commit()
         output.close()
 
-    def join_tables(self, variables):
+    def join_tables(self, variables: list[str]) -> None:
         """
         Given multiple tables for variables, create a single table with a JOIN, and clean up afterwards.
         """
@@ -420,20 +475,22 @@ class ChessScapeLoader:
         for temp_table in [f"{self.aggregated_table_name}_{var}" for var in variables]:
             self.drop_table(temp_table)
 
-    def process_all_variables(self, season, rcp):
+    def process_all_variables(self, season: str, rcp: int) -> None:
         """
         Create a table of data for a single variable, containing an ID column and 10 decade averaged columns.
         """
 
         # variables in original chess_scape data
+        # TODO eventually get rid of tasmax, tasmin
         source_variables = ["pr", "rsds", "sfcWind", "tas", "tasmax", "tasmin"]
 
         # also derived variables
-        variables = [
-            *source_variables,
-            "sfcWind_99_percentile",
-            "sfcWind_95_percentile",
-        ]
+        # TODO currently not worrying about seasonal at all
+        variables = (
+            [*source_variables, "tasmax_99_percentile", "tasmin_1_percentile"]
+            if season == "annual"
+            else source_variables
+        )
 
         print("############################")
         print(f"### Data to be processed: {self.bias_corrected_keys}")
@@ -444,10 +501,30 @@ class ChessScapeLoader:
 
             self.load_all_netcdf(season, rcp, variable)
             if variable in source_variables:
+                # Standard processing for source variables
                 self.process_bias_keys()
                 self.transform_all_means()
-            # self.drop_table() NOTE we don't want to delete anything while messing aroung
+            else:
+                # Special processing for derived variables like tasmax_99_percentile
+                self.process_derived_variable(variable)
+
+            self.drop_table()
             self.create_table()
+            print(f"### About to insert data for {variable}")
+            print(f"### Table name: {self.table_name}")
+
+            # Check if we have data to insert
+            if hasattr(self, "extracted_data") and self.extracted_data:
+                print(
+                    f"### extracted_data has keys: {list(self.extracted_data.keys())}"
+                )
+                for key, data in self.extracted_data.items():
+                    print(
+                        f"### {key} has decades: {list(data.keys()) if data else 'None'}"
+                    )
+            else:
+                print(f"### WARNING: No extracted_data found for {variable}")
+
             self.insert_data_multiple_decades()
             self.close_netcdf_files()
 
@@ -458,7 +535,7 @@ class ChessScapeLoader:
         print(f"### Processing complete for dataset: {season}, rcp{rcp}.")
         print("############################\n")
 
-    def process_all_seasons(self, rcp):
+    def process_all_seasons(self, rcp: int) -> None:
         """
         Process all variables for all seasons.
         """
@@ -469,7 +546,7 @@ class ChessScapeLoader:
             self.process_all_variables(season, rcp)
 
     @timefn
-    def process_all_rcps(self):
+    def process_all_rcps(self) -> None:
         """
         Process all seasons and variables for all RCPs.
         """

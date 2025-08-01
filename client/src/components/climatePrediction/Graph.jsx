@@ -35,8 +35,8 @@ const Graph = (props) => {
     const graphContainerRef = useRef(null);
     const [isMobile, setIsMobile] = useState(false);
     const [containerWidth, setContainerWidth] = useState(undefined);
-    const [avgMin, setAvgMin] = useState([]);
-    const [avgMax, setAvgMax] = useState([]);
+    // const [avgMin, setAvgMin] = useState([]);
+    // const [avgMax, setAvgMax] = useState([]);
 
     useEffect(() => {
         // Responsive layout for mobile devices
@@ -69,24 +69,24 @@ const Graph = (props) => {
     };
 
     useEffect(() => {
-        if (climatePrediction.length === 0 || !climatePrediction[0][`${variable}_1980_mean`]) return;
+        if (climatePrediction.length === 0 || !climatePrediction[0][`${variable}_1980`]) return;
         const years = [1980, 2030, 2040, 2050, 2060, 2070];
 
         const data = years.map((year) => ({
             x: year === 1980 ? "1980 baseline" : `${year}`,
-            y: climatePrediction[0]?.[`${variable}_${year}_mean`] ?? null,
-            min: climatePrediction[0]?.[`${variable}_${year}_min`] ?? null,
-            max: climatePrediction[0]?.[`${variable}_${year}_max`] ?? null,
+            y: climatePrediction[0]?.[`${variable}_${year}`] ?? null,
+            min: climatePrediction[0]?.[`tasmin_1_percentile_${year}`] ?? null,
+            max: climatePrediction[0]?.[`tasmax_99_percentile_${year}`] ?? null,
         }));
 
-        const av = years.map((year) => ({ x: year === 1980 ? "1980 baseline" : `${year}`, y: climateAverages[year]?.mean ?? null }));
-        const avMin = years.map((year) => climateAverages[year]?.min ?? null);
-        const avMax = years.map((year) => climateAverages[year]?.max ?? null);
+        const av = years.map((year) => ({ x: year === 1980 ? "1980 baseline" : `${year}`, y: climateAverages[year] ?? null }));
+        // const avMin = years.map((year) => climateAverages[year]?.min ?? null);
+        // const avMax = years.map((year) => climateAverages[year]?.max ?? null);
 
         setAvg(av);
         setData(data);
-        setAvgMin(avMin);
-        setAvgMax(avMax);
+        // setAvgMin(avMin);
+        // setAvgMax(avMax);
     }, [climatePrediction, rcp, season, showAverage, variable, climateAverages, climateAverageRanges]);
 
     useEffect(() => {
@@ -116,35 +116,6 @@ const Graph = (props) => {
   const hoverTemplate = '%{customdata}<extra></extra>';
 
   const traces = [
-    // Max line
-    {
-      x: xValues,
-      y: maxY,
-      type: "scatter",
-      mode: "lines+markers",
-      name: "Your areas (max)",
-      marker: { color: selectedRegionsLine, symbol: "circle-open" },
-      line: { color: selectedRegionsLine, width: 2, dash: "dot" },
-      opacity: 0.5,
-      hoverinfo: "y",
-      legendgroup: "your-areas-max",
-      showlegend: true,
-      customdata: maxY.map(formatHover),
-      hovertemplate: hoverTemplate,
-    },
-    // Shading between mean and max (linked to max line)
-    {
-      x: [...xValues, ...xValues.slice().reverse()],
-      y: [...yValues, ...maxY.slice().reverse()],
-      fill: "toself",
-      fillcolor: selectedRegionsShade,
-      line: { color: "rgba(0,0,0,0)" },
-      hoverinfo: "skip",
-      name: "Your areas (mean-max range)",
-      showlegend: false,
-      legendgroup: "your-areas-max",
-      visible: true,
-    },
     // Mean line
     {
       x: xValues,
@@ -160,68 +131,102 @@ const Graph = (props) => {
       customdata: yValues.map(formatHover),
       hovertemplate: hoverTemplate,
     },
-    // Shading between min and mean (linked to min line)
-    {
-      x: [...xValues, ...xValues.slice().reverse()],
-      y: [...minY, ...yValues.slice().reverse()],
-      fill: "toself",
-      fillcolor: selectedRegionsShade,
-      line: { color: "rgba(0,0,0,0)" },
-      hoverinfo: "skip",
-      name: "Your areas (min-mean range)",
-      showlegend: false,
-      legendgroup: "your-areas-min",
-      visible: true,
-    },
-    // Min line
-    {
-      x: xValues,
-      y: minY,
-      type: "scatter",
-      mode: "lines+markers",
-      name: "Your areas (min)",
-      marker: { color: selectedRegionsLine, symbol: "circle-open" },
-      line: { color: selectedRegionsLine, width: 2, dash: "dot" },
-      opacity: 0.5,
-      hoverinfo: "y",
-      legendgroup: "your-areas-min",
-      showlegend: true,
-      customdata: minY.map(formatHover),
-      hovertemplate: hoverTemplate,
-    },
   ];
+
+  if (variable === "tas") {
+    traces.push(
+        // Max line
+        {
+            x: xValues,
+            y: maxY,
+            type: "scatter",
+            mode: "lines+markers",
+            name: "Your areas (max)",
+            marker: { color: selectedRegionsLine, symbol: "circle-open" },
+            line: { color: selectedRegionsLine, width: 2, dash: "dot" },
+            opacity: 0.5,
+            hoverinfo: "y",
+            legendgroup: "your-areas-max",
+            showlegend: true,
+            customdata: maxY.map(formatHover),
+            hovertemplate: hoverTemplate,
+        },
+        // Shading between mean and max (linked to max line)
+        {
+            x: [...xValues, ...xValues.slice().reverse()],
+            y: [...yValues, ...maxY.slice().reverse()],
+            fill: "toself",
+            fillcolor: selectedRegionsShade,
+            line: { color: "rgba(0,0,0,0)" },
+            hoverinfo: "skip",
+            name: "Your areas (mean-max range)",
+            showlegend: false,
+            legendgroup: "your-areas-max",
+            visible: true,
+        },
+        // Shading between min and mean (linked to min line)
+        {
+            x: [...xValues, ...xValues.slice().reverse()],
+            y: [...minY, ...yValues.slice().reverse()],
+            fill: "toself",
+            fillcolor: selectedRegionsShade,
+            line: { color: "rgba(0,0,0,0)" },
+            hoverinfo: "skip",
+            name: "Your areas (min-mean range)",
+            showlegend: false,
+            legendgroup: "your-areas-min",
+            visible: true,
+        },
+        // Min line
+        {
+            x: xValues,
+            y: minY,
+            type: "scatter",
+            mode: "lines+markers",
+            name: "Your areas (min)",
+            marker: { color: selectedRegionsLine, symbol: "circle-open" },
+            line: { color: selectedRegionsLine, width: 2, dash: "dot" },
+            opacity: 0.5,
+            hoverinfo: "y",
+            legendgroup: "your-areas-min",
+            showlegend: true,
+            customdata: minY.map(formatHover),
+            hovertemplate: hoverTemplate,
+        },
+    )
+  }
 
   if (showAverage) {
     // UK max line
-    traces.push({
-      x: xValues,
-      y: avgMax,
-      type: "scatter",
-      mode: "lines+markers",
-      name: "UK average (max)",
-      marker: { color: averageUKLine, symbol: "circle-open" },
-      line: { color: averageUKLine, width: 2, dash: "dot" },
-      opacity: 0.5,
-      hoverinfo: "y",
-      legendgroup: "uk-average-max",
-      showlegend: true,
-      visible: "legendonly",
-      customdata: avgMax.map(formatHover),
-      hovertemplate: hoverTemplate,
-    });
-    // Shading between UK mean and max (linked to max line)
-    traces.push({
-      x: [...xValues, ...xValues.slice().reverse()],
-      y: [...avgY, ...avgMax.slice().reverse()],
-      fill: "toself",
-      fillcolor: averageUKShade,
-      line: { color: "rgba(0,0,0,0)" },
-      hoverinfo: "skip",
-      name: "UK average (mean-max range)",
-      showlegend: false,
-      legendgroup: "uk-average-max",
-      visible: "legendonly",
-    });
+    // traces.push({
+    //   x: xValues,
+    //   y: avgMax,
+    //   type: "scatter",
+    //   mode: "lines+markers",
+    //   name: "UK average (max)",
+    //   marker: { color: averageUKLine, symbol: "circle-open" },
+    //   line: { color: averageUKLine, width: 2, dash: "dot" },
+    //   opacity: 0.5,
+    //   hoverinfo: "y",
+    //   legendgroup: "uk-average-max",
+    //   showlegend: true,
+    //   visible: "legendonly",
+    //   customdata: avgMax.map(formatHover),
+    //   hovertemplate: hoverTemplate,
+    // });
+    // // Shading between UK mean and max (linked to max line)
+    // traces.push({
+    //   x: [...xValues, ...xValues.slice().reverse()],
+    //   y: [...avgY, ...avgMax.slice().reverse()],
+    //   fill: "toself",
+    //   fillcolor: averageUKShade,
+    //   line: { color: "rgba(0,0,0,0)" },
+    //   hoverinfo: "skip",
+    //   name: "UK average (mean-max range)",
+    //   showlegend: false,
+    //   legendgroup: "uk-average-max",
+    //   visible: "legendonly",
+    // });
     // UK mean line
     traces.push({
       x: xValues,
@@ -238,53 +243,53 @@ const Graph = (props) => {
       hovertemplate: hoverTemplate,
     });
     // Shading between UK min and mean (linked to min line)
-    traces.push({
-      x: [...xValues, ...xValues.slice().reverse()],
-      y: [...avgMin, ...avgY.slice().reverse()],
-      fill: "toself",
-      fillcolor: averageUKShade,
-      line: { color: "rgba(0,0,0,0)" },
-      hoverinfo: "skip",
-      name: "UK average (min-mean range)",
-      showlegend: false,
-      legendgroup: "uk-average-min",
-      visible: "legendonly",
-    });
-    // UK min line
-    traces.push({
-      x: xValues,
-      y: avgMin,
-      type: "scatter",
-      mode: "lines+markers",
-      name: "UK average (min)",
-      marker: { color: averageUKLine, symbol: "circle-open" },
-      line: { color: averageUKLine, width: 2, dash: "dot" },
-      opacity: 0.5,
-      hoverinfo: "y",
-      legendgroup: "uk-average-min",
-      showlegend: true,
-      visible: "legendonly",
-      customdata: avgMin.map(formatHover),
-      hovertemplate: hoverTemplate,
-    });
+    // traces.push({
+    //   x: [...xValues, ...xValues.slice().reverse()],
+    //   y: [...avgMin, ...avgY.slice().reverse()],
+    //   fill: "toself",
+    //   fillcolor: averageUKShade,
+    //   line: { color: "rgba(0,0,0,0)" },
+    //   hoverinfo: "skip",
+    //   name: "UK average (min-mean range)",
+    //   showlegend: false,
+    //   legendgroup: "uk-average-min",
+    //   visible: "legendonly",
+    // });
+    // // UK min line
+    // traces.push({
+    //   x: xValues,
+    //   y: avgMin,
+    //   type: "scatter",
+    //   mode: "lines+markers",
+    //   name: "UK average (min)",
+    //   marker: { color: averageUKLine, symbol: "circle-open" },
+    //   line: { color: averageUKLine, width: 2, dash: "dot" },
+    //   opacity: 0.5,
+    //   hoverinfo: "y",
+    //   legendgroup: "uk-average-min",
+    //   showlegend: true,
+    //   visible: "legendonly",
+    //   customdata: avgMin.map(formatHover),
+    //   hovertemplate: hoverTemplate,
+    // });
   }
 
     // Temporary hardcoded y-axis ranges
     const yAxisRanges = {
         pr: [0, 10],
-        tas: [0, 25],
+        tas: [-10, 40],
         sfcWind: [0, 10],
         rsds: [0, 300],
     };
 
   // Pad by 5% either side
-  const variableRange = climateAverageRanges && climateAverageRanges[variable];
-    const paddedRange = variableRange
-        ? [
-            variableRange[0] - 0.05 * (variableRange[1] - variableRange[0]),
-            variableRange[1] + 0.05 * (variableRange[1] - variableRange[0])
-        ]
-        : undefined;
+//   const variableRange = climateAverageRanges && climateAverageRanges[variable];
+//     const paddedRange = variableRange
+//         ? [
+//             variableRange[0] - 0.05 * (variableRange[1] - variableRange[0]),
+//             variableRange[1] + 0.05 * (variableRange[1] - variableRange[0])
+//         ]
+//         : undefined;
 
   const layout = {
     legend: isMobile
@@ -300,7 +305,7 @@ const Graph = (props) => {
     yaxis: {
       title: { text: getYAxis(), standoff: isMobile ? 10 : 40 },
       automargin: true,
-      range: paddedRange,
+      range: yAxisRanges[variable],
     },
     font: isMobile ? { size: 12 } : { size: 18 },
     height: 400, // fixed height for consistent appearance
