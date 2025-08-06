@@ -15,6 +15,7 @@ import "./StaticAdaptation.css";
 import { useEffect, useState } from "react";
 import { useCollapse } from "react-collapsed";
 
+import adaptationRefs from "../../kumu/parsed/processed_references.json";
 import StaticReferences from "./StaticReferences";
 
 const StaticAdaptation = ({ adaptation, selectedHazardName }) => {
@@ -29,6 +30,12 @@ const StaticAdaptation = ({ adaptation, selectedHazardName }) => {
     // Ensure adaptation exists and has attributes
     const attributes = adaptation?.attributes || {};
     const aggregatedLayers = attributes.aggregated_layers || [];
+    const referenceIds = attributes.reference_id || [];
+
+    // Filter case studies from references
+    const caseStudyRefs = referenceIds
+        .map((id) => adaptationRefs[id.toString()])
+        .filter((ref) => ref && ref.notes === "Case study");
 
     return (
         <div className="adaptation collapsible">
@@ -40,6 +47,21 @@ const StaticAdaptation = ({ adaptation, selectedHazardName }) => {
                 <div className="content">
                     <b className="static-adaptation-emphasis">Description:</b>
                     <p>{attributes.description || "No description available"}</p>
+                    {caseStudyRefs.length > 0 && (
+                        <>
+                            <b className="static-adaptation-emphasis">Case Studies:</b>
+                            <ul>
+                                {caseStudyRefs.map((ref) => (
+                                    <li key={ref.article_id}>
+                                        <a href={ref.link} target="_blank" rel="noopener noreferrer">
+                                            {ref.title || ref.link}
+                                        </a>
+                                        {ref.authors && ` - ${ref.authors}`}
+                                    </li>
+                                ))}
+                            </ul>
+                        </>
+                    )}
                     <b className="static-adaptation-emphasis">Related impact pathways:</b>
                     <ul>
                         {aggregatedLayers

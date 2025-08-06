@@ -11,6 +11,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
 import "./StaticReferences.css";
+
 import { useState } from "react";
 import { useCollapse } from "react-collapsed";
 
@@ -71,7 +72,6 @@ const StaticReferences = ({ referenceIds }) => {
 
     // Sort reference types for consistent ordering
     const sortedTypes = Object.keys(groupedRefs).sort((a, b) => {
-        // Put common types first, then alphabetical
         const typeOrder = ['Journal Article', 'Book', 'Report', 'Web Page', 'Other'];
         const aIndex = typeOrder.indexOf(a);
         const bIndex = typeOrder.indexOf(b);
