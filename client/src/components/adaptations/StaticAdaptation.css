@@ -46,3 +46,26 @@
     font-weight: bold;
     font-size: 1.2em;
 }
+
+.pathways-inline {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0.5rem 0;
+}
+
+@media (min-width: 1000px) {
+    .pathways-inline {
+        font-size: 1.1rem;
+    }
+}
+
+@media (min-width: 1500px) {
+    .pathways-inline {
+        font-size: 1.4rem;
+    }
+}
+
+.pathways-inline strong {
+    font-weight: 600;
+    color: #333;
+}

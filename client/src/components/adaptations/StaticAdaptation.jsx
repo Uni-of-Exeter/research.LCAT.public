@@ -18,14 +18,14 @@ import { useCollapse } from "react-collapsed";
 import adaptationRefs from "../../kumu/parsed/processed_references.json";
 import StaticReferences from "./StaticReferences";
 
-const StaticAdaptation = ({ adaptation, selectedHazardName }) => {
+const StaticAdaptation = ({ adaptation, selectedHazards }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
 
     // Collapse all sections when hazard changes
     useEffect(() => {
         setIsExpanded(false);
-    }, [selectedHazardName]);
+    }, [selectedHazards]);
 
     // Ensure adaptation exists and has attributes
     const attributes = adaptation?.attributes || {};
@@ -37,6 +37,8 @@ const StaticAdaptation = ({ adaptation, selectedHazardName }) => {
         .map((id) => adaptationRefs[id.toString()])
         .filter((ref) => ref && ref.notes === "Case study");
 
+    const relatedHazards = aggregatedLayers.filter((item) => !selectedHazards.includes(item));
+
     return (
         <div className="adaptation collapsible">
             <div className="adaptation header" {...getToggleProps({ onClick: () => setIsExpanded((prev) => !prev) })}>
@@ -47,6 +49,13 @@ const StaticAdaptation = ({ adaptation, selectedHazardName }) => {
                 <div className="content">
                     <b className="static-adaptation-emphasis">Description:</b>
                     <p>{attributes.description || "No description available"}</p>
+                    {relatedHazards.length > 0 && (
+                        <p className="pathways-inline">
+                            <strong>Related impact pathways:</strong> {
+                                relatedHazards
+                                .join(', ')}
+                        </p>
+                    )}
                     {caseStudyRefs.length > 0 && (
                         <>
                             <b className="static-adaptation-emphasis">Case Studies:</b>
@@ -62,15 +71,6 @@ const StaticAdaptation = ({ adaptation, selectedHazardName }) => {
                             </ul>
                         </>
                     )}
-                    <b className="static-adaptation-emphasis">Related impact pathways:</b>
-                    <ul>
-                        {aggregatedLayers
-                            .filter((item) => item !== selectedHazardName)
-                            .map((item, index) => (
-                                <li key={index}>{item}</li>
-                            ))}
-                    </ul>
-
                     <StaticReferences referenceIds={attributes.reference_id} />
                 </div>
             </div>
