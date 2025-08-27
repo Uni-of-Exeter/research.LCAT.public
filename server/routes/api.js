@@ -205,8 +205,8 @@ router.get("/region", async function (req, res) {
             )
             FROM ${table}
             WHERE ST_Intersects(
-                geom, 
-                ST_Transform(ST_MakeEnvelope($2, $3, $4, $5, 4326), ${boundaryDetails.srid})
+                ST_Transform(geom, 4326),
+                ST_MakeEnvelope($2, $3, $4, $5, 4326)
             );
         `;
 

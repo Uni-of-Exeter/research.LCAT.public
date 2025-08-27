@@ -14,7 +14,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./StaticAdaptations.css";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import adaptationData from "../../kumu/parsed/adaptation_data.json";
 import { pathways } from "../climateImpacts/ClimateImpactSummaryData";
@@ -177,7 +177,7 @@ const StaticAdaptations = (props) => {
                             <StaticAdaptation
                                 key={adaptation._id}
                                 adaptation={adaptation}
-                                selectedHazardName={selectedHazardName}
+                                selectedHazards={selectedHazards}
                             />
                         );
                     })

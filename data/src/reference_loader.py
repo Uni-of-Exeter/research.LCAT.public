@@ -59,7 +59,8 @@ class ReferenceLoader:
             authors TEXT,
             date VARCHAR(50),
             journal TEXT,
-            issue TEXT
+            issue TEXT,
+            notes TEXT
         );
         """
 
@@ -75,7 +76,18 @@ class ReferenceLoader:
         Ensure a record has the correct fields before inserting.
         """
 
-        required_fields = ["article_id", "type", "doi", "link", "title", "authors", "date", "journal", "issue"]
+        required_fields = [
+            "article_id",
+            "type",
+            "doi",
+            "link",
+            "title",
+            "authors",
+            "date",
+            "journal",
+            "issue",
+            "notes",
+        ]
 
         return all(field in record for field in required_fields)
 
@@ -88,8 +100,8 @@ class ReferenceLoader:
             raise ValueError("No reference data loaded. Use the load_json() method to load references.")
 
         insert_query = """
-        INSERT INTO "references" (article_id, type, doi, link, link_replacement, title, authors, date, journal, issue)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO "references" (article_id, type, doi, link, link_replacement, title, authors, date, journal, issue, notes)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT (article_id) DO NOTHING;
         """
 
@@ -108,6 +120,7 @@ class ReferenceLoader:
                         record["date"],
                         record["journal"],
                         record["issue"],
+                        record["notes"],
                     ),
                 )
         self.conn.commit()

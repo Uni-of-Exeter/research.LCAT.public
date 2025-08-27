@@ -10,7 +10,7 @@
 }
 
 .reference-container:hover {
-    background-color: #f0f4f8;
+    background-color: #f0f4f8 !important;
 }
 
 .reference-emphasis {
@@ -23,4 +23,52 @@
 .reference-container ul li:nth-child(3),
 .reference-container ul li:nth-child(4) {
     list-style-type: none;
+}
+
+.static-references {
+    margin-top: 1rem;
+}
+
+.reference-group {
+    margin-bottom: 0.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+.reference-group-header {
+    padding: 0.75rem;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 4px 4px 0 0;
+    transition: background-color 0.2s ease;
+}
+
+.reference-group-header:hover {
+    background-color: #e9ecef;
+}
+
+.reference-type-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.reference-group-content {
+    padding: 0.5rem;
+    border-top: 1px solid #e0e0e0;
+    background-color: #dee2e6;
+}
+
+.reference-group-content .reference-container {
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+}
+
+.reference-group-content .reference-container:last-child {
+    margin-bottom: 0;
 }
