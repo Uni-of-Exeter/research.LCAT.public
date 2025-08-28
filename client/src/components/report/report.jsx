@@ -1,4 +1,4 @@
-import { Circle, Document, G, Image,Link,Page, Path, StyleSheet, Svg, Text, View } from '@react-pdf/renderer';
+import { Document, Image,Link,Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import React from 'react';
 
 import DecreaseArrow from '../../images/buttons/decrease.png';
@@ -72,6 +72,37 @@ const styles = StyleSheet.create({
         padding: 10,
         flexGrow: 1,
     },
+    contentItem: {
+        fontSize: 12,
+        marginBottom: 4,
+        color: '#333',
+    },
+    headerText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 8,
+    },
+    subHeaderText: {
+        fontSize: 16,
+        color: '#666',
+        marginBottom: 8,
+    },
+    dateText: {
+        fontSize: 12,
+        color: '#888',
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 12,
+        color: '#333',
+    },
+    bodyText: {
+        fontSize: 12,
+        lineHeight: 1.5,
+        color: '#333',
+    },
     text: {
         fontSize: 12,
         lineHeight: 1.5,
@@ -131,28 +162,6 @@ const styles = StyleSheet.create({
         height: 12,
         marginBottom: 4,
     },
-    table: {
-        display: 'table',
-        width: '100%',
-        borderStyle: 'solid',
-        borderWidth: 1,
-        borderColor: '#ddd',
-        marginBottom: 10,
-    },
-    tableRow: {
-        flexDirection: 'row',
-        borderBottomWidth: 1,
-        borderBottomColor: '#ddd',
-    },
-    tableCell: {
-        width: '50%',
-        padding: 5,
-        fontSize: 11,
-    },
-    tableHeader: {
-        backgroundColor: '#f5f5f5',
-        fontWeight: 'bold',
-    },
     bulletList: {
         marginLeft: 10,
         marginTop: 5,
@@ -210,23 +219,6 @@ const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
                     );
                 })}
             </View>
-
-            {/* Detailed table for additional information */}
-            <View style={styles.table}>
-                <View style={[styles.tableRow, styles.tableHeader]}>
-                    <Text style={styles.tableCell}>Climate Variable</Text>
-                    <Text style={styles.tableCell}>Projected Change</Text>
-                </View>
-                {climateVariables.map((item, index) => {
-                    const climateData = formatClimateData(climatePrediction, item.variable, item.name, item.units, 2070);
-                    return (
-                        <View key={index} style={styles.tableRow}>
-                            <Text style={styles.tableCell}>{item.name}</Text>
-                            <Text style={styles.tableCell}>{climateData.change}</Text>
-                        </View>
-                    );
-                })}
-            </View>
             
             <Text style={styles.text}>
                 Note: Yearly average climate change does not always reflect the extremes of summer and winter.
@@ -236,7 +228,9 @@ const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
 };
 
 // PDF Document component (no hooks allowed)
-const ClimateReport = ({ regions = [], climatePrediction = null, selectedHazardName = null, rcp, season }) => {
+const ClimateReport = ({ regions, climatePrediction, selectedHazardName, rcp, season, selectedPages = ['climate'] }) => {
+    const shouldIncludePage = (pageId) => selectedPages.includes(pageId);
+
     return (
         <Document>
             <Page size="A4" style={styles.page}>
@@ -281,18 +275,77 @@ const ClimateReport = ({ regions = [], climatePrediction = null, selectedHazardN
                         The following information was taken from LCAT on {new Date().toLocaleDateString()} and is a summary based on your unique search selection. <Link src="https://lcat.uk/">Visit LCAT</Link> for more information, including for different locations, impacts or adaptation topic areas.  
                     </Text>
                 </View>
+                {/* Summary of selected pages */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Report Contents</Text>
+                    {selectedPages.map(pageId => (
+                        <Text key={pageId} style={styles.contentItem}>
+                            • {getPageTitle(pageId)}
+                        </Text>
+                    ))}
+                </View>
             </Page>
-            
-            <Page size="A4" style={styles.page}>
-                <ClimateSummaryPDF 
-                    climatePrediction={climatePrediction} 
-                    regions={regions}
-                    rcp={rcp}
-                    season={season}
-                />
-            </Page>
+
+            {/* Conditionally include pages based on selection */}
+            {shouldIncludePage('climate') && (
+                <Page size="A4" style={styles.page}>
+                    <ClimateSummaryPDF 
+                        climatePrediction={climatePrediction} 
+                        regions={regions}
+                        rcp={rcp}
+                        season={season}
+                    />
+                </Page>
+            )}
+
+            {shouldIncludePage('hazards') && selectedHazardName && (
+                <Page size="A4" style={styles.page}>
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Climate Hazards</Text>
+                        <Text style={styles.bodyText}>
+                            Analysis for selected hazard: {selectedHazardName}
+                        </Text>
+                        {/* Add your hazards content here */}
+                    </View>
+                </Page>
+            )}
+
+            {shouldIncludePage('adaptations') && (
+                <Page size="A4" style={styles.page}>
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Adaptation Options</Text>
+                        <Text style={styles.bodyText}>
+                            Recommended adaptation strategies and actions.
+                        </Text>
+                        {/* Add your adaptations content here */}
+                    </View>
+                </Page>
+            )}
+
+            {shouldIncludePage('vulnerability') && regions && regions.length > 0 && (
+                <Page size="A4" style={styles.page}>
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Vulnerability Assessment</Text>
+                        <Text style={styles.bodyText}>
+                            Community vulnerability factors for {regions.map(r => r.name).join(", ")}
+                        </Text>
+                        {/* Add your vulnerability content here */}
+                    </View>
+                </Page>
+            )}
         </Document>
     );
+};
+
+// Add helper function to get page titles
+const getPageTitle = (pageId) => {
+    const titles = {
+        'climate': 'Climate Summary',
+        'hazards': 'Climate Hazards',
+        'adaptations': 'Adaptation Options',
+        'vulnerability': 'Vulnerability Assessment'
+    };
+    return titles[pageId] || pageId;
 };
 
 export default ClimateReport;
