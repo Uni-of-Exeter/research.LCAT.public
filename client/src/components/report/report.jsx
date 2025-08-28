@@ -1,4 +1,4 @@
-import { Document, Image,Link,Page, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Document, Image,Link,Page, Text, View } from '@react-pdf/renderer';
 
 import DecreaseArrow from '../../images/buttons/decrease.png';
 import IncreaseArrow from '../../images/buttons/increase.png';
@@ -15,6 +15,7 @@ import LCATLogo from '../../images/logos/LCAT_Logo_Primary_RGB.png';
 import { climateVariables, formatClimateData } from '../../utils/climateUtils';
 import { andify } from "../../utils/utils";
 import { climateHazardsData } from '../climateHazard/ClimateHazardData';
+import { reportStyles as styles } from './reportStyles';
 
 
 const getClimateIcon = (variable) => {
@@ -46,149 +47,6 @@ const getHazardIcon = (hazardName) => {
     };
     return iconMap[hazardName] || HeatwaveIcon;
 };
-
-// PDF styles
-const styles = StyleSheet.create({
-    page: {
-        flexDirection: 'column',
-        backgroundColor: '#ffffff',
-        padding: 30,
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 10,
-        paddingBottom: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ddd',
-    },
-    headerLeft: {
-        flex: 1,
-        paddingRight: 10,
-    },
-    headerRight: {
-        alignItems: 'flex-end',
-    },
-    logoContainer: {
-        alignItems: 'flex-start',
-    },
-    logo: {
-        width: 120,
-        height: 120,
-    },
-    title: {
-        fontSize: 22,
-        marginBottom: 10,
-        textAlign: 'center',
-        fontWeight: 'bold',
-    },
-    section: {
-        margin: 10,
-        padding: 10,
-        flexGrow: 1,
-    },
-    contentItem: {
-        fontSize: 12,
-        marginBottom: 4,
-        color: '#333',
-    },
-    headerText: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 8,
-    },
-    subHeaderText: {
-        fontSize: 16,
-        color: '#666',
-        marginBottom: 8,
-    },
-    dateText: {
-        fontSize: 12,
-        color: '#888',
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 12,
-        color: '#333',
-    },
-    bodyText: {
-        fontSize: 12,
-        lineHeight: 1.5,
-        color: '#333',
-    },
-    text: {
-        fontSize: 12,
-        lineHeight: 1.5,
-    },
-    intro: {
-        fontSize: 12,
-        marginBottom: 10,
-        fontWeight: 'bold',
-    },
-    subtitle: {
-        fontSize: 16,
-        marginBottom: 10,
-        fontWeight: 'bold',
-    },
-    climateContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 20,
-        padding: 15,
-        border: '1px solid #ddd',
-        borderRadius: 8,
-        backgroundColor: '#f9f9f9',
-    },
-    climateItem: {
-        alignItems: 'center',
-        width: '23%',
-        padding: 10,
-        backgroundColor: '#ffffff',
-        borderRadius: 8,
-        border: '1px solid #e0e0e0',
-    },
-    climateVariable: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        marginBottom: 8,
-        textAlign: 'center',
-        color: '#333333',
-    },
-    climateValue: {
-        fontSize: 11,
-        textAlign: 'center',
-        lineHeight: 1.4,
-        color: '#666666',
-    },
-    iconContainer: {
-        alignItems: 'center',
-        marginBottom: 8,
-        flexDirection: 'column',
-    },
-    icon: {
-        width: 40,
-        height: 40,
-        marginBottom: 4,
-    },
-    arrow: {
-        width: 15,
-        height: 12,
-        marginBottom: 4,
-    },
-    bulletList: {
-        marginLeft: 10,
-        marginTop: 5,
-        marginBottom: 15,
-    },
-    bulletItem: {
-        fontSize: 12,
-        lineHeight: 1.5,
-        marginBottom: 3,
-    },
-});
 
 // Climate Summary Component for PDF
 const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
