@@ -218,6 +218,7 @@ const App = () => {
                     selectedHazardName={selectedHazardName}
                     rcp={rcp}
                     season={season}
+                    applyCoastalFilter={applyCoastalFilter}
                 />
             </div>
             <CookieConsent />

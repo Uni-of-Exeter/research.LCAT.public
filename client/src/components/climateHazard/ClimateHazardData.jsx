@@ -24,7 +24,7 @@ export const climateHazardsData = [
         details: (
             <div>
                 <p>
-                    The UK's climate is warming. Our warmest years on record have occurred in the last 10 years. One
+                    The UK&apos;s climate is warming. Our warmest years on record have occurred in the last 10 years. One
                     consequence of this is an increase in <strong className="text-emphasis">frequency</strong> and{" "}
                     <strong className="text-emphasis">intensity</strong> of heatwaves.
                 </p>

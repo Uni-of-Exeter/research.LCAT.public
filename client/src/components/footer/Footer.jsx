@@ -25,7 +25,7 @@ import FooterText from "./FooterText";
 import Handbook from "./Handbook";
 import PageSelectionModal from './PageSelectionModal';
 
-const Footer = ({ regions, climatePrediction, selectedHazardName, rcp, season }) => {
+const Footer = ({ regions, climatePrediction, selectedHazardName, rcp, season, applyCoastalFilter }) => {
     const [showPageSelection, setShowPageSelection] = useState(false);
     const [selectedPageIds, setSelectedPageIds] = useState([]);
 
@@ -123,6 +123,7 @@ const Footer = ({ regions, climatePrediction, selectedHazardName, rcp, season })
                                     selectedHazardName={selectedHazardName}
                                     rcp={rcp}
                                     season={season}
+                                    applyCoastalFilter={applyCoastalFilter}
                                     selectedPages={selectedPageIds}
                                 />}
                                 fileName="climate-risk-assessment-report.pdf"

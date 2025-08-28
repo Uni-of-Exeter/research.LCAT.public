@@ -1,5 +1,4 @@
 import { Document, Image,Link,Page, StyleSheet, Text, View } from '@react-pdf/renderer';
-import React from 'react';
 
 import DecreaseArrow from '../../images/buttons/decrease.png';
 import IncreaseArrow from '../../images/buttons/increase.png';
@@ -7,9 +6,15 @@ import CloudIcon from '../../images/climate/Cloud Cover.png';
 import RainIcon from '../../images/climate/Rain.png';
 import TemperatureIcon from '../../images/climate/Temperature.png';
 import WindIcon from '../../images/climate/Wind Speed.png';
+import AirPollutionIcon from '../../images/hazards/Air Pollution.png';
+import CoastalErosionIcon from '../../images/hazards/Coastal Erosion.png';
+import FloodingIcon from '../../images/hazards/Flood.png';
+import HeatwaveIcon from '../../images/hazards/Heatwave.png';
+import WildfireIcon from '../../images/hazards/Wildfires.png';
 import LCATLogo from '../../images/logos/LCAT_Logo_Primary_RGB.png';
 import { climateVariables, formatClimateData } from '../../utils/climateUtils';
 import { andify } from "../../utils/utils";
+import { climateHazardsData } from '../climateHazard/ClimateHazardData';
 
 
 const getClimateIcon = (variable) => {
@@ -29,6 +34,17 @@ const getArrowIcon = (arrow) => {
         case 'none': return null;
         default: return null;
     }
+};
+
+const getHazardIcon = (hazardName) => {
+    const iconMap = {
+        'Heatwaves': HeatwaveIcon,
+        'Wildfires': WildfireIcon,
+        'Air Quality': AirPollutionIcon,
+        'Flooding': FloodingIcon,
+        'Coastal Erosion': CoastalErosionIcon,
+    };
+    return iconMap[hazardName] || HeatwaveIcon;
 };
 
 // PDF styles
@@ -227,8 +243,39 @@ const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
     );
 };
 
-// PDF Document component (no hooks allowed)
-const ClimateReport = ({ regions, climatePrediction, selectedHazardName, rcp, season, selectedPages = ['climate'] }) => {
+const ClimateHazardsPDF = ({applyCoastalFilter}) => {
+    const filteredHazards = applyCoastalFilter 
+        ? climateHazardsData.filter((hazard) => hazard.name !== "Coastal Erosion")
+        : climateHazardsData;
+    return (
+        <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Climate Hazard Risk</Text>
+            <Text style={styles.bodyText}>
+                Below is a summary of some of the key climate hazards for the UK.  
+            </Text>
+
+            <View style={styles.climateContainer}>
+                {filteredHazards.map((hazard, index) => {
+                    const iconSrc = getHazardIcon(hazard.name);
+                    
+                    return (
+                        <View key={index} style={styles.climateItem}>
+                            <View style={styles.iconContainer}>
+                                <Image src={iconSrc} style={styles.icon} />
+                            </View>
+                            <Text style={styles.climateVariable}>{hazard.name}</Text>
+                        </View>
+                    );
+                })}
+            </View>
+            
+            <Text style={styles.text}>
+                To access localised data on these risks, visit LCAT and click on each hazard.              
+            </Text>
+        </View>
+    )};
+
+    const ClimateReport = ({ regions, climatePrediction, selectedHazardName, rcp, season, applyCoastalFilter, selectedPages = ['climate'] }) => {
     const shouldIncludePage = (pageId) => selectedPages.includes(pageId);
 
     return (
@@ -300,13 +347,8 @@ const ClimateReport = ({ regions, climatePrediction, selectedHazardName, rcp, se
 
             {shouldIncludePage('hazards') && selectedHazardName && (
                 <Page size="A4" style={styles.page}>
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Climate Hazards</Text>
-                        <Text style={styles.bodyText}>
-                            Analysis for selected hazard: {selectedHazardName}
-                        </Text>
-                        {/* Add your hazards content here */}
-                    </View>
+                    <ClimateHazardsPDF 
+                        applyCoastalFilter={applyCoastalFilter}/>
                 </Page>
             )}
 
