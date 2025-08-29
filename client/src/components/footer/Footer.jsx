@@ -33,28 +33,36 @@ const Footer = ({ regions, climatePrediction, selectedHazardName, rcp, season, a
         {
             id: 'climate',
             title: 'Climate Summary',
-            description: 'Local climate projections and changes',
             defaultSelected: true,
             available: true //climatePrediction && climatePrediction.length > 0
         },
         {
             id: 'hazards',
             title: 'Climate Hazards',
-            description: 'Potential risks and impacts',
+            defaultSelected: true,
+            available: selectedHazardName
+        },
+        {
+            id: 'health-impacts',
+            title: 'Health Impacts',
+            defaultSelected: true,
+            available: selectedHazardName
+        },
+        {
+            id: 'community-impacts',
+            title: 'Community Impacts',
             defaultSelected: true,
             available: selectedHazardName
         },
         {
             id: 'adaptations',
             title: 'Adaptation Options',
-            description: 'Recommended actions and strategies',
             defaultSelected: false,
             available: true
         },
         {
             id: 'vulnerability',
             title: 'Vulnerability Assessment',
-            description: 'Community risk factors',
             defaultSelected: false,
             available: regions && regions.length > 0
         }
