@@ -28,6 +28,28 @@ import PageSelectionModal from './PageSelectionModal';
 const Footer = ({ regions, climatePrediction, selectedHazardName, rcp, season, applyCoastalFilter }) => {
     const [showPageSelection, setShowPageSelection] = useState(false);
     const [selectedPageIds, setSelectedPageIds] = useState([]);
+    const [shouldShowPDF, setShouldShowPDF] = useState(false);
+    const [downloadStatus, setDownloadStatus] = useState('idle');
+
+    const onPageSelection = (pageIds) => {
+        setSelectedPageIds(pageIds);
+        setShowPageSelection(false);
+        setShouldShowPDF(true);
+        setDownloadStatus('generating');
+    };
+
+    const handlePDFReady = (url) => {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'climate-risk-assessment-report.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up state
+        setDownloadStatus('idle');
+        setShouldShowPDF(false);
+    };
 
     const availablePages = [
         {
@@ -68,22 +90,7 @@ const Footer = ({ regions, climatePrediction, selectedHazardName, rcp, season, a
         }
     ].filter(page => page.available);
 
-    const handlePageSelection = (pageIds) => {
-        setSelectedPageIds(pageIds);
-        setShowPageSelection(false);
-        
-        // Trigger PDF generation immediately
-        setTimeout(() => {
-            const pdfLink = document.querySelector('.pdf-download-link');
-            if (pdfLink) {
-                pdfLink.click();
-            }
-        }, 100);
-    };
-
-
     const handleReportClick = () => {
-        console.log('PDF button clicked');
         setShowPageSelection(true);
         // Track PDF download event
         if (typeof gtag !== 'undefined') {
@@ -107,23 +114,41 @@ const Footer = ({ regions, climatePrediction, selectedHazardName, rcp, season, a
             <div style={{ textAlign: 'center', padding: '20px', backgroundColor: '#f5f5f5' }}>
                 {hasSelectedRegions ? (
                     <>
-                        <button
-                            onClick={handleReportClick}
-                            style={{
-                                backgroundColor: '#007bff',
-                                color: 'white',
-                                padding: '12px 24px',
-                                borderRadius: '5px',
-                                fontSize: '16px',
-                                fontWeight: 'bold',
-                                cursor: 'pointer',
-                                border: 'none',
-                            }}
-                        >
-                            Generate Climate Report
-                        </button>
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            position: 'relative',
+                            width: '100%'
+                        }}>
+                            <button
+                                onClick={handleReportClick}
+                                style={{
+                                    backgroundColor: '#007bff',
+                                    color: 'white',
+                                    padding: '12px 24px',
+                                    borderRadius: '5px',
+                                    fontSize: '16px',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer',
+                                    border: 'none',
+                                }}
+                            >
+                                Generate Climate Report
+                            </button>
+                            <div style={{
+                                position: 'absolute',
+                                left: 'calc(50% + 140px)',
+                                fontSize: '14px',
+                                color: downloadStatus === 'generating' ? '#666' : 'transparent',
+                                fontStyle: 'italic',
+                                whiteSpace: 'nowrap'
+                            }}>
+                                {downloadStatus === 'generating' ? 'Generating report...' : 'Generating report...'}
+                            </div>
+                        </div>
                         
-                        {selectedPageIds.length > 0 && (
+                        {shouldShowPDF && selectedPageIds.length > 0 && (
                             <PDFDownloadLink
                                 document={<ClimateReport 
                                     regions={regions} 
@@ -138,7 +163,17 @@ const Footer = ({ regions, climatePrediction, selectedHazardName, rcp, season, a
                                 className="pdf-download-link"
                                 style={{ display: 'none' }}
                             >
-                                {({ loading }) => loading ? 'Generating...' : 'Download'}
+                                {({ url, error }) => {
+                                    if (error) {
+                                        setDownloadStatus('idle');
+                                    }
+                                    
+                                    if (url && downloadStatus === 'generating') {
+                                        handlePDFReady(url);
+                                    }
+                                    
+                                    return null;
+                                }}
                             </PDFDownloadLink>
                         )}
                     </>
@@ -161,7 +196,7 @@ const Footer = ({ regions, climatePrediction, selectedHazardName, rcp, season, a
             <PageSelectionModal
                 isOpen={showPageSelection}
                 onClose={() => setShowPageSelection(false)}
-                onGenerate={handlePageSelection}
+                onGenerate={onPageSelection}
                 availablePages={availablePages}
             />
             <div className="contact-footer">
