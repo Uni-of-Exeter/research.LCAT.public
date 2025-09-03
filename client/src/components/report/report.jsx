@@ -42,10 +42,18 @@ import InjuryIcon from '../../images/impacts/general/injuries.png';
 import RespiratoryDiseasesIcon from '../../images/impacts/general/Respiratory diseases.png';
 import VectorBorneDiseasesIcon from '../../images/impacts/general/Vector-borne diseases.png';
 import LCATLogo from '../../images/logos/LCAT_Logo_Primary_RGB.png';
+import HealthConditionsIcon from '../../images/vulnerabilities/healthConditions.png';
+import LowIncomesIcon from '../../images/vulnerabilities/lowIncomes.png';
+import LowLocalKnowledgeIcon from '../../images/vulnerabilities/lowLocalKnowledge.png';
+import LowMobilityIcon from '../../images/vulnerabilities/lowMobility.png';
+import OlderPeopleIcon from '../../images/vulnerabilities/olderPeople.png';
+import PrivateSocialHousingIcon from '../../images/vulnerabilities/privateSocialHousing.png';
+import SociallyIsolatedIcon from '../../images/vulnerabilities/sociallyIsolated.png';
+import UnderFivesIcon from '../../images/vulnerabilities/underFives.png';
 import { climateVariables, formatClimateData } from '../../utils/climateUtils';
 import { andify } from "../../utils/utils";
 import { climateHazardsData } from '../climateHazard/ClimateHazardData';
-import { communityImpacts,impacts, pathways } from '../climateImpacts/ClimateImpactSummaryData';
+import { communityImpacts, impacts, pathways } from '../climateImpacts/ClimateImpactSummaryData';
 import { reportStyles as styles } from './reportStyles';
 
 
@@ -119,6 +127,17 @@ const getCommunityImpactIcon = (impactName) => {
         'Adaptation and/or mutation of microorganisms to antibiotics, chemicals and environmental stressors': AdaptationMicroorganismsIcon,
     };
     return iconMap[impactName] || PossessionsHomeIcon;
+};
+
+const vulnerabilityIconMap = {
+    'Older people': OlderPeopleIcon,
+    'Under 5s': UnderFivesIcon,
+    'People with health conditions': HealthConditionsIcon,
+    'People on low incomes': LowIncomesIcon,
+    'Tenants in private or social housing': PrivateSocialHousingIcon,
+    'People living in area for a short time': LowLocalKnowledgeIcon,
+    'People who are socially isolated': SociallyIsolatedIcon,
+    'People with low personal mobility': LowMobilityIcon,
 };
 
 // Climate Summary Component for PDF
@@ -285,7 +304,38 @@ const ClimateImpactsPDF = ({ selectedHazardName, includeHealthImpacts = true, in
     );
 };
 
-    const ClimateReport = ({ regions, climatePrediction, selectedHazardName, rcp, season, applyCoastalFilter, selectedPages = ['climate'] }) => {
+const VulnerabilityPDF = () => {
+    return (
+        <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Personal and social vulnerabilities</Text>
+            <Text style={styles.bodyText}>
+                Below is a summary of some of the key vulnerable groups for the UK.{'\n\n'}
+                It is important to consider vulnerability because not everyone is affected equally by climate change. 
+                This impacts people&apos;s ability to cope with, adapt to and recover from climate events and extreme weather. 
+                Those experiencing multiple vulnerabilities are more vulnerable to climate impacts.
+            </Text>
+
+            <View style={styles.climateContainer}>
+                {Object.entries(vulnerabilityIconMap).map(([vulnerabilityName, iconSrc], index) => {
+                    return (
+                        <View key={index} style={styles.climateItem}>
+                            <View style={styles.iconContainer}>
+                                <Image src={iconSrc} style={styles.icon} />
+                            </View>
+                            <Text style={styles.climateVariable}>{vulnerabilityName}</Text>
+                        </View>
+                    );
+                })}
+            </View>
+            
+            <Text style={styles.text}>
+                To access localised data on these vulnerabilities, visit LCAT and click on each vulnerability icon.
+            </Text>
+        </View>
+    );
+};
+
+const ClimateReport = ({ regions, climatePrediction, selectedHazardName, rcp, season, applyCoastalFilter, selectedPages = ['climate'] }) => {
     const shouldIncludePage = (pageId) => selectedPages.includes(pageId);
 
     return (
@@ -386,13 +436,7 @@ const ClimateImpactsPDF = ({ selectedHazardName, includeHealthImpacts = true, in
 
             {shouldIncludePage('vulnerability') && regions && regions.length > 0 && (
                 <Page size="A4" style={styles.page}>
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Vulnerability Assessment</Text>
-                        <Text style={styles.bodyText}>
-                            Community vulnerability factors for {regions.map(r => r.name).join(", ")}
-                        </Text>
-                        {/* Add your vulnerability content here */}
-                    </View>
+                    <VulnerabilityPDF />
                 </Page>
             )}
         </Document>
