@@ -20,7 +20,7 @@ import LoadingOverlay from "react-loading-overlay-ts";
 import { defaultState } from "../../utils/defaultState.js";
 import { communityImpacts, impacts, pathways } from "./ClimateImpactSummaryData.jsx";
 
-const ClimateImpactSummary = ({ loading, selectedHazardName, setSelectedHazardName, applyCoastalFilter }) => {
+const ClimateImpactSummary = ({ loading, selectedImpactHazard, setSelectedImpactHazard, applyCoastalFilter }) => {
     const [filteredPathwayData, setFilteredPathwayData] = useState(pathways);
     const hasTrackedHazardSelection = useRef(false);
 
@@ -31,8 +31,8 @@ const ClimateImpactSummary = ({ loading, selectedHazardName, setSelectedHazardNa
         } else {
             setFilteredPathwayData(pathways);
         }
-        setSelectedHazardName(defaultState.selectedHazardName);
-    }, [applyCoastalFilter, setSelectedHazardName]);
+        setSelectedImpactHazard(defaultState.selectedImpactHazard);
+    }, [applyCoastalFilter, setSelectedImpactHazard]);
 
     const handleHazardChange = (e) => {
         const newHazardName = e.target.value;
@@ -43,9 +43,9 @@ const ClimateImpactSummary = ({ loading, selectedHazardName, setSelectedHazardNa
             hasTrackedHazardSelection.current = true;
         }
         
-        setSelectedHazardName(newHazardName);
+        setSelectedImpactHazard(newHazardName);
     };
-    const selectedPathwayData = filteredPathwayData.find((item) => item.name === selectedHazardName);
+    const selectedPathwayData = filteredPathwayData.find((item) => item.name === selectedImpactHazard);
     const filteredImpacts = impacts.filter((item) => item.inPathway.includes(selectedPathwayData.id));
     const filteredCommunityImpacts = communityImpacts.filter((item) => item.inPathway.includes(selectedPathwayData.id));
 
@@ -61,7 +61,7 @@ const ClimateImpactSummary = ({ loading, selectedHazardName, setSelectedHazardNa
             <p>
                 You are viewing the <strong className="text-emphasis">climate</strong> impacts for&nbsp;
                 <select
-                    value={selectedHazardName}
+                    value={selectedImpactHazard}
                     onChange={handleHazardChange}
                 >
                     {filteredPathwayData.map((pathway) => (
@@ -84,7 +84,7 @@ const ClimateImpactSummary = ({ loading, selectedHazardName, setSelectedHazardNa
             </p>
 
             <p>
-                You are viewing the climate impacts for <strong className="text-emphasis">{selectedHazardName}</strong>.
+                You are viewing the climate impacts for <strong className="text-emphasis">{selectedImpactHazard}</strong>.
             </p>
 
             <div className="horiz-container-impact">
@@ -106,7 +106,7 @@ const ClimateImpactSummary = ({ loading, selectedHazardName, setSelectedHazardNa
             </p>
 
             <p>
-                You are viewing the climate impacts for <strong className="text-emphasis">{selectedHazardName}</strong>.
+                You are viewing the climate impacts for <strong className="text-emphasis">{selectedImpactHazard}</strong>.
             </p>
 
             <div className="horiz-container-impact">

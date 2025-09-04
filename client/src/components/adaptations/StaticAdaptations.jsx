@@ -18,28 +18,22 @@ import React, { useEffect, useRef, useState } from "react";
 
 import adaptationData from "../../kumu/parsed/adaptation_data.json";
 import { pathways } from "../climateImpacts/ClimateImpactSummaryData";
-import { adaptationFilters } from "./AdaptationCategories";
+import { adaptationFilters, defaultFilterCategory, defaultFilterName } from "./AdaptationCategories";
 import StaticAdaptation from "./StaticAdaptation";
 
 const StaticAdaptations = (props) => {
-    const { selectedHazardName, applyCoastalFilter } = props;
+    const { selectedAdaptationHazards, setSelectedAdaptationHazards, applyCoastalFilter, filterName, setFilterName } = props;
 
-    // Load filter options
-    const defaultFilterName = adaptationFilters[0].filterName;
-    const defaultFilterCategory = adaptationFilters[0].category;
-    const [filterName, setFilterName] = useState(defaultFilterName);
+    // Load filter category
     const [filterCategory, setFilterCategory] = useState(defaultFilterCategory);
     const hasTrackedAdaptationClick = useRef(false);
 
     // Filter pathways if coastal filter is applied
     const [filteredPathwayData, setFilteredPathwayData] = useState(pathways);
 
-    // Track array of selected hazards (controlled via buttons)
-    const [selectedHazards, setSelectedHazards] = useState([selectedHazardName]);
-
     // Function for clicking on filter buttons: adding and removing hazards to array
     const toggleHazardSelection = (hazardName) => {
-        setSelectedHazards((prev) => {
+        setSelectedAdaptationHazards((prev) => {
             // Check to see if new hazardName is selected
             const isSelected = prev.includes(hazardName);
 
@@ -71,13 +65,8 @@ const StaticAdaptations = (props) => {
         } else {
             setFilteredPathwayData(pathways);
         }
-        setSelectedHazards([selectedHazardName]);
-    }, [applyCoastalFilter, selectedHazardName]);
-
-    // When a new selectedHazardName is applied, reset the array of hazards
-    useEffect(() => {
-        setSelectedHazards([selectedHazardName]);
-    }, [selectedHazardName]);
+        setSelectedAdaptationHazards(selectedAdaptationHazards);
+    }, [applyCoastalFilter, setSelectedAdaptationHazards, selectedAdaptationHazards]);
 
     // Handle button change: set filterName and filterCategory when dropdown is used
     const handleDropdownChange = (e) => {
@@ -96,7 +85,7 @@ const StaticAdaptations = (props) => {
         const adaptationCategories = adaptation.attributes[filterCategory] || [];
 
         // First check that the adaptation contains every hazard in the array of selectedHazards
-        const matchesAllHazards = selectedHazards.every((hazard) =>
+        const matchesAllHazards = selectedAdaptationHazards.every((hazard) =>
             layers.some((layer) => layer.includes(hazard.toLowerCase() + " in full")),
         );
 
@@ -133,14 +122,14 @@ const StaticAdaptations = (props) => {
                             <strong>{pathway.name}</strong>
                         </div>
                         <div className="icon">
-                            {React.cloneElement(pathway.icon, { selectedHazard: selectedHazards.includes(pathway.name) })}
+                            {React.cloneElement(pathway.icon, { selectedHazard: selectedAdaptationHazards.includes(pathway.name) })}
                         </div>
                     </button>
                 ))}
             </div>
             <div style={{ display: "flex", justifyContent: "center" }}>
                 <button
-                    onClick={() => setSelectedHazards([])}
+                    onClick={() => setSelectedAdaptationHazards([])}
                     style={{
                         borderRadius: "8px",
                         padding: "1rem",
@@ -177,7 +166,7 @@ const StaticAdaptations = (props) => {
                             <StaticAdaptation
                                 key={adaptation._id}
                                 adaptation={adaptation}
-                                selectedHazards={selectedHazards}
+                                selectedHazards={selectedAdaptationHazards}
                             />
                         );
                     })

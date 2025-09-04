@@ -1,4 +1,4 @@
-import { Document, Image,Link,Page, Text, View } from '@react-pdf/renderer';
+import { Document, Image, Link, Page, Text, View } from '@react-pdf/renderer';
 
 import DecreaseArrow from '../../images/buttons/decrease.png';
 import IncreaseArrow from '../../images/buttons/increase.png';
@@ -50,8 +50,11 @@ import OlderPeopleIcon from '../../images/vulnerabilities/olderPeople.png';
 import PrivateSocialHousingIcon from '../../images/vulnerabilities/privateSocialHousing.png';
 import SociallyIsolatedIcon from '../../images/vulnerabilities/sociallyIsolated.png';
 import UnderFivesIcon from '../../images/vulnerabilities/underFives.png';
+import adaptationData from '../../kumu/parsed/adaptation_data.json';
 import { climateVariables, formatClimateData } from '../../utils/climateUtils';
 import { andify } from "../../utils/utils";
+import { defaultFilterName } from '../adaptations/AdaptationCategories';
+import { adaptationFilters } from '../adaptations/AdaptationCategories';
 import { climateHazardsData } from '../climateHazard/ClimateHazardData';
 import { communityImpacts, impacts, pathways } from '../climateImpacts/ClimateImpactSummaryData';
 import { reportStyles as styles } from './reportStyles';
@@ -68,7 +71,7 @@ const getClimateIcon = (variable) => {
 };
 
 const getArrowIcon = (arrow) => {
-    switch(arrow) {
+    switch (arrow) {
         case 'up': return IncreaseArrow;
         case 'down': return DecreaseArrow;
         case 'none': return null;
@@ -157,9 +160,9 @@ const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
             {regions && regions.length > 0 && rcp && season && (
                 <>
                     <Text style={styles.text}>
-                        For {andify(regions.map(region => region.name))} under the 
-                        {rcp === 'rcp60' ? ' existing global policies ' : ' worst case scenario '} 
-                        (equivalent to global warming level of {rcp === 'rcp60' ? '2.0-3.7C which is RCP 6.0' : '3.2-5.4C which is RCP 8.5'}) 
+                        For {andify(regions.map(region => region.name))} under the
+                        {rcp === 'rcp60' ? ' existing global policies ' : ' worst case scenario '}
+                        (equivalent to global warming level of {rcp === 'rcp60' ? '2.0-3.7C which is RCP 6.0' : '3.2-5.4C which is RCP 8.5'})
                         the {season} average climate change for 2070 compared with local records for the 1980s is expected to be:
                     </Text>
                 </>
@@ -170,7 +173,7 @@ const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
                     const climateData = formatClimateData(climatePrediction, item.variable, item.name, item.units, 2070);
                     const iconSrc = getClimateIcon(item.variable);
                     const arrowSrc = getArrowIcon(climateData.arrow);
-                    
+
                     return (
                         <View key={index} style={styles.climateItem}>
                             <View style={styles.iconContainer}>
@@ -185,7 +188,7 @@ const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
                     );
                 })}
             </View>
-            
+
             <Text style={styles.text}>
                 Note: Yearly average climate change does not always reflect the extremes of summer and winter.
             </Text>
@@ -193,21 +196,21 @@ const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
     );
 };
 
-const ClimateHazardsPDF = ({applyCoastalFilter}) => {
-    const filteredHazards = applyCoastalFilter 
+const ClimateHazardsPDF = ({ applyCoastalFilter }) => {
+    const filteredHazards = applyCoastalFilter
         ? climateHazardsData.filter((hazard) => hazard.name !== "Coastal Erosion")
         : climateHazardsData;
     return (
         <View style={styles.section}>
             <Text style={styles.sectionTitle}>Climate Hazard Risk</Text>
             <Text style={styles.bodyText}>
-                Below is a summary of some of the key climate hazards for the UK.  
+                Below is a summary of some of the key climate hazards for the UK.
             </Text>
 
             <View style={styles.climateContainer}>
                 {filteredHazards.map((hazard, index) => {
                     const iconSrc = getHazardIcon(hazard.name);
-                    
+
                     return (
                         <View key={index} style={styles.climateItem}>
                             <View style={styles.iconContainer}>
@@ -218,37 +221,38 @@ const ClimateHazardsPDF = ({applyCoastalFilter}) => {
                     );
                 })}
             </View>
-            
+
             <Text style={styles.text}>
-                To access localised data on these risks, visit LCAT and click on each hazard.              
+                To access localised data on these risks, visit LCAT and click on each hazard.
             </Text>
         </View>
-    )};
+    )
+};
 
-const ClimateImpactsPDF = ({ selectedHazardName, includeHealthImpacts = true, includeCommunityImpacts = true }) => {
-    const hazardId = pathways.find((pathway) => pathway.name === selectedHazardName)?.id;
-    
+const ClimateImpactsPDF = ({ selectedImpactHazard, includeHealthImpacts = true, includeCommunityImpacts = true }) => {
+    const hazardId = pathways.find((pathway) => pathway.name === selectedImpactHazard)?.id;
+
     if (!hazardId && hazardId !== 0) {
         return (
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Climate Impact Summary</Text>
-                <Text style={styles.bodyText}>No impact data available for {selectedHazardName}.</Text>
+                <Text style={styles.bodyText}>No impact data available for {selectedImpactHazard}.</Text>
             </View>
         );
     }
-    
+
     const filteredImpacts = impacts.filter((item) => item.inPathway.includes(hazardId));
     const filteredCommunityImpacts = communityImpacts.filter((item) => item.inPathway.includes(hazardId));
-    
+
     return (
         <View style={styles.section}>
             <Text style={styles.sectionTitle}>Climate Impact Summary</Text>
             <Text style={styles.bodyText}>
                 Below is a summary of the climate impacts expected in the UK from{' '}
-                <Text style={[styles.bodyText, { fontWeight: 'bold' }]}>{selectedHazardName}</Text>
-                . These impacts will vary by local area. 
+                <Text style={[styles.bodyText, { fontWeight: 'bold' }]}>{selectedImpactHazard}</Text>
+                . These impacts will vary by local area.
             </Text>
-            
+
             {includeHealthImpacts && (
                 <>
                     <Text style={styles.sectionTitle}>Health Impacts</Text>
@@ -310,8 +314,8 @@ const VulnerabilityPDF = () => {
             <Text style={styles.sectionTitle}>Personal and social vulnerabilities</Text>
             <Text style={styles.bodyText}>
                 Below is a summary of some of the key vulnerable groups for the UK.{'\n\n'}
-                It is important to consider vulnerability because not everyone is affected equally by climate change. 
-                This impacts people&apos;s ability to cope with, adapt to and recover from climate events and extreme weather. 
+                It is important to consider vulnerability because not everyone is affected equally by climate change.
+                This impacts people&apos;s ability to cope with, adapt to and recover from climate events and extreme weather.
                 Those experiencing multiple vulnerabilities are more vulnerable to climate impacts.
             </Text>
 
@@ -327,7 +331,7 @@ const VulnerabilityPDF = () => {
                     );
                 })}
             </View>
-            
+
             <Text style={styles.text}>
                 To access localised data on these vulnerabilities, visit LCAT and click on each vulnerability icon.
             </Text>
@@ -335,7 +339,86 @@ const VulnerabilityPDF = () => {
     );
 };
 
-const ClimateReport = ({ regions, climatePrediction, selectedHazardName, rcp, season, applyCoastalFilter, selectedPages = ['climate'] }) => {
+const AdaptationsPDF = ({ selectedAdaptationHazards, filterName }) => {
+    const hazardText = selectedAdaptationHazards && selectedAdaptationHazards.length > 0
+        ? selectedAdaptationHazards.join(", ")
+        : "no specific hazards";
+
+    const isDefaultFilter = filterName === defaultFilterName;
+
+    // Find the filter category for the current filterName
+    const selectedFilter = adaptationFilters.find(filter => filter.filterName === filterName);
+    const filterCategory = selectedFilter ? selectedFilter.category : adaptationFilters[0].category;
+
+    // Filter adaptations (same logic as StaticAdaptations)
+    const filteredAdaptations = adaptationData.filter((adaptation) => {
+        const layers = adaptation.attributes.layer.map((layer) => layer.toLowerCase());
+        const adaptationCategories = adaptation.attributes[filterCategory] || [];
+
+        const matchesAllHazards = selectedAdaptationHazards && selectedAdaptationHazards.length > 0
+            ? selectedAdaptationHazards.every((hazard) =>
+                layers.some((layer) => layer.includes(hazard.toLowerCase() + " in full"))
+            )
+            : false;
+
+        if (filterName === defaultFilterName) {
+            return matchesAllHazards;
+        } else {
+            return matchesAllHazards && adaptationCategories.includes(filterName);
+        }
+    });
+
+    // Limit to 20 adaptations
+    const limitedAdaptations = filteredAdaptations.slice(0, 20);
+
+    return (
+        <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Adaptations</Text>
+            <Text style={styles.bodyText}>
+                Based on the expected climate change and resulting impacts in the UK, the following adaptations should be considered.
+                These adaptations were identified to reduce risk to humans and the environment while providing co-benefits where possible.
+                {'\n\n'}
+                You have chosen adaptations related to{' '}
+                <Text style={[styles.bodyText, { fontWeight: 'bold' }]}>{hazardText}</Text>
+                {!isDefaultFilter && (
+                    <>
+                        {' '}and have filtered the list by{' '}
+                        <Text style={[styles.bodyText, { fontWeight: 'bold' }]}>{filterName}</Text>
+                    </>
+                )}.{'\n\n'}
+            </Text>
+
+            {limitedAdaptations.length > 0 && (
+                <>
+                    <Text style={styles.bodyText}>
+                        {filteredAdaptations.length > 20
+                            ? `Showing the first 20 of ${filteredAdaptations.length} adaptations:`
+                            : `${filteredAdaptations.length} adaptation${filteredAdaptations.length === 1 ? '' : 's'} found:`
+                        }
+                    </Text>
+
+                    <View style={styles.bulletList}>
+                        {limitedAdaptations.map((adaptation, index) => (
+                            <Text key={index} style={styles.bulletItem}>
+                                • {adaptation.attributes.label}
+                            </Text>
+                        ))}
+                    </View>
+                </>
+            )}
+
+            {limitedAdaptations.length === 0 && (
+                <Text style={styles.bodyText}>
+                    No adaptations found for the selected criteria.
+                </Text>
+            )}
+            <Text style={styles.bodyText}>To access more detail on each adaptation, visit LCAT and click on each adaptation.{'\n'}
+                Want to learn more about climate adaptation? Read our <Link src="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-Introduction-to-Local-Climate-Adaptation-May-2024.pdf">Introduction to Climate Adaptation</Link>.</Text>
+        </View>
+    );
+};
+
+const ClimateReport = ({ regions, climatePrediction, selectedImpactHazard, selectedAdaptationHazards, filterName, rcp, season, applyCoastalFilter, selectedPages = ['climate'] }) => {
     const shouldIncludePage = (pageId) => selectedPages.includes(pageId);
 
     return (
@@ -357,10 +440,10 @@ const ClimateReport = ({ regions, climatePrediction, selectedHazardName, rcp, se
                     </View>
                 </View>
 
-                <View style={styles.section}>                    
+                <View style={styles.section}>
                     <Text style={styles.intro}>
-                        The Local Climate Adaptation Tool (LCAT) offers you data and evidence to understand and plan for current and future climate impacts. 
-                        This includes how local climates will change, likely UK hazards, community and health impacts, who is vulnerable and what adaptations to consider. 
+                        The Local Climate Adaptation Tool (LCAT) offers you data and evidence to understand and plan for current and future climate impacts.
+                        This includes how local climates will change, likely UK hazards, community and health impacts, who is vulnerable and what adaptations to consider.
                         LCAT is evidence-based and designed with and for local decision makers.
                     </Text>
                     <Text style={styles.text}>
@@ -379,7 +462,7 @@ const ClimateReport = ({ regions, climatePrediction, selectedHazardName, rcp, se
                         ))}
                     </View>
                     <Text style={styles.text}>
-                        The following information was taken from LCAT on {new Date().toLocaleDateString()} and is a summary based on your unique search selection. <Link src="https://lcat.uk/">Visit LCAT</Link> for more information, including for different locations, impacts or adaptation topic areas.  
+                        The following information was taken from LCAT on {new Date().toLocaleDateString()} and is a summary based on your unique search selection. <Link src="https://lcat.uk/">Visit LCAT</Link> for more information, including for different locations, impacts or adaptation topic areas.
                     </Text>
                 </View>
                 {/* Summary of selected pages */}
@@ -396,8 +479,8 @@ const ClimateReport = ({ regions, climatePrediction, selectedHazardName, rcp, se
             {/* Conditionally include pages based on selection */}
             {shouldIncludePage('climate') && (
                 <Page size="A4" style={styles.page}>
-                    <ClimateSummaryPDF 
-                        climatePrediction={climatePrediction} 
+                    <ClimateSummaryPDF
+                        climatePrediction={climatePrediction}
                         regions={regions}
                         rcp={rcp}
                         season={season}
@@ -405,38 +488,35 @@ const ClimateReport = ({ regions, climatePrediction, selectedHazardName, rcp, se
                 </Page>
             )}
 
-            {shouldIncludePage('hazards') && selectedHazardName && (
+            {shouldIncludePage('hazards') && selectedImpactHazard && (
                 <Page size="A4" style={styles.page}>
-                    <ClimateHazardsPDF 
-                        applyCoastalFilter={applyCoastalFilter}/>
+                    <ClimateHazardsPDF
+                        applyCoastalFilter={applyCoastalFilter} />
                 </Page>
             )}
 
-            {(shouldIncludePage('health-impacts') || shouldIncludePage('community-impacts')) && selectedHazardName && (
+            {(shouldIncludePage('health-impacts') || shouldIncludePage('community-impacts')) && selectedImpactHazard && (
                 <Page size="A4" style={styles.page}>
-                    <ClimateImpactsPDF 
-                        selectedHazardName={selectedHazardName}
+                    <ClimateImpactsPDF
+                        selectedImpactHazard={selectedImpactHazard}
                         includeHealthImpacts={shouldIncludePage('health-impacts')}
                         includeCommunityImpacts={shouldIncludePage('community-impacts')}
                     />
                 </Page>
             )}
 
-            {shouldIncludePage('adaptations') && (
-                <Page size="A4" style={styles.page}>
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Adaptation Options</Text>
-                        <Text style={styles.bodyText}>
-                            Recommended adaptation strategies and actions.
-                        </Text>
-                        {/* Add your adaptations content here */}
-                    </View>
-                </Page>
-            )}
-
             {shouldIncludePage('vulnerability') && regions && regions.length > 0 && (
                 <Page size="A4" style={styles.page}>
                     <VulnerabilityPDF />
+                </Page>
+            )}
+
+            {shouldIncludePage('adaptations') && (
+                <Page size="A4" style={styles.page}>
+                    <AdaptationsPDF
+                        selectedAdaptationHazards={selectedAdaptationHazards}
+                        filterName={filterName}
+                    />
                 </Page>
             )}
         </Document>
@@ -450,7 +530,7 @@ const getPageTitle = (pageId) => {
         'hazards': 'Climate Hazards',
         'health-impacts': 'Health Impacts',
         'community-impacts': 'Community Impacts',
-        'adaptations': 'Adaptation Options',
+        'adaptations': 'Adaptations',
         'vulnerability': 'Vulnerability Assessment'
     };
     return titles[pageId] || pageId;

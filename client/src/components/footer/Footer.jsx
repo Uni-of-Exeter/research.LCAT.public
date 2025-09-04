@@ -25,7 +25,7 @@ import FooterText from "./FooterText";
 import Handbook from "./Handbook";
 import PageSelectionModal from './PageSelectionModal';
 
-const Footer = ({ regions, climatePrediction, selectedHazardName, rcp, season, applyCoastalFilter }) => {
+const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdaptationHazards, filterName, rcp, season, applyCoastalFilter }) => {
     const [showPageSelection, setShowPageSelection] = useState(false);
     const [selectedPageIds, setSelectedPageIds] = useState([]);
     const [shouldShowPDF, setShouldShowPDF] = useState(false);
@@ -62,19 +62,19 @@ const Footer = ({ regions, climatePrediction, selectedHazardName, rcp, season, a
             id: 'hazards',
             title: 'Climate Hazards',
             defaultSelected: true,
-            available: selectedHazardName
+            available: selectedImpactHazard
         },
         {
             id: 'health-impacts',
             title: 'Health Impacts',
             defaultSelected: true,
-            available: selectedHazardName
+            available: selectedImpactHazard
         },
         {
             id: 'community-impacts',
             title: 'Community Impacts',
             defaultSelected: true,
-            available: selectedHazardName
+            available: selectedImpactHazard
         },
         {
             id: 'adaptations',
@@ -99,7 +99,7 @@ const Footer = ({ regions, climatePrediction, selectedHazardName, rcp, season, a
                 'event_label': 'climate_report',
                 'regions_count': regions?.length || 0,
                 'has_climate_data': climatePrediction?.length > 0,
-                'selected_hazard': selectedHazardName || 'none',
+                'selected_hazard': selectedImpactHazard || 'none',
                 'rcp': rcp || 'none',
                 'season': season || 'none'
             });
@@ -153,7 +153,9 @@ const Footer = ({ regions, climatePrediction, selectedHazardName, rcp, season, a
                                 document={<ClimateReport 
                                     regions={regions} 
                                     climatePrediction={climatePrediction} 
-                                    selectedHazardName={selectedHazardName}
+                                    selectedImpactHazard={selectedImpactHazard}
+                                    selectedAdaptationHazards={selectedAdaptationHazards}
+                                    filterName={filterName}
                                     rcp={rcp}
                                     season={season}
                                     applyCoastalFilter={applyCoastalFilter}

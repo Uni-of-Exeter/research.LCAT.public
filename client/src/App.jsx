@@ -14,8 +14,9 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./App.css";
 
-import { useEffect, useRef,useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
+import { defaultFilterName } from "./components/adaptations/AdaptationCategories";
 import StaticAdaptations from "./components/adaptations/StaticAdaptations";
 import ClimateHazardRisk from "./components/climateHazard/ClimateHazardRisk";
 import ClimateImpactSummary from "./components/climateImpacts/ClimateImpactSummary";
@@ -83,10 +84,20 @@ const App = () => {
     const [variable, setVariable] = useState(defaultState.variable);
     const [isPredictionLoading, setIsPredictionLoading] = useState(defaultState.isPredictionLoading);
     const [areAveragesLoading, setAreAveragesLoading] = useState(defaultState.areAveragesLoading);
-    const [selectedHazardName, setSelectedHazardName] = useState(defaultState.selectedHazardName);
+    const [selectedImpactHazard, setSelectedImpactHazard] = useState(defaultState.selectedImpactHazard);
     const [applyCoastalFilter, setApplyCoastalFilter] = useState(defaultState.applyCoastalFilter);
 
+    const [selectedAdaptationHazards, setSelectedAdaptationHazards] = useState([defaultState.selectedImpactHazard]);
+    const [filterName, setFilterName] = useState(defaultFilterName);
+    
     useScrollTracking();
+
+    // If a new impact hazard is selected, update the adaptation hazards to match
+    useEffect(() => {
+        if (selectedImpactHazard && typeof selectedImpactHazard === 'string') {
+            setSelectedAdaptationHazards([selectedImpactHazard]);
+        }
+    }, [selectedImpactHazard])
 
     useEffect(() => {
         if (regions.length === 0) {
@@ -95,7 +106,7 @@ const App = () => {
             setVariable(defaultState.variable);
             setClimatePrediction(defaultState.climatePrediction)
             setClimateAverages(defaultState.climateAverages)
-            setSelectedHazardName(defaultState.selectedHazardName)
+            setSelectedImpactHazard(defaultState.selectedImpactHazard)
             setApplyCoastalFilter(defaultState.applyCoastalFilter)
         }
     }, [regions]);
@@ -183,14 +194,14 @@ const App = () => {
                     <div data-section="impacts" className="grey-section">
                         <ClimateImpactSummary
                             loading={isPredictionLoading}
-                            selectedHazardName={selectedHazardName}
-                            setSelectedHazardName={setSelectedHazardName}
+                            selectedImpactHazard={selectedImpactHazard}
+                            setSelectedImpactHazard={setSelectedImpactHazard}
                             applyCoastalFilter={applyCoastalFilter}
                         />
                         <KumuImpactPathway
                             regions={regions}
-                            selectedHazardName={selectedHazardName}
-                            setSelectedHazardName={setSelectedHazardName}
+                            selectedImpactHazard={selectedImpactHazard}
+                            setSelectedImpactHazard={setSelectedImpactHazard}
                             applyCoastalFilter={applyCoastalFilter}
                         />
                     </div>
@@ -206,8 +217,11 @@ const App = () => {
                 {regions.length > 0 && (
                     <div data-section="adaptations" className="grey-section">
                         <StaticAdaptations
-                            selectedHazardName={selectedHazardName}
+                            selectedAdaptationHazards={selectedAdaptationHazards}
+                            setSelectedAdaptationHazards={setSelectedAdaptationHazards}
                             applyCoastalFilter={applyCoastalFilter}
+                            filterName={filterName}
+                            setFilterName={setFilterName}
                         />
                     </div>
                 )}
@@ -215,7 +229,9 @@ const App = () => {
                 <Footer 
                     regions={regions}
                     climatePrediction={climatePrediction}
-                    selectedHazardName={selectedHazardName}
+                    selectedImpactHazard={selectedImpactHazard}
+                    selectedAdaptationHazards={selectedAdaptationHazards}
+                    filterName={filterName}
                     rcp={rcp}
                     season={season}
                     applyCoastalFilter={applyCoastalFilter}
