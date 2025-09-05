@@ -29,7 +29,7 @@ h1 {
     font-family: "Montserrat-Black", Arial, Helvetica, sans-serif;
     font-size: 200%;
     margin-bottom: 0em;
-    color: #115158ff;
+    color: var(--color-header-text);
     text-transform: uppercase;
 }
 
@@ -69,7 +69,7 @@ select:hover {
 }
 
 a {
-    color: #115158ff;
+    color: var(--color-header-text);
 }
 
 button {
@@ -188,4 +188,5 @@ button:hover {
 
 :root {
   --color-button-hover: rgba(245,130,31,1);
+  --color-header-text: #115158ff;
 }

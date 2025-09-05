@@ -68,7 +68,7 @@
   to {
     opacity: 1;
     transform: translateY(0) scaleY(1);
-    max-height: 500px;
+    max-height: 1000px;
   }
 }
 
@@ -80,7 +80,7 @@
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  color: #115158ff;
+  color: var(--color-header-text);
   text-decoration: none;
   user-select: none;
   padding: 2px 0;
@@ -91,7 +91,7 @@
 
 .data-source-header:hover {
   background: none;
-  color: #115158ff;
+  color: var(--color-header-text);
 }
 
 .data-source-header span:first-child {
@@ -112,7 +112,7 @@
   animation: slideDown 0.3s ease-out;
   margin-top: 10px;
   padding: 15px 15px 0px 15px;
-  border-left: 5px solid #115158ff;
+  border-left: 5px solid var(--color-header-text);
   line-height: 1.5;
 }
 
