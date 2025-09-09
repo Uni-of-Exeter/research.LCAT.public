@@ -141,4 +141,34 @@ export const reportStyles = StyleSheet.create({
         lineHeight: 1.5,
         marginBottom: 3,
     },
+    footer: {
+        marginTop: 'auto',
+        padding: '10pt',
+        borderTop: '1pt solid #f0f0f0',
+        backgroundColor: '#f7f7f7',
+        },
+    footerText: {
+        fontSize: 8,
+        marginBottom: 8,
+        color: '#444444',
+        textAlign: 'center',
+        },
+    footerLogosContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginTop: 5,
+        marginBottom: 5,
+        },
+    footerPartnerLogos: {
+        width: 300,
+        marginBottom: 10,
+        },
+    footerFunderLogos: {
+        width: 300,
+        },
+    logoBlock: {
+        marginBottom: 10,
+        alignItems: 'center',
+        },
 });

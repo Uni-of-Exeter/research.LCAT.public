@@ -42,6 +42,8 @@ import InjuryIcon from '../../images/impacts/general/injuries.png';
 import RespiratoryDiseasesIcon from '../../images/impacts/general/Respiratory diseases.png';
 import VectorBorneDiseasesIcon from '../../images/impacts/general/Vector-borne diseases.png';
 import LCATLogo from '../../images/logos/LCAT_Logo_Primary_RGB.png';
+import FooterLogos from '../../images/logos/new-footer-logos.png';
+import FunderLogos from '../../images/logos/new-funder-logos.png';
 import HealthConditionsIcon from '../../images/vulnerabilities/healthConditions.png';
 import LowIncomesIcon from '../../images/vulnerabilities/lowIncomes.png';
 import LowLocalKnowledgeIcon from '../../images/vulnerabilities/lowLocalKnowledge.png';
@@ -418,8 +420,46 @@ const AdaptationsPDF = ({ selectedAdaptationHazards, filterName }) => {
     );
 };
 
+const ReportFooter = () => {
+    return (
+        <View style={styles.footer} wrap={false}>
+            <Text style={styles.footerText}>
+                Please note that LCAT is updated regularly. The information contained in this summary was correct as of the date you downloaded the document. We suggest returning to the website for the most up to date information and data. If you would like to understand the sources for any of this summary, please visit the LCAT website. To reference this report, please reference University of Exeter and the date you downloaded the report.
+            </Text>
+
+            <View style={styles.footerLogosContainer}>
+                <View style={styles.logoBlock}>
+                    <Image
+                        src={FooterLogos}
+                        style={styles.footerPartnerLogos}
+                    />
+                </View>
+                <View style={styles.logoBlock}>
+                    <Image
+                        src={FunderLogos}
+                        style={styles.footerFunderLogos}
+                    />
+                </View>
+            </View>
+        </View>
+    );
+};
+
 const ClimateReport = ({ regions, climatePrediction, selectedImpactHazard, selectedAdaptationHazards, filterName, rcp, season, applyCoastalFilter, selectedPages = ['climate'] }) => {
     const shouldIncludePage = (pageId) => selectedPages.includes(pageId);
+
+    // Determine which is the last page to include the footer
+    let lastPage = 'climate'; // Default
+
+    if (shouldIncludePage('adaptations')) {
+        lastPage = 'adaptations';
+    } else if (shouldIncludePage('vulnerability') && regions && regions.length > 0) {
+        lastPage = 'vulnerability';
+    } else if ((shouldIncludePage('health-impacts') || shouldIncludePage('community-impacts')) && selectedImpactHazard) {
+        lastPage = 'impacts';
+    } else if (shouldIncludePage('hazards') && selectedImpactHazard) {
+        lastPage = 'hazards';
+    }
 
     return (
         <Document>
@@ -485,6 +525,7 @@ const ClimateReport = ({ regions, climatePrediction, selectedImpactHazard, selec
                         rcp={rcp}
                         season={season}
                     />
+                    {lastPage === 'climate' && <ReportFooter />}
                 </Page>
             )}
 
@@ -492,6 +533,7 @@ const ClimateReport = ({ regions, climatePrediction, selectedImpactHazard, selec
                 <Page size="A4" style={styles.page}>
                     <ClimateHazardsPDF
                         applyCoastalFilter={applyCoastalFilter} />
+                    {lastPage === 'hazards' && <ReportFooter />}
                 </Page>
             )}
 
@@ -502,12 +544,14 @@ const ClimateReport = ({ regions, climatePrediction, selectedImpactHazard, selec
                         includeHealthImpacts={shouldIncludePage('health-impacts')}
                         includeCommunityImpacts={shouldIncludePage('community-impacts')}
                     />
+                    {lastPage === 'impacts' && <ReportFooter />}
                 </Page>
             )}
 
             {shouldIncludePage('vulnerability') && regions && regions.length > 0 && (
                 <Page size="A4" style={styles.page}>
                     <VulnerabilityPDF />
+                    {lastPage === 'vulnerability' && <ReportFooter />}
                 </Page>
             )}
 
@@ -517,6 +561,7 @@ const ClimateReport = ({ regions, climatePrediction, selectedImpactHazard, selec
                         selectedAdaptationHazards={selectedAdaptationHazards}
                         filterName={filterName}
                     />
+                    {lastPage === 'adaptations' && <ReportFooter />}
                 </Page>
             )}
         </Document>
