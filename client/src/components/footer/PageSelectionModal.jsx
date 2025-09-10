@@ -1,4 +1,3 @@
-// Create PageSelectionModal.jsx
 import './PageSelectionModal.css';
 
 import { useState } from 'react';
@@ -49,7 +48,6 @@ const PageSelectionModal = ({ isOpen, onClose, onGenerate, availablePages }) => 
         >
             <div className="modal-content">
                 <h3 id="modal-title">Select Report Pages</h3>
-                <p>Choose which sections to include in your report:</p>
                 
                 <div className="page-options">
                     {availablePages.map(page => (
@@ -61,8 +59,7 @@ const PageSelectionModal = ({ isOpen, onClose, onGenerate, availablePages }) => 
                                 aria-label={`Include ${page.title} in report`}
                             />
                             <div className="page-info">
-                                <span className="page-title">{page.title}</span>
-                                <span className="page-description">{page.description}</span>
+                                <span className="page-name">{page.title}</span>
                             </div>
                         </label>
                     ))}
@@ -77,7 +74,7 @@ const PageSelectionModal = ({ isOpen, onClose, onGenerate, availablePages }) => 
                         className="btn-primary"
                         disabled={selectedCount === 0}
                     >
-                        Generate Report ({selectedCount} page{selectedCount !== 1 ? 's' : ''})
+                        Generate Report <br />({selectedCount} page{selectedCount !== 1 ? 's' : ''})
                     </button>
                 </div>
             </div>

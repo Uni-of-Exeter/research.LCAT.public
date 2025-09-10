@@ -352,16 +352,24 @@ const AdaptationsPDF = ({ selectedAdaptationHazards, filterName }) => {
     const selectedFilter = adaptationFilters.find(filter => filter.filterName === filterName);
     const filterCategory = selectedFilter ? selectedFilter.category : adaptationFilters[0].category;
 
-    // Filter adaptations (same logic as StaticAdaptations)
+    // Filter adaptations
     const filteredAdaptations = adaptationData.filter((adaptation) => {
         const layers = adaptation.attributes.layer.map((layer) => layer.toLowerCase());
         const adaptationCategories = adaptation.attributes[filterCategory] || [];
 
-        const matchesAllHazards = selectedAdaptationHazards && selectedAdaptationHazards.length > 0
-            ? selectedAdaptationHazards.every((hazard) =>
-                layers.some((layer) => layer.includes(hazard.toLowerCase() + " in full"))
-            )
-            : false;
+        // If no hazards are selected, show all adaptations (just apply category filter)
+        if (!selectedAdaptationHazards || selectedAdaptationHazards.length === 0) {
+            if (filterName === defaultFilterName) {
+                return true; // Show all adaptations
+            } else {
+                return adaptationCategories.includes(filterName); // Filter by category only
+            }
+        }
+
+        // If hazards are selected, filter by both hazards and category
+        const matchesAllHazards = selectedAdaptationHazards.every((hazard) =>
+            layers.some((layer) => layer.includes(hazard.toLowerCase() + " in full"))
+    );
 
         if (filterName === defaultFilterName) {
             return matchesAllHazards;

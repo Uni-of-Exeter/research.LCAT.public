@@ -56,13 +56,13 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
             id: 'climate',
             title: 'Climate Summary',
             defaultSelected: true,
-            available: true //climatePrediction && climatePrediction.length > 0
+            available: regions && regions.length > 0
         },
         {
             id: 'hazards',
-            title: 'Climate Hazards',
+            title: 'Climate Hazard Risk',
             defaultSelected: true,
-            available: selectedImpactHazard
+            available: true
         },
         {
             id: 'health-impacts',
@@ -77,17 +77,17 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
             available: selectedImpactHazard
         },
         {
-            id: 'adaptations',
-            title: 'Adaptation Options',
-            defaultSelected: false,
+            id: 'vulnerability',
+            title: 'Vulnerabilities',
+            defaultSelected: true,
             available: true
         },
         {
-            id: 'vulnerability',
-            title: 'Vulnerability Assessment',
-            defaultSelected: false,
-            available: regions && regions.length > 0
-        }
+            id: 'adaptations',
+            title: 'Adaptations',
+            defaultSelected: true,
+            available: true
+        },
     ].filter(page => page.available);
 
     const handleReportClick = () => {
@@ -116,10 +116,9 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
                     <>
                         <div style={{
                             display: 'flex',
-                            justifyContent: 'center',
+                            flexDirection: 'column',
                             alignItems: 'center',
-                            position: 'relative',
-                            width: '100%'
+                            gap: '8px'
                         }}>
                             <button
                                 onClick={handleReportClick}
@@ -137,14 +136,12 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
                                 Generate Climate Report
                             </button>
                             <div style={{
-                                position: 'absolute',
-                                left: 'calc(50% + 140px)',
                                 fontSize: '14px',
                                 color: downloadStatus === 'generating' ? '#666' : 'transparent',
                                 fontStyle: 'italic',
-                                whiteSpace: 'nowrap'
+                                height: '20px' // Reserve space to prevent layout shift
                             }}>
-                                {downloadStatus === 'generating' ? 'Generating report...' : 'Generating report...'}
+                                {downloadStatus === 'generating' ? 'Generating report...' : ''}
                             </div>
                         </div>
                         
@@ -161,7 +158,7 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
                                     applyCoastalFilter={applyCoastalFilter}
                                     selectedPages={selectedPageIds}
                                 />}
-                                fileName="climate-risk-assessment-report.pdf"
+                                fileName="LCAT-report.pdf"
                                 className="pdf-download-link"
                                 style={{ display: 'none' }}
                             >
