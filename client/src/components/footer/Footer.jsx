@@ -15,7 +15,7 @@ Common Good Public License Beta 1.0 for more details. */
 import "./Footer.css";
 
 import { PDFDownloadLink } from '@react-pdf/renderer';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import ClimateReport from "../report/report";
 import AdaptationGuide from "./AdaptationGuide";
@@ -30,26 +30,34 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
     const [selectedPageIds, setSelectedPageIds] = useState([]);
     const [shouldShowPDF, setShouldShowPDF] = useState(false);
     const [downloadStatus, setDownloadStatus] = useState('idle');
+    const [hasDownloaded, setHasDownloaded] = useState(false);
+    const [pdfUrl, setPdfUrl] = useState(null);
 
     const onPageSelection = (pageIds) => {
         setSelectedPageIds(pageIds);
         setShowPageSelection(false);
         setShouldShowPDF(true);
         setDownloadStatus('generating');
+        setHasDownloaded(false);
+        setPdfUrl(null);
     };
 
-    const handlePDFReady = (url) => {
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'climate-risk-assessment-report.pdf';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        // Clean up state
-        setDownloadStatus('idle');
-        setShouldShowPDF(false);
-    };
+    useEffect(() => {
+        if (pdfUrl && downloadStatus === 'generating' && !hasDownloaded) {
+            setHasDownloaded(true);
+
+            const link = document.createElement('a');
+            link.href = pdfUrl;
+            link.download = 'LCAT-report.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Clean up state
+            setDownloadStatus('idle');
+            setShouldShowPDF(false);
+        }
+    }, [pdfUrl, downloadStatus, hasDownloaded]);
 
     const availablePages = [
         {
@@ -164,11 +172,16 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
                             >
                                 {({ url, error }) => {
                                     if (error) {
-                                        setDownloadStatus('idle');
+                                        setTimeout(() => {
+                                            setDownloadStatus('idle');
+                                            setHasDownloaded(false);
+                                        }, 0);
                                     }
                                     
-                                    if (url && downloadStatus === 'generating') {
-                                        handlePDFReady(url);
+                                    if (url && !pdfUrl) {
+                                        setTimeout(() => {
+                                            setPdfUrl(url);
+                                        }, 0);
                                     }
                                     
                                     return null;
