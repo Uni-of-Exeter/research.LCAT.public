@@ -145,6 +145,38 @@ const vulnerabilityIconMap = {
     'People with low personal mobility': LowMobilityIcon,
 };
 
+const getTextStyle = (text) => {
+    const baseStyle = styles.climateVariable;
+    if (text.length > 40) {
+        return { ...baseStyle, fontSize: 10 };
+    } else if (text.length > 30) {
+        return { ...baseStyle, fontSize: 10.5 };
+    }
+    return baseStyle;
+};
+
+const formatLineBreaks = (text) => {
+    // Manually define break points
+    const breakPoints = [
+        { from: 'Respiratory diseases', to: 'Respiratory\ndiseases' },
+        { from: 'viruses, fungi', to: 'viruses,\nfungi' },
+        { from: 'natural environment', to: 'natural\nenvironment' },
+        { from: 'health conditions', to: 'health\nconditions' },
+        { from: 'are socially', to: 'are\nsocially' },
+        { from: 'low personal', to: 'low\npersonal' },
+    ];
+
+    let formattedText = text;
+
+    for (const breakPoint of breakPoints) {
+        if (formattedText.includes(breakPoint.from)) {
+            formattedText = formattedText.replace(breakPoint.from, breakPoint.to);
+        }
+    }
+
+    return formattedText;
+};
+
 // Climate Summary Component for PDF
 const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
     if (!climatePrediction || climatePrediction.length === 0) {
@@ -177,7 +209,7 @@ const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
                     const arrowSrc = getArrowIcon(climateData.arrow);
 
                     return (
-                        <View key={index} style={styles.climateItem}>
+                        <View key={index} style={[styles.climateItem, { width: '24%' }]}>
                             <View style={styles.iconContainer}>
                                 {arrowSrc && (
                                     <Image src={arrowSrc} style={styles.arrow} />
@@ -214,7 +246,7 @@ const ClimateHazardsPDF = ({ applyCoastalFilter }) => {
                     const iconSrc = getHazardIcon(hazard.name);
 
                     return (
-                        <View key={index} style={styles.climateItem}>
+                        <View key={index} style={[styles.climateItem, { width: '19%', padding: 4 }]}>
                             <View style={styles.iconContainer}>
                                 <Image src={iconSrc} style={styles.icon} />
                             </View>
@@ -269,11 +301,11 @@ const ClimateImpactsPDF = ({ selectedImpactHazard, includeHealthImpacts = true, 
                         {filteredImpacts.map((impact, index) => {
                             const iconSrc = getImpactIcon(impact.name);
                             return (
-                                <View key={index} style={styles.climateItem}>
+                                <View key={index} style={[styles.climateItem, { width: '24%' }]}>
                                     <View style={styles.iconContainer}>
                                         <Image src={iconSrc} style={styles.icon} />
                                     </View>
-                                    <Text style={styles.climateVariable}>{impact.name}</Text>
+                                    <Text style={getTextStyle(impact.name)}>{formatLineBreaks(impact.name)}</Text>
                                 </View>
                             );
                         })}
@@ -295,11 +327,11 @@ const ClimateImpactsPDF = ({ selectedImpactHazard, includeHealthImpacts = true, 
                         {filteredCommunityImpacts.map((impact, index) => {
                             const iconSrc = getCommunityImpactIcon(impact.name);
                             return (
-                                <View key={index} style={styles.climateItem}>
+                                <View key={index} style={[styles.climateItem, { width: '24%' }]}>
                                     <View style={styles.iconContainer}>
                                         <Image src={iconSrc} style={styles.icon} />
                                     </View>
-                                    <Text style={styles.climateVariable}>{impact.name}</Text>
+                                    <Text style={getTextStyle(impact.name)}>{formatLineBreaks(impact.name)}</Text>
                                 </View>
                             );
                         })}
@@ -324,11 +356,11 @@ const VulnerabilityPDF = () => {
             <View style={styles.climateContainer}>
                 {Object.entries(vulnerabilityIconMap).map(([vulnerabilityName, iconSrc], index) => {
                     return (
-                        <View key={index} style={styles.climateItem}>
+                        <View key={index} style={[styles.climateItem, { width: '24%' }]}>
                             <View style={styles.iconContainer}>
                                 <Image src={iconSrc} style={styles.icon} />
                             </View>
-                            <Text style={styles.climateVariable}>{vulnerabilityName}</Text>
+                            <Text style={getTextStyle(vulnerabilityName)}>{formatLineBreaks(vulnerabilityName)}</Text>
                         </View>
                     );
                 })}
