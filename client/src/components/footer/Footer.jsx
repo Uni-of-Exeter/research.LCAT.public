@@ -119,36 +119,17 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
 
     return (
         <div>
-            <div style={{ textAlign: 'center', padding: '20px', backgroundColor: '#f5f5f5' }}>
+            <div className="pdf-generation-section">
                 {hasSelectedRegions ? (
                     <>
-                        <div style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: '8px'
-                        }}>
+                        <div className="pdf-button-container">
                             <button
                                 onClick={handleReportClick}
-                                style={{
-                                    backgroundColor: '#007bff',
-                                    color: 'white',
-                                    padding: '12px 24px',
-                                    borderRadius: '5px',
-                                    fontSize: '16px',
-                                    fontWeight: 'bold',
-                                    cursor: 'pointer',
-                                    border: 'none',
-                                }}
+                                className="generate-report-button"
                             >
                                 Generate Climate Report
                             </button>
-                            <div style={{
-                                fontSize: '14px',
-                                color: downloadStatus === 'generating' ? '#666' : 'transparent',
-                                fontStyle: 'italic',
-                                height: '20px' // Reserve space to prevent layout shift
-                            }}>
+                            <div className={`generating-status ${downloadStatus === 'generating' ? 'visible' : 'hidden'}`}>
                                 {downloadStatus === 'generating' ? 'Generating report...' : ''}
                             </div>
                         </div>
@@ -168,7 +149,6 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
                                 />}
                                 fileName="LCAT-report.pdf"
                                 className="pdf-download-link"
-                                style={{ display: 'none' }}
                             >
                                 {({ url, error }) => {
                                     if (error) {
@@ -190,16 +170,7 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
                         )}
                     </>
                 ) : (
-                    <div style={{
-                        backgroundColor: '#f0f0f0',
-                        color: '#666',
-                        padding: '12px 24px',
-                        borderRadius: '5px',
-                        fontSize: '16px',
-                        fontWeight: 'bold',
-                        display: 'inline-block',
-                        border: '2px dashed #ccc',
-                    }}>
+                        <div className="select-region-prompt">
                         Select a region to generate report
                     </div>
                 )}
