@@ -1,8 +1,11 @@
 // Function to parse the float values from the prediction
+
+// TODO: Note that we have made changes here so this branch works with DB changes from the add-extremes branch
+//       We will want to revisit this in future before merging
 export const climateChange = (prediction, variable, year) => {
     if (prediction.length > 0) {
-        const baseline = parseFloat(prediction[0][`${variable}_1980_mean`]);
-        const predict = parseFloat(prediction[0][`${variable}_${year}_mean`]);
+        const baseline = parseFloat(prediction[0][`${variable}_1980`]);
+        const predict = parseFloat(prediction[0][`${variable}_${year}`]);
         return baseline != null && predict != null ? predict - baseline : null;
     }
     return null;
