@@ -72,10 +72,6 @@ export const reportStyles = StyleSheet.create({
         lineHeight: 1.5,
         color: '#333',
     },
-    text: {
-        fontSize: 12,
-        lineHeight: 1.5,
-    },
     intro: {
         fontSize: 12,
         marginBottom: 10,

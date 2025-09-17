@@ -164,6 +164,7 @@ const formatLineBreaks = (text) => {
         { from: 'health conditions', to: 'health\nconditions' },
         { from: 'are socially', to: 'are\nsocially' },
         { from: 'low personal', to: 'low\npersonal' },
+        { from: 'Temperature increases', to: 'Temperature\nincreases' },
     ];
 
     let formattedText = text;
@@ -183,7 +184,7 @@ const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
         return (
             <View style={styles.section}>
                 <Text style={styles.subtitle}>Climate Summary</Text>
-                <Text style={styles.text}>No climate data available for this region.</Text>
+                <Text style={styles.bodyText}>No climate data available for this region.</Text>
             </View>
         );
     }
@@ -193,11 +194,15 @@ const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
             <Text style={styles.subtitle}>EXPLORE YOUR LOCAL CLIMATE</Text>
             {regions && regions.length > 0 && rcp && season && (
                 <>
-                    <Text style={styles.text}>
-                        For {andify(regions.map(region => region.name))} under the
-                        {rcp === 'rcp60' ? ' existing global policies ' : ' worst case scenario '}
+                    <Text style={styles.bodyText}>
+                        For <Text style={[styles.bodyText, { fontWeight: 'bold' }]}>{andify(regions.map(region => region.name))}</Text>
+                        {' '}under the
+                        <Text style={[styles.bodyText, { fontWeight: 'bold' }]}>
+                            {rcp === 'rcp60' ? ' existing global policies ' : ' worst case scenario '}
+                        </Text>
                         (equivalent to global warming level of {rcp === 'rcp60' ? '2.0-3.7C which is RCP 6.0' : '3.2-5.4C which is RCP 8.5'})
-                        the {season} average climate change for 2070 compared with local records for the 1980s is expected to be:
+                        {' '}the <Text style={[styles.bodyText, { fontWeight: 'bold' }]}>{season}</Text>
+                        {' '}average climate change for 2070 compared with local records for the 1980s is expected to be:
                     </Text>
                 </>
             )}
@@ -217,13 +222,13 @@ const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
                                 <Image src={iconSrc} style={styles.icon} />
                             </View>
                             <Text style={styles.climateVariable}>{item.name}</Text>
-                            <Text style={styles.climateValue}>{climateData.change}</Text>
+                            <Text style={styles.climateValue}>{formatLineBreaks(climateData.change)}</Text>
                         </View>
                     );
                 })}
             </View>
 
-            <Text style={styles.text}>
+            <Text style={styles.bodyText}>
                 Note: Yearly average climate change does not always reflect the extremes of summer and winter.
             </Text>
         </View>
@@ -256,7 +261,7 @@ const ClimateHazardsPDF = ({ applyCoastalFilter }) => {
                 })}
             </View>
 
-            <Text style={styles.text}>
+            <Text style={styles.bodyText}>
                 To access localised data on these risks, visit LCAT and click on each hazard.
             </Text>
         </View>
@@ -366,7 +371,7 @@ const VulnerabilityPDF = () => {
                 })}
             </View>
 
-            <Text style={styles.text}>
+            <Text style={styles.bodyText}>
                 To access localised data on these vulnerabilities, visit LCAT and click on each vulnerability icon.
             </Text>
         </View>
@@ -526,7 +531,7 @@ const ClimateReport = ({ regions, climatePrediction, selectedImpactHazard, selec
                         This includes how local climates will change, likely UK hazards, community and health impacts, who is vulnerable and what adaptations to consider.
                         LCAT is evidence-based and designed with and for local decision makers.
                     </Text>
-                    <Text style={styles.text}>
+                    <Text style={styles.bodyText}>
                         Benefits of adaptation include:
                     </Text>
                     <View style={styles.bulletList}>
@@ -541,7 +546,7 @@ const ClimateReport = ({ regions, climatePrediction, selectedImpactHazard, selec
                             </Text>
                         ))}
                     </View>
-                    <Text style={styles.text}>
+                    <Text style={styles.bodyText}>
                         The following information was taken from LCAT on {new Date().toLocaleDateString()} and is a summary based on your unique search selection. <Link src="https://lcat.uk/">Visit LCAT</Link> for more information, including for different locations, impacts or adaptation topic areas.
                     </Text>
                 </View>
