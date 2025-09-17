@@ -1,4 +1,4 @@
-import { Image, Text, View } from '@react-pdf/renderer';
+import { Image, Link, Text, View } from '@react-pdf/renderer';
 
 import DecreaseArrow from '../../../images/buttons/decrease.png';
 import IncreaseArrow from '../../../images/buttons/increase.png';
@@ -81,6 +81,15 @@ const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
 
             <Text style={styles.bodyText}>
                 Note: Yearly average climate change does not always reflect the extremes of summer and winter.
+                {'\n\n'}
+                Data source: The current iteration of the tool uses climate data from the{" "}
+                <Link src="https://catalogue.ceda.ac.uk/uuid/8194b416cbee482b89e0dfbe17c5786c">CHESS-SCAPE</Link>{" "}
+                dataset. CHESS-SCAPE provides bias-corrected data for England, Scotland, Wales, and the Isle of Man.
+                CHESS-SCAPE provides non bias-corrected data for Northern Ireland and the Isles of Scilly. The tool
+                displays RCP 6.0 and RCP 8.5. For more information, please see the{" "}
+                <Link src="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE-June-2025-update.pdf">
+                    LCAT Handbook.
+                </Link>
             </Text>
         </View>
     );
