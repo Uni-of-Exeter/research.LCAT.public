@@ -19,6 +19,7 @@ class ClimateDataProcessor:
         self.conf = config
         self.rcp = None
         self.bias_corrected = None
+        self.season = None
         self.variable = None
         self.excluded_decades = []
         self.file_urls = []
@@ -40,7 +41,23 @@ class ClimateDataProcessor:
 
         self.file_urls = nc_files
 
-    def process_data_by_decade(self, variable_name, calculation_func, **calc_kwargs):
+    def _parse_filename_date(self, file_url):
+        """Extract date components from filename"""
+        filename = file_url.split("/")[-1]
+        date_match = re.search(r"(\d{4})(\d{2})(\d{2})-(\d{4})(\d{2})(\d{2})", filename)
+
+        if date_match:
+            return {
+                "start_month": date_match.group(2),
+                "start_date": date_match.group(1)
+                + date_match.group(2)
+                + date_match.group(3),
+            }
+        return None
+
+    def process_data_by_decade(
+        self, variable_name, season, calculation_func, **calc_kwargs
+    ):
         """
         Generic function to process files by decade and apply a calculation function
 
@@ -64,23 +81,54 @@ class ClimateDataProcessor:
 
         print(f"Grid size: {len(y_coords)} x {len(x_coords)}")
 
-        # Sort files by date to ensure proper chronological order
-        def extract_date(file_url):
-            filename = file_url.split("/")[-1]
-            date_match = re.search(r"(\d{8})-(\d{8})", filename)
-            if date_match:
-                return date_match.group(1)  # Start date
-            return filename
+        file_dates = []
+        for file_url in self.file_urls:
+            date_info = self._parse_filename_date(file_url)
+            if date_info:
+                file_dates.append((file_url, date_info))
+            else:
+                print(
+                    f"Warning: Could not extract date from filename: {file_url.split('/')[-1]}"
+                )
 
-        sorted_files = sorted(self.file_urls, key=extract_date)
+        # Sort files by date
+        sorted_file_dates = sorted(file_dates, key=lambda x: x[1]["start_date"])
+
+        # Filter files based on season
+        def filter_files_by_season(files, season):
+            """Filter files based on season requirements"""
+            if season == "annual":
+                return [fd[0] for fd in files]  # Return just URLs
+
+            season_months = {"summer": ["06", "07", "08"], "winter": ["12", "01", "02"]}
+
+            if season not in season_months:
+                raise ValueError(
+                    f"Invalid season: {season}. Must be 'annual', 'summer', or 'winter'"
+                )
+
+            target_months = season_months[season]
+            filtered_files = []
+
+            for file_url, date_info in file_dates:
+                if date_info["start_month"] in target_months:
+                    filtered_files.append(file_url)
+
+            return filtered_files
+
+        # Apply season filtering
+        print(f"Filtering files for season: {season}")
+        filtered_files = filter_files_by_season(sorted_file_dates, season)
+        print(
+            f"Files after season filtering: {len(filtered_files)} out of {len(self.file_urls)}"
+        )
 
         # Calculate step-based decades (assuming each file represents one step/year)
-        # For December-to-December years, we need to group files in sets of 10
         excluded_decades = [1, 2, 3, 4]
 
         decade_files = {}
-        for i, file_url in enumerate(sorted_files):
-            decade = i // 120  # Each decade = 120 consecutive monthly files
+        for i, file_url in enumerate(filtered_files):
+            decade = i // 120 if season == "annual" else i // 30
 
             if decade not in excluded_decades:
                 if decade not in decade_files:
@@ -311,42 +359,63 @@ class ClimateDataProcessor:
 
         rcps = [60, 85]
         bias_corrected = [True, False]
-
-        variables = ["tasmin"]
+        seasons = ["winter", "summer"]
+        variables = ["tasmax", "tasmin"]
         self.excluded_decades = [1, 2, 3, 4]  # Exclude 1990s, 2000s, 2010s, 2020s
 
         for rcp in rcps:
             for bias in bias_corrected:
-                for variable in variables:
-                    self.rcp = rcp
-                    self.bias_corrected = bias
-                    self.variable = variable
+                for season in seasons:
+                    for variable in variables:
+                        self.rcp = rcp
+                        self.bias_corrected = bias
+                        self.season = season
+                        self.variable = variable
 
-                    print(
-                        f"Processing RCP {rcp}, Bias Corrected: {bias}, Variable: {variable}"
-                    )
+                        print(
+                            f"Processing RCP {rcp}, Bias Corrected: {bias}, Variable: {variable}"
+                        )
 
-                    self.get_file_links()
+                        self.get_file_links()
 
-                    # Process data by decade and calculate quantiles
-                    # TODO check if we need 99 and 95 quantiles in seperate files
-                    dataset = self.process_data_by_decade(
-                        self.variable,
-                        self.calculate_quantiles,
-                        quantiles=[1],
-                    )
+                        # Process data by decade and calculate quantiles
+                        # TODO check if we need 99 and 95 quantiles in seperate files
+                        # FIXED: Use correct quantiles for each variable
+                        if variable == "tasmax":
+                            quantiles = [99]  # 99th percentile for maximum temperatures
+                        elif variable == "tasmin":
+                            quantiles = [1]  # 1st percentile for minimum temperatures
+                        else:
+                            quantiles = [95, 99]  # Default for other variables
 
-                    bias_corrected_folder = "_bias-corrected" if bias else ""
-                    season_folder = "annual"
+                        dataset = self.process_data_by_decade(
+                            self.variable,
+                            self.season,
+                            self.calculate_quantiles,
+                            quantiles=quantiles,
+                        )
 
-                    # Create filepath
-                    sub_folders = (
-                        f"data/rcp{rcp}{bias_corrected_folder}/01/{season_folder}"
-                    )
+                        bias_corrected_folder = "_bias-corrected" if bias else ""
+                        season_folder = (
+                            "seasonal" if self.season != "annual" else "annual"
+                        )
 
-                    # Save the dataset to a NetCDF file
+                        # Create filepath
+                        sub_folders = (
+                            f"data/rcp{rcp}{bias_corrected_folder}/01/{season_folder}"
+                        )
 
-                    filename = f"chess-scape_rcp{rcp}{'_bias-corrected' if bias else ''}_01_{variable}_1_percentile_uk_1km_annual_19801201-20801130.nc"
-                    filepath = os.path.join(self.data_location, sub_folders, filename)
-                    dataset.to_netcdf(filepath)
-                    print(f"Saved dataset to {filepath}")
+                        # Save the dataset to a NetCDF file
+                        # TODO figure out the 1 percentile / 99 percentile issue
+                        if variable == "tasmax":
+                            variable_name = "tasmax_99_percentile"
+                        elif variable == "tasmin":
+                            variable_name = "tasmin_1_percentile"
+                        else:
+                            variable_name = variable
+                        filename = f"chess-scape_rcp{rcp}{'_bias-corrected' if bias else ''}_01_{variable_name}_uk_1km_{self.season}_19801201-20801130.nc"
+                        filepath = os.path.join(
+                            self.data_location, sub_folders, filename
+                        )
+                        dataset.to_netcdf(filepath)
+                        print(f"Saved dataset to {filepath}")

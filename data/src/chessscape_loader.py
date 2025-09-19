@@ -159,21 +159,30 @@ class ChessScapeLoader:
 
         # Create filepath folder adjustments
         bias_corrected_folder = "_bias-corrected" if bias_corrected_key == "bias_corrected" else ""
-        season_folder = "seasonal" if season != "annual" else "annual"
+        if variable in ["tasmax_99_percentile", "tasmin_1_percentile"] and season in [
+            "summer",
+            "winter",
+        ]:
+            # New single-season quantile files
+            sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/seasonal"
+            quantile_num = "99" if "99" in variable else "1"
+            base_var = "tasmax" if "tasmax" in variable else "tasmin"
+            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{base_var}_{quantile_num}_percentile_uk_1km_{season}_19801201-20801130.nc"
+        else:
+            # Original files
+            season_folder = "seasonal" if season != "annual" else "annual"
+            sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/{season_folder}"
+            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{variable}_uk_1km_{season_folder}_19801201-20801130.nc"
 
-        # Create filepath
-        sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/{season_folder}"
-        filename = (
-            f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{variable}_uk_1km_{season_folder}_19801201-20801130.nc"
-        )
         filepath = os.path.join(self.data_location, sub_folders, filename)
 
         # Load netcdf file
         if os.path.exists(filepath):
-            self.current_netcdf_data[bias_corrected_key] = self.open_netcdf_file(filepath)
-
+            self.current_netcdf_data[bias_corrected_key] = self.open_netcdf_file(
+                filepath
+            )
         else:
-            print(f"Incorrect filepath: {filepath}")
+            print(f"File not found: {filepath}")
 
     def load_all_netcdf(self, season: str, rcp: int, variable: str) -> None:
         """
@@ -211,10 +220,8 @@ class ChessScapeLoader:
 
     def process_derived_variable(self, variable: str) -> None:
         """
-        Process derived variables like tasmax_99_percentile and tasmin_1_percentile that have pre-computed data
-        with decade coordinates that need to be mapped to actual years.
+        Process derived variables
         """
-        print(f"### Processing derived variable: {variable}")
         self.extracted_data = {}
 
         # Map variable names to their data keys
@@ -229,39 +236,49 @@ class ChessScapeLoader:
         quantile_key = quantile_mapping[variable]
 
         for bias_corrected_key in self.bias_corrected_keys:
-            # Get the quantile data using the mapped key
-            quantile_data = self.current_netcdf_data[bias_corrected_key][quantile_key]
+            if bias_corrected_key not in self.current_netcdf_data:
+                print(f"No data loaded for bias key: {bias_corrected_key}")
+                continue
 
-            # Debug: check the decade coordinate
-            print(
-                f"### Available decade coordinates: {quantile_data.decade.to_numpy()}"
-            )
+            dataset = self.current_netcdf_data[bias_corrected_key]
+            available_vars = list(dataset.data_vars.keys())
 
-            # Create the decade structure to match expected format
+            # Try to find the quantile data
+            quantile_data = None
+
+            # First, try exact match
+            if quantile_key in dataset.data_vars:
+                quantile_data = dataset[quantile_key]
+            else:
+                # Try to find any quantile variable
+                for var_name in available_vars:
+                    if "quantile" in var_name.lower():
+                        quantile_data = dataset[var_name]
+                        break
+
+            if quantile_data is None:
+                print(f"Could not find any suitable data in {available_vars}")
+                continue
+
+            # Process the data based on its structure
             decade_dict = {}
 
-            # Map the decade coordinate values to actual years
-            # [0,5,6,7,8,9] -> [1980,2030,2040,2050,2060,2070]
-            decade_mapping = {0: 1980, 5: 2030, 6: 2040, 7: 2050, 8: 2060, 9: 2070}
+            if "decade" in quantile_data.dims:
+                decade_mapping = {0: 1980, 5: 2030, 6: 2040, 7: 2050, 8: 2060, 9: 2070}
+                decade_coords = quantile_data.decade.values
 
-            # Extract data for each available decade
-            for decade_coord in quantile_data.decade.to_numpy():
-                if decade_coord in decade_mapping:
-                    decade_year = decade_mapping[decade_coord]
-                    # Select the data for this specific decade coordinate
-                    decade_data = quantile_data.sel(decade=decade_coord)
-                    decade_dict[decade_year] = decade_data
-                    print(
-                        f"### Mapped decade coord {decade_coord} -> year {decade_year}"
-                    )
-                else:
-                    print(f"### WARNING: Unknown decade coordinate: {decade_coord}")
+                for decade_coord in decade_coords:
+                    decade_coord_int = int(decade_coord)
+                    if decade_coord_int in decade_mapping:
+                        decade_year = decade_mapping[decade_coord_int]
+                        decade_data = quantile_data.sel(decade=decade_coord)
+                        decade_dict[decade_year] = decade_data
+                    else:
+                        print(f"Unknown decade coordinate: {decade_coord_int}")
+            else:
+                decade_dict[2070] = quantile_data
 
             self.extracted_data[bias_corrected_key] = decade_dict
-
-            print(
-                f"### Final decade structure for {variable}: {sorted(decade_dict.keys())}"
-            )
 
     def process_decade(self, data: xr.Dataset) -> dict[int, xr.DataArray]:
         """
@@ -404,6 +421,8 @@ class ChessScapeLoader:
         # Add columns to database in one go
         if self.extracted_data[bias_key] == {}:
             print("### WARNING: No data extracted for this variable.")
+            return
+
         new_column_names = [
             f"{self.variable}_{decade}" for decade in self.extracted_data[bias_key]
         ]
@@ -477,27 +496,42 @@ class ChessScapeLoader:
 
     def process_all_variables(self, season: str, rcp: int) -> None:
         """
-        Create a table of data for a single variable, containing an ID column and 10 decade averaged columns.
+        Create a table of data for a single variable, containing an ID column and decade columns.
         """
 
-        # variables in original chess_scape data
-        # TODO eventually get rid of tasmax, tasmin
+        # Base variables always available
         source_variables = ["pr", "rsds", "sfcWind", "tas", "tasmax", "tasmin"]
 
-        # also derived variables
-        # TODO currently not worrying about seasonal at all
-        variables = (
-            [*source_variables, "tasmax_99_percentile", "tasmin_1_percentile"]
-            if season == "annual"
-            else source_variables
-        )
+        # Derived variables - now available for all seasons
+        derived_variables = []
+        if season == "annual":
+            derived_variables = ["tasmax_99_percentile", "tasmin_1_percentile"]
+        elif season in ["summer", "winter"]:
+            potential_seasonal = ["tasmax_99_percentile", "tasmin_1_percentile"]
+            for var in potential_seasonal:
+                # Check file existence with correct path
+                bias_corrected_folder = (
+                    "_bias-corrected"
+                    if "bias_corrected" in self.bias_corrected_keys
+                    else ""
+                )
+                sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/seasonal"
+                quantile_num = "99" if "99" in var else "1"
+                base_var = "tasmax" if "tasmax" in var else "tasmin"
+                filename = (
+                    f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{base_var}_"
+                    f"{quantile_num}_percentile_uk_1km_{season}_19801201-20801130.nc"
+                )
+                filepath = os.path.join(self.data_location, sub_folders, filename)
 
-        print("############################")
-        print(f"### Data to be processed: {self.bias_corrected_keys}")
-        print(f"### Processing all variables for dataset: {season}, rcp{rcp}.\n")
+                if os.path.exists(filepath):
+                    derived_variables.append(var)
+                else:
+                    print(f"Seasonal quantile file not found: {filename}")
+
+        variables = source_variables + derived_variables
 
         for variable in variables:
-            print(f"### Processing variable: {variable}")
 
             self.load_all_netcdf(season, rcp, variable)
             if variable in source_variables:
@@ -505,35 +539,15 @@ class ChessScapeLoader:
                 self.process_bias_keys()
                 self.transform_all_means()
             else:
-                # Special processing for derived variables like tasmax_99_percentile
+                # Special processing for derived variables
                 self.process_derived_variable(variable)
 
             self.drop_table()
             self.create_table()
-            print(f"### About to insert data for {variable}")
-            print(f"### Table name: {self.table_name}")
-
-            # Check if we have data to insert
-            if hasattr(self, "extracted_data") and self.extracted_data:
-                print(
-                    f"### extracted_data has keys: {list(self.extracted_data.keys())}"
-                )
-                for key, data in self.extracted_data.items():
-                    print(
-                        f"### {key} has decades: {list(data.keys()) if data else 'None'}"
-                    )
-            else:
-                print(f"### WARNING: No extracted_data found for {variable}")
-
             self.insert_data_multiple_decades()
             self.close_netcdf_files()
 
-            print(f"### Processing complete: {variable}\n")
-
         self.join_tables(variables)
-
-        print(f"### Processing complete for dataset: {season}, rcp{rcp}.")
-        print("############################\n")
 
     def process_all_seasons(self, rcp: int) -> None:
         """
