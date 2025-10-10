@@ -28,7 +28,6 @@ const tileLayer = {
 
 const center = [55.8, -3.2];
 const highlightCol = "#ffd768ff";
-
 const mapping = {
     boundary_uk_counties: "UK Counties and Unitary Authorities",
     boundary_la_districts: "Local Authority Districts",
