@@ -276,22 +276,19 @@ router.post("/gids_centre", async function (req, res) {
 
 /// GET CHESS-SCAPE CLIMATE DATA FROM DB ///
 
-// TODO: Note that we have made changes here so this branch works with DB changes from the add-extremes branch
-//       We will want to revisit this in future before merging
-
 // CHESS-SCAPE helper function: generate climate column SQL
 function buildAvgClimateCols() {
     const averageClimateColNames = [];
     const variables = ["tas", "sfcWind", "pr", "rsds"];
     const decades = ["1980", "1990", "2000", "2010", "2020", "2030", "2040", "2050", "2060", "2070"];
-    // const stats = ["min", "mean", "max"];
+    const stats = ["min", "mean", "max"];
 
     for (const variable of variables) {
         for (const decade of decades) {
-            // for (const stat of stats) {
-                averageClimateColNames.push(`AVG("${variable}_${decade}") as "${variable}_${decade}"`);
+            for (const stat of stats) {
+                averageClimateColNames.push(`AVG("${variable}_${decade}_${stat}") as "${variable}_${decade}_${stat}"`);
             }
-        // }
+        }
     }
 
     return averageClimateColNames;
@@ -404,12 +401,9 @@ router.get("/chess_scape_uk_averages", async (req, res) => {
 
         const decades = ["1980", "1990", "2000", "2010", "2020", "2030", "2040", "2050", "2060", "2070"];
 
-        // TODO: Note that we have made changes here so this branch works with DB changes from the add-extremes branch
-        //       We will want to revisit this in future before merging
-
-        // Construct query to get mean for each decade
+        // Construct query to get min, mean, max for each decade
         const query = `
-            SELECT decade, mean
+            SELECT decade, min, mean, max
             FROM chess_scape_uk_averages
             WHERE is_bias_corrected = $1
             AND rcp = $2
@@ -429,9 +423,9 @@ router.get("/chess_scape_uk_averages", async (req, res) => {
         const result = await client.query(query, queryParams);
         await client.end();
 
-       // Format: { [decade]: mean }
+       // Format: { [decade]: { min, mean, max } }
         const formattedData = Object.fromEntries(
-            result.rows.map((row) => [row.decade, row.mean])
+            result.rows.map((row) => [row.decade, { min: row.min, mean: row.mean, max: row.max }])
         );
         res.json(formattedData);
     } catch (err) {
