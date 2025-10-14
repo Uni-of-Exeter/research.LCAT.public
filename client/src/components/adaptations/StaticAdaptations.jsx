@@ -23,6 +23,7 @@ import StaticAdaptation from "./StaticAdaptation";
 
 const StaticAdaptations = (props) => {
     const { selectedAdaptationHazards, setSelectedAdaptationHazards, applyCoastalFilter, filterName, setFilterName } = props;
+    const [showDataSource, setShowDataSource] = useState(false);
 
     // Load filter category
     const [filterCategory, setFilterCategory] = useState(defaultFilterCategory);
@@ -175,10 +176,31 @@ const StaticAdaptations = (props) => {
                 )}
             </div>
 
-            <p className="note">
-                Data source: The adaptation data is based on published scientific literature and reports. You can see
-                the references used by expanding each adaptation.
-            </p>
+            <div className="data-source-section">
+                <button
+                    className={`data-source-header ${showDataSource ? 'expanded' : ''}`}
+                    onClick={() => setShowDataSource(!showDataSource)}
+                >
+                    <span>Reference source information</span>
+                    <span>▼</span>
+                </button>
+
+                {showDataSource && (
+                    <div className="data-source-content">
+                        <p>
+                            The adaptation data is based on published scientific literature and reports. You can see
+                            the references used by expanding each adaptation. The references are collected in the following categories:
+                        </p>
+                        <ul>
+                            <li><strong>Journal Article:</strong> Scholarly publications reporting original research or reviews of existing research</li>
+                            <li><strong>Report:</strong> Formal publications by organisations to communicate research, guidelines, or other relevant materials</li>
+                            <li><strong>Web page:</strong> Online reference materials (archived at time of inclusion)</li>
+                            <li><strong>Book:</strong> Sections, chapters, and full books</li>
+                            <li><strong>Database:</strong> Collections of evidence, such as tools or lists</li>
+                        </ul>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

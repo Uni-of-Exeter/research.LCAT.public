@@ -60,7 +60,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
 
         layer.bindTooltip(name);
         layer.setStyle({
-            color: "#115158ff",
+            color: "var(--color-header-text)",
             weight: 3,
             fillColor: isSelected ? highlightCol : col,
             fillOpacity: 1,
