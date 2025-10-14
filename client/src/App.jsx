@@ -97,7 +97,7 @@ const App = () => {
         if (selectedImpactHazard && typeof selectedImpactHazard === 'string') {
             setSelectedAdaptationHazards([selectedImpactHazard]);
         }
-    }, [selectedImpactHazard])
+    }, [selectedImpactHazard]);
 
     useEffect(() => {
         if (regions.length === 0) {

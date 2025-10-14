@@ -32,6 +32,7 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
     const [downloadStatus, setDownloadStatus] = useState('idle');
     const [hasDownloaded, setHasDownloaded] = useState(false);
     const [pdfUrl, setPdfUrl] = useState(null);
+    const [pdfError, setPdfError] = useState(null);
 
     const onPageSelection = (pageIds) => {
         setSelectedPageIds(pageIds);
@@ -41,6 +42,15 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
         setHasDownloaded(false);
         setPdfUrl(null);
     };
+
+    // Handle PDF generation errors
+    useEffect(() => {
+        if (pdfError) {
+            setDownloadStatus('idle');
+            setHasDownloaded(false);
+            setPdfError(null);
+        }
+    }, [pdfError]);
 
     useEffect(() => {
         if (pdfUrl && downloadStatus === 'generating' && !hasDownloaded) {
@@ -151,17 +161,12 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
                                 className="pdf-download-link"
                             >
                                 {({ url, error }) => {
-                                    if (error) {
-                                        setTimeout(() => {
-                                            setDownloadStatus('idle');
-                                            setHasDownloaded(false);
-                                        }, 0);
+                                    if (error && !pdfError) {
+                                        setPdfError(error);
                                     }
                                     
                                     if (url && !pdfUrl) {
-                                        setTimeout(() => {
-                                            setPdfUrl(url);
-                                        }, 0);
+                                        setPdfUrl(url);
                                     }
                                     
                                     return null;
