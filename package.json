@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "dependency-cruiser": "^17.1.0",
+    "graphviz": "^0.0.9"
+  }
+}
