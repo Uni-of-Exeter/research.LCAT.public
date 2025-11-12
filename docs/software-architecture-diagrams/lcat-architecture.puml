@@ -1,0 +1,201 @@
+@startuml LCAT Architecture
+!theme plain
+title LCAT (Local Climate Adaptation Tool) - System Architecture
+
+' Define package colors
+skinparam packageStyle rectangle
+skinparam component {
+  BackgroundColor LightBlue
+  BorderColor Blue
+}
+skinparam database {
+  BackgroundColor LightGreen
+  BorderColor Green
+}
+skinparam node {
+  BackgroundColor LightYellow
+  BorderColor Orange
+}
+
+' External Systems
+node "Climate Data Sources" as climate_sources {
+  component "CHESS-SCAPE\nNetCDF Files" as chessscape
+  component "Boundary\nShapefiles" as boundaries
+  component "Reference\nData (CSV)" as references
+}
+
+' Database Layer
+database "PostgreSQL + PostGIS" as database {
+  component "Climate Data Tables" as climate_tables {
+    [chess_scape_rcp60_*]
+    [chess_scape_rcp85_*]
+    [chess_scape_uk_averages]
+  }
+  
+  component "Boundary Tables" as boundary_tables {
+    [boundary_uk_counties]
+    [boundary_la_districts]
+    [boundary_lsoa]
+    [boundary_msoa]
+    [boundary_parishes]
+    [boundary_sc_dz]
+    [boundary_ni_dz]
+    [boundary_iom]
+  }
+  
+  component "Reference Tables" as reference_tables {
+    [boundary_details]
+    [grid_overlaps_*]
+    [cache_*_to_*]
+  }
+}
+
+' Python Data Processing Layer
+package "Python Data Pipeline" as python_layer {
+  component "DBManager" as db_manager {
+    note right: Database setup\nand management
+  }
+  
+  component "Data Loaders" as loaders {
+    [BoundaryLoader]
+    [ChessScapeLoader]
+    [ChessScapeAveragesLoader]
+    [ReferenceLoader]
+    [GridLoader]
+  }
+  
+  component "Data Processors" as processors {
+    [ProcessKumu]
+    [ProcessReferences]
+    [OverlapCalculator]
+    [CoastalIdentifier]
+  }
+  
+  component "Analysis Tools" as analysis {
+    [DBPlotter]
+    [DetailsGenerator]
+  }
+}
+
+' Server Layer (Node.js/Express)
+package "Server Layer" as server_layer {
+  component "Express App" as app {
+    note right: Main application\nCORS configuration\nStatic file serving
+  }
+  
+  component "API Routes" as api {
+    [/api/all_regions]
+    [/api/are_gids_coastal]
+    [/api/region]
+    [/api/gids_centre]
+    [/api/chess_scape]
+    [/api/chess_scape_uk_averages]
+    [/api/chess_scape_uk_variable_ranges]
+    [/api/ping]
+  }
+}
+
+' Client Layer (React)
+package "React Frontend" as client_layer {
+  component "Main App" as main_app {
+    note right: State management\nScroll tracking\nGoogle Analytics
+  }
+  
+  component "Climate Components" as climate_components {
+    [ClimateMap]
+    [ClimateSettings] 
+    [ClimateSummary]
+    [Graph]
+    [ClimatePrediction]
+  }
+  
+  component "Impact Components" as impact_components {
+    [ClimateHazardRisk]
+    [ClimateImpactSummary]
+    [KumuImpactPathway]
+  }
+  
+  component "Vulnerability Components" as vuln_components {
+    [PersonalSocialVulnerabilities]
+    [IMDMap]
+  }
+  
+  component "Adaptation Components" as adapt_components {
+    [StaticAdaptations]
+    [StaticAdaptation]
+    [StaticReferences]
+  }
+  
+  component "Utility Components" as util_components {
+    [Header]
+    [Footer]
+    [Introduction]
+    [CookieConsent]
+    [Feedback]
+  }
+  
+  component "Data Loaders" as client_loaders {
+    [AllRegionLoader]
+    [ClimatePredictionLoader]
+    [ClimateAveragesLoader]
+    [CoastalFilterLoader]
+    [RegionCentreLoader]
+    [GeoJSONLoader]
+  }
+}
+
+' Web Browser
+node "User Browser" as browser {
+  component "Interactive Map\n(Leaflet)" as map
+  component "Data Visualizations\n(D3/Charts)" as charts
+  component "User Interface" as ui
+}
+
+' Data Flow Connections
+climate_sources --> python_layer : "Data Ingestion"
+python_layer --> database : "Load & Process Data"
+
+database --> server_layer : "SQL Queries\n(PostgreSQL Client)"
+server_layer --> client_layer : "REST API\n(JSON responses)"
+client_layer --> browser : "React Components\n(HTML/CSS/JS)"
+
+' Internal connections
+db_manager --> database : "Setup & Management"
+loaders --> database : "Bulk Data Loading"
+processors --> database : "Data Processing"
+analysis --> database : "Visualization"
+
+app --> api : "Route Handling"
+api --> database : "Database Queries"
+
+main_app --> climate_components
+main_app --> impact_components
+main_app --> vuln_components
+main_app --> adapt_components
+main_app --> util_components
+main_app --> client_loaders
+
+client_loaders --> server_layer : "HTTP Requests"
+
+' Key Data Flows
+note as data_flow
+**Key Data Flows:**
+1. Climate data ingested from NetCDF files
+2. Boundary data loaded from shapefiles
+3. Reference data processed from CSV
+4. Frontend requests climate predictions
+5. Map interactions trigger data loading
+6. Real-time climate visualization
+end note
+
+' Technology Stack
+note as tech_stack
+**Technology Stack:**
+- **Frontend:** React, Leaflet Maps, D3.js
+- **Backend:** Node.js, Express.js
+- **Database:** PostgreSQL + PostGIS
+- **Data Processing:** Python, NetCDF, Pandas
+- **Deployment:** Static files + API server
+end note
+
+@enduml
