@@ -116,7 +116,7 @@ def test_get_mask_bias_corrected(gl):
 
 def test_get_mask_non_bias_corrected_uses_dirty_mask_and_polygon(gl):
     """
-    get_mask('non_bias_corrected') should return the intersection of:
+    GridLoader.get_mask('non_bias_corrected') should return the intersection of:
     - where data is not NaN (dirty_mask), and
     - the combined polygon mask (NI ∪ Scilly Isles).
     """
@@ -162,4 +162,33 @@ def test_get_mask_non_bias_corrected_uses_dirty_mask_and_polygon(gl):
 
     assert mask.shape == (3, 3)
     assert np.array_equal(mask, expected)
+
+def test_create_polygon_mask_simple_square(gl):
+    """ 
+    GridLoader.create_polygon_mask should return a boolean mask indicating
+    which grid points fall inside the given polygon.
+
+    Using a simple 5×5 grid and a square polygon, we check that:
+    - an interior point is True, and
+    - an exterior point is False.
+    """
+    y_size, x_size = 5, 5
+
+    polygon_vertices = [
+        (1, 1),
+        (3, 1),
+        (3, 3),
+        (1, 3),
+    ]
+
+    mask = gl.create_polygon_mask(polygon_vertices, y_size, x_size)
+    print(mask)
+    assert mask.shape == (y_size, x_size)
+    assert mask.dtype == bool
+
+    # clearly inside
+    assert mask[2, 2]
+
+    # clearly outside
+    assert not mask[0, 0]
 
