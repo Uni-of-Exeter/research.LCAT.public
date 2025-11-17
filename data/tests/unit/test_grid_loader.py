@@ -192,3 +192,45 @@ def test_create_polygon_mask_simple_square(gl):
     # clearly outside
     assert not mask[0, 0]
 
+def test__create_filled_land_mask_fills_small_lakes(gl):
+    """
+    _create_filled_land_mask should fill small 'lake' regions (False inside True)
+    while leaving the large surrounding ocean (False outside) unchanged.
+
+    We create a 5x5 mask with:
+    - a border of ocean (False)
+    - a block of land (True) in the middle
+    - a single-cell 'lake' (False) in the centre of that land
+
+    With a size_threshold larger than the lake but smaller than the ocean,
+    only the lake should be filled.
+    """
+    land_mask = np.array([
+        [False, False, False, False, False],
+        [False,  True,  True,  True, False],
+        [False,  True, False,  True, False],  # centre cell (2, 2) is a lake
+        [False,  True,  True,  True, False],
+        [False, False, False, False, False],
+    ], dtype=bool)
+
+    # Sanity check: lake cell is currently water
+    assert land_mask[2, 2] == False
+
+    filled = gl._create_filled_land_mask(land_mask, size_threshold=15)
+
+    # Shape/dtype preserved
+    assert filled.shape == land_mask.shape
+    assert filled.dtype == bool
+
+    # The little lake should now be filled in as land
+    assert filled[2, 2] == True
+
+    # Ocean corners should still be water
+    assert filled[0, 0] == False
+    assert filled[0, 4] == False
+    assert filled[4, 0] == False
+    assert filled[4, 4] == False
+
+    # We should have exactly one more land cell than before
+    assert np.count_nonzero(filled) == np.count_nonzero(land_mask) + 1
+
