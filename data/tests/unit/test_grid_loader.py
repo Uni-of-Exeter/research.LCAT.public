@@ -234,6 +234,51 @@ def test__create_filled_land_mask_fills_small_lakes(gl):
     # We should have exactly one more land cell than before
     assert np.count_nonzero(filled) == np.count_nonzero(land_mask) + 1
 
+def test_create_coastline_mask_simple_island(gl):
+    """
+    GridLoader.create_coastline_mask should create a boolean mask of coastal
+    land cells: land cells with some, but not all, land neighbours in a 3×3
+    window.
+
+    Using a simple 5×5 'island' in aggregated_labelled, we expect the coastline
+    to be the outer ring of that island (all land cells except the centre).
+    """
+    # 5×5 island: 3×3 block of land surrounded by water
+    aggregated_labelled = np.array([
+        [0, 0, 0, 0, 0],
+        [0, 1, 1, 1, 0],
+        [0, 1, 1, 1, 0],
+        [0, 1, 1, 1, 0],
+        [0, 0, 0, 0, 0],
+    ], dtype=int)
+
+    gl.masks["aggregated_labelled"] = aggregated_labelled
+
+    # For this simple case, filled_land_mask == land_mask (no lakes to fill),
+    # so we stub _create_filled_land_mask to just return the input.
+    def fake_filled_land_mask(land_mask):
+        return land_mask
+
+    gl._create_filled_land_mask = fake_filled_land_mask
+
+    # Run the method under test
+    gl.create_coastline_mask()
+
+    coastline = gl.masks["coastline"]
+
+    # Expected coastline: all land cells except the central one at (2,2)
+    expected = np.array([
+        [False, False, False, False, False],
+        [False,  True,  True,  True, False],
+        [False,  True, False,  True, False],
+        [False,  True,  True,  True, False],
+        [False, False, False, False, False],
+    ], dtype=bool)
+
+    assert coastline.shape == aggregated_labelled.shape
+    assert coastline.dtype == bool
+    np.testing.assert_array_equal(coastline, expected)
+
 def test_create_inland_mask_simple_island(gl):
     """
     GridLoader.create_inland_mask should return a band of land cells
