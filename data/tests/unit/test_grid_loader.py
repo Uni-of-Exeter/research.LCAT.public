@@ -234,3 +234,42 @@ def test__create_filled_land_mask_fills_small_lakes(gl):
     # We should have exactly one more land cell than before
     assert np.count_nonzero(filled) == np.count_nonzero(land_mask) + 1
 
+def test_create_inland_mask_simple_island(gl):
+    """
+    GridLoader.create_inland_mask should return a band of land cells
+    near the coastline, based on binary erosion using a circular
+    structuring element.
+
+    Using a simple 5×5 island, we expect radius=1 erosion to leave
+    a 1-cell-wide coastal band around the edge of the island.
+    """
+    # Original land mask (True = land, False = water)
+    land_mask = np.array([
+        [False, False, False, False, False],
+        [False,  True,  True,  True, False],
+        [False,  True,  True,  True, False],
+        [False,  True,  True,  True, False],
+        [False, False, False, False, False],
+    ], dtype=bool)
+
+    # For this test, filled_land_mask is identical (no lakes)
+    filled_land_mask = land_mask.copy()
+
+    inland = gl.create_inland_mask(
+        land_mask=land_mask,
+        filled_land_mask=filled_land_mask,
+        radius=1
+    )
+
+    # Expected inland band: land cells that disappear after erosion
+    expected = np.array([
+        [False, False, False, False, False],
+        [False,  True,  True,  True, False],
+        [False,  True, False,  True, False],
+        [False,  True,  True,  True, False],
+        [False, False, False, False, False],
+    ], dtype=bool)
+
+    assert inland.shape == land_mask.shape
+    assert inland.dtype == bool
+    np.testing.assert_array_equal(inland, expected)
