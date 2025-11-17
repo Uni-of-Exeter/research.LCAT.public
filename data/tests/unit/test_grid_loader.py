@@ -40,7 +40,7 @@ def test_aggregate_cached_masks(gl):
 
     gl.masks["non_bias_corrected"] = np.array([
         [False, True],
-        [False, False]
+        [False, True]
     ])
 
     gl.aggregate_cached_masks()
@@ -91,7 +91,7 @@ def test_create_aggregated_labelled_mask(gl):
 
 def test_get_mask_bias_corrected(gl):
     """
-    get_mask('bias_corrected') should return a boolean mask showing
+    GridLoader.get_mask('bias_corrected') should return a boolean mask showing
     where the chosen variable is not NaN in the first time slice.
     """
     gl.variable = "tas"
@@ -110,7 +110,7 @@ def test_get_mask_bias_corrected(gl):
 
     # Expected: True where tas is not NaN in time slice 0
     expected = ~da.isnull().values[0]
-
+    print(np.array_equal(mask, expected))
     assert mask.shape == (2, 2)
     assert np.array_equal(mask, expected)
 
