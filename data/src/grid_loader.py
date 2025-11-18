@@ -519,7 +519,6 @@ class GridLoader:
         """
         Run mask creation and database insert process.
         """
-
         self.process_masks(plot_labelled_mask=True)
         self.drop_table()
         self.create_table()
