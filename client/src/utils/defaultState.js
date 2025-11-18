@@ -10,7 +10,7 @@ export const defaultState = {
     variable: "tas",
     isPredictionLoading: false,
     areAveragesLoading: false,
-    selectedHazardName: "Extreme Storms",
+    selectedImpactHazard: "Extreme Storms",
     applyCoastalFilter: false,
     mapCenter: {lat: 55.8, lng: -3.2},
 };

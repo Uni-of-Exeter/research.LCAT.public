@@ -423,7 +423,7 @@ router.get("/chess_scape_uk_averages", async (req, res) => {
         const result = await client.query(query, queryParams);
         await client.end();
 
-        // Format: { [decade]: { min, mean, max } }
+       // Format: { [decade]: { min, mean, max } }
         const formattedData = Object.fromEntries(
             result.rows.map((row) => [row.decade, { min: row.min, mean: row.mean, max: row.max }])
         );

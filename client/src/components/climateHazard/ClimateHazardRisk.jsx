@@ -14,7 +14,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./ClimateHazardRisk.css";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { climateHazardsData } from "./ClimateHazardData";
 

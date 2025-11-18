@@ -20,7 +20,7 @@ import { useCollapse } from "react-collapsed";
 import { defaultState } from "../../utils/defaultState.js";
 import { pathways } from "./ClimateImpactSummaryData";
 
-const KumuImpactPathway = ({ regions, selectedHazardName, setSelectedHazardName, applyCoastalFilter }) => {
+const KumuImpactPathway = ({ regions, selectedImpactHazard, setSelectedImpactHazard, applyCoastalFilter }) => {
     const [isExpanded, setExpanded] = useState(false);
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
     const hasTrackedCollapsibleOpen = useRef(false);
@@ -35,10 +35,10 @@ const KumuImpactPathway = ({ regions, selectedHazardName, setSelectedHazardName,
         } else {
             setFilteredPathwayData(pathways);
         }
-        setSelectedHazardName(defaultState.selectedHazardName);
-    }, [applyCoastalFilter, setSelectedHazardName]);
+        setSelectedImpactHazard(defaultState.selectedImpactHazard);
+    }, [applyCoastalFilter, setSelectedImpactHazard]);
 
-    const pathway = filteredPathwayData.find((item) => item.name === selectedHazardName);
+    const pathway = filteredPathwayData.find((item) => item.name === selectedImpactHazard);
 
     let pathwayMap;
     switch (whichPathway) {
@@ -108,9 +108,9 @@ const KumuImpactPathway = ({ regions, selectedHazardName, setSelectedHazardName,
                             </select>{" "}
                             climate impacts for{" "}
                             <select
-                                value={selectedHazardName}
+                                value={selectedImpactHazard}
                                 onChange={(e) => {
-                                    setSelectedHazardName(e.target.value);
+                                    setSelectedImpactHazard(e.target.value);
                                 }}
                             >
                                 {filteredPathwayData.map((pathway) => (

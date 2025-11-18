@@ -110,3 +110,59 @@
         padding-right: 50px;
     }
 }
+
+/* PDF Generation Section */
+.pdf-generation-section {
+    text-align: center;
+    background-color: #f7f7f7;
+}
+
+.pdf-button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.generate-report-button {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+}
+
+.generate-report-button:hover {
+    background-color: #0056b3;
+}
+
+.generating-status {
+    font-size: 14px;
+    font-style: italic;
+    height: 20px; /* Reserve space to prevent layout shift */
+}
+
+.generating-status.visible {
+    color: #666;
+}
+
+.generating-status.hidden {
+    color: transparent;
+}
+
+.select-region-prompt {
+    background-color: #f0f0f0;
+    color: #666;
+    padding: 12px 24px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    display: inline-block;
+    border: 2px dashed #ccc;
+}
+
+.pdf-download-link {
+    display: none;
+}

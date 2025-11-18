@@ -72,3 +72,7 @@ export const adaptationFilters = [
         displayName: "Monitoring and management programmes",
     },
 ];
+
+// Export the default filter name
+export const defaultFilterName = adaptationFilters[0].filterName;
+export const defaultFilterCategory = adaptationFilters[0].category;
