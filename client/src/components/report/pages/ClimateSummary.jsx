@@ -2,10 +2,10 @@ import { Image, Link, Text, View } from '@react-pdf/renderer';
 
 import DecreaseArrow from '../../../images/buttons/decrease.png';
 import IncreaseArrow from '../../../images/buttons/increase.png';
-import CloudIcon from '../../../images/climate/Cloud Cover.png';
+import CloudIcon from '../../../images/climate/CloudCover.png';
 import RainIcon from '../../../images/climate/Rain.png';
 import TemperatureIcon from '../../../images/climate/Temperature.png';
-import WindIcon from '../../../images/climate/Wind Speed.png';
+import WindIcon from '../../../images/climate/WindSpeed.png';
 import { climateVariables, formatClimateData } from '../../../utils/climateUtils';
 import { andify } from "../../../utils/utils";
 import { reportStyles as styles } from '../reportStyles';

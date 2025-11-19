@@ -1,7 +1,7 @@
 import { Image, Text, View } from '@react-pdf/renderer';
 
-import AirPollutionIcon from '../../../images/hazards/Air Pollution.png';
-import CoastalErosionIcon from '../../../images/hazards/Coastal Erosion.png';
+import AirPollutionIcon from '../../../images/hazards/AirPollution.png';
+import CoastalErosionIcon from '../../../images/hazards/CoastalErosion.png';
 import FloodingIcon from '../../../images/hazards/Flood.png';
 import HeatwaveIcon from '../../../images/hazards/Heatwave.png';
 import WildfireIcon from '../../../images/hazards/Wildfires.png';
