@@ -279,7 +279,7 @@ router.post("/gids_centre", async function (req, res) {
 // CHESS-SCAPE helper function: generate climate column SQL
 function buildAvgClimateCols() {
     const averageClimateColNames = [];
-    const variables = ["tas", "sfcWind", "pr", "rsds", "tasmax_99_percentile", "tasmin_1_percentile"];
+    const variables = ["tas", "sfcWind", "pr", "rsds", "tasmax_99_percentile", "tasmin_1_percentile", "tropical_nights"];
     const decades = ["1980", "2030", "2040", "2050", "2060", "2070"];
     // const stats = ["min", "mean", "max"];
 

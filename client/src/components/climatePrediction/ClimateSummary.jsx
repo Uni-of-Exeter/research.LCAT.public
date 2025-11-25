@@ -19,6 +19,7 @@ import IncreaseSvg from "../../images/buttons/increase";
 import CloudSvg from "../../images/climate/CloudCover";
 import RainSvg from "../../images/climate/Rain";
 import TempSvg from "../../images/climate/Temperature";
+import { ReactComponent as TropicalNightsSvg } from "../../images/climate/TropicalNights.svg";
 import WindSvg from "../../images/climate/WindSpeed";
 
 // Function to parse the float values from the prediction
@@ -114,6 +115,14 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
                         name="Windiness"
                         units="m/sec"
                         Icon={WindSvg}
+                    />
+                    <ClimateVariable
+                        prediction={climatePrediction}
+                        year={year}
+                        variable="tropical_nights"
+                        name="Tropical Nights"
+                        units="nights/year"
+                        Icon={TropicalNightsSvg}
                     />
                 </div>
                 <p>

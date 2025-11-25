@@ -1,5 +1,6 @@
 import concurrent.futures
 import gc
+import inspect
 import io
 import os
 import random
@@ -157,7 +158,17 @@ class ClimateDataProcessor:
 
             # Apply the calculation function
             print(f"Applying calculation for step-decade {decade}...")
-            result = calculation_func(decade_data, **calc_kwargs)
+
+            call_kwargs = dict(calc_kwargs)
+            if "season" not in call_kwargs:
+                try:
+                    params = inspect.signature(calculation_func).parameters
+                except (TypeError, ValueError):
+                    params = {}
+                if "season" in params:
+                    call_kwargs["season"] = season
+
+            result = calculation_func(decade_data, **call_kwargs)
 
             decade_results[decade] = result
 
@@ -331,10 +342,13 @@ class ClimateDataProcessor:
             coords={"decade": decade_coords, "y": y_coords, "x": x_coords},
         )
 
-    def calculate_quantiles(self, data, quantiles=[95, 99]):
+    def calculate_quantiles(self, data, quantiles=None):
         """Calculate temperature quantiles"""
 
         n_time, n_y, n_x = data.shape
+
+        if quantiles is None:
+            quantiles = [95, 99]
 
         if "tas" in self.variable:
             # Convert temperature from Kelvin to Celsius
@@ -355,18 +369,105 @@ class ClimateDataProcessor:
 
         return results
 
-    def generate_data(self):
+    def calculate_tropical_nights(self, data, temp_threshold=20.0, season=None):
+        """
+        Calculate mean number of tropical nights per 'season'
+        (nights where minimum temperature does not drop below threshold)
 
-        rcps = [60, 85]
-        bias_corrected = [True, False]
-        seasons = ["winter", "summer"]
-        variables = ["tasmax", "tasmin"]
+        Parameters:
+        - data: temperature data array (time, y, x) - should be tasmin data
+        - temp_threshold: temperature threshold in degrees Celsius (default 20°C)
+
+        Returns:
+        - 2D array of mean tropical nights for each pixel
+        """
+        n_time, n_y, n_x = data.shape
+
+        season_name = (season or self.season or "annual").lower()
+        season_lengths = {"annual": 360, "summer": 90, "winter": 90}
+
+        if season_name not in season_lengths:
+            raise ValueError(
+                f"Unsupported season '{season_name}'. Expected one of {tuple(season_lengths)}."
+            )
+
+        days_per_window = season_lengths[season_name]
+        n_seasons = n_time / days_per_window
+
+        if n_seasons <= 0:
+            raise ValueError("No data available for tropical nights calculation")
+
+        if not np.isclose(n_seasons, round(n_seasons), atol=1e-6):
+            print(
+                "WARNING: data length is not a whole number of seasonal windows. "
+                f"Computed {n_seasons:.2f} {season_name} seasons from {n_time} days."
+            )
+
+        # Convert from Kelvin to Celsius
+        data = data - 273.15
+
+        # Reshape to work with all pixels at once
+        data_reshaped = data.reshape(n_time, -1)  # (time, pixels)
+
+        # Find nights where temperature stays >= threshold
+        tropical_nights = data_reshaped >= temp_threshold
+
+        print(
+            f"Processing {n_time} days (~{n_seasons:.1f} {season_name} seasons) with "
+            f"threshold {temp_threshold}°C"
+        )
+
+        # Count tropical nights per pixel and convert to mean per season
+        tropical_night_counts = np.sum(tropical_nights, axis=0)
+        mean_tropical_nights_per_season = tropical_night_counts / n_seasons
+
+        # Reshape back to grid
+        return mean_tropical_nights_per_season.reshape(n_y, n_x)
+
+    def generate_data(
+        self,
+        *,
+        quantiles_config=None,
+        tropical_nights_enabled=True,
+        rcps=None,
+        bias_options=None,
+        seasons=None,
+        variables=None,
+        tropical_threshold=20.0,
+    ):
+        """Generate requested datasets for configured climate scenarios."""
+
+        rcps = rcps or [60, 85]
+        bias_options = bias_options or [True, False]
+        seasons = seasons or ["annual", "winter", "summer"]
+        variables = variables or ["tasmax", "tasmin"]
         self.excluded_decades = [1, 2, 3, 4]  # Exclude 1990s, 2000s, 2010s, 2020s
 
+        default_quantiles = {"tasmax": [99], "tasmin": [1]}
+        if quantiles_config is None:
+            quantiles_config = default_quantiles
+        else:
+            quantiles_config = {
+                var: list(values) for var, values in quantiles_config.items()
+            }
+
         for rcp in rcps:
-            for bias in bias_corrected:
+            for bias in bias_options:
                 for season in seasons:
                     for variable in variables:
+                        quantiles = list(quantiles_config.get(variable, []))
+                        compute_quantiles = bool(quantiles)
+                        compute_tropical = (
+                            tropical_nights_enabled and variable == "tasmin"
+                        )
+
+                        if not compute_quantiles and not compute_tropical:
+                            print(
+                                "Skipping processing for variable "
+                                f"{variable} (no outputs requested)."
+                            )
+                            continue
+
                         self.rcp = rcp
                         self.bias_corrected = bias
                         self.season = season
@@ -378,44 +479,50 @@ class ClimateDataProcessor:
 
                         self.get_file_links()
 
-                        # Process data by decade and calculate quantiles
-                        # TODO check if we need 99 and 95 quantiles in seperate files
-                        # FIXED: Use correct quantiles for each variable
-                        if variable == "tasmax":
-                            quantiles = [99]  # 99th percentile for maximum temperatures
-                        elif variable == "tasmin":
-                            quantiles = [1]  # 1st percentile for minimum temperatures
-                        else:
-                            quantiles = [95, 99]  # Default for other variables
-
-                        dataset = self.process_data_by_decade(
-                            self.variable,
-                            self.season,
-                            self.calculate_quantiles,
-                            quantiles=quantiles,
+                        bias_suffix = "_bias-corrected" if bias else ""
+                        season_folder = "seasonal" if season != "annual" else "annual"
+                        output_dir = os.path.join(
+                            self.data_location,
+                            f"data/rcp{rcp}{bias_suffix}/01/{season_folder}",
                         )
+                        os.makedirs(output_dir, exist_ok=True)
 
-                        bias_corrected_folder = "_bias-corrected" if bias else ""
-                        season_folder = (
-                            "seasonal" if self.season != "annual" else "annual"
-                        )
+                        if compute_quantiles:
+                            quantile_dataset = self.process_data_by_decade(
+                                variable,
+                                season,
+                                self.calculate_quantiles,
+                                quantiles=quantiles,
+                            )
 
-                        # Create filepath
-                        sub_folders = (
-                            f"data/rcp{rcp}{bias_corrected_folder}/01/{season_folder}"
-                        )
+                            quantile_fragment = "_".join(str(q) for q in quantiles)
+                            if len(quantiles) == 1:
+                                quantile_label = f"{variable}_{quantiles[0]}_percentile"
+                            else:
+                                quantile_label = (
+                                    f"{variable}_{quantile_fragment}_percentiles"
+                                )
 
-                        # Save the dataset to a NetCDF file
-                        # TODO figure out the 1 percentile / 99 percentile issue
-                        if variable == "tasmax":
-                            variable_name = "tasmax_99_percentile"
-                        elif variable == "tasmin":
-                            variable_name = "tasmin_1_percentile"
-                        else:
-                            variable_name = variable
-                        filename = f"chess-scape_rcp{rcp}{'_bias-corrected' if bias else ''}_01_{variable_name}_uk_1km_{self.season}_19801201-20801130.nc"
-                        filepath = os.path.join(
-                            self.data_location, sub_folders, filename
-                        )
-                        dataset.to_netcdf(filepath)
-                        print(f"Saved dataset to {filepath}")
+                            quantile_filename = (
+                                f"chess-scape_rcp{rcp}{bias_suffix}_01_{quantile_label}_"
+                                f"uk_1km_{season}_19801201-20801130.nc"
+                            )
+                            quantile_path = os.path.join(output_dir, quantile_filename)
+                            quantile_dataset.to_netcdf(quantile_path)
+                            print(f"Saved dataset to {quantile_path}")
+
+                        if compute_tropical:
+                            tropical_dataset = self.process_data_by_decade(
+                                variable,
+                                season,
+                                self.calculate_tropical_nights,
+                                temp_threshold=tropical_threshold,
+                            )
+
+                            tropical_filename = (
+                                f"chess-scape_rcp{rcp}{bias_suffix}_01_tropical_nights_"
+                                f"uk_1km_{season}_19801201-20801130.nc"
+                            )
+                            tropical_path = os.path.join(output_dir, tropical_filename)
+                            tropical_dataset.to_netcdf(tropical_path)
+                            print(f"Saved dataset to {tropical_path}")

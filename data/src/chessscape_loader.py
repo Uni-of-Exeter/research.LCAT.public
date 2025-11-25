@@ -159,7 +159,13 @@ class ChessScapeLoader:
 
         # Create filepath folder adjustments
         bias_corrected_folder = "_bias-corrected" if bias_corrected_key == "bias_corrected" else ""
-        if variable in ["tasmax_99_percentile", "tasmin_1_percentile"] and season in [
+
+        if variable == "tropical_nights":
+            # Tropical nights files
+            season_folder = "seasonal" if season != "annual" else "annual"
+            sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/{season_folder}"
+            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_tropical_nights_uk_1km_{season}_19801201-20801130.nc"
+        elif variable in ["tasmax_99_percentile", "tasmin_1_percentile"] and season in [
             "summer",
             "winter",
         ]:
@@ -220,20 +226,21 @@ class ChessScapeLoader:
 
     def process_derived_variable(self, variable: str) -> None:
         """
-        Process derived variables
+        Process derived variables (quantiles and tropical nights)
         """
         self.extracted_data = {}
 
         # Map variable names to their data keys
-        quantile_mapping = {
+        variable_mapping = {
             "tasmax_99_percentile": "quantile_99",
             "tasmin_1_percentile": "quantile_1",
+            "tropical_nights": "variable",
         }
 
-        if variable not in quantile_mapping:
+        if variable not in variable_mapping:
             raise ValueError(f"Unknown derived variable: {variable}")
 
-        quantile_key = quantile_mapping[variable]
+        data_key = variable_mapping[variable]
 
         for bias_corrected_key in self.bias_corrected_keys:
             if bias_corrected_key not in self.current_netcdf_data:
@@ -243,40 +250,46 @@ class ChessScapeLoader:
             dataset = self.current_netcdf_data[bias_corrected_key]
             available_vars = list(dataset.data_vars.keys())
 
-            # Try to find the quantile data
-            quantile_data = None
+            # Try to find the data
+            target_data = None
 
             # First, try exact match
-            if quantile_key in dataset.data_vars:
-                quantile_data = dataset[quantile_key]
+            if data_key in dataset.data_vars:
+                target_data = dataset[data_key]
+            elif variable == "tropical_nights":
+                # For tropical nights, try common alternatives
+                for var_name in available_vars:
+                    if "tropical" in var_name.lower() or var_name == "variable":
+                        target_data = dataset[var_name]
+                        break
             else:
                 # Try to find any quantile variable
                 for var_name in available_vars:
                     if "quantile" in var_name.lower():
-                        quantile_data = dataset[var_name]
+                        target_data = dataset[var_name]
                         break
 
-            if quantile_data is None:
-                print(f"Could not find any suitable data in {available_vars}")
+            if target_data is None:
+                print(f"Could not find suitable data in {available_vars}")
                 continue
 
             # Process the data based on its structure
             decade_dict = {}
 
-            if "decade" in quantile_data.dims:
+            if "decade" in target_data.dims:
                 decade_mapping = {0: 1980, 5: 2030, 6: 2040, 7: 2050, 8: 2060, 9: 2070}
-                decade_coords = quantile_data.decade.values
+                decade_coords = target_data.decade.values
 
                 for decade_coord in decade_coords:
                     decade_coord_int = int(decade_coord)
                     if decade_coord_int in decade_mapping:
                         decade_year = decade_mapping[decade_coord_int]
-                        decade_data = quantile_data.sel(decade=decade_coord)
+                        decade_data = target_data.sel(decade=decade_coord)
                         decade_dict[decade_year] = decade_data
                     else:
                         print(f"Unknown decade coordinate: {decade_coord_int}")
             else:
-                decade_dict[2070] = quantile_data
+                decade_dict[2070] = target_data
 
             self.extracted_data[bias_corrected_key] = decade_dict
 
@@ -502,19 +515,27 @@ class ChessScapeLoader:
         # Base variables always available
         source_variables = ["pr", "rsds", "sfcWind", "tas", "tasmax", "tasmin"]
 
-        # Derived variables - now available for all seasons
+        # Derived variables - check availability for each season
         derived_variables = []
-        if season == "annual":
-            derived_variables = ["tasmax_99_percentile", "tasmin_1_percentile"]
-        elif season in ["summer", "winter"]:
-            potential_seasonal = ["tasmax_99_percentile", "tasmin_1_percentile"]
-            for var in potential_seasonal:
-                # Check file existence with correct path
-                bias_corrected_folder = (
-                    "_bias-corrected"
-                    if "bias_corrected" in self.bias_corrected_keys
-                    else ""
-                )
+        potential_derived = [
+            "tasmax_99_percentile",
+            "tasmin_1_percentile",
+            "tropical_nights",
+        ]
+
+        for var in potential_derived:
+            # Check file existence
+            bias_corrected_folder = (
+                "_bias-corrected"
+                if "bias_corrected" in self.bias_corrected_keys
+                else ""
+            )
+
+            if var == "tropical_nights":
+                season_folder = "seasonal" if season != "annual" else "annual"
+                sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/{season_folder}"
+                filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_tropical_nights_uk_1km_{season}_19801201-20801130.nc"
+            elif season in ["summer", "winter"]:
                 sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/seasonal"
                 quantile_num = "99" if "99" in var else "1"
                 base_var = "tasmax" if "tasmax" in var else "tasmin"
@@ -522,12 +543,24 @@ class ChessScapeLoader:
                     f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{base_var}_"
                     f"{quantile_num}_percentile_uk_1km_{season}_19801201-20801130.nc"
                 )
-                filepath = os.path.join(self.data_location, sub_folders, filename)
-
-                if os.path.exists(filepath):
-                    derived_variables.append(var)
+            elif season == "annual":
+                # Annual quantiles are in annual folder
+                sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/annual"
+                if var == "tropical_nights":
+                    filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_tropical_nights_uk_1km_annual_19801201-20801130.nc"
                 else:
-                    print(f"Seasonal quantile file not found: {filename}")
+                    quantile_num = "99" if "99" in var else "1"
+                    base_var = "tasmax" if "tasmax" in var else "tasmin"
+                    filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{base_var}_{quantile_num}_percentile_uk_1km_annual_19801201-20801130.nc"
+            else:
+                continue
+
+            filepath = os.path.join(self.data_location, sub_folders, filename)
+
+            if os.path.exists(filepath):
+                derived_variables.append(var)
+            else:
+                print(f"Derived variable file not found: {filename}")
 
         variables = source_variables + derived_variables
 
