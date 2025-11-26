@@ -364,6 +364,8 @@ class OverlapCalculator:
                 self.process_no_overlap_regions()
                 print(f"### No overlap processing complete: {boundary_identifier}\n")
 
+            self.conn.commit()
+
         print("### Overlaps inserted for all boundaries.")
         print("############################\n")
 
