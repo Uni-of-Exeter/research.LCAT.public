@@ -31,15 +31,15 @@
     font-size: 120%;
 }
 
-@media (min-width: 1000px) {
-    .vert-container-hazard {
-        width: 20%;
-    }
-}
-
 @media (min-width: 600px) {
     .vert-container-hazard {
         width: 33.3%;
+    }
+}
+
+@media (min-width: 1000px) {
+    .vert-container-hazard {
+        width: 20%;
     }
 }
 
