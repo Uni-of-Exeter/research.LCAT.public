@@ -21,7 +21,7 @@
     flex-direction: column;
     text-align: center;
     font-size: 75%;
-    width: 33.33%;
+    width: 50%;
     box-sizing: border-box;
     margin-bottom: 1.5em;
     line-height: 1.6;
@@ -34,6 +34,12 @@
 
 .details-placeholder {
     text-align: center;
+}
+
+@media (min-width: 600px) {
+    .vert-container-impact {
+        width: 33.3%;
+    }
 }
 
 @media (min-width: 1000px) {
