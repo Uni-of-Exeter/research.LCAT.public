@@ -74,39 +74,33 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
             id: 'climate',
             title: 'Climate Summary',
             defaultSelected: true,
-            available: regions && regions.length > 0
         },
         {
             id: 'hazards',
             title: 'Climate Hazard Risk',
             defaultSelected: true,
-            available: true
         },
         {
             id: 'health-impacts',
             title: 'Health Impacts',
             defaultSelected: true,
-            available: selectedImpactHazard
         },
         {
             id: 'community-impacts',
             title: 'Community Impacts',
             defaultSelected: true,
-            available: selectedImpactHazard
         },
         {
             id: 'vulnerability',
             title: 'Vulnerabilities',
             defaultSelected: true,
-            available: true
         },
         {
             id: 'adaptations',
             title: 'Adaptations',
             defaultSelected: true,
-            available: true
         },
-    ].filter(page => page.available);
+    ];
 
     const handleReportClick = () => {
         setShowPageSelection(true);
