@@ -26,6 +26,12 @@ import Handbook from "./Handbook";
 import PageSelectionModal from './PageSelectionModal';
 
 const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdaptationHazards, filterName, rcp, season, applyCoastalFilter }) => {
+    // Generate filename with region names
+    const regionNames = regions && regions.length > 0
+        ? regions.map(r => r.name.replace(/'/g, '').replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '')).join('_')
+        : 'no-region';
+    const reportFileName = `LCAT-summary-report-${regionNames}.pdf`;
+
     const [showPageSelection, setShowPageSelection] = useState(false);
     const [selectedPageIds, setSelectedPageIds] = useState([]);
     const [shouldShowPDF, setShouldShowPDF] = useState(false);
@@ -58,7 +64,7 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
 
             const link = document.createElement('a');
             link.href = pdfUrl;
-            link.download = 'LCAT-report.pdf';
+            link.download = reportFileName;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -67,7 +73,7 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
             setDownloadStatus('idle');
             setShouldShowPDF(false);
         }
-    }, [pdfUrl, downloadStatus, hasDownloaded]);
+    }, [pdfUrl, downloadStatus, hasDownloaded, reportFileName]);
 
     const availablePages = [
         {
@@ -131,7 +137,7 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
                                 onClick={handleReportClick}
                                 className="generate-report-button"
                             >
-                                Generate Climate Report
+                                Generate LCAT Summary Report
                             </button>
                             <div className={`generating-status ${downloadStatus === 'generating' ? 'visible' : 'hidden'}`}>
                                 {downloadStatus === 'generating' ? 'Generating report...' : ''}
@@ -151,7 +157,7 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
                                     applyCoastalFilter={applyCoastalFilter}
                                     selectedPages={selectedPageIds}
                                 />}
-                                fileName="LCAT-report.pdf"
+                                fileName={reportFileName}
                                 className="pdf-download-link"
                             >
                                 {({ url, error }) => {
