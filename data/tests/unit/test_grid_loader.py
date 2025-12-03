@@ -55,7 +55,40 @@ def test_aggregate_cached_masks(gl):
 
     assert np.array_equal(gl.masks["aggregated"], expected)
 
-def test_create_aggregated_labelled_mask(gl):
+
+@pytest.mark.parametrize(
+    "bc, nbc, expected",
+    [
+        # Only bias corrected
+        (
+            np.array([[True, False], 
+                      [False, False]]),
+            np.array([[False, False], 
+                      [False, False]]),
+            np.array([[1, 0], 
+                      [0, 0]]),
+        ),
+        # Only non-bias corrected
+        (
+            np.array([[False, False], 
+                      [False, False]]),
+            np.array([[False, True], 
+                      [False, False]]),
+            np.array([[0, 2], 
+                      [0, 0]]),
+        ),
+        # Both in one cell
+        (
+            np.array([[True, False], 
+                      [False, False]]),
+            np.array([[True, False], 
+                      [False, False]]),
+            np.array([[3, 0], 
+                      [0, 0]]),
+        ),
+    ],
+)
+def test_create_aggregated_labelled_mask(gl, bc, nbc, expected):
     """
     GridLoader.create_aggregated_labelled_mask should combine the
     existing boolean masks for bias_corrected and non_bias_corrected
@@ -66,28 +99,13 @@ def test_create_aggregated_labelled_mask(gl):
     both True           → label 3 (1 + 2)
     neither             → label 0
     """
-    # Fake tiny masks
-    gl.masks["bias_corrected"] = np.array([
-        [True,  False],
-        [False, True]
-    ])
+    gl.masks["bias_corrected"] = bc
+    gl.masks["non_bias_corrected"] = nbc
 
-    gl.masks["non_bias_corrected"] = np.array([
-        [False, True],
-        [False, True]
-    ])
-
-    # Run the method
     gl.create_aggregated_labelled_mask()
 
-    # Expected output:
-    # bias (1) + 2 * non_bias
-    expected = (
-        gl.masks["bias_corrected"].astype(int)
-        + 2 * gl.masks["non_bias_corrected"].astype(int)
-    )
+    np.testing.assert_array_equal(gl.masks["aggregated_labelled"], expected)
 
-    assert np.array_equal(gl.masks["aggregated_labelled"], expected)
 
 def test_get_mask_bias_corrected(gl):
     """
