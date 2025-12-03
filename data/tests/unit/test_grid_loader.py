@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 import xarray as xr
 from data.src.grid_loader import GridLoader
+from conftest import *
 
 @pytest.fixture
 def cfg():
@@ -55,40 +56,7 @@ def test_aggregate_cached_masks(gl):
 
     assert np.array_equal(gl.masks["aggregated"], expected)
 
-
-@pytest.mark.parametrize(
-    "bc, nbc, expected",
-    [
-        # Only bias corrected
-        (
-            np.array([[True, False], 
-                      [False, False]]),
-            np.array([[False, False], 
-                      [False, False]]),
-            np.array([[1, 0], 
-                      [0, 0]]),
-        ),
-        # Only non-bias corrected
-        (
-            np.array([[False, False], 
-                      [False, False]]),
-            np.array([[False, True], 
-                      [False, False]]),
-            np.array([[0, 2], 
-                      [0, 0]]),
-        ),
-        # Both in one cell
-        (
-            np.array([[True, False], 
-                      [False, False]]),
-            np.array([[True, False], 
-                      [False, False]]),
-            np.array([[3, 0], 
-                      [0, 0]]),
-        ),
-    ],
-)
-def test_create_aggregated_labelled_mask(gl, bc, nbc, expected):
+def test_create_aggregated_labelled_mask(gl):
     """
     GridLoader.create_aggregated_labelled_mask should combine the
     existing boolean masks for bias_corrected and non_bias_corrected
@@ -99,13 +67,26 @@ def test_create_aggregated_labelled_mask(gl, bc, nbc, expected):
     both True           → label 3 (1 + 2)
     neither             → label 0
     """
-    gl.masks["bias_corrected"] = bc
-    gl.masks["non_bias_corrected"] = nbc
+    # Fake tiny masks
+    gl.masks["bias_corrected"] = np.array([
+        [True,  False],
+        [False, True]
+    ])
 
+    gl.masks["non_bias_corrected"] = np.array([
+        [False, True],
+        [False, True]
+    ])
+
+    # Run the method
     gl.create_aggregated_labelled_mask()
 
-    np.testing.assert_array_equal(gl.masks["aggregated_labelled"], expected)
-
+    # Expected output:
+    expected = np.array([
+        [1, 2],  # (True, False)  and (False, True)
+        [0, 3],  # (False, False) and (True, True)
+    ])
+    assert np.array_equal(gl.masks["aggregated_labelled"], expected)
 
 def test_get_mask_bias_corrected(gl):
     """
@@ -181,99 +162,139 @@ def test_get_mask_non_bias_corrected_uses_dirty_mask_and_polygon(gl):
     assert mask.shape == (3, 3)
     assert np.array_equal(mask, expected)
 
-def test_create_polygon_mask_simple_square(gl):
-    """ 
-    GridLoader.create_polygon_mask should return a boolean mask indicating
-    which grid points fall inside the given polygon.
+@pytest.mark.parametrize(
+    "polygon_vertices, inside_points, outside_points",
+    [
+        # Central square: (1,1)-(3,1)-(3,3)-(1,3)
+        (
+            [(1, 1), (3, 1), (3, 3), (1, 3)],
+            # points comfortably inside the square
+            [(2, 2)],
+            # clearly outside
+            [(0, 0), (4, 4)],
+        ),
+        # Slightly smaller full-ish square in the middle
+        (
+            [(0.5, 0.5), (3.5, 0.5), (3.5, 3.5), (0.5, 3.5)],
+            [(2, 2), (1, 2), (2, 1)],   # inside-ish points
+            [(0, 0), (4, 4)],           # definitely outside
+        ),
+        # Diamond shape
+        (
+            [(2, 0), (4, 2), (2, 4), (0, 2)],
+            [(2, 2), (2, 3)],           # safely inside
+            [(0, 0), (4, 0), (0, 4)],   # clearly outside corners
+        ),
+    ],
+)
+def test_create_polygon_mask_variants(gl, polygon_vertices, inside_points, outside_points):
 
-    Using a simple 5×5 grid and a square polygon, we check that:
-    - an interior point is True, and
-    - an exterior point is False.
-    """
     y_size, x_size = 5, 5
 
-    polygon_vertices = [
-        (1, 1),
-        (3, 1),
-        (3, 3),
-        (1, 3),
-    ]
-
     mask = gl.create_polygon_mask(polygon_vertices, y_size, x_size)
-    print(mask)
+
     assert mask.shape == (y_size, x_size)
     assert mask.dtype == bool
 
-    # clearly inside
-    assert mask[2, 2]
+    # Points we believe are clearly inside should be True
+    for (y, x) in inside_points:
+        assert mask[y, x], f"Expected inside point {(y,x)} to be True"
 
-    # clearly outside
-    assert not mask[0, 0]
+    # Points we believe are clearly outside should be False
+    for (y, x) in outside_points:
+        assert not mask[y, x], f"Expected outside point {(y,x)} to be False"
 
-def test__create_filled_land_mask_fills_small_lakes(gl):
-    """
-    _create_filled_land_mask should fill small 'lake' regions (False inside True)
-    while leaving the large surrounding ocean (False outside) unchanged.
+@pytest.mark.parametrize(
+    "land_mask, size_threshold, expected",
+    [
+        # 1-cell lake; threshold enough to fill that lake, smaller than big ocean component
+        (SMALL_LAKE_MASK, 5, EXPECTED_SMALL_LAKE_FILLED),
 
-    We create a 5x5 mask with:
-    - a border of ocean (False)
-    - a block of land (True) in the middle
-    - a single-cell 'lake' (False) in the centre of that land
+        # 4-cell lake; threshold too small → nothing filled
+        (BIG_LAKE_MASK, 3, EXPECTED_BIG_LAKE_UNCHANGED),
 
-    With a size_threshold larger than the lake but smaller than the ocean,
-    only the lake should be filled.
-    """
-    land_mask = np.array([
-        [False, False, False, False, False],
-        [False,  True,  True,  True, False],
-        [False,  True, False,  True, False],  # centre cell (2, 2) is a lake
-        [False,  True,  True,  True, False],
-        [False, False, False, False, False],
-    ], dtype=bool)
+        # 4-cell lake; threshold big enough to fill the lake, still smaller than ocean
+        (BIG_LAKE_MASK, 10, EXPECTED_BIG_LAKE_FILLED),
+    ],
+)
+def test__create_filled_land_mask_handles_lakes(gl, land_mask, size_threshold, expected):
+    filled = gl._create_filled_land_mask(land_mask, size_threshold=size_threshold)
 
-    # Sanity check: lake cell is currently water
-    assert land_mask[2, 2] == False
-
-    filled = gl._create_filled_land_mask(land_mask, size_threshold=15)
-
-    # Shape/dtype preserved
     assert filled.shape == land_mask.shape
     assert filled.dtype == bool
 
-    # The little lake should now be filled in as land
-    assert filled[2, 2] == True
+    # Direct comparison with explicit expected mask
+    np.testing.assert_array_equal(filled, expected)
 
-    # Ocean corners should still be water
-    assert filled[0, 0] == False
-    assert filled[0, 4] == False
-    assert filled[4, 0] == False
-    assert filled[4, 4] == False
+@pytest.mark.parametrize(
+    "aggregated_labelled, expected_coastline",
+    [
+        # Case 1: 5x5 island with 3x3 solid land block in the middle
+        (
+            np.array([
+                [0, 0, 0, 0, 0],
+                [0, 1, 1, 1, 0],
+                [0, 1, 1, 1, 0],
+                [0, 1, 1, 1, 0],
+                [0, 0, 0, 0, 0],
+            ], dtype=int),
+            np.array([
+                [False, False, False, False, False],
+                [False,  True,  True,  True, False],
+                [False,  True, False,  True, False],
+                [False,  True,  True,  True, False],
+                [False, False, False, False, False],
+            ], dtype=bool),
+        ),
 
-    # We should have exactly one more land cell than before
-    assert np.count_nonzero(filled) == np.count_nonzero(land_mask) + 1
+        # Case 2: plus-shaped island – every land cell touches ocean,
+        # so all land cells should be coastline.
+        (
+            np.array([
+                [0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 0],
+                [1, 1, 1, 1, 1],
+                [0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 0],
+            ], dtype=int),
+            np.array([
+                [False, False,  True, False, False],
+                [False, False,  True, False, False],
+                [ True,  True,  True,  True,  True],
+                [False, False,  True, False, False],
+                [False, False,  True, False, False],
+            ], dtype=bool),
+        ),
 
-def test_create_coastline_mask_simple_island(gl):
+        # Case 3: tiny 3x3 grid with a single land cell in the centre.
+        # That lone land cell is coastline (has some but not all land neighbours:
+        # it has only itself).
+        (
+            np.array([
+                [0, 0, 0],
+                [0, 1, 0],
+                [0, 0, 0],
+            ], dtype=int),
+            np.array([
+                [False, False, False],
+                [False,  True, False],
+                [False, False, False],
+            ], dtype=bool),
+        ),
+    
+
+    ],
+)
+def test_create_coastline_mask_parametrised(gl, aggregated_labelled, expected_coastline):
     """
-    GridLoader.create_coastline_mask should create a boolean mask of coastal
-    land cells: land cells with some, but not all, land neighbours in a 3×3
-    window.
-
-    Using a simple 5×5 'island' in aggregated_labelled, we expect the coastline
-    to be the outer ring of that island (all land cells except the centre).
+    GridLoader.create_coastline_mask should mark as coastline any land cell
+    that has some, but not all, land neighbours in its 3x3 neighbourhood.
     """
-    # 5×5 island: 3×3 block of land surrounded by water
-    aggregated_labelled = np.array([
-        [0, 0, 0, 0, 0],
-        [0, 1, 1, 1, 0],
-        [0, 1, 1, 1, 0],
-        [0, 1, 1, 1, 0],
-        [0, 0, 0, 0, 0],
-    ], dtype=int)
 
     gl.masks["aggregated_labelled"] = aggregated_labelled
 
-    # For this simple case, filled_land_mask == land_mask (no lakes to fill),
-    # so we stub _create_filled_land_mask to just return the input.
+    # For these synthetic tests, we don't want lake-filling to interfere,
+    # so stub _create_filled_land_mask to be the identity function.
     def fake_filled_land_mask(land_mask):
         return land_mask
 
@@ -281,61 +302,152 @@ def test_create_coastline_mask_simple_island(gl):
 
     # Run the method under test
     gl.create_coastline_mask()
-
     coastline = gl.masks["coastline"]
 
-    # Expected coastline: all land cells except the central one at (2,2)
-    expected = np.array([
-        [False, False, False, False, False],
-        [False,  True,  True,  True, False],
-        [False,  True, False,  True, False],
-        [False,  True,  True,  True, False],
-        [False, False, False, False, False],
-    ], dtype=bool)
+    land_mask = aggregated_labelled.astype(bool)
 
+    # Basic invariants
     assert coastline.shape == aggregated_labelled.shape
     assert coastline.dtype == bool
-    np.testing.assert_array_equal(coastline, expected)
 
-def test_create_inland_mask_simple_island(gl):
+    # Coastline must always be a subset of land
+    assert np.all(coastline <= land_mask)
+
+    # Exact expected patterns for these synthetic grids
+    np.testing.assert_array_equal(coastline, expected_coastline)
+
+import numpy as np
+import pytest
+
+
+@pytest.mark.parametrize(
+    "land_mask, radius, expected",
+    [
+        # ---------------------------------------------------------------
+        # CASE 1: radius = 0 → structuring element is a single pixel.
+        # Erosion with a 1-pixel element leaves the land mask unchanged,
+        # so inland_mask = land & ~eroded = land & ~land = all False.
+        # This exercises the "no erosion" pathway.
+        # ---------------------------------------------------------------
+        (
+            np.array([
+                [False, False, False, False, False],
+                [False,  True,  True,  True, False],
+                [False,  True,  True,  True, False],
+                [False,  True,  True,  True, False],
+                [False, False, False, False, False],
+            ], dtype=bool),
+            0,
+            np.array([
+                [False, False, False, False, False],
+                [False, False, False, False, False],
+                [False, False, False, False, False],
+                [False, False, False, False, False],
+                [False, False, False, False, False],
+            ], dtype=bool),
+        ),
+
+        # ---------------------------------------------------------------
+        # CASE 2: radius = 1 on the same 3×3 "island" in the middle.
+        #
+        # The circular structuring element erodes away the central cell
+        # (which has enough land neighbours), leaving a hollow 3×3 ring.
+        # inland_mask = original land minus eroded land → the outer ring
+        # becomes "inland band".
+        #
+        # This exercises the "partial erosion" / coastal-band behaviour.
+        # ---------------------------------------------------------------
+        (
+            np.array([
+                [False, False, False, False, False],
+                [False,  True,  True,  True, False],
+                [False,  True,  True,  True, False],
+                [False,  True,  True,  True, False],
+                [False, False, False, False, False],
+            ], dtype=bool),
+            1,
+            np.array([
+                [False, False, False, False, False],
+                [False,  True,  True,  True, False],
+                [False,  True, False,  True, False],
+                [False,  True,  True,  True, False],
+                [False, False, False, False, False],
+            ], dtype=bool),
+        ),
+
+        # ---------------------------------------------------------------
+        # CASE 3: two separate components:
+        #
+        #   - a THICK 3-cell horizontal bar at row 1
+        #   - a THIN single-cell "blob" at (3, 1)
+        #
+        # With radius = 1:
+        #   * the bar shrinks to a single cell in the middle
+        #   * the isolated single cell is completely eroded away
+        #
+        # inland_mask = land & ~eroded, so:
+        #   - the *ends* of the bar are inland band (they disappear)
+        #   - the thin isolated blob is also entirely inland
+        #
+        # This exercises the "mixed" behaviour where:
+        #   - thick regions produce a narrow inland band
+        #   - thin regions are fully classified as inland.
+        # ---------------------------------------------------------------
+        (
+            np.array([
+                [False, False, False, False, False],
+                [False,  True,  True,  True, False],
+                [False, False, False, False, False],
+                [False,  True, False, False, False],
+                [False, False, False, False, False],
+            ], dtype=bool),
+            1,
+            np.array([
+                [False, False, False, False, False],
+                [False,  True, False,  True, False],  # ends of bar are inland
+                [False, False, False, False, False],
+                [False,  True, False, False, False],  # thin blob is fully inland
+                [False, False, False, False, False],
+            ], dtype=bool),
+        ),
+        # CASE 4: radius 2 → full erosion → whole island becomes inland
+        (
+            np.array([
+                [False, False, False, False, False],
+                [False,  True,  True,  True, False],
+                [False,  True,  True,  True, False],
+                [False,  True,  True,  True, False],
+                [False, False, False, False, False],
+            ], dtype=bool),
+            2,
+            np.array([
+                [False, False, False, False, False],
+                [False,  True,  True,  True, False],
+                [False,  True,  True,  True, False],
+                [False,  True,  True,  True, False],
+                [False, False, False, False, False],
+            ], dtype=bool),
+        ),
+    ],
+)
+def test_create_inland_mask_various_shapes(gl, land_mask, radius, expected):
     """
-    GridLoader.create_inland_mask should return a band of land cells
-    near the coastline, based on binary erosion using a circular
-    structuring element.
-
-    Using a simple 5×5 island, we expect radius=1 erosion to leave
-    a 1-cell-wide coastal band around the edge of the island.
+    GridLoader.create_inland_mask should correctly identify "inland band"
+    cells as those land cells that are lost under binary erosion with a
+    circular structuring element of the given radius.
     """
-    # Original land mask (True = land, False = water)
-    land_mask = np.array([
-        [False, False, False, False, False],
-        [False,  True,  True,  True, False],
-        [False,  True,  True,  True, False],
-        [False,  True,  True,  True, False],
-        [False, False, False, False, False],
-    ], dtype=bool)
-
-    # For this test, filled_land_mask is identical (no lakes)
     filled_land_mask = land_mask.copy()
 
     inland = gl.create_inland_mask(
         land_mask=land_mask,
         filled_land_mask=filled_land_mask,
-        radius=1
+        radius=radius,
     )
-
-    # Expected inland band: land cells that disappear after erosion
-    expected = np.array([
-        [False, False, False, False, False],
-        [False,  True,  True,  True, False],
-        [False,  True, False,  True, False],
-        [False,  True,  True,  True, False],
-        [False, False, False, False, False],
-    ], dtype=bool)
 
     assert inland.shape == land_mask.shape
     assert inland.dtype == bool
     np.testing.assert_array_equal(inland, expected)
+
 
 def test_create_coastal_mask_with_inland_regions(gl):
     """
@@ -408,3 +520,4 @@ def test_create_coastal_mask_with_inland_regions(gl):
     assert gl.coastal_map[0] == "ocean"
     assert gl.coastal_map[1] == "coastline"
     assert gl.coastal_map[10] == "10km from coast"
+
