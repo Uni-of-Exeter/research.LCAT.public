@@ -61,6 +61,9 @@ const IntroPDF = ({ regions, selectedPages }) => {
                 <Text style={styles.bodyText}>
                     The following information was taken from LCAT on {new Date().toLocaleDateString()} and is a summary based on your unique search selection. <Link src="https://lcat.uk/">Visit LCAT</Link> for more information, including for different locations, impacts or adaptation topic areas.
                 </Text>
+                <Text style={styles.bodyText}>
+                    To reference this report, please cite <Text style={styles.italic}>&quot;University of Exeter ({new Date().getFullYear()}) Local Climate Adaptation Tool, available from lcat.uk. Accessed on {new Date().toLocaleDateString()}.&quot;</Text>
+                </Text>
             </View>
             {/* Summary of selected pages */}
             <View style={styles.section}>
@@ -74,7 +77,7 @@ const IntroPDF = ({ regions, selectedPages }) => {
             {/* Footer with logos and disclaimer */}
             <View style={styles.footer} wrap={false}>
                 <Text style={styles.footerText}>
-                    Please note that LCAT is updated regularly. The information contained in this summary was correct as of the date you downloaded the document. We suggest returning to the website for the most up to date information and data. If you would like to understand the sources for any of this summary, please visit the LCAT website. To reference this report, please reference University of Exeter and the date you downloaded the report.
+                    Please note that LCAT is updated regularly. The information contained in this summary was correct as of the date you downloaded the document. We suggest returning to the website for the most up to date information and data. If you would like to understand the sources for any of this summary, please visit the LCAT website.
                 </Text>
 
                 <View style={styles.footerLogosContainer}>
