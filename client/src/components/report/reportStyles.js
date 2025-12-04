@@ -84,7 +84,7 @@ export const reportStyles = StyleSheet.create({
         lineHeight: 1.5,
         color: '#333',
     },
-        italic: {
+    italic: {
         fontStyle: 'italic',
     },
     intro: {
