@@ -129,7 +129,7 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
 
     return (
         <div>
-            <div className="pdf-generation-section">
+            <div id="generate-report-section">
                 {hasSelectedRegions ? (
                     <>
                         <div className="pdf-button-container">

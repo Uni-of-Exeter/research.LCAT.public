@@ -112,7 +112,7 @@
 }
 
 /* PDF Generation Section */
-.pdf-generation-section {
+#generate-report-section {
     text-align: center;
     background-color: #f7f7f7;
 }

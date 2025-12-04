@@ -62,6 +62,16 @@ const Introduction = () => {
                     </a>
                 </li>
             </ul>
+            <p>
+                Once you have selected your area, you can use the{" "}
+                <a href="#generate-report-section" onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById('generate-report-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }}>
+                    button
+                </a>{" "}
+                at the end of the tool to generate a downloadable summary report of your results.
+            </p>
         </div>
     );
 };
