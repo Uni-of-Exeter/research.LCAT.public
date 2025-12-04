@@ -10,6 +10,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+import { LCAT_HANDBOOK_URL } from "../../utils/constants";
 
 const Handbook = () => {
     return (
@@ -19,7 +20,7 @@ const Handbook = () => {
                 <p>
                     <a
                         className="handbook-button"
-                        href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE-June-2025-update.pdf"
+                        href={LCAT_HANDBOOK_URL}
                         target="_blank"
                         rel="noreferrer"
                         aria-label="Read the LCAT Handbook PDF"
@@ -28,7 +29,7 @@ const Handbook = () => {
                 <p>
                     Read the&nbsp;
                     <a
-                        href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE-June-2025-update.pdf"
+                        href={LCAT_HANDBOOK_URL}
                         target="_blank"
                         rel="noreferrer"
                     >

@@ -37,11 +37,23 @@ export const reportStyles = StyleSheet.create({
         fontWeight: 'bold',
     },
     section: {
-        margin: 10,
-        padding: 10,
+        margin: 5,
+        padding: 5,
         flexGrow: 1,
     },
     contentItem: {
+        fontSize: 12,
+        marginBottom: 4,
+        color: '#333',
+    },
+    twoColumnList: {
+        flexDirection: 'row',
+        width: '70%',
+    },
+    column: {
+        width: '50%',
+    },
+    contentItemColumn: {
         fontSize: 12,
         marginBottom: 4,
         color: '#333',
@@ -71,6 +83,9 @@ export const reportStyles = StyleSheet.create({
         fontSize: 12,
         lineHeight: 1.5,
         color: '#333',
+    },
+    italic: {
+        fontStyle: 'italic',
     },
     intro: {
         fontSize: 12,

@@ -7,6 +7,7 @@ import RainIcon from '../../../images/climate/Rain.png';
 import TemperatureIcon from '../../../images/climate/Temperature.png';
 import WindIcon from '../../../images/climate/WindSpeed.png';
 import { climateVariables, formatClimateData } from '../../../utils/climateUtils';
+import { LCAT_HANDBOOK_URL } from '../../../utils/constants';
 import { andify } from "../../../utils/utils";
 import { reportStyles as styles } from '../reportStyles';
 import { formatLineBreaks } from '../textFormattingUtils';
@@ -87,7 +88,7 @@ const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
                 dataset. CHESS-SCAPE provides bias-corrected data for England, Scotland, Wales, and the Isle of Man.
                 CHESS-SCAPE provides non bias-corrected data for Northern Ireland and the Isles of Scilly. The tool
                 displays RCP 6.0 and RCP 8.5. For more information, please see the{" "}
-                <Link src="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE-June-2025-update.pdf">
+                <Link src={LCAT_HANDBOOK_URL}>
                     LCAT Handbook
                 </Link>
                 .
