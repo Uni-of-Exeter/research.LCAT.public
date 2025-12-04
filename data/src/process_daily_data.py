@@ -369,9 +369,9 @@ class ClimateDataProcessor:
 
         return results
 
-    def calculate_tropical_nights(self, data, temp_threshold=20.0, season=None):
+    def calculate_tropical_nights(self, data, temp_threshold=20.0):
         """
-        Calculate mean number of tropical nights per 'season'
+        Calculate mean number of tropical nights per year
         (nights where minimum temperature does not drop below threshold)
 
         Parameters:
@@ -379,28 +379,20 @@ class ClimateDataProcessor:
         - temp_threshold: temperature threshold in degrees Celsius (default 20°C)
 
         Returns:
-        - 2D array of mean tropical nights for each pixel
+        - 2D array of mean tropical nights per year for each pixel
         """
         n_time, n_y, n_x = data.shape
 
-        season_name = (season or self.season or "annual").lower()
-        season_lengths = {"annual": 360, "summer": 90, "winter": 90}
+        days_per_year = 360
+        n_years = n_time / days_per_year
 
-        if season_name not in season_lengths:
-            raise ValueError(
-                f"Unsupported season '{season_name}'. Expected one of {tuple(season_lengths)}."
-            )
-
-        days_per_window = season_lengths[season_name]
-        n_seasons = n_time / days_per_window
-
-        if n_seasons <= 0:
+        if n_years <= 0:
             raise ValueError("No data available for tropical nights calculation")
 
-        if not np.isclose(n_seasons, round(n_seasons), atol=1e-6):
+        if not np.isclose(n_years, round(n_years), atol=1e-6):
             print(
-                "WARNING: data length is not a whole number of seasonal windows. "
-                f"Computed {n_seasons:.2f} {season_name} seasons from {n_time} days."
+                "WARNING: data length is not a whole number of years. "
+                f"Computed {n_years:.2f} years from {n_time} days."
             )
 
         # Convert from Kelvin to Celsius
@@ -413,27 +405,63 @@ class ClimateDataProcessor:
         tropical_nights = data_reshaped >= temp_threshold
 
         print(
-            f"Processing {n_time} days (~{n_seasons:.1f} {season_name} seasons) with "
+            f"Processing {n_time} days (~{n_years:.1f} years) with "
             f"threshold {temp_threshold}°C"
         )
 
-        # Count tropical nights per pixel and convert to mean per season
+        # Count tropical nights per pixel and convert to mean per year
         tropical_night_counts = np.sum(tropical_nights, axis=0)
-        mean_tropical_nights_per_season = tropical_night_counts / n_seasons
+        mean_tropical_nights_per_year = tropical_night_counts / n_years
 
         # Reshape back to grid
-        return mean_tropical_nights_per_season.reshape(n_y, n_x)
+        return mean_tropical_nights_per_year.reshape(n_y, n_x)
+
+    def calculate_heat_days(self, data, temp_threshold=30.0):
+        """
+        Calculate mean number of hot/extreme heat days per year
+
+        Parameters:
+        - data: temperature data array (time, y, x)
+        - temp_threshold: temperature threshold in degrees Celsius (default 30C)
+
+        Returns:
+        - 2D array of mean hot/extreme heat days per year for each pixel
+        """
+        n_time, n_y, n_x = data.shape
+
+        data = data - 273.15
+
+        # Reshape to work with all pixels at once
+        data_reshaped = data.reshape(n_time, -1)  # (time, pixels)
+
+        # Find days exceeding threshold for all pixels
+        hot_days = data_reshaped >= temp_threshold
+
+        # Calculate number of years in the dataset
+        n_years = n_time / 360
+
+        print(f"Processing {n_time} days ({n_years:.1f} years) of data")
+        print(f"Threshold: {temp_threshold} C")
+
+        # Count hot days per pixel and convert to mean per year
+        hot_days_count = np.sum(hot_days, axis=0)
+        mean_hot_days_per_year = hot_days_count / n_years
+
+        # Reshape back to grid
+        return mean_hot_days_per_year.reshape(n_y, n_x)
 
     def generate_data(
         self,
         *,
         quantiles_config=None,
         tropical_nights_enabled=True,
+        hot_days_enabled=True,
         rcps=None,
         bias_options=None,
         seasons=None,
         variables=None,
         tropical_threshold=20.0,
+        heat_threshold=30.0,
     ):
         """Generate requested datasets for configured climate scenarios."""
 
@@ -451,17 +479,31 @@ class ClimateDataProcessor:
                 var: list(values) for var, values in quantiles_config.items()
             }
 
+        saved_datasets = []
+
         for rcp in rcps:
             for bias in bias_options:
                 for season in seasons:
                     for variable in variables:
                         quantiles = list(quantiles_config.get(variable, []))
                         compute_quantiles = bool(quantiles)
+                        # TODO tropical & hot days don't need all decades - optimize later
                         compute_tropical = (
-                            tropical_nights_enabled and variable == "tasmin"
+                            tropical_nights_enabled
+                            and variable == "tasmin"
+                            and season == "annual"
+                        )
+                        compute_hot_days = (
+                            hot_days_enabled
+                            and variable == "tasmax"
+                            and season == "annual"
                         )
 
-                        if not compute_quantiles and not compute_tropical:
+                        if (
+                            not compute_quantiles
+                            and not compute_tropical
+                            and not compute_hot_days
+                        ):
                             print(
                                 "Skipping processing for variable "
                                 f"{variable} (no outputs requested)."
@@ -510,6 +552,7 @@ class ClimateDataProcessor:
                             quantile_path = os.path.join(output_dir, quantile_filename)
                             quantile_dataset.to_netcdf(quantile_path)
                             print(f"Saved dataset to {quantile_path}")
+                            saved_datasets.append(quantile_path)
 
                         if compute_tropical:
                             tropical_dataset = self.process_data_by_decade(
@@ -526,3 +569,28 @@ class ClimateDataProcessor:
                             tropical_path = os.path.join(output_dir, tropical_filename)
                             tropical_dataset.to_netcdf(tropical_path)
                             print(f"Saved dataset to {tropical_path}")
+                            saved_datasets.append(tropical_path)
+
+                        if compute_hot_days:
+                            hot_days_dataset = self.process_data_by_decade(
+                                variable,
+                                season,
+                                self.calculate_heat_days,
+                                temp_threshold=heat_threshold,
+                            )
+
+                            hot_days_filename = (
+                                f"chess-scape_rcp{rcp}{bias_suffix}_01_hot_heat_days_"
+                                f"uk_1km_{season}_19801201-20801130.nc"
+                            )
+                            hot_days_path = os.path.join(output_dir, hot_days_filename)
+                            hot_days_dataset.to_netcdf(hot_days_path)
+                            print(f"Saved dataset to {hot_days_path}")
+                            saved_datasets.append(hot_days_path)
+
+        print("\n" + "=" * 60)
+        print(f"SUMMARY: {len(saved_datasets)} datasets saved")
+        print("=" * 60)
+        for path in saved_datasets:
+            print(f"  {path}")
+        print("=" * 60)
