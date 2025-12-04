@@ -68,16 +68,31 @@ const IntroPDF = ({ regions, selectedPages }) => {
             {/* Summary of selected pages */}
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Report Contents</Text>
-                {selectedPages.map(pageId => (
-                    <Text key={pageId} style={styles.contentItem}>
-                        • {getPageTitle(pageId)}
-                    </Text>
-                ))}
+                <View style={styles.twoColumnList}>
+                    <View style={styles.column}>
+                        {selectedPages.slice(0, Math.min(3, selectedPages.length)).map(pageId => (
+                            <Text key={pageId} style={styles.contentItemColumn}>
+                                • {getPageTitle(pageId)}
+                            </Text>
+                        ))}
+                    </View>
+                    {selectedPages.length > 3 && (
+                        <View style={styles.column}>
+                            {selectedPages.slice(3).map(pageId => (
+                                <Text key={pageId} style={styles.contentItemColumn}>
+                                    • {getPageTitle(pageId)}
+                                </Text>
+                            ))}
+                        </View>
+                    )}
+                </View>
             </View>
             {/* Footer with logos and disclaimer */}
             <View style={styles.footer} wrap={false}>
                 <Text style={styles.footerText}>
                     Please note that LCAT is updated regularly. The information contained in this summary was correct as of the date you downloaded the document. We suggest returning to the website for the most up to date information and data. If you would like to understand the sources for any of this summary, please visit the LCAT website.
+                    {'\n\n'}
+                    The LCAT project team and their agents, take no responsibility for decisions taken as a result of the use of this tool. While every effort has been made to ensure data represented in the tool are accurate, no liability is accepted for any inaccuracies in the dataset or for any actions taken based on the use of this tool. The views expressed in this tool do not reflect the views of the organisations or the funding bodies. There is no guarantee that the tool will be updated to reflect changes in the source information.
                 </Text>
 
                 <View style={styles.footerLogosContainer}>

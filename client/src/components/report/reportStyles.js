@@ -46,6 +46,18 @@ export const reportStyles = StyleSheet.create({
         marginBottom: 4,
         color: '#333',
     },
+    twoColumnList: {
+        flexDirection: 'row',
+        width: '70%',
+    },
+    column: {
+        width: '50%',
+    },
+    contentItemColumn: {
+        fontSize: 12,
+        marginBottom: 4,
+        color: '#333',
+    },
     headerText: {
         fontSize: 24,
         fontWeight: 'bold',
