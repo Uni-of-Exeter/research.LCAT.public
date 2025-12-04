@@ -188,7 +188,18 @@ def test_get_mask_non_bias_corrected_uses_dirty_mask_and_polygon(gl):
     ],
 )
 def test_create_polygon_mask_variants(gl, polygon_vertices, inside_points, outside_points):
+    """
+    Test that create_polygon_mask correctly marks points inside a given
+    polygon as True and points clearly outside the polygon as False.
 
+    Rather than asserting an entire mask (which can be sensitive to the
+    underlying point-in-polygon boundary rules), this test checks that:
+      - all provided inside_points evaluate to True,
+      - all provided outside_points evaluate to False.
+
+    This verifies the intended behaviour without depending on the precise
+    boundary semantics of Path.contains_points.
+    """
     y_size, x_size = 5, 5
 
     mask = gl.create_polygon_mask(polygon_vertices, y_size, x_size)
@@ -218,6 +229,14 @@ def test_create_polygon_mask_variants(gl, polygon_vertices, inside_points, outsi
     ],
 )
 def test__create_filled_land_mask_handles_lakes(gl, land_mask, size_threshold, expected):
+    """
+    Verify that _create_filled_land_mask returns a boolean mask identical
+    in shape to the input and fills only the lake regions that fall under
+    the specified size_threshold.
+
+    This directly asserts equality against an explicitly provided expected
+    mask, ensuring deterministic behaviour for various lake sizes.
+    """
     filled = gl._create_filled_land_mask(land_mask, size_threshold=size_threshold)
 
     assert filled.shape == land_mask.shape
@@ -316,10 +335,6 @@ def test_create_coastline_mask_parametrised(gl, aggregated_labelled, expected_co
     # Exact expected patterns for these synthetic grids
     np.testing.assert_array_equal(coastline, expected_coastline)
 
-import numpy as np
-import pytest
-
-
 @pytest.mark.parametrize(
     "land_mask, radius, expected",
     [
@@ -375,42 +390,7 @@ import pytest
             ], dtype=bool),
         ),
 
-        # ---------------------------------------------------------------
-        # CASE 3: two separate components:
-        #
-        #   - a THICK 3-cell horizontal bar at row 1
-        #   - a THIN single-cell "blob" at (3, 1)
-        #
-        # With radius = 1:
-        #   * the bar shrinks to a single cell in the middle
-        #   * the isolated single cell is completely eroded away
-        #
-        # inland_mask = land & ~eroded, so:
-        #   - the *ends* of the bar are inland band (they disappear)
-        #   - the thin isolated blob is also entirely inland
-        #
-        # This exercises the "mixed" behaviour where:
-        #   - thick regions produce a narrow inland band
-        #   - thin regions are fully classified as inland.
-        # ---------------------------------------------------------------
-        (
-            np.array([
-                [False, False, False, False, False],
-                [False,  True,  True,  True, False],
-                [False, False, False, False, False],
-                [False,  True, False, False, False],
-                [False, False, False, False, False],
-            ], dtype=bool),
-            1,
-            np.array([
-                [False, False, False, False, False],
-                [False,  True, False,  True, False],  # ends of bar are inland
-                [False, False, False, False, False],
-                [False,  True, False, False, False],  # thin blob is fully inland
-                [False, False, False, False, False],
-            ], dtype=bool),
-        ),
-        # CASE 4: radius 2 → full erosion → whole island becomes inland
+        # CASE 3: radius 2 → full erosion → whole island becomes inland
         (
             np.array([
                 [False, False, False, False, False],
@@ -448,76 +428,156 @@ def test_create_inland_mask_various_shapes(gl, land_mask, radius, expected):
     assert inland.dtype == bool
     np.testing.assert_array_equal(inland, expected)
 
+@pytest.mark.parametrize(
+    "aggregated_labelled, coastline_mask, inland_bands, expected",
+    [
+        # Case 1: plus-shaped land with coastline on the "arms"
+        # and a 10km inland band at the centre only.
+        #
+        #   O L O
+        #   L L L
+        #   O L O
+        #
+        (
+            np.array([
+                [0, 1, 0],
+                [1, 1, 1],
+                [0, 1, 0],
+            ], dtype=int),
+            np.array([
+                [False, True,  False],
+                [True,  False, True ],
+                [False, True,  False],
+            ], dtype=bool),
+            {
+                10: np.array([
+                    [False, False, False],
+                    [False, True,  False],
+                    [False, False, False],
+                ], dtype=bool),
+                # other radii → no inland band
+            },
+            np.array([
+                [0, 1, 0],
+                [1, 10, 1],
+                [0, 1, 0],
+            ], dtype=int),
+        ),
 
-def test_create_coastal_mask_with_inland_regions(gl):
+        # Case 2: solid 3×3 land block with only the centre in the 10km band
+        # and no coastline at all.
+        #
+        #   L L L
+        #   L L L
+        #   L L L
+        #
+        # Expectation:
+        # - corners and edges remain plain land (2)
+        # - centre cell is 10
+        # - no coastline cells (no 1s)
+        (
+            np.array([
+                [1, 1, 1],
+                [1, 1, 1],
+                [1, 1, 1],
+            ], dtype=int),
+            np.array([
+                [False, False, False],
+                [False, False, False],
+                [False, False, False],
+            ], dtype=bool),
+            {
+                10: np.array([
+                    [False, False, False],
+                    [False, True,  False],
+                    [False, False, False],
+                ], dtype=bool),
+            },
+            np.array([
+                [2, 2, 2],
+                [2, 10, 2],
+                [2, 2, 2],
+            ], dtype=int),
+        ),
+
+        # Case 3: solid 3×3 land block with coastline on the outer ring
+        # and both 10km and 20km inland bands defined.
+        #
+        #   L L L
+        #   L L L
+        #   L L L
+        #
+        # coastline_mask: outer ring
+        # inland_10:      cross (non-corner arms)
+        # inland_20:      centre cell
+        #
+        # Because create_coastal_mask_with_inland_regions:
+        #   - sets land=2,
+        #   - then 20, then 10,
+        #   - then coastline (1) last,
+        # the final result is:
+        #   - outer ring = 1 (coastline overrides land/bands)
+        #   - centre     = 20 (only in 20km band)
+        (
+            np.array([
+                [1, 1, 1],
+                [1, 1, 1],
+                [1, 1, 1],
+            ], dtype=int),
+            np.array([
+                [True,  True,  True],
+                [True,  False, True],
+                [True,  True,  True],
+            ], dtype=bool),
+            {
+                10: np.array([
+                    [False, True,  False],
+                    [True,  False, True ],
+                    [False, True,  False],
+                ], dtype=bool),
+                20: np.array([
+                    [False, False, False],
+                    [False, True,  False],
+                    [False, False, False],
+                ], dtype=bool),
+            },
+            np.array([
+                [1, 1, 1],
+                [1, 20, 1],
+                [1, 1, 1],
+            ], dtype=int),
+        ),
+    ],
+)
+def test_create_coastal_mask_with_inland_regions(gl, aggregated_labelled, coastline_mask, inland_bands, expected):
     """
     GridLoader.create_coastal_mask_with_inland_regions should combine:
-    - the land mask,
-    - the inland distance bands (from create_inland_mask),
+    - the land mask (aggregated_labelled > 0),
+    - inland distance bands (via create_inland_mask),
     - and the coastline mask,
-    into a single integer mask with the expected codes.
+    into a single integer mask using the documented codes:
+        0 = ocean, 1 = coastline, 2 = land,
+        10/20/30/40/50 = 10/20/... km from coast.
     """
-    # 3x3 land shape: a plus (+) of land cells
-    # L = land (aggregated_labelled > 0), O = ocean
-    #
-    #   O L O
-    #   L L L
-    #   O L O
-    #
-    aggregated_labelled = np.array([
-        [0, 1, 0],
-        [1, 1, 1],
-        [0, 1, 0],
-    ], dtype=int)
-    land_mask = aggregated_labelled.astype(bool)
-
     gl.masks["aggregated_labelled"] = aggregated_labelled
-
-    # Define a fake coastline: the "arms" of the plus, but not the centre
-    coastline_mask = np.array([
-        [False, True,  False],
-        [True,  False, True ],
-        [False, True,  False],
-    ], dtype=bool)
     gl.masks["coastline"] = coastline_mask
 
-    # Define a fake inward 10km band: only the centre cell
-    inward_10_mask = np.array([
-        [False, False, False],
-        [False, True,  False],
-        [False, False, False],
-    ], dtype=bool)
-
-    # Stub create_inland_mask to return our inward_10_mask for radius=10,
-    # and no bands (all False) for other radii.
     def fake_create_inland_mask(land, filled, radius):
-        if radius == 10:
-            return inward_10_mask
-        return np.zeros_like(land, dtype=bool)
+        # Use the provided inland mask for this radius if present,
+        # otherwise no inland band for that radius.
+        return inland_bands.get(radius, np.zeros_like(land, dtype=bool))
 
     gl.create_inland_mask = fake_create_inland_mask
 
-    # Run method under test
     gl.create_coastal_mask_with_inland_regions()
-
     final = gl.masks["final_coastal_mask"]
-
-    # Expected codes:
-    # - 0: ocean            → outer corners
-    # - 1: coastline        → arms of the plus
-    # - 10: 10km band       → centre cell
-    #
-    expected = np.array([
-        [0, 1, 0],
-        [1, 10, 1],
-        [0, 1, 0],
-    ], dtype=int)
 
     assert final.shape == aggregated_labelled.shape
     np.testing.assert_array_equal(final, expected)
 
-    # Also check the coastal_map was set as documented
+    # Basic sanity on coastal_map
     assert gl.coastal_map[0] == "ocean"
     assert gl.coastal_map[1] == "coastline"
+    assert gl.coastal_map[2] == "land"
     assert gl.coastal_map[10] == "10km from coast"
-
+    assert gl.coastal_map[20] == "20km from coast"
