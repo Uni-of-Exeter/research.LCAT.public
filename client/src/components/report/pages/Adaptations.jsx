@@ -1,6 +1,7 @@
 import { Link, Text, View } from '@react-pdf/renderer';
 
 import adaptationData from '../../../kumu/parsed/adaptation_data.json';
+import { ADAPTATION_INTRO_PDF_URL } from '../../../utils/constants';
 import { adaptationFilters, defaultFilterName } from '../../adaptations/AdaptationCategories';
 import { reportStyles as styles } from '../reportStyles';
 
@@ -86,7 +87,7 @@ const AdaptationsPDF = ({ selectedAdaptationHazards, filterName }) => {
                 </Text>
             )}
             <Text style={styles.bodyText}>To access more detail on each adaptation, visit LCAT and click on each adaptation.{'\n'}
-                Want to learn more about climate adaptation? Read our <Link src="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-Introduction-to-Local-Climate-Adaptation-May-2024.pdf">Introduction to Climate Adaptation</Link>.</Text>
+                Want to learn more about climate adaptation? Read our <Link src={ADAPTATION_INTRO_PDF_URL}>Introduction to Climate Adaptation</Link>.</Text>
         </View>
     );
 };
