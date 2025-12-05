@@ -35,15 +35,6 @@
     padding: 0.3em;
 }
 
-.climate-icon-button:hover {
-    outline: 2px solid var(--color-button-hover);
-    border-radius: 6px;
-}
-
-.climate-variable-selected {
-    outline: 2px solid var(--color-button);
-    border-radius: 6px;
-}
 
 /* optional, only if you want to pad the details area */
 .climate-selected-details,
@@ -55,4 +46,10 @@
 
 .climate-selected-details h2 {
     margin-top: 0;
+}
+
+.climate-icon-button:hover {
+    background: none;
+    color: inherit;
+    border: none;
 }
