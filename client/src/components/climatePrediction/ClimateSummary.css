@@ -27,3 +27,30 @@
     width: 12em;
     font-size: 75%;
 }
+
+/* New: clickable variable tiles */
+.climate-summary .climate-variable-button {
+    all: unset;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.climate-summary .climate-variable-button:hover {
+    outline: 2px solid var(--color-button-hover);
+}
+
+.climate-summary .climate-variable-selected {
+    outline: 2px solid var(--color-button);
+}
+
+/* New: details block under icons (mirrors hazard style) */
+.climate-selected-details,
+.climate-details-placeholder {
+    margin-top: 1em;
+    padding: 1em;
+    border-top: 1px solid #ccc;
+}
+
+.climate-selected-details h2 {
+    margin-top: 0;
+}
