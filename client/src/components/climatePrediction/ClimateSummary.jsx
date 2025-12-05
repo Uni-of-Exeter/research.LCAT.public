@@ -63,14 +63,21 @@ const PredictionSummary = ({ prediction, year, variable, name, units }) => {
     );
 };
 
-// Component for arrow + prediction + icon for each climate variable
-const ClimateVariable = ({ prediction, year, variable, name, units, Icon }) => {
+// Component for arrow + icon + summary text
+// Only the icon is clickable – the rest of the box is not.
+const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClick, isSelected }) => {
     const value = climateChange(prediction, variable, year);
 
     return (
         <div className="vert-container">
             {renderArrow(value, variable)}
-            <Icon className="climate-arrow" />
+            <button
+                type="button"
+                className={`climate-icon-button ${isSelected ? "climate-variable-selected" : ""}`}
+                onClick={onClick}
+            >
+                <Icon className="climate-arrow" />
+            </button>
             <PredictionSummary prediction={prediction} year={year} variable={variable} name={name} units={units} />
         </div>
     );
@@ -95,8 +102,6 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
             );
         }
 
-        // For now, just some explanatory text per variable.
-        // Later, you’ll plug the tropical nights block in here for "tas".
         if (selectedVariable === "tas") {
             return (
                 <div className="climate-selected-details">
@@ -148,76 +153,49 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
 
     return (
         <LoadingOverlay active={loading} spinner text="Loading climate data">
-                <div className="climate-summary">
-                    <div className="horiz-container">
-                        <button
-                            type="button"
-                            className={`vert-container climate-variable-button ${
-                                selectedVariable === "tas" ? "climate-variable-selected" : ""
-                            }`}
-                            onClick={() => handleSelect("tas")}
-                        >
-                            <ClimateVariable
-                                prediction={climatePrediction}
-                                year={year}
-                                variable="tas"
-                                name="Temperature"
-                                units="°C"
-                                Icon={TempSvg}
-                            />
-                        </button>
-
-                        <button
-                            type="button"
-                            className={`vert-container climate-variable-button ${
-                                selectedVariable === "pr" ? "climate-variable-selected" : ""
-                            }`}
-                            onClick={() => handleSelect("pr")}
-                        >
-                            <ClimateVariable
-                                prediction={climatePrediction}
-                                year={year}
-                                variable="pr"
-                                name="Rainfall"
-                                units="mm/day"
-                                Icon={RainSvg}
-                            />
-                        </button>
-
-                        <button
-                            type="button"
-                            className={`vert-container climate-variable-button ${
-                                selectedVariable === "rsds" ? "climate-variable-selected" : ""
-                            }`}
-                            onClick={() => handleSelect("rsds")}
-                        >
-                            <ClimateVariable
-                                prediction={climatePrediction}
-                                year={year}
-                                variable="rsds"
-                                name="Cloudiness"
-                                units="Watts/m2"
-                                Icon={CloudSvg}
-                            />
-                        </button>
-
-                        <button
-                            type="button"
-                            className={`vert-container climate-variable-button ${
-                                selectedVariable === "sfcWind" ? "climate-variable-selected" : ""
-                            }`}
-                            onClick={() => handleSelect("sfcWind")}
-                        >
-                            <ClimateVariable
-                                prediction={climatePrediction}
-                                year={year}
-                                variable="sfcWind"
-                                name="Windiness"
-                                units="m/sec"
-                                Icon={WindSvg}
-                            />
-                        </button>
-                    </div>
+            <div className="climate-summary">
+                <div className="horiz-container">
+                    <ClimateVariable
+                        prediction={climatePrediction}
+                        year={year}
+                        variable="tas"
+                        name="Temperature"
+                        units="°C"
+                        Icon={TempSvg}
+                        onClick={() => handleSelect("tas")}
+                        isSelected={selectedVariable === "tas"}
+                    />
+                    <ClimateVariable
+                        prediction={climatePrediction}
+                        year={year}
+                        variable="pr"
+                        name="Rainfall"
+                        units="mm/day"
+                        Icon={RainSvg}
+                        onClick={() => handleSelect("pr")}
+                        isSelected={selectedVariable === "pr"}
+                    />
+                    <ClimateVariable
+                        prediction={climatePrediction}
+                        year={year}
+                        variable="rsds"
+                        name="Cloudiness"
+                        units="Watts/m2"
+                        Icon={CloudSvg}
+                        onClick={() => handleSelect("rsds")}
+                        isSelected={selectedVariable === "rsds"}
+                    />
+                    <ClimateVariable
+                        prediction={climatePrediction}
+                        year={year}
+                        variable="sfcWind"
+                        name="Windiness"
+                        units="m/sec"
+                        Icon={WindSvg}
+                        onClick={() => handleSelect("sfcWind")}
+                        isSelected={selectedVariable === "sfcWind"}
+                    />
+                </div>
 
                 {renderDetails()}
 

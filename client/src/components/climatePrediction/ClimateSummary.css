@@ -28,22 +28,24 @@
     font-size: 75%;
 }
 
-/* New: clickable variable tiles */
-.climate-summary .climate-variable-button {
+.climate-icon-button {
     all: unset;
     cursor: pointer;
-    box-sizing: border-box;
+    display: inline-block;
+    padding: 0.3em;
 }
 
-.climate-summary .climate-variable-button:hover {
+.climate-icon-button:hover {
     outline: 2px solid var(--color-button-hover);
+    border-radius: 6px;
 }
 
-.climate-summary .climate-variable-selected {
+.climate-variable-selected {
     outline: 2px solid var(--color-button);
+    border-radius: 6px;
 }
 
-/* New: details block under icons (mirrors hazard style) */
+/* optional, only if you want to pad the details area */
 .climate-selected-details,
 .climate-details-placeholder {
     margin-top: 1em;
