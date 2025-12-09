@@ -487,7 +487,7 @@ class ClimateDataProcessor:
                     for variable in variables:
                         quantiles = list(quantiles_config.get(variable, []))
                         compute_quantiles = bool(quantiles)
-                        # TODO tropical & hot days don't need all decades - optimize later
+                        # TODO tropical & hot days only need 2 decades - optimize later
                         compute_tropical = (
                             tropical_nights_enabled
                             and variable == "tasmin"

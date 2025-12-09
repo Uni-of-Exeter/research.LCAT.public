@@ -160,11 +160,11 @@ class ChessScapeLoader:
         # Create filepath folder adjustments
         bias_corrected_folder = "_bias-corrected" if bias_corrected_key == "bias_corrected" else ""
 
-        if variable == "tropical_nights":
-            # Tropical nights files
+        if variable in ["tropical_nights", "hot_heat_days"]:
+            # TODO not seasonal anymore?
             season_folder = "seasonal" if season != "annual" else "annual"
             sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/{season_folder}"
-            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_tropical_nights_uk_1km_{season}_19801201-20801130.nc"
+            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{variable}_uk_1km_{season}_19801201-20801130.nc"
         elif variable in ["tasmax_99_percentile", "tasmin_1_percentile"] and season in [
             "summer",
             "winter",
@@ -226,7 +226,7 @@ class ChessScapeLoader:
 
     def process_derived_variable(self, variable: str) -> None:
         """
-        Process derived variables (quantiles and tropical nights)
+        Process derived variables (quantiles, tropical nights, hot heat days)
         """
         self.extracted_data = {}
 
@@ -235,6 +235,7 @@ class ChessScapeLoader:
             "tasmax_99_percentile": "quantile_99",
             "tasmin_1_percentile": "quantile_1",
             "tropical_nights": "variable",
+            "hot_heat_days": "variable",
         }
 
         if variable not in variable_mapping:
@@ -256,10 +257,14 @@ class ChessScapeLoader:
             # First, try exact match
             if data_key in dataset.data_vars:
                 target_data = dataset[data_key]
-            elif variable == "tropical_nights":
-                # For tropical nights, try common alternatives
+            elif variable in ["tropical_nights", "hot_heat_days"]:
+                # For tropical nights and hot heat days, try common alternatives
                 for var_name in available_vars:
-                    if "tropical" in var_name.lower() or var_name == "variable":
+                    if (
+                        "tropical" in var_name.lower()
+                        or "hot" in var_name.lower()
+                        or var_name == "variable"
+                    ):
                         target_data = dataset[var_name]
                         break
             else:
@@ -521,6 +526,7 @@ class ChessScapeLoader:
             "tasmax_99_percentile",
             "tasmin_1_percentile",
             "tropical_nights",
+            "hot_heat_days",
         ]
 
         for var in potential_derived:
@@ -531,10 +537,10 @@ class ChessScapeLoader:
                 else ""
             )
 
-            if var == "tropical_nights":
+            if var in ["tropical_nights", "hot_heat_days"]:
                 season_folder = "seasonal" if season != "annual" else "annual"
                 sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/{season_folder}"
-                filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_tropical_nights_uk_1km_{season}_19801201-20801130.nc"
+                filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{var}_uk_1km_{season}_19801201-20801130.nc"
             elif season in ["summer", "winter"]:
                 sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/seasonal"
                 quantile_num = "99" if "99" in var else "1"
@@ -546,8 +552,8 @@ class ChessScapeLoader:
             elif season == "annual":
                 # Annual quantiles are in annual folder
                 sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/annual"
-                if var == "tropical_nights":
-                    filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_tropical_nights_uk_1km_annual_19801201-20801130.nc"
+                if var in ["tropical_nights", "hot_heat_days"]:
+                    filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{var}_uk_1km_annual_19801201-20801130.nc"
                 else:
                     quantile_num = "99" if "99" in var else "1"
                     base_var = "tasmax" if "tasmax" in var else "tasmin"
