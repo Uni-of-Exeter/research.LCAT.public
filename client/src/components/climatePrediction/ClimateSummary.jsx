@@ -106,10 +106,19 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
         if (selectedVariable === "tas") {
             return (
                 <div className="climate-selected-details">
-                    <h2>Temperature details</h2>
+                    <h2>Additional temperature metrics</h2>
+                    <div className="horiz-container">
+                        <ClimateVariable
+                            prediction={climatePrediction}
+                            year={year}
+                            variable="tropical_nights"
+                            name="Tropical Nights"
+                            units="nights/year"
+                            Icon={TropicalNightsSvg}
+                        />
+                    </div>
                     <p>
-                        Here we will show additional information about temperature, such as tropical nights and how they
-                        change under different climate scenarios.
+                    Note: Only yearly predictions are available for these measures
                     </p>
                 </div>
             );
@@ -196,18 +205,8 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
                         onClick={() => handleSelect("sfcWind")}
                         isSelected={selectedVariable === "sfcWind"}
                     />
-                    <ClimateVariable
-                        prediction={climatePrediction}
-                        year={year}
-                        variable="tropical_nights"
-                        name="Tropical Nights"
-                        units="nights/year"
-                        Icon={TropicalNightsSvg}
-                    />
                 </div>
-
                 {renderDetails()}
-
                 <p>
                     Note: Yearly average climate change does not always reflect the extremes of summer and winter.
                     Change the drop-down menu above to see the predictions for the different seasons.
