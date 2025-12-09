@@ -17,6 +17,8 @@ import LoadingOverlay from "react-loading-overlay-ts";
 import DecreaseSvg from "../../images/buttons/decrease";
 import IncreaseSvg from "../../images/buttons/increase";
 import CloudSvg from "../../images/climate/CloudCover";
+import { ReactComponent as DryDaysSvg } from "../../images/climate/DryDays.svg";
+import { ReactComponent as HeavyRainDaysSvg } from "../../images/climate/HeavyRainDays.svg";
 import { ReactComponent as HotHeatDaysSvg } from "../../images/climate/HotHeatDays.svg";
 import RainSvg from "../../images/climate/Rain";
 import TempSvg from "../../images/climate/Temperature";
@@ -110,6 +112,22 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
                         name="Hot Heat Days"
                         units="days/year"
                         Icon={HotHeatDaysSvg}
+                    />
+                    <ClimateVariable
+                        prediction={climatePrediction}
+                        year={year}
+                        variable="heavy_rain_days"
+                        name="Heavy Rain Days"
+                        units="days/year"
+                        Icon={HeavyRainDaysSvg}
+                    />
+                    <ClimateVariable
+                        prediction={climatePrediction}
+                        year={year}
+                        variable="dry_days"
+                        name="Dry Days"
+                        units="days/year"
+                        Icon={DryDaysSvg}
                     />
                 </div>
                 <p>

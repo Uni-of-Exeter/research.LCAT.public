@@ -279,15 +279,22 @@ router.post("/gids_centre", async function (req, res) {
 // CHESS-SCAPE helper function: generate climate column SQL
 function buildAvgClimateCols() {
     const averageClimateColNames = [];
-    const variables = ["tas", "sfcWind", "pr", "rsds", "tasmax_99_percentile", "tasmin_1_percentile", "tropical_nights", "hot_heat_days"];
-    const decades = ["1980", "2030", "2040", "2050", "2060", "2070"];
-    // const stats = ["min", "mean", "max"];
+    const baseVariables = ["tas", "sfcWind", "pr", "rsds", "tasmax_99_percentile", "tasmin_1_percentile"];
+    const derivedVariables = ["tropical_nights", "hot_heat_days", "heavy_rain_days", "dry_days"];
+    const allDecades = ["1980", "2030", "2040", "2050", "2060", "2070"];
+    const derivedDecades = ["1980", "2070"];
 
-    for (const variable of variables) {
-        for (const decade of decades) {
-            // for (const stat of stats) {
-                averageClimateColNames.push(`AVG("${variable}_${decade}") as "${variable}_${decade}"`);
-            // }
+    // Base variables use all decades
+    for (const variable of baseVariables) {
+        for (const decade of allDecades) {
+            averageClimateColNames.push(`AVG("${variable}_${decade}") as "${variable}_${decade}"`);
+        }
+    }
+
+    // Derived variables only use 1980 and 2070
+    for (const variable of derivedVariables) {
+        for (const decade of derivedDecades) {
+            averageClimateColNames.push(`AVG("${variable}_${decade}") as "${variable}_${decade}"`);
         }
     }
 
