@@ -125,6 +125,7 @@ class ProcessReferences:
                     "date": row["Date"],
                     "journal": row["Journal"],
                     "issue": row["Volume/Issue"],
+                    "notes": row["Notes"],
                 }
 
                 self.processed_references[row_id] = ref

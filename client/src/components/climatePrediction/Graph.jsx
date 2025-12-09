@@ -10,11 +10,14 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+/* global gtag */
+
 import { useEffect, useRef, useState } from "react";
 import { useCollapse } from "react-collapsed";
 import LoadingOverlay from "react-loading-overlay-ts";
 import Plot from "react-plotly.js";
 
+import { CHESS_SCAPE_URL, LCAT_HANDBOOK_URL } from "../../utils/constants";
 import { andify } from "../../utils/utils";
 
 // Define graph colours
@@ -35,6 +38,7 @@ const Graph = (props) => {
     const graphContainerRef = useRef(null);
     const [isMobile, setIsMobile] = useState(false);
     const [containerWidth, setContainerWidth] = useState(undefined);
+    const hasTrackedCollapsibleOpen = useRef(false);
     // const [avgMin, setAvgMin] = useState([]);
     // const [avgMax, setAvgMax] = useState([]);
 
@@ -94,10 +98,19 @@ const Graph = (props) => {
             setExpanded(false);
             setAvg([]);
             setData([]);
+            // Reset tracking flag when no regions selected  
+            hasTrackedCollapsibleOpen.current = false;
         }
     }, [regions]);
 
     const handleOnClick = () => {
+        // Track first-time opening of collapsible
+        if (!isExpanded && !hasTrackedCollapsibleOpen.current && typeof gtag !== 'undefined') {
+            gtag('event', 'collapsible_open', {
+                section: 'climate_details'
+            });
+            hasTrackedCollapsibleOpen.current = true;
+        }
         setExpanded(!isExpanded);
     };
 
@@ -413,7 +426,7 @@ const Graph = (props) => {
             <p className="note">
                 Data source: The current iteration of the tool uses climate data from the{" "}
                 <a
-                    href="https://catalogue.ceda.ac.uk/uuid/8194b416cbee482b89e0dfbe17c5786c"
+                    href={CHESS_SCAPE_URL}
                     target="_blank"
                     rel="noreferrer"
                 >
@@ -423,7 +436,7 @@ const Graph = (props) => {
                 CHESS-SCAPE provides non bias-corrected data for Northern Ireland and the Isles of Scilly. The tool
                 displays RCP 6.0 and RCP 8.5. For more information, please see the{" "}
                 <a
-                    href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE-June-2025-update.pdf"
+                    href={LCAT_HANDBOOK_URL}
                     target="_blank"
                     rel="noreferrer"
                 >

@@ -10,7 +10,9 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
-import React, { useEffect, useState } from "react";
+/* global gtag */
+
+import React, { useEffect, useRef,useState } from "react";
 import { useCollapse } from "react-collapsed";
 
 import { defaultState } from "../../utils/defaultState";
@@ -34,6 +36,7 @@ const IMDMap = ({ regions, regionType }) => {
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
     const [regionsCentre, setRegionsCentre] = useState(defaultState.mapCenter);
     const [zoomLevel, setZoomLevel] = useState(8);
+    const hasTrackedCollapsibleOpen = useRef(false);
 
     useEffect(() => {
         // Set zoom level based on region type
@@ -46,6 +49,11 @@ const IMDMap = ({ regions, regionType }) => {
     useEffect(() => setExpanded(false), [regions]);
 
     function handleOnClick() {
+        // Track first-time opening of collapsible
+        if (!isExpanded && !hasTrackedCollapsibleOpen.current && typeof gtag !== 'undefined') {
+            gtag('event', 'deprivation_details_opened');
+            hasTrackedCollapsibleOpen.current = true;
+        } 
         setExpanded(!isExpanded);
     }
 

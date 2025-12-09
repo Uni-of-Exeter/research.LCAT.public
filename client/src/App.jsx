@@ -10,10 +10,13 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+/* global gtag */
+
 import "./App.css";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
+import { defaultFilterName } from "./components/adaptations/AdaptationCategories";
 import StaticAdaptations from "./components/adaptations/StaticAdaptations";
 import ClimateHazardRisk from "./components/climateHazard/ClimateHazardRisk";
 import ClimateImpactSummary from "./components/climateImpacts/ClimateImpactSummary";
@@ -34,6 +37,40 @@ import IMDMap from "./components/vulnerabilities/IMDMap";
 import PersonalSocialVulnerabilities from "./components/vulnerabilities/PersonalSocialVulnerabilities";
 import { defaultState } from "./utils/defaultState";
 
+const useScrollTracking = () => {
+    const sectionsRef = useRef(new Set());
+    
+    useEffect(() => {
+        
+        const handleScroll = () => {
+            const sections = document.querySelectorAll('[data-section]');
+            
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+                                
+                if (isVisible && !sectionsRef.current.has(section.dataset.section)) {
+                    
+                    // Track section view
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'section_view', {
+                            section_name: section.dataset.section,
+                            timestamp: Date.now()
+                        });
+                    }
+                    
+                    sectionsRef.current.add(section.dataset.section);
+                }
+            });
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        handleScroll(); // Check initial state
+        
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+};
+
 const App = () => {
     const [regions, setRegions] = useState(defaultState.regions);
     const [regionType, setRegionType] = useState(defaultState.regionType);
@@ -47,8 +84,20 @@ const App = () => {
     const [variable, setVariable] = useState(defaultState.variable);
     const [isPredictionLoading, setIsPredictionLoading] = useState(defaultState.isPredictionLoading);
     const [areAveragesLoading, setAreAveragesLoading] = useState(defaultState.areAveragesLoading);
-    const [selectedHazardName, setSelectedHazardName] = useState(defaultState.selectedHazardName);
+    const [selectedImpactHazard, setSelectedImpactHazard] = useState(defaultState.selectedImpactHazard);
     const [applyCoastalFilter, setApplyCoastalFilter] = useState(defaultState.applyCoastalFilter);
+
+    const [selectedAdaptationHazards, setSelectedAdaptationHazards] = useState([defaultState.selectedImpactHazard]);
+    const [filterName, setFilterName] = useState(defaultFilterName);
+    
+    useScrollTracking();
+
+    // If a new impact hazard is selected, update the adaptation hazards to match
+    useEffect(() => {
+        if (selectedImpactHazard && typeof selectedImpactHazard === 'string') {
+            setSelectedAdaptationHazards([selectedImpactHazard]);
+        }
+    }, [selectedImpactHazard]);
 
     useEffect(() => {
         if (regions.length === 0) {
@@ -57,7 +106,7 @@ const App = () => {
             setVariable(defaultState.variable);
             setClimatePrediction(defaultState.climatePrediction)
             setClimateAverages(defaultState.climateAverages)
-            setSelectedHazardName(defaultState.selectedHazardName)
+            setSelectedImpactHazard(defaultState.selectedImpactHazard)
             setApplyCoastalFilter(defaultState.applyCoastalFilter)
         }
     }, [regions]);
@@ -92,7 +141,7 @@ const App = () => {
                 setClimateAverageRanges={setClimateAverageRanges}
             /> */}
 
-                <div className="white-section">
+                <div data-section="map" className="white-section">
                     <ClimateMap
                         regions={regions}
                         setRegions={setRegions}
@@ -103,7 +152,7 @@ const App = () => {
                 </div>
 
                 {regions.length > 0 && (
-                    <div className="grey-section">
+                    <div data-section="details" className="grey-section">
                         <ClimateSettings
                             regions={regions}
                             season={season}
@@ -136,45 +185,57 @@ const App = () => {
             )}
 
                 {regions.length > 0 && (
-                    <div className="white-section">
+                    <div data-section="hazard" className="white-section">
                         <ClimateHazardRisk applyCoastalFilter={applyCoastalFilter} />
                     </div>
                 )}
 
                 {regions.length > 0 && (
-                    <div className="grey-section">
+                    <div data-section="impacts" className="grey-section">
                         <ClimateImpactSummary
                             loading={isPredictionLoading}
-                            selectedHazardName={selectedHazardName}
-                            setSelectedHazardName={setSelectedHazardName}
+                            selectedImpactHazard={selectedImpactHazard}
+                            setSelectedImpactHazard={setSelectedImpactHazard}
                             applyCoastalFilter={applyCoastalFilter}
                         />
                         <KumuImpactPathway
                             regions={regions}
-                            selectedHazardName={selectedHazardName}
-                            setSelectedHazardName={setSelectedHazardName}
+                            selectedImpactHazard={selectedImpactHazard}
+                            setSelectedImpactHazard={setSelectedImpactHazard}
                             applyCoastalFilter={applyCoastalFilter}
                         />
                     </div>
                 )}
 
                 {regions.length > 0 && (
-                    <div className="white-section">
+                    <div data-section="vulnerabilities" className="white-section">
                         <PersonalSocialVulnerabilities />
                         {regionType !== "boundary_iom" && <IMDMap regions={regions} regionType={regionType} />}
                     </div>
                 )}
 
                 {regions.length > 0 && (
-                    <div className="grey-section">
+                    <div data-section="adaptations" className="grey-section">
                         <StaticAdaptations
-                            selectedHazardName={selectedHazardName}
+                            selectedAdaptationHazards={selectedAdaptationHazards}
+                            setSelectedAdaptationHazards={setSelectedAdaptationHazards}
                             applyCoastalFilter={applyCoastalFilter}
+                            filterName={filterName}
+                            setFilterName={setFilterName}
                         />
                     </div>
                 )}
 
-                <Footer />
+                <Footer 
+                    regions={regions}
+                    climatePrediction={climatePrediction}
+                    selectedImpactHazard={selectedImpactHazard}
+                    selectedAdaptationHazards={selectedAdaptationHazards}
+                    filterName={filterName}
+                    rcp={rcp}
+                    season={season}
+                    applyCoastalFilter={applyCoastalFilter}
+                />
             </div>
             <CookieConsent />
         </>
