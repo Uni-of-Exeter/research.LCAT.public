@@ -1,5 +1,5 @@
 // Function to parse the float values from the prediction
-const climateChange = (prediction, variable, year) => {
+export const climateChange = (prediction, variable, year) => {
     if (prediction.length > 0) {
         const baseline = parseFloat(prediction[0][`${variable}_1980`]);
         const predict = parseFloat(prediction[0][`${variable}_${year}`]);
