@@ -27,3 +27,29 @@
     width: 12em;
     font-size: 75%;
 }
+
+.climate-icon-button {
+    all: unset;
+    cursor: pointer;
+    display: inline-block;
+    padding: 0.3em;
+}
+
+
+/* optional, only if you want to pad the details area */
+.climate-selected-details,
+.climate-details-placeholder {
+    margin-top: 1em;
+    padding: 1em;
+    border-top: 1px solid #ccc;
+}
+
+.climate-selected-details h2 {
+    margin-top: 0;
+}
+
+.climate-icon-button:hover {
+    background: none;
+    color: inherit;
+    border: none;
+}

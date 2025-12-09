@@ -12,6 +12,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./ClimateSummary.css";
 
+import React, { useState } from "react";
 import LoadingOverlay from "react-loading-overlay-ts";
 
 import DecreaseSvg from "../../images/buttons/decrease";
@@ -63,14 +64,21 @@ const PredictionSummary = ({ prediction, year, variable, name, units }) => {
     );
 };
 
-// Component for arrow + prediction + icon for each climate variable
-const ClimateVariable = ({ prediction, year, variable, name, units, Icon }) => {
+// Component for arrow + icon + summary text
+// Only the icon is clickable – the rest of the box is not.
+const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClick, isSelected }) => {
     const value = climateChange(prediction, variable, year);
 
     return (
         <div className="vert-container">
             {renderArrow(value, variable)}
-            <Icon className="climate-arrow" />
+            <button
+                type="button"
+                className={`climate-icon-button ${isSelected ? "climate-variable-selected" : ""}`}
+                onClick={onClick}
+            >
+                <Icon className="climate-arrow" />
+            </button>
             <PredictionSummary prediction={prediction} year={year} variable={variable} name={name} units={units} />
         </div>
     );
@@ -79,6 +87,70 @@ const ClimateVariable = ({ prediction, year, variable, name, units, Icon }) => {
 // Final component for climate summary section
 const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
     if (regions.length === 0) return null;
+
+    const [selectedVariable, setSelectedVariable] = useState(null); // "tas" | "pr" | "rsds" | "sfcWind" | null
+
+    const handleSelect = (variableKey) => {
+        setSelectedVariable(variableKey);
+    };
+
+    const renderDetails = () => {
+        if (!selectedVariable) {
+            return (
+                <div className="climate-details-placeholder">
+                    <p>Please click a climate variable icon to view details.</p>
+                </div>
+            );
+        }
+
+        if (selectedVariable === "tas") {
+            return (
+                <div className="climate-selected-details">
+                    <h2>Temperature details</h2>
+                    <p>
+                        Here we will show additional information about temperature, such as tropical nights and how they
+                        change under different climate scenarios.
+                    </p>
+                </div>
+            );
+        }
+
+        if (selectedVariable === "pr") {
+            return (
+                <div className="climate-selected-details">
+                    <h2>Rainfall details</h2>
+                    <p>
+                        Additional information about projected changes in rainfall intensity and seasonality will appear
+                        here.
+                    </p>
+                </div>
+            );
+        }
+
+        if (selectedVariable === "rsds") {
+            return (
+                <div className="climate-selected-details">
+                    <h2>Cloudiness details</h2>
+                    <p>
+                        This section can describe changes in cloudiness and what that means for sunshine and solar gain.
+                    </p>
+                </div>
+            );
+        }
+
+        if (selectedVariable === "sfcWind") {
+            return (
+                <div className="climate-selected-details">
+                    <h2>Windiness details</h2>
+                    <p>
+                        This section can summarise how wind speeds may change and any implications for local hazards.
+                    </p>
+                </div>
+            );
+        }
+
+        return null;
+    };
 
     return (
         <LoadingOverlay active={loading} spinner text="Loading climate data">
@@ -91,6 +163,8 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
                         name="Temperature"
                         units="°C"
                         Icon={TempSvg}
+                        onClick={() => handleSelect("tas")}
+                        isSelected={selectedVariable === "tas"}
                     />
                     <ClimateVariable
                         prediction={climatePrediction}
@@ -99,6 +173,8 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
                         name="Rainfall"
                         units="mm/day"
                         Icon={RainSvg}
+                        onClick={() => handleSelect("pr")}
+                        isSelected={selectedVariable === "pr"}
                     />
                     <ClimateVariable
                         prediction={climatePrediction}
@@ -107,6 +183,8 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
                         name="Cloudiness"
                         units="Watts/m2"
                         Icon={CloudSvg}
+                        onClick={() => handleSelect("rsds")}
+                        isSelected={selectedVariable === "rsds"}
                     />
                     <ClimateVariable
                         prediction={climatePrediction}
@@ -115,6 +193,8 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
                         name="Windiness"
                         units="m/sec"
                         Icon={WindSvg}
+                        onClick={() => handleSelect("sfcWind")}
+                        isSelected={selectedVariable === "sfcWind"}
                     />
                     <ClimateVariable
                         prediction={climatePrediction}
@@ -125,6 +205,9 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
                         Icon={TropicalNightsSvg}
                     />
                 </div>
+
+                {renderDetails()}
+
                 <p>
                     Note: Yearly average climate change does not always reflect the extremes of summer and winter.
                     Change the drop-down menu above to see the predictions for the different seasons.
