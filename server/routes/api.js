@@ -277,7 +277,7 @@ router.post("/gids_centre", async function (req, res) {
 /// GET CHESS-SCAPE CLIMATE DATA FROM DB ///
 
 // CHESS-SCAPE helper function: generate climate column SQL
-function buildAvgClimateCols() {
+function buildAvgClimateCols(season) {
     const averageClimateColNames = [];
     const baseVariables = ["tas", "sfcWind", "pr", "rsds", "tasmax_99_percentile", "tasmin_1_percentile"];
     const derivedVariables = ["tropical_nights", "hot_heat_days", "heavy_rain_days", "dry_days"];
@@ -291,10 +291,12 @@ function buildAvgClimateCols() {
         }
     }
 
-    // Derived variables only use 1980 and 2070
-    for (const variable of derivedVariables) {
-        for (const decade of derivedDecades) {
-            averageClimateColNames.push(`AVG("${variable}_${decade}") as "${variable}_${decade}"`);
+    // Derived variables only use 1980 and 2070, annually
+    if (season === "annual") {
+        for (const variable of derivedVariables) {
+            for (const decade of derivedDecades) {
+                averageClimateColNames.push(`AVG("${variable}_${decade}") as "${variable}_${decade}"`);
+            }
         }
     }
 
@@ -373,7 +375,7 @@ router.get("/chess_scape", async (req, res) => {
 
         // Get query method
         const method = boundaryDetails.method;
-        const averageClimateColNames = buildAvgClimateCols();
+        const averageClimateColNames = buildAvgClimateCols(season);
 
         // Build query based on variables and method
         let query;
