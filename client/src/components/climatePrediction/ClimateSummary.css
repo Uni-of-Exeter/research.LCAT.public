@@ -53,3 +53,18 @@
     color: inherit;
     border: none;
 }
+
+.climate-selected-details .horiz-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: left
+}
+
+.climate-selected-details .vert-container {
+    display: flex;
+    text-align: center;
+    margin-bottom: 1em;
+    width: 25%;
+    line-height: 1.6;
+}
