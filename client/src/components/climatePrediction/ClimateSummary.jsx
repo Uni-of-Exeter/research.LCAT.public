@@ -47,10 +47,8 @@ const PredictionSummary = ({ prediction, year, variable, name, units }) => {
 
 // Component for arrow + icon + summary text
 // Only the icon is clickable – the rest of the box is not.
-const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClick, isSelected, season}) => {
+const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClick, isSelected, isAnnual}) => {
     const value = climateChange(prediction, variable, year);
-    const isAnnual = season === "annual"
-    console.log(season)
 
     return (
         <div className="vert-container">
@@ -86,6 +84,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
     const handleSelect = (variableKey) => {
         setSelectedVariable(variableKey);
     };
+    const isAnnual = season === "annual"
 
     const renderDetails = () => {
         if (!selectedVariable) {
@@ -190,7 +189,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                         Icon={TempSvg}
                         onClick={() => handleSelect("tas")}
                         isSelected={selectedVariable === "tas"}
-                        season={season}
+                        isAnnual={isAnnual}
                     />
                     <ClimateVariable
                         prediction={climatePrediction}
@@ -201,7 +200,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                         Icon={RainSvg}
                         onClick={() => handleSelect("pr")}
                         isSelected={selectedVariable === "pr"}
-                        season={season}
+                        isAnnual={isAnnual}
                     />
                     <ClimateVariable
                         prediction={climatePrediction}
@@ -212,7 +211,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                         Icon={CloudSvg}
                         onClick={() => handleSelect("rsds")}
                         isSelected={selectedVariable === "rsds"}
-                        season={season}
+                        isAnnual={isAnnual}
                     />
                     <ClimateVariable
                         prediction={climatePrediction}
@@ -223,10 +222,10 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                         Icon={WindSvg}
                         onClick={() => handleSelect("sfcWind")}
                         isSelected={selectedVariable === "sfcWind"}
-                        season={season}
+                        isAnnual={isAnnual}
                     />
                 </div>
-                {renderDetails()}
+                {isAnnual && renderDetails()}
                 <p>
                     Note: Yearly average climate change does not always reflect the extremes of summer and winter.
                     Change the drop-down menu above to see the predictions for the different seasons.
