@@ -47,8 +47,10 @@ const PredictionSummary = ({ prediction, year, variable, name, units }) => {
 
 // Component for arrow + icon + summary text
 // Only the icon is clickable – the rest of the box is not.
-const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClick, isSelected }) => {
+const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClick, isSelected, season}) => {
     const value = climateChange(prediction, variable, year);
+    const isAnnual = season === "annual"
+    console.log(season)
 
     return (
         <div className="vert-container">
@@ -58,15 +60,25 @@ const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClic
                 className={`climate-icon-button ${isSelected ? "climate-variable-selected" : ""}`}
                 onClick={onClick}
             >
-                <Icon className="climate-arrow" />
+                <Icon
+                    className="climate-arrow"
+                    selected={isSelected}
+                    isAnnual={isAnnual}
+                />
             </button>
-            <PredictionSummary prediction={prediction} year={year} variable={variable} name={name} units={units} />
+            <PredictionSummary 
+                prediction={prediction} 
+                year={year} 
+                variable={variable} 
+                name={name} 
+                units={units} 
+                />
         </div>
     );
 };
 
 // Final component for climate summary section
-const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
+const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) => {
     if (regions.length === 0) return null;
 
     const [selectedVariable, setSelectedVariable] = useState(null); // "tas" | "pr" | "rsds" | "sfcWind" | null
@@ -178,6 +190,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
                         Icon={TempSvg}
                         onClick={() => handleSelect("tas")}
                         isSelected={selectedVariable === "tas"}
+                        season={season}
                     />
                     <ClimateVariable
                         prediction={climatePrediction}
@@ -188,6 +201,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
                         Icon={RainSvg}
                         onClick={() => handleSelect("pr")}
                         isSelected={selectedVariable === "pr"}
+                        season={season}
                     />
                     <ClimateVariable
                         prediction={climatePrediction}
@@ -198,6 +212,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
                         Icon={CloudSvg}
                         onClick={() => handleSelect("rsds")}
                         isSelected={selectedVariable === "rsds"}
+                        season={season}
                     />
                     <ClimateVariable
                         prediction={climatePrediction}
@@ -208,6 +223,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
                         Icon={WindSvg}
                         onClick={() => handleSelect("sfcWind")}
                         isSelected={selectedVariable === "sfcWind"}
+                        season={season}
                     />
                 </div>
                 {renderDetails()}

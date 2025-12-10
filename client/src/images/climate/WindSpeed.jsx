@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 
-const SvgWindSpeed = ({ selected, ...rest }) => {
+const SvgWindSpeed = ({ selected, isAnnual, ...rest }) => {
     const [isHovered, setIsHovered] = useState(false);
 
-    // Becomes yellow if hovered OR selected
-    const isActive = selected || isHovered;
+    const isActive = (isHovered || selected) && isAnnual;
+    
+    console.log("wind isActive:", isActive)
 
     return (
         <svg

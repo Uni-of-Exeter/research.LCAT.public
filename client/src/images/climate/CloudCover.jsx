@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 
-const SvgCloudCover = ({ selectedHazard, ...rest }) => {
+const SvgCloudCover = ({ selected, isAnnual, ...rest }) => {
     const [isHovered, setIsHovered] = useState(false);
 
-    const isActive = selectedHazard === "Cloud cover" || isHovered;
-    // ^^^ change "Cloud cover" if your hazard is named slightly differently
+    const isActive = (isHovered || selected) && isAnnual;
+    
+    console.log("cloud isActive:", isActive)
 
     return (
         <svg

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 
-const SvgRain = ({ selected, ...rest }) => {
+const SvgRain = ({ selected, isAnnual, ...rest }) => {
     const [isHovered, setIsHovered] = useState(false);
 
-    // active = hovered OR selected by parent
-    const isActive = selected || isHovered;
-
+    const isActive = (isHovered || selected) && isAnnual;
+    
+    console.log("rain isActive:", isActive)
+    
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 
-const SvgTemperature = ({ selected, ...rest }) => {
+const SvgTemperature = ({ selected, isAnnual, ...rest }) => {
     const [isHovered, setIsHovered] = useState(false);
 
-    // active if hovered OR selected from ClimateSummary
-    const isActive = selected || isHovered;
+    const isActive = (isHovered || selected) && (isAnnual)
 
+    
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
