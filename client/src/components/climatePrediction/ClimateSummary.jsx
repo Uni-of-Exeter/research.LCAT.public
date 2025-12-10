@@ -97,6 +97,15 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
                             units="nights/year"
                             Icon={TropicalNightsSvg}
                         />
+                        <ClimateVariable
+                        prediction={climatePrediction}
+                        year={year}
+                        variable="hot_heat_days"
+                        name="Hot Heat Days"
+                        units="days/year"
+                        Icon={HotHeatDaysSvg}
+                    />
+                    
                     </div>
                     <p>
                     Note: Only yearly predictions are available for these measures
@@ -109,10 +118,24 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
             return (
                 <div className="climate-selected-details">
                     <h2>Rainfall details</h2>
-                    <p>
-                        Additional information about projected changes in rainfall intensity and seasonality will appear
-                        here.
-                    </p>
+                    <div className="horiz-container">
+                        <ClimateVariable
+                            prediction={climatePrediction}
+                            year={year}
+                            variable="heavy_rain_days"
+                            name="Heavy Rain Days"
+                            units="days/year"
+                            Icon={HeavyRainDaysSvg}
+                        />
+                        <ClimateVariable
+                            prediction={climatePrediction}
+                            year={year}
+                            variable="dry_days"
+                            name="Dry Days"
+                            units="days/year"
+                            Icon={DryDaysSvg}
+                        />
+                    </div>
                 </div>
             );
         }
@@ -185,30 +208,6 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
                         Icon={WindSvg}
                         onClick={() => handleSelect("sfcWind")}
                         isSelected={selectedVariable === "sfcWind"}
-                    />
-                    <ClimateVariable
-                        prediction={climatePrediction}
-                        year={year}
-                        variable="hot_heat_days"
-                        name="Hot Heat Days"
-                        units="days/year"
-                        Icon={HotHeatDaysSvg}
-                    />
-                    <ClimateVariable
-                        prediction={climatePrediction}
-                        year={year}
-                        variable="heavy_rain_days"
-                        name="Heavy Rain Days"
-                        units="days/year"
-                        Icon={HeavyRainDaysSvg}
-                    />
-                    <ClimateVariable
-                        prediction={climatePrediction}
-                        year={year}
-                        variable="dry_days"
-                        name="Dry Days"
-                        units="days/year"
-                        Icon={DryDaysSvg}
                     />
                 </div>
                 {renderDetails()}
