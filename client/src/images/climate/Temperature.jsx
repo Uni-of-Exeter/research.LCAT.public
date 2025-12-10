@@ -5,7 +5,6 @@ const SvgTemperature = ({ selected, isAnnual, ...rest }) => {
 
     const isActive = (isHovered || selected) && isAnnual
 
-    console.log("temp isactive:", isActive)
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"

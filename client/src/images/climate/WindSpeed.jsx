@@ -5,8 +5,6 @@ const SvgWindSpeed = ({ selected, isAnnual, ...rest }) => {
 
     const isActive = (isHovered || selected) && isAnnual;
     
-    console.log("wind isActive:", isActive)
-
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"

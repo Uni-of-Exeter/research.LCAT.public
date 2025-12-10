@@ -4,9 +4,7 @@ const SvgRain = ({ selected, isAnnual, ...rest }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     const isActive = (isHovered || selected) && isAnnual;
-    
-    console.log("rain isActive:", isActive)
-    
+        
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"

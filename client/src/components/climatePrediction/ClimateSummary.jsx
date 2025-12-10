@@ -80,18 +80,25 @@ const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClic
 const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) => {
     if (regions.length === 0) return null;
 
-    const [selectedVariable, setSelectedVariable] = useState(null); // "tas" | "pr" | "rsds" | "sfcWind" | null
+    const [selectedVariable, setSelectedVariable] = useState(null);
 
     const handleSelect = (variableKey) => {
-        setSelectedVariable(variableKey);
-    };
+    setSelectedVariable((prev) =>
+        prev === variableKey ? null : variableKey
+    );
+};
+
+
     const isAnnual = season === "annual"
 
     const renderDetails = () => {
         if (!selectedVariable) {
             return (
                 <div className="climate-details-placeholder">
-                    <p>Please click a climate variable icon to view details.</p>
+                    <p>Please click a climate variable icon to view details.  
+                        <i> *Only annual predictions are available for these measures.</i>
+                    </p>
+                    
                 </div>
             );
         }
@@ -121,9 +128,6 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                     />
                     
                     </div>
-                    <p>
-                    Note: Only yearly predictions are available for these measures
-                    </p>
                 </div>
             );
         }

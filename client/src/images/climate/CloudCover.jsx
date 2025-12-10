@@ -5,8 +5,6 @@ const SvgCloudCover = ({ selected, isAnnual, ...rest }) => {
 
     const isActive = (isHovered || selected) && isAnnual;
     
-    console.log("cloud isActive:", isActive)
-
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
