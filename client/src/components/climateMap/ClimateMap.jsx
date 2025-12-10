@@ -10,6 +10,8 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+/* global gtag */
+
 import "./ClimateMap.css";
 
 import { useVirtualizer } from "@tanstack/react-virtual";
@@ -45,6 +47,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
     const [triggerLoadingIndicator, setTriggerLoadingIndicator] = useState(true);
     const [isDrawerOpen, setIsDrawerOpen] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const hasTrackedRegionSelection = useRef(false);
 
     const layerMap = useRef(new Map());
     const parentRef = useRef(null);
@@ -57,7 +60,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
 
         layer.bindTooltip(name);
         layer.setStyle({
-            color: "#115158ff",
+            color: "var(--color-header-text)",
             weight: 3,
             fillColor: isSelected ? highlightCol : col,
             fillOpacity: 1,
@@ -85,6 +88,11 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
         setRegions((prevRegions) => {
             const alreadySelected = prevRegions.some((r) => r.id === gid);
             if (!alreadySelected) {
+                // Track region selection once
+                if (!hasTrackedRegionSelection.current && typeof gtag !== 'undefined') {
+                    gtag('event', 'region_selection');
+                    hasTrackedRegionSelection.current = true;
+                }
                 targetLayer && targetLayer.setStyle({ fillColor: highlightCol, fillOpacity: 1 });
                 return [
                     ...prevRegions,

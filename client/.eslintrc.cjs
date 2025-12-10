@@ -13,6 +13,7 @@ module.exports = {
     settings: { react: { version: "18.2" } },
     plugins: ["react-refresh", "simple-import-sort"],
     rules: {
+        "react/prop-types": "off",
         "react/jsx-no-target-blank": "off",
         "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
         "react/react-in-jsx-scope": "off",

@@ -10,33 +10,31 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+/* global gtag */
+
 import "./StaticAdaptations.css";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import adaptationData from "../../kumu/parsed/adaptation_data.json";
 import { pathways } from "../climateImpacts/ClimateImpactSummaryData";
-import { adaptationFilters } from "./AdaptationCategories";
+import { adaptationFilters, defaultFilterCategory, defaultFilterName } from "./AdaptationCategories";
 import StaticAdaptation from "./StaticAdaptation";
 
 const StaticAdaptations = (props) => {
-    const { selectedHazardName, applyCoastalFilter } = props;
+    const { selectedAdaptationHazards, setSelectedAdaptationHazards, applyCoastalFilter, filterName, setFilterName } = props;
+    const [showDataSource, setShowDataSource] = useState(false);
 
-    // Load filter options
-    const defaultFilterName = adaptationFilters[0].filterName;
-    const defaultFilterCategory = adaptationFilters[0].category;
-    const [filterName, setFilterName] = useState(defaultFilterName);
+    // Load filter category
     const [filterCategory, setFilterCategory] = useState(defaultFilterCategory);
+    const hasTrackedAdaptationClick = useRef(false);
 
     // Filter pathways if coastal filter is applied
     const [filteredPathwayData, setFilteredPathwayData] = useState(pathways);
 
-    // Track array of selected hazards (controlled via buttons)
-    const [selectedHazards, setSelectedHazards] = useState([selectedHazardName]);
-
     // Function for clicking on filter buttons: adding and removing hazards to array
     const toggleHazardSelection = (hazardName) => {
-        setSelectedHazards((prev) => {
+        setSelectedAdaptationHazards((prev) => {
             // Check to see if new hazardName is selected
             const isSelected = prev.includes(hazardName);
 
@@ -53,6 +51,12 @@ const StaticAdaptations = (props) => {
             // If selected and the only one do nothing
             return prev;
         });
+
+        // Track first adaptation click
+        if (!hasTrackedAdaptationClick.current && typeof gtag !== 'undefined') {
+            gtag('event', 'adaptation_icon_clicked');
+            hasTrackedAdaptationClick.current = true;
+        }
     };
 
     // When coastal filter is applied, filter pathways and reset selectedHazards
@@ -62,13 +66,8 @@ const StaticAdaptations = (props) => {
         } else {
             setFilteredPathwayData(pathways);
         }
-        setSelectedHazards([selectedHazardName]);
-    }, [applyCoastalFilter, selectedHazardName]);
-
-    // When a new selectedHazardName is applied, reset the array of hazards
-    useEffect(() => {
-        setSelectedHazards([selectedHazardName]);
-    }, [selectedHazardName]);
+        setSelectedAdaptationHazards(selectedAdaptationHazards);
+    }, [applyCoastalFilter, setSelectedAdaptationHazards, selectedAdaptationHazards]);
 
     // Handle button change: set filterName and filterCategory when dropdown is used
     const handleDropdownChange = (e) => {
@@ -87,7 +86,7 @@ const StaticAdaptations = (props) => {
         const adaptationCategories = adaptation.attributes[filterCategory] || [];
 
         // First check that the adaptation contains every hazard in the array of selectedHazards
-        const matchesAllHazards = selectedHazards.every((hazard) =>
+        const matchesAllHazards = selectedAdaptationHazards.every((hazard) =>
             layers.some((layer) => layer.includes(hazard.toLowerCase() + " in full")),
         );
 
@@ -124,14 +123,14 @@ const StaticAdaptations = (props) => {
                             <strong>{pathway.name}</strong>
                         </div>
                         <div className="icon">
-                            {React.cloneElement(pathway.icon, { selectedHazard: selectedHazards.includes(pathway.name) })}
+                            {React.cloneElement(pathway.icon, { selectedHazard: selectedAdaptationHazards.includes(pathway.name) })}
                         </div>
                     </button>
                 ))}
             </div>
             <div style={{ display: "flex", justifyContent: "center" }}>
                 <button
-                    onClick={() => setSelectedHazards([])}
+                    onClick={() => setSelectedAdaptationHazards([])}
                     style={{
                         borderRadius: "8px",
                         padding: "1rem",
@@ -168,7 +167,7 @@ const StaticAdaptations = (props) => {
                             <StaticAdaptation
                                 key={adaptation._id}
                                 adaptation={adaptation}
-                                selectedHazardName={selectedHazardName}
+                                selectedHazards={selectedAdaptationHazards}
                             />
                         );
                     })
@@ -177,10 +176,31 @@ const StaticAdaptations = (props) => {
                 )}
             </div>
 
-            <p className="note">
-                Data source: The adaptation data is based on published scientific literature and reports. You can see
-                the references used by expanding each adaptation.
-            </p>
+            <div className="data-source-section">
+                <button
+                    className={`data-source-header ${showDataSource ? 'expanded' : ''}`}
+                    onClick={() => setShowDataSource(!showDataSource)}
+                >
+                    <span>Reference source information</span>
+                    <span>▼</span>
+                </button>
+
+                {showDataSource && (
+                    <div className="data-source-content">
+                        <p>
+                            The adaptation data is based on published scientific literature and reports. You can see
+                            the references used by expanding each adaptation. The references are collected in the following categories:
+                        </p>
+                        <ul>
+                            <li><strong>Journal Article:</strong> Scholarly publications reporting original research or reviews of existing research</li>
+                            <li><strong>Report:</strong> Formal publications by organisations to communicate research, guidelines, or other relevant materials</li>
+                            <li><strong>Web page:</strong> Online reference materials (archived at time of inclusion)</li>
+                            <li><strong>Book:</strong> Sections, chapters, and full books</li>
+                            <li><strong>Database:</strong> Collections of evidence, such as tools or lists</li>
+                        </ul>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

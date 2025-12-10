@@ -10,15 +10,18 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+/* global gtag */
+
 import "./ClimateHazardRisk.css";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { climateHazardsData } from "./ClimateHazardData";
 
 const ClimateHazardRisk = ({ applyCoastalFilter }) => {
     const [selectedHazard, setSelectedHazard] = useState(null);
     const [filteredClimateHazardData, setFilteredClimateHazardData] = useState([]);
+    const hasTrackedHazardClick = useRef(false);
 
     useEffect(() => {
         if (applyCoastalFilter) {
@@ -28,6 +31,15 @@ const ClimateHazardRisk = ({ applyCoastalFilter }) => {
         }
         setSelectedHazard(null);
     }, [applyCoastalFilter]);
+
+    const handleHazardClick = (hazardName) => {
+        if (!hasTrackedHazardClick.current && typeof gtag !== 'undefined') {
+            gtag('event', 'hazard_icon_clicked');
+            hasTrackedHazardClick.current = true;
+        }
+        
+        setSelectedHazard(hazardName);
+    };
 
     return (
         <div>
@@ -44,7 +56,7 @@ const ClimateHazardRisk = ({ applyCoastalFilter }) => {
                     <button
                         className="vert-container-hazard"
                         key={hazard.name}
-                        onClick={() => setSelectedHazard(hazard.name)}
+                        onClick={() => handleHazardClick(hazard.name)}
                     >
                         <div className="hazard-text">
                             <strong>{hazard.name}</strong>

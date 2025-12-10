@@ -10,6 +10,8 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+import { LCAT_HANDBOOK_URL } from "../../utils/constants";
+
 const Introduction = () => {
     return (
         <div className="grey-section">
@@ -49,7 +51,7 @@ const Introduction = () => {
                 </li>
                 <li>
                     <a
-                        href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-USER-GUIDE-June-2025-update.pdf"
+                        href={LCAT_HANDBOOK_URL}
                         target="_blank"
                         rel="noreferrer"
                     >
@@ -62,6 +64,16 @@ const Introduction = () => {
                     </a>
                 </li>
             </ul>
+            <p>
+                Once you have selected your area, you can use the{" "}
+                <a href="#generate-report-section" onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById('generate-report-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }}>
+                    button
+                </a>{" "}
+                at the end of the tool to generate a downloadable summary report of your results.
+            </p>
         </div>
     );
 };

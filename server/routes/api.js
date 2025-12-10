@@ -205,8 +205,8 @@ router.get("/region", async function (req, res) {
             )
             FROM ${table}
             WHERE ST_Intersects(
-                geom, 
-                ST_Transform(ST_MakeEnvelope($2, $3, $4, $5, 4326), ${boundaryDetails.srid})
+                ST_Transform(geom, 4326),
+                ST_MakeEnvelope($2, $3, $4, $5, 4326)
             );
         `;
 
@@ -277,17 +277,26 @@ router.post("/gids_centre", async function (req, res) {
 /// GET CHESS-SCAPE CLIMATE DATA FROM DB ///
 
 // CHESS-SCAPE helper function: generate climate column SQL
-function buildAvgClimateCols() {
+function buildAvgClimateCols(season) {
     const averageClimateColNames = [];
-    const variables = ["tas", "sfcWind", "pr", "rsds", "tasmax_99_percentile", "tasmin_1_percentile", "tropical_nights"];
-    const decades = ["1980", "2030", "2040", "2050", "2060", "2070"];
-    // const stats = ["min", "mean", "max"];
+    const baseVariables = ["tas", "sfcWind", "pr", "rsds", "tasmax_99_percentile", "tasmin_1_percentile"];
+    const derivedVariables = ["tropical_nights", "hot_heat_days", "heavy_rain_days", "dry_days"];
+    const allDecades = ["1980", "2030", "2040", "2050", "2060", "2070"];
+    const derivedDecades = ["1980", "2070"];
 
-    for (const variable of variables) {
-        for (const decade of decades) {
-            // for (const stat of stats) {
+    // Base variables use all decades
+    for (const variable of baseVariables) {
+        for (const decade of allDecades) {
+            averageClimateColNames.push(`AVG("${variable}_${decade}") as "${variable}_${decade}"`);
+        }
+    }
+
+    // Derived variables only use 1980 and 2070, annually
+    if (season === "annual") {
+        for (const variable of derivedVariables) {
+            for (const decade of derivedDecades) {
                 averageClimateColNames.push(`AVG("${variable}_${decade}") as "${variable}_${decade}"`);
-            // }
+            }
         }
     }
 
@@ -366,7 +375,7 @@ router.get("/chess_scape", async (req, res) => {
 
         // Get query method
         const method = boundaryDetails.method;
-        const averageClimateColNames = buildAvgClimateCols();
+        const averageClimateColNames = buildAvgClimateCols(season);
 
         // Build query based on variables and method
         let query;

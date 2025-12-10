@@ -10,17 +10,26 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
+/* global gtag */
+
 import "./PersonalSocialVulnerabilities.css";
 
-import React, { useState } from "react";
+import React, { useRef,useState } from "react";
 
 import { vulnerabilityData } from "./PersonalSocialVulnerabilitiesData";
 
 const PersonalSocialVulnerabilities = () => {
     const [selectedVulnerability, setSelectedVulnerability] = useState(null);
+    const hasTrackedVulnerabilityClick = useRef(false);
 
     const handleVulnerabilityClick = (vulnerabilityName) => {
         setSelectedVulnerability(vulnerabilityName);
+
+        // Track first vulnerability click
+        if (!hasTrackedVulnerabilityClick.current && typeof gtag !== 'undefined') {
+            gtag('event', 'vulnerability_icon_clicked');
+            hasTrackedVulnerabilityClick.current = true;
+        }
     };
 
     const selectedVulnerabilityDetails = vulnerabilityData.find(

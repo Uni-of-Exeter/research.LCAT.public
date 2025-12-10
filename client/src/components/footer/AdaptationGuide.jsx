@@ -12,6 +12,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import React from "react";
 
+import { ADAPTATION_INTRO_PDF_URL } from "../../utils/constants";
 const AdaptationGuide = () => {
     return (
         <div className="footer-flex-container">
@@ -20,7 +21,7 @@ const AdaptationGuide = () => {
                 <p>
                     <a
                         className="dummy-resource-button"
-                        href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-Introduction-to-Local-Climate-Adaptation-May-2024.pdf"
+                        href={ADAPTATION_INTRO_PDF_URL}
                         target="_blank"
                         rel="noreferrer"
                         aria-label="Download the Introduction to Local Climate Adaptation PDF"
@@ -29,7 +30,7 @@ const AdaptationGuide = () => {
                 <p>
                     Read our&nbsp;
                     <a
-                        href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-Introduction-to-Local-Climate-Adaptation-May-2024.pdf"
+                        href={ADAPTATION_INTRO_PDF_URL}
                         target="_blank"
                         rel="noreferrer"
                     >

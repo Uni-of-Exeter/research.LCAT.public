@@ -13,7 +13,9 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@react-pdf/renderer": "^4.3.0",
         "@tanstack/react-virtual": "^3.13.9",
+        "canvg": "^4.0.3",
         "colormap": "^2.3.2",
         "leaflet": "^1.9.4",
         "plotly.js": "^3.0.1",

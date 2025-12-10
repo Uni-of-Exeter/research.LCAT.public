@@ -13,7 +13,7 @@
     flex-direction: column;
     text-align: center;
     font-size: 75%;
-    width: 33.33%;
+    width: 50%;
     box-sizing: border-box;
     margin-bottom: 1.5em;
     line-height: 1.6;
@@ -29,6 +29,12 @@
 .hazard-text {
     padding: 1em;
     font-size: 120%;
+}
+
+@media (min-width: 600px) {
+    .vert-container-hazard {
+        width: 33.33%;
+    }
 }
 
 @media (min-width: 1000px) {

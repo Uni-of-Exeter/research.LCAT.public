@@ -15,20 +15,29 @@ import "./StaticAdaptation.css";
 import { useEffect, useState } from "react";
 import { useCollapse } from "react-collapsed";
 
+import adaptationRefs from "../../kumu/parsed/processed_references.json";
 import StaticReferences from "./StaticReferences";
 
-const StaticAdaptation = ({ adaptation, selectedHazardName }) => {
+const StaticAdaptation = ({ adaptation, selectedHazards }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
 
     // Collapse all sections when hazard changes
     useEffect(() => {
         setIsExpanded(false);
-    }, [selectedHazardName]);
+    }, [selectedHazards]);
 
     // Ensure adaptation exists and has attributes
     const attributes = adaptation?.attributes || {};
     const aggregatedLayers = attributes.aggregated_layers || [];
+    const referenceIds = attributes.reference_id || [];
+
+    // Filter case studies from references
+    const caseStudyRefs = referenceIds
+        .map((id) => adaptationRefs[id.toString()])
+        .filter((ref) => ref && ref.notes === "Case study");
+
+    const relatedHazards = aggregatedLayers.filter((item) => !selectedHazards.includes(item));
 
     return (
         <div className="adaptation collapsible">
@@ -40,15 +49,28 @@ const StaticAdaptation = ({ adaptation, selectedHazardName }) => {
                 <div className="content">
                     <b className="static-adaptation-emphasis">Description:</b>
                     <p>{attributes.description || "No description available"}</p>
-                    <b className="static-adaptation-emphasis">Related impact pathways:</b>
-                    <ul>
-                        {aggregatedLayers
-                            .filter((item) => item !== selectedHazardName)
-                            .map((item, index) => (
-                                <li key={index}>{item}</li>
-                            ))}
-                    </ul>
-
+                    {relatedHazards.length > 0 && (
+                        <p className="pathways-inline">
+                            <strong>Related impact pathways:</strong> {
+                                relatedHazards
+                                .join(', ')}
+                        </p>
+                    )}
+                    {caseStudyRefs.length > 0 && (
+                        <>
+                            <b className="static-adaptation-emphasis">Case Studies:</b>
+                            <ul>
+                                {caseStudyRefs.map((ref) => (
+                                    <li key={ref.article_id}>
+                                        <a href={ref.link} target="_blank" rel="noopener noreferrer">
+                                            {ref.title || ref.link}
+                                        </a>
+                                        {ref.authors && ` - ${ref.authors}`}
+                                    </li>
+                                ))}
+                            </ul>
+                        </>
+                    )}
                     <StaticReferences referenceIds={attributes.reference_id} />
                 </div>
             </div>

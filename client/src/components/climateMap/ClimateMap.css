@@ -8,9 +8,9 @@
     margin: 0;
 }
 
-@media (min-width: 2000px) {
+@media (min-width: 1000px) {
     .leaflet-container {
-        height: 750px;
+        height: 650px;
     }
 }
 
@@ -148,9 +148,9 @@
     }
 }
 
-@media (min-width: 2000px) {
+@media (min-width: 1000px) {
     .map-selection {
-        height: 750px;
+        height: 650px;
     }
 }
 

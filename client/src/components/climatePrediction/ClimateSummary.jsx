@@ -18,20 +18,14 @@ import LoadingOverlay from "react-loading-overlay-ts";
 import DecreaseSvg from "../../images/buttons/decrease";
 import IncreaseSvg from "../../images/buttons/increase";
 import CloudSvg from "../../images/climate/CloudCover";
+import { ReactComponent as DryDaysSvg } from "../../images/climate/DryDays.svg";
+import { ReactComponent as HeavyRainDaysSvg } from "../../images/climate/HeavyRainDays.svg";
+import { ReactComponent as HotHeatDaysSvg } from "../../images/climate/HotHeatDays.svg";
 import RainSvg from "../../images/climate/Rain";
 import TempSvg from "../../images/climate/Temperature";
 import { ReactComponent as TropicalNightsSvg } from "../../images/climate/TropicalNights.svg";
 import WindSvg from "../../images/climate/WindSpeed";
-
-// Function to parse the float values from the prediction
-const climateChange = (prediction, variable, year) => {
-    if (prediction.length > 0) {
-        const baseline = parseFloat(prediction[0][`${variable}_1980`]);
-        const predict = parseFloat(prediction[0][`${variable}_${year}`]);
-        return baseline != null && predict != null ? predict - baseline : null;
-    }
-    return null;
-};
+import { climateChange, formatClimateData } from "../../utils/climateUtils";
 
 // Function to render an arrow pointing up or down
 const renderArrow = (value, variable) => {
@@ -43,23 +37,10 @@ const renderArrow = (value, variable) => {
 
 // Component to create summary text for each climate variable
 const PredictionSummary = ({ prediction, year, variable, name, units }) => {
-    const value = climateChange(prediction, variable, year);
-    if (value == null) {
-        return <span>No data yet for this area, coming soon.</span>;
-    }
-    const adjustedValue = variable === "rsds" ? -value : value;
-    const absoluteValue = Math.abs(adjustedValue).toFixed(2);
-    const direction = adjustedValue === 0 ? "No change in" : adjustedValue > 0 ? "increases" : "decreases";
-
+    const climateData = formatClimateData(prediction, variable, name, units, year);
     return (
         <div className="summary-text">
-            {adjustedValue === 0 ? (
-                `${direction} ${name}`
-            ) : (
-                <>
-                    {name} {direction} by {absoluteValue} {units}
-                </>
-            )}
+            {climateData.change}
         </div>
     );
 };
@@ -204,6 +185,30 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
                         Icon={WindSvg}
                         onClick={() => handleSelect("sfcWind")}
                         isSelected={selectedVariable === "sfcWind"}
+                    />
+                    <ClimateVariable
+                        prediction={climatePrediction}
+                        year={year}
+                        variable="hot_heat_days"
+                        name="Hot Heat Days"
+                        units="days/year"
+                        Icon={HotHeatDaysSvg}
+                    />
+                    <ClimateVariable
+                        prediction={climatePrediction}
+                        year={year}
+                        variable="heavy_rain_days"
+                        name="Heavy Rain Days"
+                        units="days/year"
+                        Icon={HeavyRainDaysSvg}
+                    />
+                    <ClimateVariable
+                        prediction={climatePrediction}
+                        year={year}
+                        variable="dry_days"
+                        name="Dry Days"
+                        units="days/year"
+                        Icon={DryDaysSvg}
                     />
                 </div>
                 {renderDetails()}
