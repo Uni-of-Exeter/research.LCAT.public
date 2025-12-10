@@ -54,6 +54,11 @@
     border: none;
 }
 
+.climate-icon-button:disabled {
+    cursor: default;
+    pointer-events: none;
+}
+
 .climate-selected-details .horiz-container {
     display: flex;
     flex-direction: row;
