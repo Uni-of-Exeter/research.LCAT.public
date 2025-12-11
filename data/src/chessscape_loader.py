@@ -165,6 +165,7 @@ class ChessScapeLoader:
             "hot_heat_days",
             "heavy_rain_days",
             "dry_days",
+            "windy_days",
         ]:
             # These variables only exist for annual data
             sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/annual"
@@ -242,6 +243,7 @@ class ChessScapeLoader:
             "hot_heat_days": "variable",
             "heavy_rain_days": "variable",
             "dry_days": "variable",
+            "windy_days": "variable",
         }
 
         if variable not in variable_mapping:
@@ -268,14 +270,16 @@ class ChessScapeLoader:
                 "hot_heat_days",
                 "heavy_rain_days",
                 "dry_days",
+                "windy_days",
             ]:
-                # For tropical nights, hot heat days, heavy rain days, and dry days, try common alternatives
+                # For derived day-count variables, try common alternatives
                 for var_name in available_vars:
                     if (
                         "tropical" in var_name.lower()
                         or "hot" in var_name.lower()
                         or "rain" in var_name.lower()
                         or "dry" in var_name.lower()
+                        or "windy" in var_name.lower()
                         or var_name == "variable"
                     ):
                         target_data = dataset[var_name]
@@ -542,6 +546,7 @@ class ChessScapeLoader:
             "hot_heat_days",
             "heavy_rain_days",
             "dry_days",
+            "windy_days",
         ]
 
         for var in potential_derived:
@@ -552,10 +557,16 @@ class ChessScapeLoader:
                 else ""
             )
 
-            # Skip tropical_nights, hot_heat_days, heavy_rain_days, and dry_days for non-annual seasons
+            # Skip derived day-count variables for non-annual seasons
             if (
                 var
-                in ["tropical_nights", "hot_heat_days", "heavy_rain_days", "dry_days"]
+                in [
+                    "tropical_nights",
+                    "hot_heat_days",
+                    "heavy_rain_days",
+                    "dry_days",
+                    "windy_days",
+                ]
                 and season != "annual"
             ):
                 continue
@@ -565,6 +576,7 @@ class ChessScapeLoader:
                 "hot_heat_days",
                 "heavy_rain_days",
                 "dry_days",
+                "windy_days",
             ]:
                 sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/annual"
                 filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{var}_uk_1km_annual_19801201-20801130.nc"

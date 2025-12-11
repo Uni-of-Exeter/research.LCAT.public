@@ -456,6 +456,10 @@ class ClimateDataProcessor:
             data, rain_threshold, comparison="lte", convert_precip=True
         )
 
+    def calculate_windy_days(self, data, wind_threshold=8.0):
+        """Calculate mean windy days per year (wind speed >= threshold)"""
+        return self.calculate_threshold_days(data, wind_threshold, comparison="gte")
+
     def generate_data(
         self,
         *,
@@ -464,6 +468,7 @@ class ClimateDataProcessor:
         hot_days_enabled=True,
         heavy_rain_enabled=True,
         dry_days_enabled=True,
+        windy_days_enabled=True,
         rcps=None,
         bias_options=None,
         seasons=None,
@@ -472,13 +477,14 @@ class ClimateDataProcessor:
         heat_threshold=30.0,
         rain_threshold=50.0,
         dry_threshold=1.0,
+        wind_threshold=8.0,
     ):
         """Generate requested datasets for configured climate scenarios."""
 
         rcps = rcps or [60, 85]
         bias_options = bias_options or [True, False]
         seasons = seasons or ["annual", "winter", "summer"]
-        variables = variables or ["tasmax", "tasmin", "pr"]
+        variables = variables or ["tasmax", "tasmin", "pr", "sfcWind"]
         self.excluded_decades = [1, 2, 3, 4]  # Exclude 1990s, 2000s, 2010s, 2020s
 
         default_quantiles = {"tasmax": [99], "tasmin": [1]}
@@ -515,6 +521,11 @@ class ClimateDataProcessor:
                         compute_dry_days = (
                             dry_days_enabled and variable == "pr" and season == "annual"
                         )
+                        compute_windy_days = (
+                            windy_days_enabled
+                            and variable == "sfcWind"
+                            and season == "annual"
+                        )
 
                         if (
                             not compute_quantiles
@@ -522,6 +533,7 @@ class ClimateDataProcessor:
                             and not compute_hot_days
                             and not compute_heavy_rain
                             and not compute_dry_days
+                            and not compute_windy_days
                         ):
                             print(
                                 "Skipping processing for variable "
@@ -596,7 +608,7 @@ class ClimateDataProcessor:
                                 variable,
                                 season,
                                 self.calculate_heat_days,
-                                decades_to_include=[0, 9],  # 1980 and 2070 only
+                                decades_to_include=[0, 9],
                                 temp_threshold=heat_threshold,
                             )
 
@@ -614,7 +626,7 @@ class ClimateDataProcessor:
                                 variable,
                                 season,
                                 self.calculate_heavy_rain_days,
-                                decades_to_include=[0, 9],  # 1980 and 2070 only
+                                decades_to_include=[0, 9],
                                 rain_threshold=rain_threshold,
                             )
 
@@ -633,7 +645,7 @@ class ClimateDataProcessor:
                                 variable,
                                 season,
                                 self.calculate_dry_days,
-                                decades_to_include=[0, 9],  # 1980 and 2070 only
+                                decades_to_include=[0, 9],
                                 rain_threshold=dry_threshold,
                             )
 
@@ -645,6 +657,25 @@ class ClimateDataProcessor:
                             dry_days_dataset.to_netcdf(dry_days_path)
                             print(f"Saved dataset to {dry_days_path}")
                             saved_datasets.append(dry_days_path)
+                        if compute_windy_days:
+                            windy_days_dataset = self.process_data_by_decade(
+                                variable,
+                                season,
+                                self.calculate_windy_days,
+                                decades_to_include=[0, 9],
+                                wind_threshold=wind_threshold,
+                            )
+
+                            windy_days_filename = (
+                                f"chess-scape_rcp{rcp}{bias_suffix}_01_windy_days_"
+                                f"uk_1km_{season}_19801201-20801130.nc"
+                            )
+                            windy_days_path = os.path.join(
+                                output_dir, windy_days_filename
+                            )
+                            windy_days_dataset.to_netcdf(windy_days_path)
+                            print(f"Saved dataset to {windy_days_path}")
+                            saved_datasets.append(windy_days_path)
 
         print("\n" + "=" * 60)
         print(f"SUMMARY: {len(saved_datasets)} datasets saved")
