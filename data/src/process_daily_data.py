@@ -16,20 +16,23 @@ from tqdm import tqdm
 
 
 class ClimateDataProcessor:
-    def __init__(self, config):
+
+    def __init__(self, config, ensemble_member=1):
         self.conf = config
         self.rcp = None
         self.bias_corrected = None
         self.season = None
         self.variable = None
+        self.ensemble_member = ensemble_member
         self.excluded_decades = []
         self.file_urls = []
         self.data_location = self.conf["chess_scape_netcdf_location"]
 
     def get_file_links(self):
         bias_corrected_suffix = "_bias-corrected" if self.bias_corrected else ""
+        ensemble_str = f"{self.ensemble_member:02d}"
 
-        base_url = f"https://dap.ceda.ac.uk/badc/deposited2021/chess-scape/data/rcp{self.rcp}{bias_corrected_suffix}/01/daily/{self.variable}/"
+        base_url = f"https://dap.ceda.ac.uk/badc/deposited2021/chess-scape/data/rcp{self.rcp}{bias_corrected_suffix}/{ensemble_str}/daily/{self.variable}/"
         response = requests.get(base_url)
         soup = BeautifulSoup(response.content, "html.parser")
 
@@ -554,9 +557,10 @@ class ClimateDataProcessor:
 
                         bias_suffix = "_bias-corrected" if bias else ""
                         season_folder = "seasonal" if season != "annual" else "annual"
+                        ensemble_str = f"{self.ensemble_member:02d}"
                         output_dir = os.path.join(
                             self.data_location,
-                            f"data/rcp{rcp}{bias_suffix}/01/{season_folder}",
+                            f"data/rcp{rcp}{bias_suffix}/{ensemble_str}/{season_folder}",
                         )
                         os.makedirs(output_dir, exist_ok=True)
 
@@ -577,7 +581,7 @@ class ClimateDataProcessor:
                                 )
 
                             quantile_filename = (
-                                f"chess-scape_rcp{rcp}{bias_suffix}_01_{quantile_label}_"
+                                f"chess-scape_rcp{rcp}{bias_suffix}_{ensemble_str}_{quantile_label}_"
                                 f"uk_1km_{season}_19801201-20801130.nc"
                             )
                             quantile_path = os.path.join(output_dir, quantile_filename)
@@ -595,7 +599,7 @@ class ClimateDataProcessor:
                             )
 
                             tropical_filename = (
-                                f"chess-scape_rcp{rcp}{bias_suffix}_01_tropical_nights_"
+                                f"chess-scape_rcp{rcp}{bias_suffix}_{ensemble_str}_tropical_nights_"
                                 f"uk_1km_{season}_19801201-20801130.nc"
                             )
                             tropical_path = os.path.join(output_dir, tropical_filename)
@@ -613,7 +617,7 @@ class ClimateDataProcessor:
                             )
 
                             hot_days_filename = (
-                                f"chess-scape_rcp{rcp}{bias_suffix}_01_hot_heat_days_"
+                                f"chess-scape_rcp{rcp}{bias_suffix}_{ensemble_str}_hot_heat_days_"
                                 f"uk_1km_{season}_19801201-20801130.nc"
                             )
                             hot_days_path = os.path.join(output_dir, hot_days_filename)
@@ -631,7 +635,7 @@ class ClimateDataProcessor:
                             )
 
                             heavy_rain_filename = (
-                                f"chess-scape_rcp{rcp}{bias_suffix}_01_heavy_rain_days_"
+                                f"chess-scape_rcp{rcp}{bias_suffix}_{ensemble_str}_heavy_rain_days_"
                                 f"uk_1km_{season}_19801201-20801130.nc"
                             )
                             heavy_rain_path = os.path.join(
@@ -650,7 +654,7 @@ class ClimateDataProcessor:
                             )
 
                             dry_days_filename = (
-                                f"chess-scape_rcp{rcp}{bias_suffix}_01_dry_days_"
+                                f"chess-scape_rcp{rcp}{bias_suffix}_{ensemble_str}_dry_days_"
                                 f"uk_1km_{season}_19801201-20801130.nc"
                             )
                             dry_days_path = os.path.join(output_dir, dry_days_filename)
@@ -667,7 +671,7 @@ class ClimateDataProcessor:
                             )
 
                             windy_days_filename = (
-                                f"chess-scape_rcp{rcp}{bias_suffix}_01_windy_days_"
+                                f"chess-scape_rcp{rcp}{bias_suffix}_{ensemble_str}_windy_days_"
                                 f"uk_1km_{season}_19801201-20801130.nc"
                             )
                             windy_days_path = os.path.join(

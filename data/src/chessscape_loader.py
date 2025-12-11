@@ -37,7 +37,9 @@ class ChessScapeLoader:
         6. Aggregate multiple tables and clean up
     """
 
-    def __init__(self, config: dict, mask: np.ndarray) -> None:
+    def __init__(
+        self, config: dict, mask: np.ndarray, ensemble_member: int = 1
+    ) -> None:
         self.conf = config
 
         # psycopg2 connection and db cursor
@@ -47,6 +49,7 @@ class ChessScapeLoader:
         self.data_location = None
         self.mask = None
         self.bias_corrected_keys = []
+        self.ensemble_member = ensemble_member
 
         # currently loaded CHESS-SCAPE file and associated extracted data
         self.current_netcdf_data = {}
@@ -159,6 +162,7 @@ class ChessScapeLoader:
 
         # Create filepath folder adjustments
         bias_corrected_folder = "_bias-corrected" if bias_corrected_key == "bias_corrected" else ""
+        ensemble_str = f"{self.ensemble_member:02d}"
 
         if variable in [
             "tropical_nights",
@@ -168,22 +172,26 @@ class ChessScapeLoader:
             "windy_days",
         ]:
             # These variables only exist for annual data
-            sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/annual"
-            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{variable}_uk_1km_annual_19801201-20801130.nc"
+            sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/annual"
+            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_{variable}_uk_1km_annual_19801201-20801130.nc"
         elif variable in ["tasmax_99_percentile", "tasmin_1_percentile"] and season in [
             "summer",
             "winter",
         ]:
             # New single-season quantile files
-            sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/seasonal"
+            sub_folders = (
+                f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/seasonal"
+            )
             quantile_num = "99" if "99" in variable else "1"
             base_var = "tasmax" if "tasmax" in variable else "tasmin"
-            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{base_var}_{quantile_num}_percentile_uk_1km_{season}_19801201-20801130.nc"
+            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_{base_var}_{quantile_num}_percentile_uk_1km_{season}_19801201-20801130.nc"
         else:
             # Original files
             season_folder = "seasonal" if season != "annual" else "annual"
-            sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/{season_folder}"
-            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{variable}_uk_1km_{season_folder}_19801201-20801130.nc"
+            sub_folders = (
+                f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/{season_folder}"
+            )
+            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_{variable}_uk_1km_{season_folder}_19801201-20801130.nc"
 
         filepath = os.path.join(self.data_location, sub_folders, filename)
 
@@ -571,6 +579,8 @@ class ChessScapeLoader:
             ):
                 continue
 
+            ensemble_str = f"{self.ensemble_member:02d}"
+
             if var in [
                 "tropical_nights",
                 "hot_heat_days",
@@ -578,22 +588,28 @@ class ChessScapeLoader:
                 "dry_days",
                 "windy_days",
             ]:
-                sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/annual"
-                filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{var}_uk_1km_annual_19801201-20801130.nc"
+                sub_folders = (
+                    f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/annual"
+                )
+                filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_{var}_uk_1km_annual_19801201-20801130.nc"
             elif season in ["summer", "winter"]:
-                sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/seasonal"
+                sub_folders = (
+                    f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/seasonal"
+                )
                 quantile_num = "99" if "99" in var else "1"
                 base_var = "tasmax" if "tasmax" in var else "tasmin"
                 filename = (
-                    f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{base_var}_"
+                    f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_{base_var}_"
                     f"{quantile_num}_percentile_uk_1km_{season}_19801201-20801130.nc"
                 )
             elif season == "annual":
                 # Annual quantiles are in annual folder
-                sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/annual"
+                sub_folders = (
+                    f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/annual"
+                )
                 quantile_num = "99" if "99" in var else "1"
                 base_var = "tasmax" if "tasmax" in var else "tasmin"
-                filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{base_var}_{quantile_num}_percentile_uk_1km_annual_19801201-20801130.nc"
+                filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_{base_var}_{quantile_num}_percentile_uk_1km_annual_19801201-20801130.nc"
             else:
                 continue
 
