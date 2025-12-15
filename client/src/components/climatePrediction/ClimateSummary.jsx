@@ -118,14 +118,14 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             isAnnual={false}
                         />
                         <ClimateVariable
-                        prediction={climatePrediction}
-                        year={year}
-                        variable="hot_heat_days"
-                        name="Hot Heat Days"
-                        units="days/year"
-                        Icon={HotHeatDaysSvg}
-                        isAnnual={false}
-                    />
+                            prediction={climatePrediction}
+                            year={year}
+                            variable="hot_heat_days"
+                            name="Hot Heat Days"
+                            units="days/year"
+                            Icon={HotHeatDaysSvg}
+                            isAnnual={false}
+                        />
                     
                     </div>
                 </div>
