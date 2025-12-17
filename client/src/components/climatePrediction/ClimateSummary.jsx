@@ -47,7 +47,7 @@ const PredictionSummary = ({ prediction, year, variable, name, units }) => {
 
 // Component for arrow + icon + summary text
 // Only the icon is clickable – the rest of the box is not.
-const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClick, isSelected, isAnnual}) => {
+const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClick, isSelected, isAnnual }) => {
     const value = climateChange(prediction, variable, year);
 
     return (
