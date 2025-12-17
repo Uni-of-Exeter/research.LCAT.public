@@ -166,7 +166,7 @@ const App = () => {
                             year={year}
                             regions={regions}
                             loading={isPredictionLoading}
-                            season = {season}
+                            season={season}
                         />
 
                     <Graph
