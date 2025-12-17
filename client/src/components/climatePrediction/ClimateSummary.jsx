@@ -95,8 +95,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
         if (!selectedVariable) {
             return (
                 <div className="climate-details-placeholder">
-                    <p>Please click a climate variable icon to view details.  
-                        <i> *Only annual predictions are available for these measures.</i>
+                    <p>Please click a climate variable icon to view details. <i> *Only annual predictions are available for these measures.</i>
                     </p>
                     
                 </div>
