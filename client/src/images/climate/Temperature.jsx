@@ -3,7 +3,7 @@ import React, { useState } from "react";
 const SvgTemperature = ({ selected, isAnnual, ...rest }) => {
     const [isHovered, setIsHovered] = useState(false);
 
-    const isActive = (isHovered || selected) && isAnnual
+    const isActive = (isHovered || selected) && isAnnual;
 
     return (
         <svg
