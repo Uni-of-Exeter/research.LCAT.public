@@ -89,7 +89,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
     };
 
 
-    const isAnnual = season === "annual"
+    const isAnnual = season === "annual";
 
     const renderDetails = () => {
         if (!selectedVariable) {
