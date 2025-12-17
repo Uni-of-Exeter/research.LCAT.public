@@ -47,7 +47,7 @@ const PredictionSummary = ({ prediction, year, variable, name, units }) => {
 
 // Component for arrow + icon + summary text
 // Only the icon is clickable – the rest of the box is not.
-const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClick, isSelected, isAnnual }) => {
+const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClick=undefined, isSelected=false, isAnnual=false}) => {
     const value = climateChange(prediction, variable, year);
 
     return (
@@ -114,7 +114,6 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             name="Tropical Nights"
                             units="nights/year"
                             Icon={TropicalNightsSvg}
-                            isAnnual={false}
                         />
                         <ClimateVariable
                             prediction={climatePrediction}
@@ -123,7 +122,6 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             name="Hot Heat Days"
                             units="days/year"
                             Icon={HotHeatDaysSvg}
-                            isAnnual={false}
                         />
                     
                     </div>
@@ -143,7 +141,6 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             name="Heavy Rain Days"
                             units="days/year"
                             Icon={HeavyRainDaysSvg}
-                            isAnnual={false}
                         />
                         <ClimateVariable
                             prediction={climatePrediction}
@@ -152,7 +149,6 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             name="Dry Days"
                             units="days/year"
                             Icon={DryDaysSvg}
-                            isAnnual={false}
                         />
                     </div>
                 </div>
