@@ -83,10 +83,10 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
     const [selectedVariable, setSelectedVariable] = useState(null);
 
     const handleSelect = (variableKey) => {
-    setSelectedVariable((prev) =>
-        prev === variableKey ? null : variableKey
-    );
-};
+        setSelectedVariable((prev) =>
+            prev === variableKey ? null : variableKey
+        );
+    };
 
 
     const isAnnual = season === "annual"
