@@ -49,7 +49,7 @@ const PredictionSummary = ({ prediction, year, variable, name, units }) => {
 // Only the icon is clickable – the rest of the box is not.
 const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClick=undefined, isSelected=false, isAnnual=false}) => {
     const value = climateChange(prediction, variable, year);
-
+    console.log(isSelected)
     return (
         <div className="vert-container">
             {renderArrow(value, variable)}
@@ -65,6 +65,28 @@ const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClic
                     isAnnual={isAnnual}
                 />
             </button>
+            <PredictionSummary 
+                prediction={prediction} 
+                year={year} 
+                variable={variable} 
+                name={name} 
+                units={units} 
+                />
+        </div>
+    );
+};
+
+// Component for arrow + icon + summary text
+// Only the icon is clickable – the rest of the box is not.
+const DetailClimateVariable = ({ prediction, year, variable, name, units, Icon}) => {
+    const value = climateChange(prediction, variable, year);
+
+    return (
+        <div className="vert-container">
+            {renderArrow(value, variable)}
+            <Icon
+                className="climate-arrow"
+            />
             <PredictionSummary 
                 prediction={prediction} 
                 year={year} 
@@ -107,7 +129,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                 <div className="climate-selected-details">
                     <h2>Additional temperature metrics</h2>
                     <div className="horiz-container">
-                        <ClimateVariable
+                        <DetailClimateVariable
                             prediction={climatePrediction}
                             year={year}
                             variable="tropical_nights"
@@ -115,7 +137,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             units="nights/year"
                             Icon={TropicalNightsSvg}
                         />
-                        <ClimateVariable
+                        <DetailClimateVariable
                             prediction={climatePrediction}
                             year={year}
                             variable="hot_heat_days"
@@ -134,7 +156,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                 <div className="climate-selected-details">
                     <h2>Rainfall details</h2>
                     <div className="horiz-container">
-                        <ClimateVariable
+                        <DetailClimateVariable
                             prediction={climatePrediction}
                             year={year}
                             variable="heavy_rain_days"
@@ -142,7 +164,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             units="days/year"
                             Icon={HeavyRainDaysSvg}
                         />
-                        <ClimateVariable
+                        <DetailClimateVariable
                             prediction={climatePrediction}
                             year={year}
                             variable="dry_days"
