@@ -49,7 +49,6 @@ const PredictionSummary = ({ prediction, year, variable, name, units }) => {
 // Only the icon is clickable – the rest of the box is not.
 const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClick=undefined, isSelected=false, isAnnual=false}) => {
     const value = climateChange(prediction, variable, year);
-    console.log(isSelected)
     return (
         <div className="vert-container">
             {renderArrow(value, variable)}
@@ -78,22 +77,36 @@ const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClic
 
 // Component for arrow + icon + summary text
 // Only the icon is clickable – the rest of the box is not.
-const DetailClimateVariable = ({ prediction, year, variable, name, units, Icon}) => {
+const DetailClimateVariable = ({ 
+  prediction, 
+  year, 
+  variable, 
+  name, 
+  units, 
+  Icon,
+  infoContent  // <- Add this prop
+}) => {
     const value = climateChange(prediction, variable, year);
-
+    
     return (
-        <div className="vert-container">
-            {renderArrow(value, variable)}
-            <Icon
-                className="climate-arrow"
-            />
-            <PredictionSummary 
-                prediction={prediction} 
-                year={year} 
-                variable={variable} 
-                name={name} 
-                units={units} 
-                />
+        <div className="additional-variables">
+            <div className="vert-container">
+                {renderArrow(value, variable)}
+                <Icon className="climate-arrow" />
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <PredictionSummary 
+                        prediction={prediction} 
+                        year={year} 
+                        variable={variable} 
+                        name={name} 
+                        units={units} 
+                    />
+                </div>
+            </div>
+            <div className="info-banner">
+                <span className="info-icon">ℹ️</span>
+                <span className="info-text">{infoContent}</span>
+            </div>
         </div>
     );
 };
@@ -136,6 +149,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             name="Tropical Nights"
                             units="nights/year"
                             Icon={TropicalNightsSvg}
+                            infoContent="Nights when temperature stays above 20°C. These can impact sleep quality and cooling costs."
                         />
                         <DetailClimateVariable
                             prediction={climatePrediction}
@@ -144,6 +158,8 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             name="Hot Heat Days"
                             units="days/year"
                             Icon={HotHeatDaysSvg}
+                            infoContent="Days when max temperature above 30°C. These can impact sleep quality and cooling costs."
+
                         />
                     
                     </div>
@@ -163,6 +179,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             name="Heavy Rain Days"
                             units="days/year"
                             Icon={HeavyRainDaysSvg}
+                            infoContent="Days when max temperature above 30°C. These can impact sleep quality and cooling costs."
                         />
                         <DetailClimateVariable
                             prediction={climatePrediction}
@@ -171,6 +188,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             name="Dry Days"
                             units="days/year"
                             Icon={DryDaysSvg}
+                            infoContent="Days when max temperature above 30°C. These can impact sleep quality and cooling costs."
                         />
                     </div>
                 </div>
