@@ -148,8 +148,8 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             variable="tropical_nights"
                             name="Tropical Nights"
                             units="nights/year"
-                            Icon={TropicalNightsSvg}
-                            infoContent="Nights when temperature stays above 20°C. These can impact sleep quality and cooling costs."
+                            Icon={TropicalNightsSvg}    
+                            infoContent="Tropical nights are nights when the minimum temperature stays above 20 °C."
                         />
                         <DetailClimateVariable
                             prediction={climatePrediction}
@@ -158,10 +158,8 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             name="Hot Heat Days"
                             units="days/year"
                             Icon={HotHeatDaysSvg}
-                            infoContent="Days when max temperature above 30°C. These can impact sleep quality and cooling costs."
-
+                            infoContent="Summer days are days when the maximum temperature exceeds 25 °C."
                         />
-                    
                     </div>
                 </div>
             );
@@ -179,7 +177,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             name="Heavy Rain Days"
                             units="days/year"
                             Icon={HeavyRainDaysSvg}
-                            infoContent="Days when max temperature above 30°C. These can impact sleep quality and cooling costs."
+                            infoContent="Heavy rain days are days when rainfall exceeds 50 mm."
                         />
                         <DetailClimateVariable
                             prediction={climatePrediction}
@@ -188,7 +186,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             name="Dry Days"
                             units="days/year"
                             Icon={DryDaysSvg}
-                            infoContent="Days when max temperature above 30°C. These can impact sleep quality and cooling costs."
+                            infoContent="Dry days are days where rainfall is below 1mm."
                         />
                     </div>
                 </div>
