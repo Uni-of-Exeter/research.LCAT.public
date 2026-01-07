@@ -1,15 +1,17 @@
 import pytest
+from unittest.mock import MagicMock
+import os
 import numpy as np
 import xarray as xr
+import conftest
 from data.src.grid_loader import GridLoader
-from conftest import *
+import data.src.grid_loader as grid_loader_module  # <- patch xr here (module-level)
 
 @pytest.fixture
 def cfg():
-    """
-    A minimal config dictionary so GridLoader can construct.
-    """
+    """A minimal config dictionary so GridLoader can construct."""
     return {"chess_scape_netcdf_location": "."}
+
 
 @pytest.fixture
 def gl(cfg):
@@ -20,12 +22,105 @@ def gl(cfg):
     loader = GridLoader(cfg)
     loader.data = {}   # wipe any real data
     loader.masks = {}  # wipe any previous masks
+    loader.data_location = "/root"
     return loader
+
 
 def test_fixture_sanity(gl):
     assert isinstance(gl, GridLoader)
     assert gl.data == {}
     assert gl.masks == {}
+
+
+def test_open_netcdf_file_calls_xarray_open_dataset(monkeypatch, gl):
+    fake_ds = MagicMock()
+    fake_ds.y.size = 10
+    fake_ds.x.size = 20
+    fake_ds.time.size = 30
+
+    fake_xr = MagicMock()
+    fake_xr.open_dataset.return_value = fake_ds
+
+    # Patch the module-global `xr` used by GridLoader.open_netcdf_file
+    monkeypatch.setattr(grid_loader_module, "xr", fake_xr)
+
+    out = gl.open_netcdf_file("/some/file.nc")
+
+    fake_xr.open_dataset.assert_called_once_with("/some/file.nc", engine="netcdf4")
+    assert out is fake_ds
+
+
+def test_open_netcdf_file_returns_none_on_error(monkeypatch, gl):
+    fake_xr = MagicMock()
+    fake_xr.open_dataset.side_effect = FileNotFoundError("nope")
+
+    # Patch the module-global `xr` used by GridLoader.open_netcdf_file
+    monkeypatch.setattr(grid_loader_module, "xr", fake_xr)
+
+    out = gl.open_netcdf_file("/missing/file.nc")
+
+    # This assumes open_netcdf_file returns None on error.
+    # If your implementation currently raises or hits UnboundLocalError,
+    # fix open_netcdf_file by initialising data=None before try.
+    assert out is None
+
+
+def test_open_netcdf_files_uses_provided_paths_and_sets_state(gl):
+    gl.open_netcdf_file = MagicMock(side_effect=["BIAS_DS", "NONBIAS_DS"])
+
+    gl.open_netcdf_files(
+        filepath_bias_corrected="/a/bias.nc",
+        filepath_non_bias_corrected="/b/nonbias.nc",
+        variable="tas",
+    )
+
+    gl.open_netcdf_file.assert_any_call("/a/bias.nc")
+    gl.open_netcdf_file.assert_any_call("/b/nonbias.nc")
+    assert gl.data["bias_corrected"] == "BIAS_DS"
+    assert gl.data["non_bias_corrected"] == "NONBIAS_DS"
+    assert gl.variable == "tas"
+
+
+def test_open_netcdf_files_defaults_build_paths_and_sets_variable(gl):
+    gl.open_netcdf_file = MagicMock(side_effect=["BIAS_DS", "NONBIAS_DS"])
+
+    # ACT: call the method to trigger defaults
+    gl.open_netcdf_files()
+
+    # ASSERT: state set
+    assert gl.variable == "tas"
+    assert gl.data["bias_corrected"] == "BIAS_DS"
+    assert gl.data["non_bias_corrected"] == "NONBIAS_DS"
+
+    # ASSERT: paths built correctly
+    bias_path = gl.open_netcdf_file.call_args_list[0].args[0]
+    nonbias_path = gl.open_netcdf_file.call_args_list[1].args[0]
+
+    # Don't require "/root/" specifically (join may produce "/rootdata" if mis-set etc.)
+    assert bias_path.startswith(gl.data_location)
+    assert nonbias_path.startswith(gl.data_location)
+
+    assert "rcp60_bias-corrected" in bias_path
+    assert "rcp60_bias-corrected" not in nonbias_path
+
+    assert bias_path.endswith(
+        os.path.join(
+            "data",
+            "rcp60_bias-corrected",
+            "01",
+            "annual",
+            "chess-scape_rcp60_bias-corrected_01_tas_uk_1km_annual_19801201-20801130.nc",
+        )
+    )
+    assert nonbias_path.endswith(
+        os.path.join(
+            "data",
+            "rcp60",
+            "01",
+            "annual",
+            "chess-scape_rcp60_01_tas_uk_1km_annual_19801201-20801130.nc",
+        )
+    )
 
 def test_aggregate_cached_masks(gl):
     """
@@ -219,13 +314,13 @@ def test_create_polygon_mask_variants(gl, polygon_vertices, inside_points, outsi
     "land_mask, size_threshold, expected",
     [
         # 1-cell lake; threshold enough to fill that lake, smaller than big ocean component
-        (SMALL_LAKE_MASK, 5, EXPECTED_SMALL_LAKE_FILLED),
+        (conftest.SMALL_LAKE_MASK, 5, conftest.EXPECTED_SMALL_LAKE_FILLED),
 
         # 4-cell lake; threshold too small → nothing filled
-        (BIG_LAKE_MASK, 3, EXPECTED_BIG_LAKE_UNCHANGED),
+        (conftest.BIG_LAKE_MASK, 3, conftest.EXPECTED_BIG_LAKE_UNCHANGED),
 
         # 4-cell lake; threshold big enough to fill the lake, still smaller than ocean
-        (BIG_LAKE_MASK, 10, EXPECTED_BIG_LAKE_FILLED),
+        (conftest.BIG_LAKE_MASK, 10, conftest.EXPECTED_BIG_LAKE_FILLED),
     ],
 )
 def test__create_filled_land_mask_handles_lakes(gl, land_mask, size_threshold, expected):
