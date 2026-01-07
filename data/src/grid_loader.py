@@ -77,7 +77,7 @@ class GridLoader:
         """
         Lazy load a netcdf file with xarray.
         """
-
+        data = None
         try:
             data = xr.open_dataset(filepath, engine="netcdf4")
             print(f"Loaded file into xarray with sizes y: {data.y.size}, x: {data.x.size}, t: {data.time.size}")
