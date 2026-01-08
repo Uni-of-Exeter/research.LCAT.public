@@ -7,6 +7,10 @@ import conftest
 from data.src.grid_loader import GridLoader
 import data.src.grid_loader as grid_loader_module  # <- patch xr here (module-level)
 
+# =============================================================================
+# create fixtures
+# =============================================================================
+
 @pytest.fixture
 def cfg():
     """A minimal config dictionary so GridLoader can construct."""
@@ -30,6 +34,10 @@ def test_fixture_sanity(gl):
     assert isinstance(gl, GridLoader)
     assert gl.data == {}
     assert gl.masks == {}
+
+# =============================================================================
+# netcdf functions
+# =============================================================================
 
 
 def test_open_netcdf_file_calls_xarray_open_dataset(monkeypatch, gl):
@@ -121,6 +129,9 @@ def test_open_netcdf_files_defaults_build_paths_and_sets_variable(gl):
             "chess-scape_rcp60_01_tas_uk_1km_annual_19801201-20801130.nc",
         )
     )
+# =============================================================================
+# cached masks
+# =============================================================================
 
 def test_aggregate_cached_masks(gl):
     """
@@ -182,6 +193,11 @@ def test_create_aggregated_labelled_mask(gl):
         [0, 3],  # (False, False) and (True, True)
     ])
     assert np.array_equal(gl.masks["aggregated_labelled"], expected)
+
+# =============================================================================
+# get_masks
+# =============================================================================
+
 
 def test_get_mask_bias_corrected(gl):
     """
@@ -257,6 +273,10 @@ def test_get_mask_non_bias_corrected_uses_dirty_mask_and_polygon(gl):
     assert mask.shape == (3, 3)
     assert np.array_equal(mask, expected)
 
+# =============================================================================
+# create_polygon_masks
+# =============================================================================
+
 @pytest.mark.parametrize(
     "polygon_vertices, inside_points, outside_points",
     [
@@ -310,6 +330,10 @@ def test_create_polygon_mask_variants(gl, polygon_vertices, inside_points, outsi
     for (y, x) in outside_points:
         assert not mask[y, x], f"Expected outside point {(y,x)} to be False"
 
+# =============================================================================
+# _create_filled_land_masks
+# =============================================================================
+
 @pytest.mark.parametrize(
     "land_mask, size_threshold, expected",
     [
@@ -339,6 +363,10 @@ def test__create_filled_land_mask_handles_lakes(gl, land_mask, size_threshold, e
 
     # Direct comparison with explicit expected mask
     np.testing.assert_array_equal(filled, expected)
+
+# =============================================================================
+# create_coastline_mask
+# =============================================================================
 
 @pytest.mark.parametrize(
     "aggregated_labelled, expected_coastline",
@@ -429,6 +457,10 @@ def test_create_coastline_mask_parametrised(gl, aggregated_labelled, expected_co
 
     # Exact expected patterns for these synthetic grids
     np.testing.assert_array_equal(coastline, expected_coastline)
+
+# =============================================================================
+# create_inland_mask
+# =============================================================================
 
 @pytest.mark.parametrize(
     "land_mask, radius, expected",
@@ -522,6 +554,10 @@ def test_create_inland_mask_various_shapes(gl, land_mask, radius, expected):
     assert inland.shape == land_mask.shape
     assert inland.dtype == bool
     np.testing.assert_array_equal(inland, expected)
+
+# =============================================================================
+# create_coastal_mask
+# =============================================================================
 
 @pytest.mark.parametrize(
     "aggregated_labelled, coastline_mask, inland_bands, expected",
