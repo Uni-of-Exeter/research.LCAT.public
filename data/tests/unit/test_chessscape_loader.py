@@ -54,13 +54,15 @@ def sample_annual_dataset():
     Minimal annual NetCDF dataset.
     100 time steps (100 years), 3x3 grid.
     """
+    import pandas as pd
+    
     np.random.seed(42)
     tas_data = np.random.rand(100, 3, 3) * 10 + 280
     
     ds = xr.Dataset(
         {"tas": (["time", "y", "x"], tas_data)},
         coords={
-            "time": [np.datetime64(f"{1981 + i}-01-01") for i in range(100)],
+            "time": pd.date_range(start="1981-01-01", periods=100, freq="YS"),
             "y": [0, 1000, 2000],
             "x": [0, 1000, 2000],
         },
