@@ -66,6 +66,42 @@ def test_connect_to_db_sets_connection_string(mock_psycopg2, bl):
 
 
 # =============================================================================
+# drop_table
+# =============================================================================
+
+
+def test_drop_table_executes_drop_query(bl):
+    """Should execute DROP TABLE query"""
+    bl.conn = MagicMock()
+    bl.cur = MagicMock()
+
+    bl.drop_table("boundary_test")
+
+    bl.cur.execute.assert_called_once_with('DROP TABLE IF EXISTS "boundary_test";')
+    bl.conn.commit.assert_called_once()
+
+
+def test_drop_table_commits_transaction(bl):
+    """Should commit after dropping table"""
+    bl.conn = MagicMock()
+    bl.cur = MagicMock()
+
+    bl.drop_table("test_table")
+
+    assert bl.conn.commit.called
+
+
+def test_drop_table_handles_exception(bl):
+    """Should handle exceptions gracefully"""
+    bl.conn = MagicMock()
+    bl.cur = MagicMock()
+    bl.cur.execute.side_effect = Exception("Database error")
+
+    # Should not raise exception
+    bl.drop_table("boundary_test")
+
+
+# =============================================================================
 # load_boundary
 # =============================================================================
 
