@@ -25,13 +25,10 @@ def bl(mock_config):
 
 
 def test_set_database_projection_code_updates_projection(bl):
-    """Should update target projection"""
+    """Should update target projection with provided code"""
     bl.set_database_projection_code("4326")
     assert bl.target_projection == "4326"
-
-
-def test_set_database_projection_code_accepts_string(bl):
-    """Should accept projection code as string"""
+    
     bl.set_database_projection_code("29902")
     assert bl.target_projection == "29902"
 
