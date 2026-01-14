@@ -2,7 +2,7 @@ import json
 
 import pandas as pd
 
-from src import scrape_doi
+from data.src import scrape_doi
 
 
 class ProcessReferences:
