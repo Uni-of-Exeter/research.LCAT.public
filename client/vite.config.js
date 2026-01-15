@@ -13,4 +13,7 @@ export default defineConfig({
         }),
         react(),
     ],
+    test: {
+        environment: "jsdom",
+    },
 });
