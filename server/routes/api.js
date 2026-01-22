@@ -280,7 +280,7 @@ router.post("/gids_centre", async function (req, res) {
 function buildAvgClimateCols(season) {
     const averageClimateColNames = [];
     const baseVariables = ["tas", "sfcWind", "pr", "rsds", "tasmax_99_percentile", "tasmin_1_percentile"];
-    const derivedVariables = ["tropical_nights", "hot_heat_days", "heavy_rain_days", "dry_days"];
+    const derivedVariables = ["tropical_nights", "hot_heat_days", "heavy_rain_days", "dry_days", "windy_days"];
     const allDecades = ["1980", "2030", "2040", "2050", "2060", "2070"];
     const derivedDecades = ["1980", "2070"];
 

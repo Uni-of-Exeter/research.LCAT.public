@@ -129,6 +129,14 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
                         units="days/year"
                         Icon={DryDaysSvg}
                     />
+                    <ClimateVariable
+                        prediction={climatePrediction}
+                        year={year}
+                        variable="windy_days"
+                        name="Windy Days"
+                        units="days/year"
+                        Icon={WindSvg}
+                    />
                 </div>
                 <p>
                     Note: Yearly average climate change does not always reflect the extremes of summer and winter.
