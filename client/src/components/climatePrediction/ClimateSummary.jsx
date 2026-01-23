@@ -16,10 +16,10 @@ import LoadingOverlay from "react-loading-overlay-ts";
 
 import DecreaseSvg from "../../images/buttons/decrease";
 import IncreaseSvg from "../../images/buttons/increase";
-import CloudSvg from "../../images/climate/CloudCover";
 import { ReactComponent as DryDaysSvg } from "../../images/climate/DryDays.svg";
 import { ReactComponent as HeavyRainDaysSvg } from "../../images/climate/HeavyRainDays.svg";
 import { ReactComponent as HotHeatDaysSvg } from "../../images/climate/HotHeatDays.svg";
+import { ReactComponent as RadiationSvg } from "../../images/climate/Radiation.svg";
 import RainSvg from "../../images/climate/Rain";
 import TempSvg from "../../images/climate/Temperature";
 import { ReactComponent as TropicalNightsSvg } from "../../images/climate/TropicalNights.svg";
@@ -27,11 +27,9 @@ import WindSvg from "../../images/climate/WindSpeed";
 import { climateChange, formatClimateData } from "../../utils/climateUtils";
 
 // Function to render an arrow pointing up or down
-const renderArrow = (value, variable) => {
+const renderArrow = (value) => {
     if (value == null) return null;
-    // Invert value for rsds (more radiation = less cloud)
-    const adjustedValue = variable === "rsds" ? -value : value;
-    return adjustedValue < 0 ? <DecreaseSvg className="climate-arrow" /> : <IncreaseSvg className="climate-arrow" />;
+    return value < 0 ? <DecreaseSvg className="climate-arrow" /> : <IncreaseSvg className="climate-arrow" />;
 };
 
 // Component to create summary text for each climate variable
@@ -50,7 +48,7 @@ const ClimateVariable = ({ prediction, year, variable, name, units, Icon }) => {
 
     return (
         <div className="vert-container">
-            {renderArrow(value, variable)}
+            {renderArrow(value)}
             <Icon className="climate-arrow" />
             <PredictionSummary prediction={prediction} year={year} variable={variable} name={name} units={units} />
         </div>
@@ -85,9 +83,9 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year }) => {
                         prediction={climatePrediction}
                         year={year}
                         variable="rsds"
-                        name="Cloudiness"
+                        name="Radiation"
                         units="Watts/m2"
-                        Icon={CloudSvg}
+                        Icon={RadiationSvg}
                     />
                     <ClimateVariable
                         prediction={climatePrediction}
