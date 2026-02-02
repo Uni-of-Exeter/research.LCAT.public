@@ -17,7 +17,7 @@ import LoadingOverlay from "react-loading-overlay-ts";
 
 import DecreaseSvg from "../../images/buttons/decrease";
 import IncreaseSvg from "../../images/buttons/increase";
-import { ReactComponent as DryDaysSvg } from "../../images/climate/DryDays.svg";
+import DryDaysSvg from "../../images/climate/DryDays";
 import { ReactComponent as HeavyRainDaysSvg } from "../../images/climate/HeavyRainDays.svg";
 import { ReactComponent as HotHeatDaysSvg } from "../../images/climate/HotHeatDays.svg";
 import { ReactComponent as RadiationSvg } from "../../images/climate/Radiation.svg";
@@ -175,13 +175,18 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
             );
         }
 
-        if (selectedVariable === "rsds") {
+        if (selectedVariable === "dry_days") {
             return (
                 <div className="climate-selected-details">
-                    <h2>Cloudiness details</h2>
-                    <p>
-                        This section can describe changes in cloudiness and what that means for sunshine and solar gain.
-                    </p>
+                    <h2>Dry Days details</h2>
+                    <DetailClimateVariable
+                        prediction={climatePrediction}
+                        year={year}
+                        variable="rsds"
+                        name="Radiation"
+                        units="Watts/m2"
+                        Icon={RadiationSvg}
+                    />
                 </div>
             );
         }
@@ -229,12 +234,12 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                     <ClimateVariable
                         prediction={climatePrediction}
                         year={year}
-                        variable="rsds"
-                        name="Radiation"
-                        units="Watts/m2"
-                        Icon={RadiationSvg}
-                        onClick={() => handleSelect("rsds")}
-                        isSelected={selectedVariable === "rsds"}
+                        variable="dry_days"
+                        name="Dry Days"
+                        units="days/year"
+                        Icon={DryDaysSvg}
+                        onClick={() => handleSelect("dry_days")}
+                        isSelected={selectedVariable === "dry_days"}
                         isAnnual={isAnnual}
                     />
                     <ClimateVariable
