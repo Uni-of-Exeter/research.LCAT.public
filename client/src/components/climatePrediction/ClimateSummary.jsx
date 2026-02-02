@@ -195,9 +195,14 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
             return (
                 <div className="climate-selected-details">
                     <h2>Windiness details</h2>
-                    <p>
-                        This section can summarise how wind speeds may change and any implications for local hazards.
-                    </p>
+                    <DetailClimateVariable
+                        prediction={climatePrediction}
+                        year={year}
+                        variable="windy_days"
+                        name="Windy Days"
+                        units="days/year"
+                        Icon={WindSvg}
+                    />
                 </div>
             );
         }
@@ -252,22 +257,6 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                         onClick={() => handleSelect("sfcWind")}
                         isSelected={selectedVariable === "sfcWind"}
                         isAnnual={isAnnual}
-                    />
-                    <ClimateVariable
-                        prediction={climatePrediction}
-                        year={year}
-                        variable="windy_days"
-                        name="Windy Days"
-                        units="days/year"
-                        Icon={WindSvg}
-                    />
-                    <ClimateVariable
-                        prediction={climatePrediction}
-                        year={year}
-                        variable="windy_days"
-                        name="Windy Days"
-                        units="days/year"
-                        Icon={WindSvg}
                     />
                 </div>
                 {isAnnual && renderDetails()}
