@@ -16,20 +16,23 @@ from tqdm import tqdm
 
 
 class ClimateDataProcessor:
-    def __init__(self, config):
+
+    def __init__(self, config, ensemble_member=1):
         self.conf = config
         self.rcp = None
         self.bias_corrected = None
         self.season = None
         self.variable = None
+        self.ensemble_member = ensemble_member
         self.excluded_decades = []
         self.file_urls = []
         self.data_location = self.conf["chess_scape_netcdf_location"]
 
     def get_file_links(self):
         bias_corrected_suffix = "_bias-corrected" if self.bias_corrected else ""
+        ensemble_str = f"{self.ensemble_member:02d}"
 
-        base_url = f"https://dap.ceda.ac.uk/badc/deposited2021/chess-scape/data/rcp{self.rcp}{bias_corrected_suffix}/01/daily/{self.variable}/"
+        base_url = f"https://dap.ceda.ac.uk/badc/deposited2021/chess-scape/data/rcp{self.rcp}{bias_corrected_suffix}/{ensemble_str}/daily/{self.variable}/"
         response = requests.get(base_url)
         soup = BeautifulSoup(response.content, "html.parser")
 
@@ -456,6 +459,10 @@ class ClimateDataProcessor:
             data, rain_threshold, comparison="lte", convert_precip=True
         )
 
+    def calculate_windy_days(self, data, wind_threshold=8.0):
+        """Calculate mean windy days per year (wind speed >= threshold)"""
+        return self.calculate_threshold_days(data, wind_threshold, comparison="gte")
+
     def generate_data(
         self,
         *,
@@ -464,6 +471,7 @@ class ClimateDataProcessor:
         hot_days_enabled=True,
         heavy_rain_enabled=True,
         dry_days_enabled=True,
+        windy_days_enabled=True,
         rcps=None,
         bias_options=None,
         seasons=None,
@@ -472,13 +480,14 @@ class ClimateDataProcessor:
         heat_threshold=30.0,
         rain_threshold=50.0,
         dry_threshold=1.0,
+        wind_threshold=8.0,
     ):
         """Generate requested datasets for configured climate scenarios."""
 
         rcps = rcps or [60, 85]
         bias_options = bias_options or [True, False]
         seasons = seasons or ["annual", "winter", "summer"]
-        variables = variables or ["tasmax", "tasmin", "pr"]
+        variables = variables or ["tasmax", "tasmin", "pr", "sfcWind"]
         self.excluded_decades = [1, 2, 3, 4]  # Exclude 1990s, 2000s, 2010s, 2020s
 
         default_quantiles = {"tasmax": [99], "tasmin": [1]}
@@ -515,6 +524,11 @@ class ClimateDataProcessor:
                         compute_dry_days = (
                             dry_days_enabled and variable == "pr" and season == "annual"
                         )
+                        compute_windy_days = (
+                            windy_days_enabled
+                            and variable == "sfcWind"
+                            and season == "annual"
+                        )
 
                         if (
                             not compute_quantiles
@@ -522,6 +536,7 @@ class ClimateDataProcessor:
                             and not compute_hot_days
                             and not compute_heavy_rain
                             and not compute_dry_days
+                            and not compute_windy_days
                         ):
                             print(
                                 "Skipping processing for variable "
@@ -542,9 +557,10 @@ class ClimateDataProcessor:
 
                         bias_suffix = "_bias-corrected" if bias else ""
                         season_folder = "seasonal" if season != "annual" else "annual"
+                        ensemble_str = f"{self.ensemble_member:02d}"
                         output_dir = os.path.join(
                             self.data_location,
-                            f"data/rcp{rcp}{bias_suffix}/01/{season_folder}",
+                            f"data/rcp{rcp}{bias_suffix}/{ensemble_str}/{season_folder}",
                         )
                         os.makedirs(output_dir, exist_ok=True)
 
@@ -565,7 +581,7 @@ class ClimateDataProcessor:
                                 )
 
                             quantile_filename = (
-                                f"chess-scape_rcp{rcp}{bias_suffix}_01_{quantile_label}_"
+                                f"chess-scape_rcp{rcp}{bias_suffix}_{ensemble_str}_{quantile_label}_"
                                 f"uk_1km_{season}_19801201-20801130.nc"
                             )
                             quantile_path = os.path.join(output_dir, quantile_filename)
@@ -583,7 +599,7 @@ class ClimateDataProcessor:
                             )
 
                             tropical_filename = (
-                                f"chess-scape_rcp{rcp}{bias_suffix}_01_tropical_nights_"
+                                f"chess-scape_rcp{rcp}{bias_suffix}_{ensemble_str}_tropical_nights_"
                                 f"uk_1km_{season}_19801201-20801130.nc"
                             )
                             tropical_path = os.path.join(output_dir, tropical_filename)
@@ -596,12 +612,12 @@ class ClimateDataProcessor:
                                 variable,
                                 season,
                                 self.calculate_heat_days,
-                                decades_to_include=[0, 9],  # 1980 and 2070 only
+                                decades_to_include=[0, 9],
                                 temp_threshold=heat_threshold,
                             )
 
                             hot_days_filename = (
-                                f"chess-scape_rcp{rcp}{bias_suffix}_01_hot_heat_days_"
+                                f"chess-scape_rcp{rcp}{bias_suffix}_{ensemble_str}_hot_heat_days_"
                                 f"uk_1km_{season}_19801201-20801130.nc"
                             )
                             hot_days_path = os.path.join(output_dir, hot_days_filename)
@@ -614,12 +630,12 @@ class ClimateDataProcessor:
                                 variable,
                                 season,
                                 self.calculate_heavy_rain_days,
-                                decades_to_include=[0, 9],  # 1980 and 2070 only
+                                decades_to_include=[0, 9],
                                 rain_threshold=rain_threshold,
                             )
 
                             heavy_rain_filename = (
-                                f"chess-scape_rcp{rcp}{bias_suffix}_01_heavy_rain_days_"
+                                f"chess-scape_rcp{rcp}{bias_suffix}_{ensemble_str}_heavy_rain_days_"
                                 f"uk_1km_{season}_19801201-20801130.nc"
                             )
                             heavy_rain_path = os.path.join(
@@ -633,18 +649,37 @@ class ClimateDataProcessor:
                                 variable,
                                 season,
                                 self.calculate_dry_days,
-                                decades_to_include=[0, 9],  # 1980 and 2070 only
+                                decades_to_include=[0, 9],
                                 rain_threshold=dry_threshold,
                             )
 
                             dry_days_filename = (
-                                f"chess-scape_rcp{rcp}{bias_suffix}_01_dry_days_"
+                                f"chess-scape_rcp{rcp}{bias_suffix}_{ensemble_str}_dry_days_"
                                 f"uk_1km_{season}_19801201-20801130.nc"
                             )
                             dry_days_path = os.path.join(output_dir, dry_days_filename)
                             dry_days_dataset.to_netcdf(dry_days_path)
                             print(f"Saved dataset to {dry_days_path}")
                             saved_datasets.append(dry_days_path)
+                        if compute_windy_days:
+                            windy_days_dataset = self.process_data_by_decade(
+                                variable,
+                                season,
+                                self.calculate_windy_days,
+                                decades_to_include=[0, 9],
+                                wind_threshold=wind_threshold,
+                            )
+
+                            windy_days_filename = (
+                                f"chess-scape_rcp{rcp}{bias_suffix}_{ensemble_str}_windy_days_"
+                                f"uk_1km_{season}_19801201-20801130.nc"
+                            )
+                            windy_days_path = os.path.join(
+                                output_dir, windy_days_filename
+                            )
+                            windy_days_dataset.to_netcdf(windy_days_path)
+                            print(f"Saved dataset to {windy_days_path}")
+                            saved_datasets.append(windy_days_path)
 
         print("\n" + "=" * 60)
         print(f"SUMMARY: {len(saved_datasets)} datasets saved")

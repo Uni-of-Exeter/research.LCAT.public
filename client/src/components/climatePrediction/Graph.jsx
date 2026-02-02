@@ -69,7 +69,7 @@ const Graph = (props) => {
         if (variable == "tas") return "Temperature (°C)";
         if (variable == "pr") return "Rainfall (mm/day)";
         if (variable == "sfcWind") return "Wind (m/s)";
-        return "Cloudiness (W/m²)";
+        return "Radiation (W/m²)";
     };
 
     useEffect(() => {
@@ -392,7 +392,7 @@ const Graph = (props) => {
                                     <option value="tas">temperature</option>
                                     <option value="pr">rain</option>
                                     <option value="sfcWind">wind</option>
-                                    <option value="rsds">cloudiness</option>
+                                    <option value="rsds">radiation</option>
                                 </select>
                                 &nbsp;for&nbsp;
                                 <select
