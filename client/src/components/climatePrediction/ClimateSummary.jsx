@@ -114,9 +114,8 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
         if (!selectedVariable) {
             return (
                 <div className="climate-details-placeholder">
-                    <p>Please click a climate variable icon to view details. <i> *Only annual predictions are available for these measures.</i>
+                    <p>Please click a climate variable icon to view additional metrics (only annual predictions are available).
                     </p>
-
                 </div>
             );
         }
@@ -124,7 +123,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
         if (selectedVariable === "tas") {
             return (
                 <div className="climate-selected-details">
-                    <h2>Additional temperature metrics</h2>
+                    <h2>temperature metrics</h2>
                     <div className="horiz-container">
                         <DetailClimateVariable
                             prediction={climatePrediction}
@@ -151,7 +150,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
         if (selectedVariable === "pr") {
             return (
                 <div className="climate-selected-details">
-                    <h2>Rainfall details</h2>
+                    <h2>Rainfall metrics</h2>
                     <div className="horiz-container">
                         <DetailClimateVariable
                             prediction={climatePrediction}
@@ -177,7 +176,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
         if (selectedVariable === "dry_days") {
             return (
                 <div className="climate-selected-details">
-                    <h2>Dry Days details</h2>
+                    <h2>Dry Days metrics</h2>
                     <DetailClimateVariable
                         prediction={climatePrediction}
                         year={year}
@@ -193,7 +192,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
         if (selectedVariable === "sfcWind") {
             return (
                 <div className="climate-selected-details">
-                    <h2>Windiness details</h2>
+                    <h2>Windiness metrics</h2>
                     <DetailClimateVariable
                         prediction={climatePrediction}
                         year={year}

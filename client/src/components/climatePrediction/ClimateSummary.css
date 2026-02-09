@@ -40,8 +40,10 @@
 .climate-selected-details,
 .climate-details-placeholder {
     margin-top: 1em;
-    padding-top: 1em;
-    border-top: 1px solid #ccc;
+}
+
+.climate-details-placeholder {
+    text-align: center;
 }
 
 .climate-selected-details h2 {
