@@ -42,6 +42,12 @@
     shape-rendering: geometricPrecision;
 }
 
+@media (hover: none) {
+    .climate-icon-button svg {
+        pointer-events: none;
+    }
+}
+
 .summary-text {
     width: 12em;
     font-size: 75%;
