@@ -35,6 +35,13 @@
     font-size: 0.875rem;
 }
 
+.climate-icon-button svg,
+.climate-icon-wrapper svg {
+    display: block;
+    overflow: visible;
+    shape-rendering: geometricPrecision;
+}
+
 .summary-text {
     width: 12em;
     font-size: 75%;
@@ -45,6 +52,7 @@
     cursor: pointer;
     display: inline-block;
     padding: 0.3em;
+    line-height: 0;
 }
 
 
