@@ -40,7 +40,7 @@
 .climate-selected-details,
 .climate-details-placeholder {
     margin-top: 1em;
-    padding: 1em;
+    padding-top: 1em;
     border-top: 1px solid #ccc;
 }
 
@@ -70,6 +70,12 @@
     display: flex;
     text-align: center;
     margin-bottom: 1em;
-    width: 25%;
+    width: 50%;
     line-height: 1.6;
+}
+
+@media (min-width: 1000px) {
+    .climate-selected-details .vert-container {
+        width: 25%;
+    }
 }

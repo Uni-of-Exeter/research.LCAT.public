@@ -47,7 +47,6 @@ const PredictionSummary = ({ prediction, year, variable, name, units }) => {
 // Only the icon is clickable – the rest of the box is not.
 const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClick = undefined, isSelected = false, isAnnual = false }) => {
     const value = climateChange(prediction, variable, year);
-    console.log(isSelected)
     return (
         <div className="vert-container">
             {renderArrow(value, variable)}
