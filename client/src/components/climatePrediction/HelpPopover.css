@@ -1,0 +1,115 @@
+.help-popover-container {
+    position: relative;
+    display: inline-block;
+}
+
+.help-popover-trigger {
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.2em;
+    color: #666;
+    transition: color 0.2s;
+}
+
+.help-popover-trigger:hover,
+.help-popover-trigger:focus {
+    color: #333;
+}
+
+.help-icon {
+    width: 1em;
+    height: 1em;
+}
+
+.help-popover-content {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 0.5em;
+    padding: 0.75em 1em;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 200px;
+    max-width: 300px;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    text-align: left;
+    color: #333;
+}
+
+.help-popover-close {
+    all: unset;
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 1.5em;
+    height: 1.5em;
+    color: #666;
+    transition: color 0.2s;
+}
+
+.help-popover-close:hover {
+    color: #333;
+}
+
+.help-popover-close svg {
+    width: 1em;
+    height: 1em;
+}
+
+/* Arrow pointing up */
+.help-popover-content::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-bottom-color: #ccc;
+}
+
+.help-popover-content::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-bottom-color: white;
+}
+
+/* Responsive: fuller width on mobile */
+@media (max-width: 600px) {
+    .help-popover-content {
+        position: fixed;
+        top: auto;
+        bottom: 1em;
+        left: 1em;
+        right: 1em;
+        transform: none;
+        max-width: none;
+        margin: 0;
+        padding-right: 2.5em;
+    }
+
+    /* Remove arrow on mobile */
+    .help-popover-content::before,
+    .help-popover-content::after {
+        display: none;
+    }
+
+    /* Show close button on mobile */
+    .help-popover-close {
+        display: flex;
+    }
+}

@@ -26,6 +26,16 @@ import TempSvg from "../../images/climate/Temperature";
 import { ReactComponent as TropicalNightsSvg } from "../../images/climate/TropicalNights.svg";
 import WindSvg from "../../images/climate/WindSpeed";
 import { climateChange, formatClimateData } from "../../utils/climateUtils";
+import HelpPopover from "./HelpPopover";
+
+// Variable explanations
+const VARIABLE_EXPLANATIONS = {
+    dry_days: "Dry days are defined as days with less than 1mm of precipitation.",
+    heavy_rain_days: "Heavy rain days are defined as days with 50mm or more of precipitation.",
+    tropical_nights: "Tropical nights occur when the minimum daily temperature does not drop below 20°C.",
+    hot_heat_days: "Hot heat days are defined as days when the maximum temperature exceeds 30°C.",
+    windy_days: "Windy days are defined as days with average wind speeds exceeding 8 m/s.",
+};
 
 // Function to render an arrow pointing up or down
 const renderArrow = (value) => {
@@ -47,21 +57,28 @@ const PredictionSummary = ({ prediction, year, variable, name, units }) => {
 // Only the icon is clickable – the rest of the box is not.
 const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClick = undefined, isSelected = false, isAnnual = false }) => {
     const value = climateChange(prediction, variable, year);
+    const explanation = VARIABLE_EXPLANATIONS[variable];
+
     return (
         <div className="vert-container">
             {renderArrow(value, variable)}
-            <button
-                type="button"
-                className={`climate-icon-button ${isSelected ? "climate-variable-selected" : ""}`}
-                onClick={onClick}
-                disabled={!isAnnual}
-            >
-                <Icon
-                    className="climate-arrow"
-                    selected={isSelected}
-                    isAnnual={isAnnual}
-                />
-            </button>
+            <div className="climate-icon-wrapper">
+                <button
+                    type="button"
+                    className={`climate-icon-button ${isSelected ? "climate-variable-selected" : ""}`}
+                    onClick={onClick}
+                    disabled={!isAnnual}
+                >
+                    <Icon
+                        className="climate-arrow"
+                        selected={isSelected}
+                        isAnnual={isAnnual}
+                    />
+                </button>
+                {explanation && (
+                    <HelpPopover content={explanation} />
+                )}
+            </div>
             <PredictionSummary
                 prediction={prediction}
                 year={year}
@@ -77,13 +94,19 @@ const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClic
 // Only the icon is clickable – the rest of the box is not.
 const DetailClimateVariable = ({ prediction, year, variable, name, units, Icon }) => {
     const value = climateChange(prediction, variable, year);
+    const explanation = VARIABLE_EXPLANATIONS[variable];
 
     return (
         <div className="vert-container">
             {renderArrow(value)}
-            <Icon
-                className="climate-arrow"
-            />
+            <div className="climate-icon-wrapper">
+                <Icon
+                    className="climate-arrow"
+                />
+                {explanation && (
+                    <HelpPopover content={explanation} />
+                )}
+            </div>
             <PredictionSummary
                 prediction={prediction}
                 year={year}
@@ -159,14 +182,6 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             name="Heavy Rain Days"
                             units="days/year"
                             Icon={HeavyRainDaysSvg}
-                        />
-                        <DetailClimateVariable
-                            prediction={climatePrediction}
-                            year={year}
-                            variable="dry_days"
-                            name="Dry Days"
-                            units="days/year"
-                            Icon={DryDaysSvg}
                         />
                     </div>
                 </div>

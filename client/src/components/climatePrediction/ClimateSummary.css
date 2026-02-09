@@ -23,6 +23,18 @@
     margin-bottom: 0.5em;
 }
 
+.climate-icon-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.climate-icon-wrapper .help-popover-container {
+    position: absolute;
+    top: -0.25em;
+    right: -0.25em;
+    font-size: 0.875rem;
+}
+
 .summary-text {
     width: 12em;
     font-size: 75%;
