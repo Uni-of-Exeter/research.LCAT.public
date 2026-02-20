@@ -171,9 +171,11 @@ class ChessScapeLoader:
             "dry_days",
             "windy_days",
         ]:
-            # These variables only exist for annual data
-            sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/annual"
-            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_{variable}_uk_1km_annual_19801201-20801130.nc"
+            season_folder = "seasonal" if season != "annual" else "annual"
+            sub_folders = (
+                f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/{season_folder}"
+            )
+            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_{variable}_uk_1km_{season}_19801201-20801130.nc"
         elif variable in ["tasmax_99_percentile", "tasmin_1_percentile"] and season in [
             "summer",
             "winter",
@@ -565,20 +567,6 @@ class ChessScapeLoader:
                 else ""
             )
 
-            # Skip derived day-count variables for non-annual seasons
-            if (
-                var
-                in [
-                    "tropical_nights",
-                    "hot_heat_days",
-                    "heavy_rain_days",
-                    "dry_days",
-                    "windy_days",
-                ]
-                and season != "annual"
-            ):
-                continue
-
             ensemble_str = f"{self.ensemble_member:02d}"
 
             if var in [
@@ -588,10 +576,11 @@ class ChessScapeLoader:
                 "dry_days",
                 "windy_days",
             ]:
+                season_folder = "seasonal" if season != "annual" else "annual"
                 sub_folders = (
-                    f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/annual"
+                    f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/{season_folder}"
                 )
-                filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_{var}_uk_1km_annual_19801201-20801130.nc"
+                filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_{var}_uk_1km_{season}_19801201-20801130.nc"
             elif season in ["summer", "winter"]:
                 sub_folders = (
                     f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/seasonal"

@@ -388,9 +388,10 @@ class ClimateDataProcessor:
         comparison="gte",
         convert_kelvin=False,
         convert_precip=False,
+        season="annual",
     ):
         """
-        Calculate mean number of days per year meeting a threshold condition.
+        Calculate mean number of days per period meeting a threshold condition.
 
         Parameters:
         - data: climate data array (time, y, x)
@@ -398,9 +399,10 @@ class ClimateDataProcessor:
         - comparison: 'gte' for >= or 'lte' for <=
         - convert_kelvin: if True, convert data from Kelvin to Celsius
         - convert_precip: if True, convert data from kg m-2 s-1 to mm/day
+        - season: "annual", "summer", or "winter" (affects normalization period)
 
         Returns:
-        - 2D array of mean days per year meeting threshold for each pixel
+        - 2D array of mean days per period meeting threshold for each pixel
         """
         n_time, n_y, n_x = data.shape
 
@@ -421,47 +423,75 @@ class ClimateDataProcessor:
         else:
             raise ValueError(f"Invalid comparison: {comparison}. Use 'gte' or 'lte'")
 
-        # Calculate number of years (360-day calendar)
-        n_years = n_time / 360
+        # Calculate number of periods for a 360-day calendar:
+        # annual => 360 days, seasonal => 90 days (3 months)
+        if season == "annual":
+            days_per_period = 360
+        elif season in ["summer", "winter"]:
+            days_per_period = 90
+        else:
+            raise ValueError(
+                f"Invalid season: {season}. Must be 'annual', 'summer', or 'winter'"
+            )
 
-        print(f"Processing {n_time} days ({n_years:.1f} years) of data")
-        print(f"Threshold: {threshold}, Comparison: {comparison}")
+        n_periods = n_time / days_per_period
 
-        # Count days meeting threshold and convert to mean per year
+        print(f"Processing {n_time} days ({n_periods:.1f} {season} periods) of data")
+        print(f"Threshold: {threshold}, Comparison: {comparison}, Season: {season}")
+
+        # Count days meeting threshold and convert to mean per period
         threshold_counts = np.sum(meets_threshold, axis=0)
-        mean_per_year = threshold_counts / n_years
+        mean_per_period = threshold_counts / n_periods
 
         # Reshape back to grid
-        return mean_per_year.reshape(n_y, n_x)
+        return mean_per_period.reshape(n_y, n_x)
 
     # Convenience wrappers for backward compatibility
-    def calculate_tropical_nights(self, data, temp_threshold=20.0):
-        """Calculate mean tropical nights per year (tasmin >= threshold)"""
+    def calculate_tropical_nights(self, data, temp_threshold=20.0, season="annual"):
+        """Calculate mean tropical nights per period (tasmin >= threshold)."""
         return self.calculate_threshold_days(
-            data, temp_threshold, comparison="gte", convert_kelvin=True
+            data,
+            temp_threshold,
+            comparison="gte",
+            convert_kelvin=True,
+            season=season,
         )
 
-    def calculate_heat_days(self, data, temp_threshold=30.0):
-        """Calculate mean hot/extreme heat days per year (tasmax >= threshold)"""
+    def calculate_heat_days(self, data, temp_threshold=30.0, season="annual"):
+        """Calculate mean hot/extreme heat days per period (tasmax >= threshold)."""
         return self.calculate_threshold_days(
-            data, temp_threshold, comparison="gte", convert_kelvin=True
+            data,
+            temp_threshold,
+            comparison="gte",
+            convert_kelvin=True,
+            season=season,
         )
 
-    def calculate_heavy_rain_days(self, data, rain_threshold=50.0):
-        """Calculate mean heavy rain days per year (pr >= threshold)"""
+    def calculate_heavy_rain_days(self, data, rain_threshold=50.0, season="annual"):
+        """Calculate mean heavy rain days per period (pr >= threshold)."""
         return self.calculate_threshold_days(
-            data, rain_threshold, comparison="gte", convert_precip=True
+            data,
+            rain_threshold,
+            comparison="gte",
+            convert_precip=True,
+            season=season,
         )
 
-    def calculate_dry_days(self, data, rain_threshold=1.0):
-        """Calculate mean dry days per year (pr <= threshold)"""
+    def calculate_dry_days(self, data, rain_threshold=1.0, season="annual"):
+        """Calculate mean dry days per period (pr <= threshold)."""
         return self.calculate_threshold_days(
-            data, rain_threshold, comparison="lte", convert_precip=True
+            data,
+            rain_threshold,
+            comparison="lte",
+            convert_precip=True,
+            season=season,
         )
 
-    def calculate_windy_days(self, data, wind_threshold=8.0):
-        """Calculate mean windy days per year (wind speed >= threshold)"""
-        return self.calculate_threshold_days(data, wind_threshold, comparison="gte")
+    def calculate_windy_days(self, data, wind_threshold=8.0, season="annual"):
+        """Calculate mean windy days per period (wind speed >= threshold)."""
+        return self.calculate_threshold_days(
+            data, wind_threshold, comparison="gte", season=season
+        )
 
     def generate_data(
         self,
@@ -506,29 +536,11 @@ class ClimateDataProcessor:
                     for variable in variables:
                         quantiles = list(quantiles_config.get(variable, []))
                         compute_quantiles = bool(quantiles)
-                        compute_tropical = (
-                            tropical_nights_enabled
-                            and variable == "tasmin"
-                            and season == "annual"
-                        )
-                        compute_hot_days = (
-                            hot_days_enabled
-                            and variable == "tasmax"
-                            and season == "annual"
-                        )
-                        compute_heavy_rain = (
-                            heavy_rain_enabled
-                            and variable == "pr"
-                            and season == "annual"
-                        )
-                        compute_dry_days = (
-                            dry_days_enabled and variable == "pr" and season == "annual"
-                        )
-                        compute_windy_days = (
-                            windy_days_enabled
-                            and variable == "sfcWind"
-                            and season == "annual"
-                        )
+                        compute_tropical = tropical_nights_enabled and variable == "tasmin"
+                        compute_hot_days = hot_days_enabled and variable == "tasmax"
+                        compute_heavy_rain = heavy_rain_enabled and variable == "pr"
+                        compute_dry_days = dry_days_enabled and variable == "pr"
+                        compute_windy_days = windy_days_enabled and variable == "sfcWind"
 
                         if (
                             not compute_quantiles
