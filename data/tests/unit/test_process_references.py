@@ -38,14 +38,7 @@ def test_init_loads_references(sample_df):
         assert len(pr.df) == 3
         assert pr.doi_lookups == {}
         assert pr.failed_doi_lookups == []
-
-
-def test_load_references_reads_csv(sample_df):
-    """Should read CSV file using pandas"""
-    with patch("pandas.read_csv", return_value=sample_df) as mock_read:
-        pr = ProcessReferences("test.csv")
-        
-        mock_read.assert_called_once_with("test.csv")
+        assert pr.processed_references == {}
 
 
 # =============================================================================
@@ -111,18 +104,21 @@ def test_clean_references_replaces_nans_with_empty_string():
 @patch("data.src.process_references.scrape_doi.scrape")
 @patch("data.src.process_references.scrape_doi.read_article")
 def test_doi_lookup_row_journal_article(mock_read_article, mock_scrape, sample_df):
-    """Should process journal article DOI lookup"""
     with patch("pandas.read_csv", return_value=sample_df):
         pr = ProcessReferences("test.csv")
-        
+
         mock_scrape.return_value = (MagicMock(), {"title": "Test"})
-        mock_read_article.return_value = {"title": "Test Paper", "doi": "10.1234/test1"}
-        
+        expected = {"title": "Test Paper", "doi": "10.1234/test1"}
+        mock_read_article.return_value = expected
+
         row = sample_df.iloc[0]
         pr.doi_lookup_row(row)
-        
-        assert "REF001" in pr.doi_lookups
+
         mock_read_article.assert_called_once()
+        mock_scrape.assert_called_once()
+
+        assert pr.doi_lookups["REF001"] == expected
+        assert "REF001" not in pr.failed_doi_lookups
 
 
 @patch("data.src.process_references.scrape_doi.scrape")
@@ -131,45 +127,51 @@ def test_doi_lookup_row_book(mock_read_book, mock_scrape, sample_df):
     """Should process book DOI lookup"""
     with patch("pandas.read_csv", return_value=sample_df):
         pr = ProcessReferences("test.csv")
-        
+
         mock_scrape.return_value = (MagicMock(), {"title": "Test Book"})
-        mock_read_book.return_value = {"title": "Test Book", "doi": "10.1234/test2"}
-        
+        expected = {"title": "Test Book", "doi": "10.1234/test2"}
+        mock_read_book.return_value = expected
+
         row = sample_df.iloc[1]
         pr.doi_lookup_row(row)
-        
-        assert "REF002" in pr.doi_lookups
-        mock_read_book.assert_called_once()
 
+        mock_read_book.assert_called_once()
+        assert pr.doi_lookups["REF002"] == expected
+        assert "REF002" not in pr.failed_doi_lookups
+        
 
 @patch("data.src.process_references.scrape_doi.scrape")
-def test_doi_lookup_row_handles_scrape_failure(mock_scrape, sample_df):
-    """Should handle scraping failures gracefully"""
+@patch("data.src.process_references.scrape_doi.read_article")
+def test_doi_lookup_row_handles_scrape_failure(mock_read_article, mock_scrape, sample_df):
+    """Should record scrape failures and not attempt parsing"""
     with patch("pandas.read_csv", return_value=sample_df):
         pr = ProcessReferences("test.csv")
-        
+
         mock_scrape.side_effect = Exception("Scrape error")
-        
-        row = sample_df.iloc[0]
+
+        row = sample_df.iloc[0]  # Journal Article
         pr.doi_lookup_row(row)
-        
+
         assert "REF001" in pr.failed_doi_lookups
+        assert "REF001" not in pr.doi_lookups
+        mock_read_article.assert_not_called()
 
 
 @patch("data.src.process_references.scrape_doi.scrape")
 @patch("data.src.process_references.scrape_doi.read_article")
 def test_doi_lookup_row_handles_parsing_failure(mock_read_article, mock_scrape, sample_df):
-    """Should handle parsing failures gracefully"""
+    """Should record parsing failures and not store lookup data"""
     with patch("pandas.read_csv", return_value=sample_df):
         pr = ProcessReferences("test.csv")
-        
+
         mock_scrape.return_value = (MagicMock(), {"title": "Test"})
         mock_read_article.side_effect = Exception("Parse error")
-        
+
         row = sample_df.iloc[0]
         pr.doi_lookup_row(row)
-        
+
         assert "REF001" in pr.failed_doi_lookups
+        assert "REF001" not in pr.doi_lookups
 
 
 # =============================================================================
@@ -179,24 +181,32 @@ def test_doi_lookup_row_handles_parsing_failure(mock_read_article, mock_scrape, 
 
 @patch.object(ProcessReferences, "doi_lookup_row")
 def test_perform_doi_lookups_scrapes_rows_with_dois(mock_lookup, sample_df):
-    """Should scrape all rows that have DOIs"""
+    """Should scrape all rows that have DOIs (when scrape_all_rows=True)"""
     with patch("pandas.read_csv", return_value=sample_df):
         pr = ProcessReferences("test.csv")
+
         pr.perform_doi_lookups(scrape_all_rows=True)
-        
-        # Should scrape 2 rows (REF001 and REF002 have DOIs, REF003 doesn't)
+
+        # REF001 and REF002 have DOIs, REF003 doesn't
         assert mock_lookup.call_count == 2
+
+        scraped_ids = [call.args[0]["Reference_ID"] for call in mock_lookup.call_args_list]
+        assert set(scraped_ids) == {"REF001", "REF002"}
 
 
 @patch.object(ProcessReferences, "doi_lookup_row")
 def test_perform_doi_lookups_scrapes_only_missing_titles(mock_lookup, sample_df):
-    """Should only scrape rows with DOIs but no titles"""
+    """Should only scrape rows with DOIs but no titles (when scrape_all_rows=False)"""
     with patch("pandas.read_csv", return_value=sample_df):
         pr = ProcessReferences("test.csv")
+
         pr.perform_doi_lookups(scrape_all_rows=False)
-        
-        # Should only scrape REF002 (has DOI but no title)
+
+        # Only REF002 has a DOI but no title in sample_df
         assert mock_lookup.call_count == 1
+
+        scraped_row = mock_lookup.call_args[0][0]
+        assert scraped_row["Reference_ID"] == "REF002"
 
 
 @patch.object(ProcessReferences, "doi_lookup_row")
@@ -244,6 +254,8 @@ def test_process_references_uses_original_data_without_lookup(sample_df):
         
         assert "REF003" in pr.processed_references
         assert pr.processed_references["REF003"]["title"] == "Manual Entry"
+        assert pr.processed_references["REF003"]["article_id"] == "REF003"
+        assert pr.processed_references["REF003"]["type"] == "Report"
 
 
 def test_process_references_includes_all_fields(sample_df):
@@ -260,6 +272,11 @@ def test_process_references_includes_all_fields(sample_df):
         assert "title" in ref
         assert "authors" in ref
         assert "date" in ref
+        assert "link" in ref
+        assert "link_replacement" in ref
+        assert "journal" in ref
+        assert "issue" in ref
+        assert "notes" in ref
 
 
 def test_process_references_processes_all_rows(sample_df):
@@ -286,7 +303,6 @@ def test_save_json_writes_to_file(sample_df):
         m = mock_open()
         with patch("builtins.open", m):
             pr.save_json("output.json")
-            W
             m.assert_called_once_with("output.json", "w", encoding="utf-8")
 
 
@@ -303,17 +319,3 @@ def test_save_json_creates_valid_json(sample_df):
                 mock_dump.assert_called_once()
                 assert mock_dump.call_args[1]["ensure_ascii"] is False
                 assert mock_dump.call_args[1]["indent"] == 4
-
-
-def test_save_json_handles_unicode(sample_df):
-    """Should handle unicode characters in references"""
-    with patch("pandas.read_csv", return_value=sample_df):
-        pr = ProcessReferences("test.csv")
-        pr.processed_references = {"REF001": {"title": "Test Paper with émojis 😀"}}
-        
-        with patch("builtins.open", mock_open()):
-            with patch("json.dump") as mock_dump:
-                pr.save_json("output.json")
-                
-                # Should use ensure_ascii=False for unicode support
-                assert mock_dump.call_args[1]["ensure_ascii"] is False
