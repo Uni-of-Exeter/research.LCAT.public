@@ -61,6 +61,7 @@ class ProcessReferences:
             response, data = scrape_doi.scrape(row)
         except Exception:
             self.failed_doi_lookups.append(row_id)
+            return
 
         # Parse result
         if row_type == "Journal Article" or row_type == "Report":
