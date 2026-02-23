@@ -81,16 +81,6 @@ def test_drop_table_executes_drop_query(bl):
     bl.conn.commit.assert_called_once()
 
 
-def test_drop_table_commits_transaction(bl):
-    """Should commit after dropping table"""
-    bl.conn = MagicMock()
-    bl.cur = MagicMock()
-
-    bl.drop_table("test_table")
-
-    assert bl.conn.commit.called
-
-
 def test_drop_table_handles_exception(bl):
     """Should handle exceptions gracefully"""
     bl.conn = MagicMock()
@@ -119,6 +109,8 @@ def test_load_boundary_builds_correct_command(mock_system, bl):
     )
 
     cmd = mock_system.call_args[0][0]
+    mock_system.assert_called_once()
+    
     assert "shp2pgsql" in cmd
     assert "-s 27700:27700" in cmd
     assert "/path/to/counties.shp" in cmd
