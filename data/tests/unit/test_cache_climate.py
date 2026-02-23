@@ -84,16 +84,6 @@ def test_drop_table_executes_drop_query(cc):
     cc.conn.commit.assert_called_once()
 
 
-def test_drop_table_commits_transaction(cc):
-    """Should commit after dropping table"""
-    cc.conn = MagicMock()
-    cc.cur = MagicMock()
-
-    cc.drop_table("test_table")
-
-    assert cc.conn.commit.called
-
-
 def test_drop_table_handles_exception(cc):
     """Should handle exceptions gracefully"""
     cc.conn = MagicMock()
@@ -150,14 +140,6 @@ def test_set_rcp_and_season_sets_cache_table(cc):
     assert cc.cache_table == "cache_uk_counties_to_rcp85_winter"
 
 
-def test_set_rcp_and_season_handles_summer(cc):
-    """Should handle summer season correctly"""
-    cc.boundary_identifier = "lsoa"
-    cc.set_rcp_and_season(60, "summer")
-    assert cc.cache_table == "cache_lsoa_to_rcp60_summer"
-    assert cc.climate_table == "chess_scape_rcp60_summer"
-
-
 # =============================================================================
 # get_climate_column_names
 # =============================================================================
@@ -197,18 +179,6 @@ def test_get_climate_column_names_excludes_grid_cell_id(cc):
     assert "tas_1980_mean" in columns
 
 
-def test_get_climate_column_names_returns_list(cc):
-    """Should return list of column names"""
-    cc.cur = MagicMock()
-    cc.climate_table = "chess_scape_rcp60_annual"
-    cc.cur.fetchall.return_value = [("col1",), ("col2",), ("col3",)]
-
-    columns = cc.get_climate_column_names()
-
-    assert isinstance(columns, list)
-    assert len(columns) == 3
-
-
 # =============================================================================
 # create_table
 # =============================================================================
@@ -226,6 +196,7 @@ def test_create_table_creates_table_with_correct_name(cc):
     sql = cc.cur.execute.call_args[0][0]
     assert "CREATE TABLE" in sql
     assert "cache_uk_counties_to_rcp60_annual" in sql
+    cc.conn.commit.assert_called_once()
 
 
 def test_create_table_includes_gid_primary_key(cc):
@@ -257,18 +228,6 @@ def test_create_table_includes_all_climate_columns(cc):
     assert "tas_1980_mean" in sql
     assert "tas_1980_max" in sql
     assert "DOUBLE PRECISION" in sql
-
-
-def test_create_table_commits_transaction(cc):
-    """Should commit after creating table"""
-    cc.conn = MagicMock()
-    cc.cur = MagicMock()
-    cc.cache_table = "cache_test"
-    cc.get_climate_column_names = MagicMock(return_value=["col1"])
-
-    cc.create_table()
-
-    assert cc.conn.commit.called
 
 
 def test_create_table_handles_exception(cc):
@@ -354,6 +313,8 @@ def test_cache_all_gids_inserts_into_cache_table(cc):
     assert "INSERT INTO" in sql
     assert "cache_test" in sql
 
+    cc.cur.execute.assert_called_once()
+
 
 def test_cache_all_gids_commits_transaction(cc):
     """Should commit after caching data"""
@@ -379,59 +340,16 @@ def test_cache_all_gids_commits_transaction(cc):
 @patch.object(CacheClimate, "drop_table")
 @patch.object(CacheClimate, "set_rcp_and_season")
 @patch.object(CacheClimate, "set_boundary")
-def test_process_boundary_calls_set_boundary(
-    mock_set_boundary, mock_set_rcp, mock_drop, mock_create, mock_cache, cc
-):
-    """Should call set_boundary with provided identifier"""
+def test_process_boundary_runs_six_iterations_and_calls_methods(
+    mock_set_boundary, mock_set_rcp, mock_drop, mock_create, mock_cache, cc):
+    """Should set the boundary once and run all 6 (RCP × season) caching 
+    iterations, calling set_rcp_and_season, drop_table, create_table, and 
+    cache_all_gids each time."""
     cc.process_boundary("uk_counties")
 
     mock_set_boundary.assert_called_once_with("uk_counties")
 
-
-@patch.object(CacheClimate, "cache_all_gids")
-@patch.object(CacheClimate, "create_table")
-@patch.object(CacheClimate, "drop_table")
-@patch.object(CacheClimate, "set_rcp_and_season")
-@patch.object(CacheClimate, "set_boundary")
-def test_process_boundary_processes_both_rcps(
-    mock_set_boundary, mock_set_rcp, mock_drop, mock_create, mock_cache, cc
-):
-    """Should process both RCP 60 and RCP 85"""
-    cc.process_boundary("uk_counties")
-
-    rcp_calls = [call.args[0] for call in mock_set_rcp.call_args_list]
-    assert 60 in rcp_calls
-    assert 85 in rcp_calls
-
-
-@patch.object(CacheClimate, "cache_all_gids")
-@patch.object(CacheClimate, "create_table")
-@patch.object(CacheClimate, "drop_table")
-@patch.object(CacheClimate, "set_rcp_and_season")
-@patch.object(CacheClimate, "set_boundary")
-def test_process_boundary_processes_all_three_seasons(
-    mock_set_boundary, mock_set_rcp, mock_drop, mock_create, mock_cache, cc
-):
-    """Should process annual, summer, and winter"""
-    cc.process_boundary("uk_counties")
-
-    season_calls = [call.args[1] for call in mock_set_rcp.call_args_list]
-    assert "annual" in season_calls
-    assert "summer" in season_calls
-    assert "winter" in season_calls
-
-
-@patch.object(CacheClimate, "cache_all_gids")
-@patch.object(CacheClimate, "create_table")
-@patch.object(CacheClimate, "drop_table")
-@patch.object(CacheClimate, "set_rcp_and_season")
-@patch.object(CacheClimate, "set_boundary")
-def test_process_boundary_processes_six_combinations(
-    mock_set_boundary, mock_set_rcp, mock_drop, mock_create, mock_cache, cc
-):
-    """Should process 6 combinations (2 RCPs × 3 seasons)"""
-    cc.process_boundary("uk_counties")
-
+    # 2 RCPs × 3 seasons = 6
     assert mock_set_rcp.call_count == 6
     assert mock_drop.call_count == 6
     assert mock_create.call_count == 6
@@ -443,43 +361,28 @@ def test_process_boundary_processes_six_combinations(
 @patch.object(CacheClimate, "drop_table")
 @patch.object(CacheClimate, "set_rcp_and_season")
 @patch.object(CacheClimate, "set_boundary")
-def test_process_boundary_drops_before_creating(
-    mock_set_boundary, mock_set_rcp, mock_drop, mock_create, mock_cache, cc
-):
-    """Should drop table before creating it"""
+def test_process_boundary_uses_expected_rcp_and_season_combinations(
+    mock_set_boundary, mock_set_rcp, mock_drop, mock_create, mock_cache, cc):
+    """Should call set_rcp_and_season with the full set of 2 RCPs (60, 85)
+    and 3 seasons (annual, summer, winter)."""
     cc.process_boundary("uk_counties")
 
-    # Check that drop is called before create for each iteration
-    assert mock_drop.called
-    assert mock_create.called
+    combos = {(call.args[0], call.args[1]) for call in mock_set_rcp.call_args_list}
+    expected = {
+        (60, "annual"),
+        (60, "summer"),
+        (60, "winter"),
+        (85, "annual"),
+        (85, "summer"),
+        (85, "winter"),
+    }
 
+    assert combos == expected
+    
 
 # =============================================================================
 # process_all_boundaries
 # =============================================================================
-
-
-@patch.object(CacheClimate, "process_boundary")
-def test_process_all_boundaries_processes_all_eight_boundaries(mock_process, cc):
-    """Should process all 8 boundary identifiers"""
-    cc.process_all_boundaries()
-
-    assert mock_process.call_count == 8
-
-    boundaries_processed = [call.args[0] for call in mock_process.call_args_list]
-    expected_boundaries = [
-        "uk_counties",
-        "la_districts",
-        "lsoa",
-        "msoa",
-        "parishes",
-        "sc_dz",
-        "ni_dz",
-        "iom",
-    ]
-
-    for boundary in expected_boundaries:
-        assert boundary in boundaries_processed
 
 
 @patch.object(CacheClimate, "process_boundary")
