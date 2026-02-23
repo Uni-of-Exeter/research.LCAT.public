@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 import tempfile
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, call
 
 from data.src.chessscape_averages_loader import ChessScapeAveragesLoader
 
@@ -183,13 +183,15 @@ def test_open_netcdf_file_missing_file_returns_none(csal):
 # =============================================================================
 
 
-def test_close_netcdf_file_closes_current_data(csal, sample_annual_dataset):
-    """Should close the current netcdf data"""
-    csal.current_netcdf_data = sample_annual_dataset
+def test_close_netcdf_file_calls_close(csal):
+    """Should call .close() on the current NetCDF dataset"""
+
+    mock_dataset = MagicMock()
+    csal.current_netcdf_data = mock_dataset
+
     csal.close_netcdf_file()
-    
-    # Dataset should be closed
-    assert csal.current_netcdf_data is not None
+
+    mock_dataset.close.assert_called_once()
 
 
 # =============================================================================
@@ -263,6 +265,23 @@ def test_load_netcdf_clears_previous_data(mock_exists, mock_open, csal):
     assert csal.transform_performed is False
 
 
+@patch("data.src.chessscape_averages_loader.os.path.exists", return_value=False)
+def test_load_netcdf_sets_current_data_to_none_if_file_missing(mock_exists, csal):
+    """Should set current_netcdf_data to None when filepath does not exist"""
+
+    # First simulate having old data loaded
+    csal.current_netcdf_data = MagicMock()
+
+    csal.load_netcdf(
+        is_bias_corrected=True,
+        season="annual",
+        rcp=60,
+        variable="tas",
+    )
+
+    assert csal.current_netcdf_data is None
+
+
 # =============================================================================
 # calculate_uk_averages_min_mean_max
 # =============================================================================
@@ -293,24 +312,6 @@ def test_calculate_uk_averages_min_mean_max_returns_scalar_values(csal, sample_a
     assert result["max"].dims == ()
 
 
-def test_calculate_uk_averages_min_mean_max_uses_10_values(csal, sample_annual_dataset):
-    """Should calculate over exactly 10 time steps (1 decade)"""
-    csal.season = "annual"
-    csal.variable = "tas"
-    
-    result = csal.calculate_uk_averages_min_mean_max(sample_annual_dataset, 0, 10, 1)
-    assert result is not None
-
-
-def test_calculate_uk_averages_min_mean_max_raises_for_wrong_slice_size(csal, sample_annual_dataset):
-    """Should raise ValueError if slice doesn't contain exactly 10 values"""
-    csal.season = "annual"
-    csal.variable = "tas"
-    
-    with pytest.raises(ValueError, match="10 values"):
-        csal.calculate_uk_averages_min_mean_max(sample_annual_dataset, 0, 5, 1)
-
-
 def test_calculate_uk_averages_min_mean_max_validates_winter_months(csal, sample_seasonal_dataset):
     """Should validate that winter data contains only January"""
     csal.season = "winter"
@@ -333,63 +334,93 @@ def test_calculate_uk_averages_min_mean_max_validates_summer_months(csal, sample
     assert result is not None
 
 
+def test_calculate_uk_averages_min_mean_max_raises_for_wrong_winter_month(
+    csal, sample_seasonal_dataset
+):
+    """Should raise ValueError if winter slice does not contain January months"""
+
+    csal.season = "winter"
+    csal.variable = "tas"
+
+    # Offset 1 corresponds to April in the seasonal dataset
+    # This should fail the month check for winter (expects month == 1)
+    with pytest.raises(ValueError, match="Different months"):
+        csal.calculate_uk_averages_min_mean_max(
+            sample_seasonal_dataset,
+            lower_bound=1,   # April
+            higher_bound=41, # 40 seasonal points = 10 years
+            step=4,
+        )
+
+
 # =============================================================================
 # process_decade
 # =============================================================================
 
 
-def test_process_decade_returns_dict_by_decade(csal, sample_annual_dataset):
-    """Should return dict keyed by decade start year"""
+def test_process_decade_annual_produces_expected_keys_and_stats(csal, sample_annual_dataset):
+    """
+    Annual:
+    - produces 10 decades
+    - decade tags match the current indexing scheme (1980..2070 step 10)
+    - each decade has min/mean/max
+    """
     csal.season = "annual"
     csal.variable = "tas"
-    
+
     csal.process_decade(sample_annual_dataset)
-    
+
     assert isinstance(csal.extracted_data, dict)
-    assert 1980 in csal.extracted_data or 1981 in csal.extracted_data
+
+    expected_keys = list(range(1980, 2080, 10))  # 1980..2070
+    assert sorted(csal.extracted_data.keys()) == expected_keys
     assert len(csal.extracted_data) == 10
 
-
-def test_process_decade_annual_uses_step_of_1(csal, sample_annual_dataset):
-    """Should use every time step for annual data"""
-    csal.season = "annual"
-    csal.variable = "tas"
-    
-    csal.process_decade(sample_annual_dataset)
-    
-    first_decade = list(csal.extracted_data.values())[0]
-    assert "min" in first_decade
-    assert "mean" in first_decade
-    assert "max" in first_decade
+    first_decade = csal.extracted_data[expected_keys[0]]
+    assert set(first_decade.keys()) == {"min", "mean", "max"}
 
 
-def test_process_decade_seasonal_uses_step_of_4(csal, sample_seasonal_dataset):
-    """Should use every 4th time step for seasonal data"""
+def test_process_decade_winter_seasonal_produces_expected_keys(csal, sample_seasonal_dataset):
+    """
+    Seasonal (winter):
+    - produces 10 decades
+    - decade tags match the current indexing scheme (1980..2070 step 10)
+    """
     csal.season = "winter"
     csal.variable = "tas"
-    
+
     csal.process_decade(sample_seasonal_dataset)
-    
-    assert isinstance(csal.extracted_data, dict)
+
+    expected_keys = list(range(1980, 2080, 10))
+    assert sorted(csal.extracted_data.keys()) == expected_keys
     assert len(csal.extracted_data) == 10
 
 
-def test_process_decade_summer_starts_at_offset_2(csal, sample_seasonal_dataset):
-    """Summer data should start at index 2 (July)"""
+def test_process_decade_summer_starts_at_index_2_and_uses_step_4(csal, sample_seasonal_dataset):
+    """
+    Seasonal (summer):
+    prove the offset/step logic by checking the first call into
+    calculate_uk_averages_min_mean_max uses lower=2, higher=42, step=4.
+    """
     csal.season = "summer"
     csal.variable = "tas"
-    
-    csal.process_decade(sample_seasonal_dataset)
-    assert len(csal.extracted_data) == 10
 
+    dummy = {"min": xr.DataArray(0.0), "mean": xr.DataArray(0.0), "max": xr.DataArray(0.0)}
 
-def test_process_decade_winter_starts_at_offset_0(csal, sample_seasonal_dataset):
-    """Winter data should start at index 0 (January)"""
-    csal.season = "winter"
-    csal.variable = "tas"
-    
-    csal.process_decade(sample_seasonal_dataset)
-    assert len(csal.extracted_data) == 10
+    with patch.object(
+        ChessScapeAveragesLoader,
+        "calculate_uk_averages_min_mean_max",
+        return_value=dummy,
+    ) as mock_calc:
+        csal.process_decade(sample_seasonal_dataset)
+
+    # First decade slice should be [2:42:4]
+    first_call_args = mock_calc.call_args_list[0].args
+    assert first_call_args[1] == 2
+    assert first_call_args[2] == 42
+    assert first_call_args[3] == 4
+
+    assert mock_calc.call_count == 10
 
 
 # =============================================================================
@@ -397,64 +428,26 @@ def test_process_decade_winter_starts_at_offset_0(csal, sample_seasonal_dataset)
 # =============================================================================
 
 
-def test_transform_dataset_converts_kelvin_to_celsius(csal):
-    """Temperature variables should be converted from Kelvin to Celsius"""
-    csal.variable = "tas"
-    data = xr.DataArray([300.0, 273.15, 283.15])
-    
+@pytest.mark.parametrize(
+    "variable, data, expected, approx",
+    [
+        ("tas", xr.DataArray([300.0, 273.15, 283.15]), [26.85, 0.0, 10.0], True),
+        ("tasmin", xr.DataArray([273.15, 283.15]), [0.0, 10.0], True),
+        ("tasmax", xr.DataArray([293.15, 303.15]), [20.0, 30.0], True),
+        ("pr", xr.DataArray([0.00001, 0.0001]), [0.864, 8.64], True),
+        ("rsds", xr.DataArray([100.0, 200.0]), [100.0, 200.0], False),
+        ("sfcWind", xr.DataArray([5.0, 10.0]), [5.0, 10.0], False),
+    ],
+)
+def test_transform_dataset_parameterised(csal, variable, data, expected, approx):
+    """transform_dataset should apply correct unit transforms depending on variable."""
+    csal.variable = variable
     result = csal.transform_dataset(data)
-    
-    np.testing.assert_array_almost_equal(result.values, [26.85, 0.0, 10.0])
 
-
-def test_transform_dataset_converts_tasmin_kelvin_to_celsius(csal):
-    """tasmin should also be converted from Kelvin to Celsius"""
-    csal.variable = "tasmin"
-    data = xr.DataArray([273.15, 283.15])
-    
-    result = csal.transform_dataset(data)
-    
-    np.testing.assert_array_almost_equal(result.values, [0.0, 10.0])
-
-
-def test_transform_dataset_converts_tasmax_kelvin_to_celsius(csal):
-    """tasmax should also be converted from Kelvin to Celsius"""
-    csal.variable = "tasmax"
-    data = xr.DataArray([293.15, 303.15])
-    
-    result = csal.transform_dataset(data)
-    
-    np.testing.assert_array_almost_equal(result.values, [20.0, 30.0])
-
-
-def test_transform_dataset_converts_precipitation(csal):
-    """Precipitation should be converted from kg/m2/s to mm/day"""
-    csal.variable = "pr"
-    data = xr.DataArray([0.00001, 0.0001])
-    
-    result = csal.transform_dataset(data)
-    
-    np.testing.assert_array_almost_equal(result.values, [0.864, 8.64])
-
-
-def test_transform_dataset_leaves_other_variables_unchanged(csal):
-    """Variables like rsds and sfcWind should not be transformed"""
-    csal.variable = "rsds"
-    data = xr.DataArray([100.0, 200.0])
-    
-    result = csal.transform_dataset(data)
-    
-    np.testing.assert_array_equal(result.values, [100.0, 200.0])
-
-
-def test_transform_dataset_leaves_sfcWind_unchanged(csal):
-    """sfcWind should not be transformed"""
-    csal.variable = "sfcWind"
-    data = xr.DataArray([5.0, 10.0])
-    
-    result = csal.transform_dataset(data)
-    
-    np.testing.assert_array_equal(result.values, [5.0, 10.0])
+    if approx:
+        np.testing.assert_allclose(result.values, expected, rtol=1e-7, atol=1e-7)
+    else:
+        np.testing.assert_array_equal(result.values, expected)
 
 
 # =============================================================================
@@ -616,8 +609,8 @@ def test_drop_table_handles_exception(mock_psycopg2, csal):
 
 
 @patch("data.src.chessscape_averages_loader.psycopg2")
-def test_insert_data_multiple_decades_uses_copy_from(mock_psycopg2, csal):
-    """Should use COPY FROM for efficient bulk insert"""
+def test_insert_data_multiple_decades_calls_copy_from_with_expected_args(mock_psycopg2, csal):
+    """Should call copy_from with expected table name and columns."""
     mock_conn = MagicMock()
     mock_cur = MagicMock()
     mock_conn.cursor.return_value = mock_cur
@@ -629,7 +622,7 @@ def test_insert_data_multiple_decades_uses_copy_from(mock_psycopg2, csal):
     csal.season = "annual"
     csal.variable = "tas"
     csal.row_id = 0
-    
+
     csal.extracted_data = {
         1980: {
             "min": xr.DataArray(10.0),
@@ -640,8 +633,26 @@ def test_insert_data_multiple_decades_uses_copy_from(mock_psycopg2, csal):
 
     csal.insert_data_multiple_decades()
 
-    assert mock_cur.copy_from.called
+    mock_cur.copy_from.assert_called_once()
 
+    args, kwargs = mock_cur.copy_from.call_args
+
+    # Positional args: (file, table, ...)
+    assert args[1] == csal.table_name
+
+    # Keyword args: sep, columns
+    assert kwargs["sep"] == ","
+    assert kwargs["columns"] == [
+        "row_id",
+        "is_bias_corrected",
+        "rcp",
+        "season",
+        "variable",
+        "decade",
+        "min",
+        "mean",
+        "max",
+    ]
 
 @patch("data.src.chessscape_averages_loader.psycopg2")
 def test_insert_data_multiple_decades_increments_row_id(mock_psycopg2, csal):
@@ -760,24 +771,48 @@ def test_process_all_variables_processes_all_six_variables(
     assert "tasmin" in variables_loaded
 
 
-@patch.object(ChessScapeAveragesLoader, "close_netcdf_file")
-@patch.object(ChessScapeAveragesLoader, "insert_data_multiple_decades")
-@patch.object(ChessScapeAveragesLoader, "transform_data")
-@patch.object(ChessScapeAveragesLoader, "process_decade")
-@patch.object(ChessScapeAveragesLoader, "load_netcdf")
-def test_process_all_variables_calls_in_correct_order(
-    mock_load, mock_process, mock_transform, mock_insert, mock_close, csal
-):
-    """Should call methods in correct order for each variable"""
-    csal.process_all_variables(season="annual", rcp=60, is_bias_corrected=True)
+def test_process_all_variables_calls_methods_in_correct_order(csal):
+    """Should call load -> process -> transform -> insert -> close in that order for each variable."""
+    call_log = []
 
-    # Each variable should have load, process, transform, insert, close called
-    assert mock_load.call_count == 6
-    assert mock_process.call_count == 6
-    assert mock_transform.call_count == 6
-    assert mock_insert.call_count == 6
-    assert mock_close.call_count == 6
+    def load_side_effect(is_bias_corrected, season, rcp, variable):
+        # mimic the real method setting state so the log can include variable name
+        csal.variable = variable
+        call_log.append(("load", variable))
 
+    def process_side_effect(_data):
+        call_log.append(("process", csal.variable))
+
+    def transform_side_effect():
+        call_log.append(("transform", csal.variable))
+
+    def insert_side_effect():
+        call_log.append(("insert", csal.variable))
+
+    def close_side_effect():
+        call_log.append(("close", csal.variable))
+
+    with patch.object(ChessScapeAveragesLoader, "load_netcdf", side_effect=load_side_effect), \
+         patch.object(ChessScapeAveragesLoader, "process_decade", side_effect=process_side_effect), \
+         patch.object(ChessScapeAveragesLoader, "transform_data", side_effect=transform_side_effect), \
+         patch.object(ChessScapeAveragesLoader, "insert_data_multiple_decades", side_effect=insert_side_effect), \
+         patch.object(ChessScapeAveragesLoader, "close_netcdf_file", side_effect=close_side_effect):
+
+        # current_netcdf_data is accessed as an argument to process_decade
+        # but our process_side_effect ignores it, so it can be anything
+        csal.current_netcdf_data = MagicMock()
+
+        csal.process_all_variables(season="annual", rcp=60, is_bias_corrected=True)
+
+    expected_vars = ["pr", "rsds", "sfcWind", "tas", "tasmax", "tasmin"]
+
+    expected_log = []
+    for v in expected_vars:
+        expected_log.extend(
+            [("load", v), ("process", v), ("transform", v), ("insert", v), ("close", v)]
+        )
+
+    assert call_log == expected_log
 
 # =============================================================================
 # process_all_seasons
@@ -838,38 +873,24 @@ def test_process_all_rcps_passes_bias_corrected_flag(mock_process, csal):
 # =============================================================================
 
 
-@patch.object(ChessScapeAveragesLoader, "process_all_rcps")
-@patch.object(ChessScapeAveragesLoader, "create_table")
-@patch.object(ChessScapeAveragesLoader, "drop_table")
-def test_process_all_data_drops_and_creates_table(mock_drop, mock_create, mock_process, csal):
-    """Should drop and create table before processing"""
-    csal.process_all_data()
+def test_process_all_data_calls_drop_create_then_process_in_order(csal):
+    """Should call drop_table -> create_table -> process_all_rcps(True) -> process_all_rcps(False) in order."""
+    parent = MagicMock()
 
-    assert mock_drop.called
-    assert mock_create.called
+    with patch.object(ChessScapeAveragesLoader, "drop_table") as mock_drop, \
+         patch.object(ChessScapeAveragesLoader, "create_table") as mock_create, \
+         patch.object(ChessScapeAveragesLoader, "process_all_rcps") as mock_process:
 
+        # Attach mocks to a parent so we can assert global ordering
+        parent.attach_mock(mock_drop, "drop_table")
+        parent.attach_mock(mock_create, "create_table")
+        parent.attach_mock(mock_process, "process_all_rcps")
 
-@patch.object(ChessScapeAveragesLoader, "process_all_rcps")
-@patch.object(ChessScapeAveragesLoader, "create_table")
-@patch.object(ChessScapeAveragesLoader, "drop_table")
-def test_process_all_data_processes_both_bias_types(mock_drop, mock_create, mock_process, csal):
-    """Should process both bias-corrected and non-bias-corrected data"""
-    csal.process_all_data()
+        csal.process_all_data()
 
-    assert mock_process.call_count == 2
-
-    bias_flags = [call.args[0] for call in mock_process.call_args_list]
-    assert True in bias_flags
-    assert False in bias_flags
-
-
-@patch.object(ChessScapeAveragesLoader, "process_all_rcps")
-@patch.object(ChessScapeAveragesLoader, "create_table")
-@patch.object(ChessScapeAveragesLoader, "drop_table")
-def test_process_all_data_drops_before_creating(mock_drop, mock_create, mock_process, csal):
-    """Should drop table before creating it"""
-    csal.process_all_data()
-
-    # Check that drop is called before create
-    assert mock_drop.called
-    assert mock_create.called
+        assert parent.mock_calls == [
+            call.drop_table(),
+            call.create_table(),
+            call.process_all_rcps(True),
+            call.process_all_rcps(False),
+        ]
