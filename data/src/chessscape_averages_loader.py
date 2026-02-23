@@ -140,6 +140,7 @@ class ChessScapeAveragesLoader:
 
         else:
             print(f"Incorrect filepath: {filepath}")
+            self.current_netcdf_data = None
 
     def calculate_uk_averages_min_mean_max(self, data, lower_bound, higher_bound, step):
         """
