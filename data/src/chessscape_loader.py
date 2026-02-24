@@ -77,9 +77,13 @@ class ChessScapeLoader:
         """
         Load a given mask, and determine what data will be needed (i.e. bias corrected or non-bias corrected, or both).
         """
+        # Reset internal state first
+        self.mask = None
+        self.bias_corrected_keys = []
 
-        if 0 not in mask:
-            raise ValueError("Have you loaded a boolean mask? Please load labelled mask instead.")
+        # Reject boolean masks explicitly
+        if mask.dtype == bool:
+            raise ValueError("Boolean mask not allowed. Please provide labelled mask (0, 1, 2).")
 
         self.mask = mask
 
