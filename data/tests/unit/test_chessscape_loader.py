@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 import xarray as xr
+import pandas as pd
 import tempfile
 from unittest.mock import MagicMock, patch
 
@@ -53,9 +54,7 @@ def sample_annual_dataset():
     """
     Minimal annual NetCDF dataset.
     100 time steps (100 years), 3x3 grid.
-    """
-    import pandas as pd
-    
+    """    
     np.random.seed(42)
     tas_data = np.random.rand(100, 3, 3) * 10 + 280
     
@@ -77,7 +76,6 @@ def sample_seasonal_dataset():
     400 time steps (100 years * 4 seasons), 3x3 grid.
     Uses pandas Timestamp for .month attribute compatibility.
     """
-    import pandas as pd
     
     np.random.seed(42)
     tas_data = np.random.rand(400, 3, 3) * 10 + 280
@@ -132,16 +130,20 @@ def test_load_mask_detects_non_bias_corrected_needed(csl):
     
     assert "non_bias_corrected" in csl.bias_corrected_keys
 
+def test_load_mask_detects_both_bias_types_when_present(csl):
+    """Should include both bias_corrected and non_bias_corrected when mask contains 1s and 2s."""
+    mask_with_both = np.array([[1, 2], [2, 0]])
 
-def test_load_mask_boolean_mask_treated_as_integers(csl):
-    """Boolean masks are treated as integers (True=1, False=0)."""
-    boolean_mask = np.array([[True, False], [False, True]])
-    csl.bias_corrected_keys = []
-    
-    csl.load_mask(boolean_mask)
-    
-    # True becomes 1, so bias_corrected should be detected
+    csl.load_mask(mask_with_both)
+
     assert "bias_corrected" in csl.bias_corrected_keys
+    assert "non_bias_corrected" in csl.bias_corrected_keys
+
+def test_load_mask_rejects_boolean_mask(csl):
+    boolean_mask = np.array([[True, False], [False, True]])
+
+    with pytest.raises(ValueError, match="Boolean mask"):
+        csl.load_mask(boolean_mask)
 
 
 # =============================================================================
@@ -169,6 +171,9 @@ def test_connect_to_db_uses_provided_credentials(mock_psycopg2, csl):
         user="custom_user",
         password="custom_pass",
     )
+    
+    assert csl.conn is mock_conn
+    assert csl.cur is mock_conn.cursor.return_value
 
 
 @patch("data.src.chessscape_loader.psycopg2")
@@ -187,6 +192,8 @@ def test_connect_to_db_falls_back_to_config(mock_psycopg2, csl):
         password="test_password",
     )
 
+    assert csl.conn is mock_conn
+    assert csl.cur is mock_conn.cursor.return_value
 
 # =============================================================================
 # open_netcdf_file
