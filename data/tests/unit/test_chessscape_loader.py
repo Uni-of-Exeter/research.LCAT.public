@@ -4,6 +4,7 @@ import xarray as xr
 import pandas as pd
 import tempfile
 from unittest.mock import MagicMock, patch
+import os 
 
 from data.src.chessscape_loader import ChessScapeLoader
 
@@ -96,10 +97,11 @@ def sample_seasonal_dataset():
 
 @pytest.fixture
 def sample_netcdf_file(sample_annual_dataset):
-    """Write sample dataset to temp file."""
     with tempfile.NamedTemporaryFile(suffix=".nc", delete=False) as tmp:
         sample_annual_dataset.to_netcdf(tmp.name)
-        return tmp.name
+        path = tmp.name
+    yield path
+    os.remove(path)
 
 
 # =============================================================================
@@ -116,7 +118,6 @@ def test_load_mask_sets_mask(csl, sample_mask):
 def test_load_mask_detects_bias_corrected_needed(csl):
     """Should add 'bias_corrected' to bias_corrected_keys when mask contains 1s."""
     mask_with_ones = np.array([[0, 1], [1, 0]])
-    csl.bias_corrected_keys = []
     csl.load_mask(mask_with_ones)
     
     assert "bias_corrected" in csl.bias_corrected_keys
@@ -125,7 +126,6 @@ def test_load_mask_detects_bias_corrected_needed(csl):
 def test_load_mask_detects_non_bias_corrected_needed(csl):
     """Should add 'non_bias_corrected' to bias_corrected_keys when mask contains 2s."""
     mask_with_twos = np.array([[0, 2], [2, 0]])
-    csl.bias_corrected_keys = []
     csl.load_mask(mask_with_twos)
     
     assert "non_bias_corrected" in csl.bias_corrected_keys
@@ -155,8 +155,9 @@ def test_load_mask_rejects_boolean_mask(csl):
 def test_connect_to_db_uses_provided_credentials(mock_psycopg2, csl):
     """Should use explicit credentials when provided."""
     mock_conn = MagicMock()
-    mock_conn.cursor.return_value = MagicMock()
     mock_psycopg2.connect.return_value = mock_conn
+    mock_cur = MagicMock()
+    mock_conn.cursor.return_value = mock_cur
 
     csl.connect_to_db(
         host="custom_host",
@@ -173,8 +174,7 @@ def test_connect_to_db_uses_provided_credentials(mock_psycopg2, csl):
     )
     
     assert csl.conn is mock_conn
-    assert csl.cur is mock_conn.cursor.return_value
-
+    assert csl.cur is mock_cur
 
 @patch("data.src.chessscape_loader.psycopg2")
 def test_connect_to_db_falls_back_to_config(mock_psycopg2, csl):
@@ -269,6 +269,21 @@ def test_load_netcdf_sets_table_name(mock_exists, mock_open, csl):
     assert csl.table_name == "chess_scape_rcp60_summer_tasmax"
 
 
+@patch.object(ChessScapeLoader, "open_netcdf_file")
+@patch("data.src.chessscape_loader.os.path.exists", return_value=True)
+def test_load_netcdf_sets_aggregated_table_name(mock_exists, mock_open, csl):
+    """Should set aggregated_table_name based on rcp and season (and not include the variable)."""
+    csl.load_netcdf(
+        season="annual",
+        rcp=60,
+        bias_corrected_key="bias_corrected",
+        variable="tas",
+    )
+
+    assert csl.aggregated_table_name == "chess_scape_rcp60_annual"
+    assert "tas" not in csl.aggregated_table_name
+
+
 # =============================================================================
 # calculate_min_mean_max
 # =============================================================================
@@ -286,15 +301,6 @@ def test_calculate_min_mean_max_returns_dict(csl, sample_annual_dataset):
     assert "max" in result
 
 
-def test_calculate_min_mean_max_uses_10_values(csl, sample_annual_dataset):
-    """Should calculate over exactly 10 time steps (1 decade)."""
-    csl.season = "annual"
-    csl.variable = "tas"
-    
-    result = csl.calculate_min_mean_max(sample_annual_dataset, 0, 10, 1)
-    assert result is not None
-
-
 def test_calculate_min_mean_max_raises_for_wrong_slice_size(csl, sample_annual_dataset):
     """Should raise ValueError if slice doesn't contain exactly 10 values."""
     csl.season = "annual"
@@ -302,6 +308,27 @@ def test_calculate_min_mean_max_raises_for_wrong_slice_size(csl, sample_annual_d
     
     with pytest.raises(ValueError, match="10 values"):
         csl.calculate_min_mean_max(sample_annual_dataset, 0, 5, 1)
+
+
+def test_calculate_min_mean_max_winter_step_4_passes_month_check(csl, sample_seasonal_dataset):
+    """Winter seasonal slicing with step=4 should only select January timestamps and pass month check."""
+    csl.season = "winter"
+    csl.variable = "tas"
+
+    # For seasonal data: first winter decade is indices 0..40 stepping by 4 -> 10 points, all month==1
+    result = csl.calculate_min_mean_max(sample_seasonal_dataset, lower_bound=0, higher_bound=40, step=4)
+
+    assert set(result.keys()) == {"min", "mean", "max"}
+
+
+def test_calculate_min_mean_max_winter_wrong_step_raises_month_check_error(csl, sample_seasonal_dataset):
+    """Winter seasonal slicing with step=1 should include non-January months and raise month check error."""
+    csl.season = "winter"
+    csl.variable = "tas"
+
+    # 10 values (size check passes), but months will be 1,4,7,10,... so month check should fail
+    with pytest.raises(ValueError, match="Different months identified"):
+        csl.calculate_min_mean_max(sample_seasonal_dataset, lower_bound=0, higher_bound=10, step=1)
 
 
 # =============================================================================
@@ -317,41 +344,71 @@ def test_process_decade_returns_dict_by_decade(csl, sample_annual_dataset):
     result = csl.process_decade(sample_annual_dataset)
     
     assert isinstance(result, dict)
-    assert 1980 in result or 1981 in result
+    assert 1980 in result 
+    assert 2070 in result
     assert len(result) == 10
 
 
-def test_process_decade_annual_uses_step_of_1(csl, sample_annual_dataset):
-    """Should use every time step for annual data."""
-    csl.season = "annual"
-    csl.variable = "tas"
-    
-    result = csl.process_decade(sample_annual_dataset)
-    
-    first_decade = list(result.values())[0]
-    assert "min" in first_decade
-    assert "mean" in first_decade
-    assert "max" in first_decade
-
-
-def test_process_decade_seasonal_uses_step_of_4(csl, sample_seasonal_dataset):
-    """Should use every 4th time step for seasonal data."""
+def test_process_decade_winter_calls_calculate_with_step_4_and_start_0(csl, sample_seasonal_dataset):
+    """Winter seasonal processing should start at index 0 and use step=4."""
     csl.season = "winter"
     csl.variable = "tas"
-    
-    result = csl.process_decade(sample_seasonal_dataset)
-    
+
+    dummy = {"min": None, "mean": None, "max": None}
+
+    with patch.object(csl, "calculate_min_mean_max", return_value=dummy) as spy_calc:
+        result = csl.process_decade(sample_seasonal_dataset)
+
+    # sanity: still produced 10 decades
     assert isinstance(result, dict)
     assert len(result) == 10
 
+    # First call args: (data, lower_bound, higher_bound, step)
+    _, lower_bound, higher_bound, step = spy_calc.call_args_list[0].args
 
-def test_process_decade_summer_starts_at_offset_2(csl, sample_seasonal_dataset):
-    """Summer data should start at index 2 (July)."""
+    assert lower_bound == 0
+    assert higher_bound == 40
+    assert step == 4
+
+
+def test_process_decade_summer_calls_calculate_with_step_4_and_start_2(csl, sample_seasonal_dataset):
+    """Summer seasonal processing should start at index 2 (July) and use step=4."""
     csl.season = "summer"
     csl.variable = "tas"
-    
-    result = csl.process_decade(sample_seasonal_dataset)
+
+    dummy = {"min": None, "mean": None, "max": None}
+
+    with patch.object(csl, "calculate_min_mean_max", return_value=dummy) as spy_calc:
+        result = csl.process_decade(sample_seasonal_dataset)
+
+    assert isinstance(result, dict)
     assert len(result) == 10
+
+    _, lower_bound, higher_bound, step = spy_calc.call_args_list[0].args
+
+    assert lower_bound == 2
+    assert higher_bound == 42
+    assert step == 4
+
+
+def test_process_decade_annual_calls_calculate_with_step_1_and_period_10(csl, sample_annual_dataset):
+    """Annual processing should start at 0 and use step=1 over a 10-point decade window."""
+    csl.season = "annual"
+    csl.variable = "tas"
+
+    dummy = {"min": None, "mean": None, "max": None}
+
+    with patch.object(csl, "calculate_min_mean_max", return_value=dummy) as spy_calc:
+        result = csl.process_decade(sample_annual_dataset)
+
+    assert isinstance(result, dict)
+    assert len(result) == 10
+
+    _, lower_bound, higher_bound, step = spy_calc.call_args_list[0].args
+
+    assert lower_bound == 0
+    assert higher_bound == 10
+    assert step == 1
 
 
 # =============================================================================
@@ -445,8 +502,7 @@ def test_create_table_creates_with_correct_name(mock_psycopg2, csl):
     csl.table_name = "chess_scape_rcp60_annual_tas"
     csl.create_table()
 
-    sql_calls = [str(call) for call in mock_cur.execute.call_args_list]
-    sql_combined = " ".join(sql_calls)
+    sql_combined = " ".join(call.args[0] for call in mock_cur.execute.call_args_list)
 
     assert "chess_scape_rcp60_annual_tas" in sql_combined
     assert "CREATE TABLE" in sql_combined.upper()
@@ -525,20 +581,24 @@ def test_add_multiple_columns_adds_all_columns(mock_psycopg2, csl):
 # =============================================================================
 
 
-@patch("data.src.chessscape_loader.psycopg2")
-def test_insert_data_multiple_decades_uses_correct_data_source(mock_psycopg2, csl, sample_mask):
-    """Should use bias_corrected for mask=1, non_bias_corrected for mask=2."""
+def test_insert_data_multiple_decades_writes_correct_rows_and_skips_zero_mask(csl, sample_mask):
+    """Should select correct bias source per mask value and skip mask==0 cells."""
+
+    # Mock DB connection + cursor
     mock_conn = MagicMock()
     mock_cur = MagicMock()
     mock_conn.cursor.return_value = mock_cur
-    mock_psycopg2.connect.return_value = mock_conn
 
-    csl.connect_to_db()
+    csl.conn = mock_conn
+    csl.cur = mock_cur
+
+    # Set required state
     csl.mask = sample_mask
     csl.table_name = "test_table"
     csl.variable = "tas"
     csl.bias_corrected_keys = ["bias_corrected", "non_bias_corrected"]
 
+    # Create deterministic extracted data
     csl.extracted_data = {
         "bias_corrected": {
             1980: {
@@ -556,18 +616,50 @@ def test_insert_data_multiple_decades_uses_correct_data_source(mock_psycopg2, cs
         },
     }
 
+    # Capture buffer passed into copy_from
+    captured_buffer = {}
+
+    def capture_copy_from(file_obj, table_name, sep=",", columns=None):
+        file_obj.seek(0)
+        captured_buffer["content"] = file_obj.read()
+
+    mock_cur.copy_from.side_effect = capture_copy_from
+
+    # Run method
     csl.insert_data_multiple_decades()
 
-    assert mock_cur.copy_from.called
+    # Parse captured content
+    lines = captured_buffer["content"].strip().split("\n")
 
+    # Ensure mask==0 cells were skipped
+    expected_rows = np.count_nonzero(sample_mask)
+    assert len(lines) == expected_rows
 
-def test_insert_data_multiple_decades_skips_zero_mask_cells(csl, sample_mask):
-    """Cells with mask value 0 should be skipped."""
-    non_zero_cells = np.count_nonzero(sample_mask)
-    zero_cells = sample_mask.size - non_zero_cells
-    
-    assert zero_cells == 2
-    assert non_zero_cells == 7
+    # Build lookup of grid_cell_id -> row values
+    parsed = {}
+    for line in lines:
+        parts = line.split(",")
+        grid_id = int(parts[0])
+        values = list(map(float, parts[1:]))
+        parsed[grid_id] = values
+
+    # Helper to compute grid_cell_id
+    def gid(i, j):
+        return i * sample_mask.shape[1] + j
+
+    # Check mask == 1 (bias_corrected → 10,15,20)
+    for i, j in zip(*np.where(sample_mask == 1)):
+        values = parsed[gid(i, j)]
+        assert values == [10.0, 15.0, 20.0]
+
+    # Check mask == 2 (non_bias_corrected → 11,16,21)
+    for i, j in zip(*np.where(sample_mask == 2)):
+        values = parsed[gid(i, j)]
+        assert values == [11.0, 16.0, 21.0]
+
+    # Ensure mask == 0 cells are not present
+    for i, j in zip(*np.where(sample_mask == 0)):
+        assert gid(i, j) not in parsed
 
 
 # =============================================================================
@@ -592,6 +684,29 @@ def test_join_tables_creates_aggregated_table(mock_psycopg2, csl):
 
     assert "CREATE TABLE" in sql_combined.upper()
     assert "JOIN" in sql_combined.upper()
+
+
+def test_join_tables_drops_aggregated_and_temp_tables(csl):
+    """Should drop aggregated table first, then drop each temporary variable table after join."""
+    csl.aggregated_table_name = "chess_scape_rcp60_annual"
+
+    csl.cur = MagicMock()
+    csl.conn = MagicMock()
+
+    with patch.object(csl, "drop_table") as mock_drop:
+        csl.join_tables(["tas", "pr", "rsds"])
+
+    # 1) first call should drop the aggregated table
+    assert mock_drop.call_args_list[0].args[0] == "chess_scape_rcp60_annual"
+
+    # 2) then should drop each temp table once (order matters because your code loops in order)
+    expected_temp_tables = [
+        "chess_scape_rcp60_annual_tas",
+        "chess_scape_rcp60_annual_pr",
+        "chess_scape_rcp60_annual_rsds",
+    ]
+    actual_temp_tables = [call.args[0] for call in mock_drop.call_args_list[1:]]
+    assert actual_temp_tables == expected_temp_tables
 
 
 # =============================================================================
@@ -640,9 +755,8 @@ def test_process_all_variables_joins_tables_at_end(
     """Should call join_tables with all variable names at the end."""
     csl.process_all_variables(season="annual", rcp=60)
 
-    mock_join.assert_called_once()
-    variables = mock_join.call_args[0][0]
-    assert len(variables) == 6
+    expected_variables = ["pr", "rsds", "sfcWind", "tas", "tasmax", "tasmin"]
+    mock_join.assert_called_once_with(expected_variables)
 
 
 # =============================================================================
