@@ -56,6 +56,10 @@ class ProcessReferences:
         row_type = row["Reference_Type"]
         row_id = row["Reference_ID"]
 
+        if row_type not in {"Journal Article", "Report", "Book", "Book Section"}:
+            print("Neither Journal Article nor Book found: no DOI lookup performed")
+            return
+
         # Scrape data
         try:
             response, data = scrape_doi.scrape(row)
