@@ -382,7 +382,7 @@ class OverlapCalculator:
         region_name = self.get_region_name(gid)
         bounding_box_geom = self.get_bounding_box(region_geom, scale_factor)
         candidate_cells = self.get_candidate_cells(bounding_box_geom)
-        closest_grid_cell_id, _ = self.find_closest_grid_cell(region_geom, candidate_cells)
+        closest_grid_cell_id, _, _ = self.find_closest_grid_cell(region_geom, candidate_cells)
         closest_grid_cell_geom = self.get_grid_cell_geometry(closest_grid_cell_id)
 
         fig, ax = plt.subplots()
@@ -401,7 +401,7 @@ class OverlapCalculator:
         )
 
         # Plot the candidate grid cells
-        for grid_cell_id, grid_cell_geom in candidate_cells:
+        for grid_cell_id, grid_cell_geom, _bias_corrected in candidate_cells:
             ax = plot_geometry(grid_cell_geom, ax=ax, color="pink", linewidth=0.5)
 
         # If we have a closest grid cell, plot on this centroid with a black cross
