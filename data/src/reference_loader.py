@@ -50,7 +50,7 @@ class ReferenceLoader:
 
         create_table_query = """
         CREATE TABLE IF NOT EXISTS "references" (
-            article_id INTEGER PRIMARY KEY,
+            article_id VARCHAR PRIMARY KEY,
             type VARCHAR(50),
             doi VARCHAR(255),
             link TEXT,
@@ -81,6 +81,7 @@ class ReferenceLoader:
             "type",
             "doi",
             "link",
+            "link_replacement",
             "title",
             "authors",
             "date",
