@@ -13,7 +13,7 @@ def scrape(row, timeout=20):
     Scrape Crossref metadata for a given row, based on DOI.
 
     Returns:
-        (response, parsed_dict)
+        dict: Parsed Crossref metadata derived from the DOI response.
 
     Raises:
         KeyError if DOI is missing from row
