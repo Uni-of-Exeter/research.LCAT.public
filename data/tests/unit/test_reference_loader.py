@@ -33,7 +33,7 @@ def db_ready_rl(rl):
 @pytest.fixture
 def valid_record():
     return {
-        "article_id": "REF001",
+        "article_id": 1,
         "type": "Journal Article",
         "doi": "10.1234/test",
         "link": "http://example.com",
@@ -97,7 +97,7 @@ def test_connect_to_db_falls_back_to_config_if_any_missing(connect, rl, kwargs):
 # -----------------------------------------------------------------------------
 
 def test_load_json_uses_explicit_filepath(rl, valid_record):
-    sample = {"REF001": valid_record}
+    sample = {"1": valid_record}
     m = mock_open(read_data=json.dumps(sample))
 
     with patch("builtins.open", m):
@@ -108,7 +108,7 @@ def test_load_json_uses_explicit_filepath(rl, valid_record):
 
 
 def test_load_json_uses_config_filepath_by_default(rl, valid_record):
-    sample = {"REF001": valid_record}
+    sample = {"1": valid_record}
     m = mock_open(read_data=json.dumps(sample))
 
     with patch("builtins.open", m):
@@ -165,16 +165,15 @@ def test_create_table_executes_and_commits(db_ready_rl):
     db_ready_rl.conn.commit.assert_called_once()
 
 
-def test_create_table_uses_text_primary_key_for_article_id(db_ready_rl):
+def test_create_table_uses_integer_primary_key_for_article_id(db_ready_rl):
     """
-    desired behaviour if your Reference_IDs are strings like REF001.
-    this will FAIL until you change the schema from INTEGER to TEXT/VARCHAR.
+    article_id should be an INTEGER primary key.
     """
     db_ready_rl.create_table()
     sql = db_ready_rl.cur.execute.call_args[0][0]
     assert "article_id" in sql
     assert "PRIMARY KEY" in sql.upper()
-    assert "article_id TEXT" in sql.lower() or "article_id varchar" in sql.lower()
+    assert "article_id INTEGER" in sql.upper() or "article_id INT" in sql.upper()
 
 
 # -----------------------------------------------------------------------------
@@ -189,8 +188,8 @@ def test_insert_data_raises_if_no_data_loaded(db_ready_rl):
 
 def test_insert_data_inserts_only_valid_records(db_ready_rl, valid_record):
     db_ready_rl.data = {
-        "REF001": valid_record,
-        "REF002": {"article_id": "REF002"},  # invalid
+        "1": valid_record,
+        "2": {"article_id": 2},  # invalid
     }
 
     db_ready_rl.insert_data()
@@ -201,7 +200,7 @@ def test_insert_data_inserts_only_valid_records(db_ready_rl, valid_record):
 
 
 def test_insert_data_uses_on_conflict_do_nothing(db_ready_rl, valid_record):
-    db_ready_rl.data = {"REF001": valid_record}
+    db_ready_rl.data = {"1": valid_record}
 
     db_ready_rl.insert_data()
 
@@ -211,7 +210,7 @@ def test_insert_data_uses_on_conflict_do_nothing(db_ready_rl, valid_record):
 
 
 def test_insert_data_passes_expected_values_tuple(db_ready_rl, valid_record):
-    db_ready_rl.data = {"REF001": valid_record}
+    db_ready_rl.data = {"1": valid_record}
 
     db_ready_rl.insert_data()
 
