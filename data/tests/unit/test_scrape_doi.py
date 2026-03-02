@@ -114,11 +114,10 @@ def test_scrape_sets_accept_header_and_opens_doi(mock_build_opener, mock_parse):
 
     row = {"DOI": "10.1234/test", "Reference_Type": "Journal Article"}
 
-    raw, data = scrape(row)
+    data = scrape(row)
 
     assert mock_opener.addheaders == [("Accept", "application/vnd.crossref.unixsd+xml")]
     mock_opener.open.assert_called_once_with("https://doi.org/10.1234/test", timeout=20)
-    assert raw == b"<xml/>"
     assert data == {"ok": True}
 
 

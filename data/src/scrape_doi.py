@@ -30,11 +30,11 @@ def scrape(row, timeout=20):
 
     # Use https://doi.org/ and ensure the response is closed
     url = DOI_BASE_URL + row_doi
-    r = opener.open(url, timeout=timeout)
-    raw = r.read()
-    
+    with opener.open(url, timeout=timeout) as r:
+        raw = r.read()
+
     d = xmltodict.parse(raw)
-    return r, d
+    return d
 
 
 def _title_to_str(title):
