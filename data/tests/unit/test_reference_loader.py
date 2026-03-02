@@ -173,7 +173,7 @@ def test_create_table_uses_integer_primary_key_for_article_id(db_ready_rl):
     sql = db_ready_rl.cur.execute.call_args[0][0]
     assert "article_id" in sql
     assert "PRIMARY KEY" in sql.upper()
-    assert "article_id INTEGER" in sql.upper() or "article_id INT" in sql.upper()
+    assert "ARTICLE_ID INTEGER" in sql.upper() or "ARTICLE_ID INT" in sql.upper()
 
 
 # -----------------------------------------------------------------------------
