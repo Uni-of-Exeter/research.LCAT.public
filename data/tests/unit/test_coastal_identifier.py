@@ -198,13 +198,8 @@ def test_process_all_boundaries_processes_expected_boundaries_in_order(mock_proc
         "parishes",
         "sc_dz",
         "ni_dz",
+        "iom"
     ]
 
     assert [c.args[0] for c in mock_process_boundary.call_args_list] == expected
 
-
-@patch.object(CoastalIdentifier, "process_boundary")
-def test_process_all_boundaries_excludes_iom(mock_process_boundary, ci):
-    ci.process_all_boundaries()
-    processed = [c.args[0] for c in mock_process_boundary.call_args_list]
-    assert "iom" not in processed
