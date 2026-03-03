@@ -170,16 +170,15 @@ def test_read_article_authors_filters_to_author_role_when_list():
 
 def test_read_article_single_contributor_should_respect_contributor_role():
     """
-    This currently FAILS with your implementation, because the single-dict branch
-    doesn't check @contributor_role.
-    Decide your desired behaviour and then make code + test align.
+    Single contributors should respect @contributor_role.
+    Editors shouldn't be included in the authors field.
     """
     row = make_row()
     contributors = {"person_name": {"given_name": "Ed", "surname": "Itor", "@contributor_role": "editor"}}
     d = make_article_crossref(contributors=contributors)
     out = read_article(row, d)
 
-    # desired behaviour: editor shouldn't be treated as an author
+    # editor shouldn't be treated as an author
     assert out["authors"] == ""
 
 
