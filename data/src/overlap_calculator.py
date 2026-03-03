@@ -401,7 +401,7 @@ class OverlapCalculator:
         )
 
         # Plot the candidate grid cells
-        for grid_cell_id, grid_cell_geom, _bias_corrected in candidate_cells:
+        for _, grid_cell_geom, _ in candidate_cells:
             ax = plot_geometry(grid_cell_geom, ax=ax, color="pink", linewidth=0.5)
 
         # If we have a closest grid cell, plot on this centroid with a black cross
