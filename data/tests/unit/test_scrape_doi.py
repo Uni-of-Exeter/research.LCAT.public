@@ -195,9 +195,8 @@ def test_read_article_publication_date_list_prefers_print_year():
 
 def test_read_article_publication_date_list_without_print_should_not_be_empty():
     """
-    This exposes the real bug: if publication_date is a list but has no print entry,
-    your code returns date == "".
-    Better behaviour is usually: fall back to first available year.
+    When publication_date is a list without a 'print' media type entry,
+    should fall back to the first available year rather than returning empty string.
     """
     row = make_row()
     publication_date = [
