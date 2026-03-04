@@ -113,7 +113,7 @@ def test_doi_lookup_row_routes_to_correct_parser(pr_from_df, ref_type, parser_at
     )
     pr = pr_from_df(df)
 
-    with patch("data.src.process_references.scrape_doi.scrape", return_value=(MagicMock(), {"any": "data"})) as mock_scrape, \
+    with patch("data.src.process_references.scrape_doi.scrape", return_value={"any": "data"}) as mock_scrape, \
          patch(f"data.src.process_references.scrape_doi.{parser_attr}", return_value={"parsed": True}) as mock_parser:
         pr.doi_lookup_row(df.iloc[0])
 
