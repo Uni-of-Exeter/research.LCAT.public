@@ -1,6 +1,6 @@
-import pytest
 from unittest.mock import MagicMock, patch, call
 
+import pytest
 from psycopg2 import sql
 
 from data.src.db_manager import DBManager
