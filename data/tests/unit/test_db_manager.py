@@ -201,34 +201,31 @@ def test_add_postgis_extension_handles_exception_without_raising(mock_connect, d
 
 
 def test_setup_database_calls_methods_in_order(db_manager):
-    # Patch on the instance to allow strict ordering checks
-    db_manager.create_user_role = MagicMock()
-    db_manager.create_database_with_role = MagicMock()
-    db_manager.add_postgis_extension = MagicMock()
+    # Track call order using a list
+    call_order = []
+    
+    def track_create_user_role():
+        call_order.append('create_user_role')
+    
+    def track_create_database():
+        call_order.append('create_database_with_role')
+    
+    def track_add_postgis():
+        call_order.append('add_postgis_extension')
+    
+    db_manager.create_user_role = MagicMock(side_effect=track_create_user_role)
+    db_manager.create_database_with_role = MagicMock(side_effect=track_create_database)
+    db_manager.add_postgis_extension = MagicMock(side_effect=track_add_postgis)
 
     db_manager.setup_database()
 
-    # Assert order via mock_calls on the instance (explicit and reliable)
-    assert db_manager.create_user_role.mock_calls == [call()]
-    assert db_manager.create_database_with_role.mock_calls == [call()]
-    assert db_manager.add_postgis_extension.mock_calls == [call()]
-
-    # And ordering across the three:
-    combined = (
-        db_manager.create_user_role.call_time
-        if hasattr(db_manager.create_user_role, "call_time")
-        else None
-    )
-    # Instead of fake timestamps, check by constructing a single list:
-    all_calls = []
-    all_calls.extend([("create_user_role", c) for c in db_manager.create_user_role.mock_calls])
-    all_calls.extend([("create_database_with_role", c) for c in db_manager.create_database_with_role.mock_calls])
-    all_calls.extend([("add_postgis_extension", c) for c in db_manager.add_postgis_extension.mock_calls])
-
-    # Since each is called once, order is enforced by asserting the sequence via call_count checks:
+    # Assert each method was called once
     assert db_manager.create_user_role.call_count == 1
     assert db_manager.create_database_with_role.call_count == 1
     assert db_manager.add_postgis_extension.call_count == 1
+    
+    # Assert they were called in the correct order
+    assert call_order == ['create_user_role', 'create_database_with_role', 'add_postgis_extension']
 
 
 # =============================================================================
