@@ -47,6 +47,7 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
         setDownloadStatus('generating');
         setHasDownloaded(false);
         setPdfUrl(null);
+        setPdfError(null);
     };
 
     // Handle PDF generation errors
@@ -62,16 +63,28 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
         if (pdfUrl && downloadStatus === 'generating' && !hasDownloaded) {
             setHasDownloaded(true);
 
-            const link = document.createElement('a');
-            link.href = pdfUrl;
-            link.download = reportFileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            // Clean up state
-            setDownloadStatus('idle');
-            setShouldShowPDF(false);
+            // Fetch the blob URL and re-trigger
+            fetch(pdfUrl)
+                .then(res => res.blob())
+                .then(blob => {
+                    const blobUrl = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = blobUrl;
+                    link.download = reportFileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+                })
+                .catch(() => {
+                    // Fallback: open in new tab (user can save manually)
+                    window.open(pdfUrl, '_blank');
+                })
+                .finally(() => {
+                    setDownloadStatus('idle');
+                    setShouldShowPDF(false);
+                    setPdfUrl(null);
+                });
         }
     }, [pdfUrl, downloadStatus, hasDownloaded, reportFileName]);
 
