@@ -1,10 +1,11 @@
+import os
+import tempfile
+from unittest.mock import MagicMock, patch
+
 import pytest
 import numpy as np
 import xarray as xr
 import pandas as pd
-import tempfile
-from unittest.mock import MagicMock, patch
-import os 
 
 from data.src.chessscape_loader import ChessScapeLoader
 
