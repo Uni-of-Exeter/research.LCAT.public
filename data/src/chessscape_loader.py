@@ -572,7 +572,6 @@ class ChessScapeLoader:
                     "tropical_nights",
                     "hot_heat_days",
                     "heavy_rain_days",
-                    "dry_days",
                     "windy_days",
                 ]
                 and season != "annual"
@@ -585,13 +584,18 @@ class ChessScapeLoader:
                 "tropical_nights",
                 "hot_heat_days",
                 "heavy_rain_days",
-                "dry_days",
                 "windy_days",
             ]:
+                # These are annual-only variables
                 sub_folders = (
                     f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/annual"
                 )
                 filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_{var}_uk_1km_annual_19801201-20801130.nc"
+            elif var == "dry_days":
+                # dry_days has both seasonal and annual versions
+                season_folder = "seasonal" if season != "annual" else "annual"
+                sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/{season_folder}"
+                filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_dry_days_uk_1km_{season}_19801201-20801130.nc"
             elif season in ["summer", "winter"]:
                 sub_folders = (
                     f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/seasonal"
@@ -625,8 +629,8 @@ class ChessScapeLoader:
         for variable in variables:
 
             self.load_all_netcdf(season, rcp, variable)
-            if variable in source_variables:
-                # Standard processing for source variables
+            if variable in source_variables or variable == "dry_days":
+                # Standard processing for source variables and dry_days
                 self.process_bias_keys()
                 self.transform_all_means()
             else:

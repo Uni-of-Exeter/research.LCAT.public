@@ -521,9 +521,7 @@ class ClimateDataProcessor:
                             and variable == "pr"
                             and season == "annual"
                         )
-                        compute_dry_days = (
-                            dry_days_enabled and variable == "pr" and season == "annual"
-                        )
+                        compute_dry_days = dry_days_enabled and variable == "pr"
                         compute_windy_days = (
                             windy_days_enabled
                             and variable == "sfcWind"

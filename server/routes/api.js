@@ -300,6 +300,11 @@ function buildAvgClimateCols(season) {
         }
     }
 
+    // dry_days is available for all seasons
+    for (const decade of derivedDecades) {
+        averageClimateColNames.push(`AVG("dry_days_${decade}") as "dry_days_${decade}"`);
+    }
+
     return averageClimateColNames;
 }
 
