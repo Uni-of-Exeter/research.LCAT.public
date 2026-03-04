@@ -82,10 +82,6 @@ class ProcessReferences:
                 print(f"DOI Book parsing failed for reference ID: {row_id}")
                 self.failed_doi_lookups.append(row_id)
 
-        else:
-            print("Reference type not found!")
-            return
-
     def perform_doi_lookups(self, scrape_all_rows=False):
         """
         Perform DOI lookups. Set scrape_all_rows to True to scrape all rows (with DOIs) from scratch, which would
