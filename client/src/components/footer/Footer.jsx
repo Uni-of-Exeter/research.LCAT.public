@@ -36,7 +36,6 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
     const [selectedPageIds, setSelectedPageIds] = useState([]);
     const [shouldShowPDF, setShouldShowPDF] = useState(false);
     const [downloadStatus, setDownloadStatus] = useState('idle');
-    const [hasDownloaded, setHasDownloaded] = useState(false);
     const [pdfUrl, setPdfUrl] = useState(null);
     const [pdfError, setPdfError] = useState(null);
 
@@ -45,7 +44,6 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
         setShowPageSelection(false);
         setShouldShowPDF(true);
         setDownloadStatus('generating');
-        setHasDownloaded(false);
         setPdfUrl(null);
         setPdfError(null);
     };
@@ -53,40 +51,10 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
     // Handle PDF generation errors
     useEffect(() => {
         if (pdfError) {
-            setDownloadStatus('idle');
-            setHasDownloaded(false);
+            setDownloadStatus('error');
             setPdfError(null);
         }
     }, [pdfError]);
-
-    useEffect(() => {
-        if (pdfUrl && downloadStatus === 'generating' && !hasDownloaded) {
-            setHasDownloaded(true);
-
-            // Fetch the blob URL and re-trigger
-            fetch(pdfUrl)
-                .then(res => res.blob())
-                .then(blob => {
-                    const blobUrl = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = blobUrl;
-                    link.download = reportFileName;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-                })
-                .catch(() => {
-                    // Fallback: open in new tab (user can save manually)
-                    window.open(pdfUrl, '_blank');
-                })
-                .finally(() => {
-                    setDownloadStatus('idle');
-                    setShouldShowPDF(false);
-                    setPdfUrl(null);
-                });
-        }
-    }, [pdfUrl, downloadStatus, hasDownloaded, reportFileName]);
 
     const availablePages = [
         {
@@ -152,9 +120,27 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
                             >
                                 Generate LCAT Summary Report
                             </button>
-                            <div className={`generating-status ${downloadStatus === 'generating' ? 'visible' : 'hidden'}`}>
-                                {downloadStatus === 'generating' ? 'Generating report...' : ''}
+                            <div className={`generating-status ${(downloadStatus === 'generating' && !pdfUrl) || downloadStatus === 'error' ? 'visible' : 'hidden'}`}>
+                                {downloadStatus === 'generating' && !pdfUrl && 'Generating report...'}
+                                {downloadStatus === 'error' && 'Download failed — please try again.'}
                             </div>
+                            {pdfUrl && (
+                                <a
+                                    href={pdfUrl}
+                                    download={reportFileName}
+                                    className="pdf-download-ready-link"
+                                    onClick={() => {
+                                        // Defer state reset so the browser can initiate the download first
+                                        setTimeout(() => {
+                                            setShouldShowPDF(false);
+                                            setDownloadStatus('idle');
+                                            setPdfUrl(null);
+                                        }, 1000);
+                                    }}
+                                >
+                                    Download your report
+                                </a>
+                            )}
                         </div>
                         
                         {shouldShowPDF && selectedPageIds.length > 0 && (
