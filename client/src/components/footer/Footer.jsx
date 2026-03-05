@@ -27,8 +27,8 @@ import PageSelectionModal from './PageSelectionModal';
 
 // Generates a PDF and renders the appropriate status/download link.
 // Rendered conditionally by Footer — mounting starts generation, unmounting cancels any pending reset timer.
-const PdfDownloader = ({ document, fileName, onDone }) => {
-    const [instance] = usePDF({ document });
+const PdfDownloader = ({ pdfDocument, fileName, onDone }) => {
+    const [instance] = usePDF({ document: pdfDocument });
     const timerRef = useRef(null);
 
     useEffect(() => {
@@ -140,7 +140,7 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
                             {shouldShowPDF && selectedPageIds.length > 0 && (
                                 <PdfDownloader
                                     key={generationId}
-                                    document={<ClimateReport
+                                    pdfDocument={<ClimateReport
                                         regions={regions}
                                         climatePrediction={climatePrediction}
                                         selectedImpactHazard={selectedImpactHazard}
