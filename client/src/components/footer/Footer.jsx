@@ -14,8 +14,8 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./Footer.css";
 
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import React, { useEffect, useState } from "react";
+import { usePDF } from '@react-pdf/renderer';
+import React, { useEffect, useRef, useState } from "react";
 
 import ClimateReport from "../report/report";
 import AdaptationGuide from "./AdaptationGuide";
@@ -24,6 +24,35 @@ import FooterLogos from "./FooterLogos";
 import FooterText from "./FooterText";
 import Handbook from "./Handbook";
 import PageSelectionModal from './PageSelectionModal';
+
+// Generates a PDF and renders the appropriate status/download link.
+// Rendered conditionally by Footer — mounting starts generation, unmounting cancels any pending reset timer.
+const PdfDownloader = ({ document, fileName, onDone }) => {
+    const [instance] = usePDF({ document });
+    const timerRef = useRef(null);
+
+    useEffect(() => {
+        return () => {
+            // If a new generation starts before the timer fires, cancel the deferred reset
+            if (timerRef.current) clearTimeout(timerRef.current);
+        };
+    }, []);
+
+    const handleClick = () => {
+        const urlToRevoke = instance.url;
+        // Defer unmount so the browser can initiate the download first
+        timerRef.current = setTimeout(() => {
+            URL.revokeObjectURL(urlToRevoke);
+            onDone();
+            timerRef.current = null;
+        }, 1000);
+    };
+
+    if (instance.loading) return <span className="generating-status visible">Generating report...</span>;
+    if (instance.error) return <span className="generating-status visible">Download failed — please try again.</span>;
+    if (instance.url) return <a href={instance.url} download={fileName} onClick={handleClick}>Download your report</a>;
+    return null;
+};
 
 const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdaptationHazards, filterName, rcp, season, applyCoastalFilter }) => {
     // Generate filename with region names
@@ -35,26 +64,14 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
     const [showPageSelection, setShowPageSelection] = useState(false);
     const [selectedPageIds, setSelectedPageIds] = useState([]);
     const [shouldShowPDF, setShouldShowPDF] = useState(false);
-    const [downloadStatus, setDownloadStatus] = useState('idle');
-    const [pdfUrl, setPdfUrl] = useState(null);
-    const [pdfError, setPdfError] = useState(null);
+    const [generationId, setGenerationId] = useState(0);
 
     const onPageSelection = (pageIds) => {
         setSelectedPageIds(pageIds);
         setShowPageSelection(false);
         setShouldShowPDF(true);
-        setDownloadStatus('generating');
-        setPdfUrl(null);
-        setPdfError(null);
+        setGenerationId(id => id + 1); // changing key unmounts the old PdfDownloader, cancelling any pending timer
     };
-
-    // Handle PDF generation errors
-    useEffect(() => {
-        if (pdfError) {
-            setDownloadStatus('error');
-            setPdfError(null);
-        }
-    }, [pdfError]);
 
     const availablePages = [
         {
@@ -120,58 +137,25 @@ const Footer = ({ regions, climatePrediction, selectedImpactHazard, selectedAdap
                             >
                                 Generate LCAT Summary Report
                             </button>
-                            <div className={`generating-status ${(downloadStatus === 'generating' && !pdfUrl) || downloadStatus === 'error' ? 'visible' : 'hidden'}`}>
-                                {downloadStatus === 'generating' && !pdfUrl && 'Generating report...'}
-                                {downloadStatus === 'error' && 'Download failed — please try again.'}
-                            </div>
-                            {pdfUrl && (
-                                <a
-                                    href={pdfUrl}
-                                    download={reportFileName}
-                                    className="pdf-download-ready-link"
-                                    onClick={() => {
-                                        // Defer state reset so the browser can initiate the download first
-                                        setTimeout(() => {
-                                            setShouldShowPDF(false);
-                                            setDownloadStatus('idle');
-                                            setPdfUrl(null);
-                                        }, 1000);
-                                    }}
-                                >
-                                    Download your report
-                                </a>
+                            {shouldShowPDF && selectedPageIds.length > 0 && (
+                                <PdfDownloader
+                                    key={generationId}
+                                    document={<ClimateReport
+                                        regions={regions}
+                                        climatePrediction={climatePrediction}
+                                        selectedImpactHazard={selectedImpactHazard}
+                                        selectedAdaptationHazards={selectedAdaptationHazards}
+                                        filterName={filterName}
+                                        rcp={rcp}
+                                        season={season}
+                                        applyCoastalFilter={applyCoastalFilter}
+                                        selectedPages={selectedPageIds}
+                                    />}
+                                    fileName={reportFileName}
+                                    onDone={() => setShouldShowPDF(false)}
+                                />
                             )}
                         </div>
-                        
-                        {shouldShowPDF && selectedPageIds.length > 0 && (
-                            <PDFDownloadLink
-                                document={<ClimateReport 
-                                    regions={regions} 
-                                    climatePrediction={climatePrediction} 
-                                    selectedImpactHazard={selectedImpactHazard}
-                                    selectedAdaptationHazards={selectedAdaptationHazards}
-                                    filterName={filterName}
-                                    rcp={rcp}
-                                    season={season}
-                                    applyCoastalFilter={applyCoastalFilter}
-                                    selectedPages={selectedPageIds}
-                                />}
-                                fileName={reportFileName}
-                                className="pdf-download-link"
-                            >
-                                {({ url, error }) => {
-                                    if (error && !pdfError) {
-                                        setPdfError(error);
-                                    }
-                                    
-                                    if (url && !pdfUrl) {
-                                        setPdfUrl(url);
-                                    }
-                                    
-                                    return null;
-                                }}
-                            </PDFDownloadLink>
-                        )}
                     </>
                 ) : (
                         <div className="select-region-prompt">
