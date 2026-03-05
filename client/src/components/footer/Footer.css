@@ -132,6 +132,7 @@
     font-weight: bold;
     cursor: pointer;
     border: none;
+    margin-bottom: 0.7em;
 }
 
 .generate-report-button:hover {
@@ -161,8 +162,4 @@
     font-weight: bold;
     display: inline-block;
     border: 2px dashed #ccc;
-}
-
-.pdf-download-link {
-    display: none;
 }
