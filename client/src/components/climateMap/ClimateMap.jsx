@@ -50,12 +50,14 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
     const hasTrackedRegionSelection = useRef(false);
 
     const layerMap = useRef(new Map());
+    const countryMap = useRef(new Map());
     const parentRef = useRef(null);
 
     const onEachFeature = (feature, layer) => {
         const col = "#00000000";
         const gid = feature.properties.gid;
         const name = feature.properties.name;
+        const country = feature.properties.country;
         const isSelected = regions.some((e) => e.id === gid);
 
         layer.bindTooltip(name);
@@ -68,6 +70,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
 
         // Store the layer reference
         layerMap.current.set(gid, layer);
+        countryMap.current.set(gid, country);
 
         layer.on("mouseover", () => {
             layer.bringToFront();
@@ -84,6 +87,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
     const toggleRegion = (gid, name, layer = null) => {
         const col = "#00000000";
         const targetLayer = layer || layerMap.current.get(gid);
+        const country = countryMap.current.get(gid);
 
         setRegions((prevRegions) => {
             const alreadySelected = prevRegions.some((r) => r.id === gid);
@@ -93,6 +97,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                     gtag('event', 'region_selection');
                     hasTrackedRegionSelection.current = true;
                 }
+                console.log(`${name}: ${country}`);
                 targetLayer && targetLayer.setStyle({ fillColor: highlightCol, fillOpacity: 1 });
                 return [
                     ...prevRegions,

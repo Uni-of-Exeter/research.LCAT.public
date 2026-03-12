@@ -178,8 +178,19 @@ router.get("/region", async function (req, res) {
         const client = new Client(conString);
         await client.connect();
 
-        // Placeholder for additional properties
-        const props = "";
+        // Derive country from ONS area code prefix, or use a fixed string for single-country boundaries
+        const countrySQL = {
+            "boundary_uk_counties":  `CASE LEFT(UPPER(ctyua23cd), 1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' WHEN 'S' THEN 'Scotland' WHEN 'N' THEN 'Northern Ireland' END`,
+            "boundary_la_districts": `CASE LEFT(UPPER(lad23cd),   1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' WHEN 'S' THEN 'Scotland' WHEN 'N' THEN 'Northern Ireland' END`,
+            "boundary_lsoa":         `CASE LEFT(UPPER(lsoa21cd),  1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
+            "boundary_msoa":         `CASE LEFT(UPPER(msoa21cd),  1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
+            "boundary_parishes":     `CASE LEFT(UPPER(par23cd),   1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
+            "boundary_sc_dz":        `'Scotland'`,
+            "boundary_ni_dz":        `'Northern Ireland'`,
+            "boundary_iom":          `'Isle of Man'`,
+        };
+        const countryExpr = countrySQL[table];
+        const props = countryExpr ? `'country', ${countryExpr}` : "";
 
         // Query: Build GeoJSON object for the given bounding box
         const get_region_query = `
