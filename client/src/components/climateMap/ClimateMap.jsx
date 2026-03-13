@@ -97,7 +97,6 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                     gtag('event', 'region_selection');
                     hasTrackedRegionSelection.current = true;
                 }
-                console.log(`${name}: ${country}`);
                 targetLayer && targetLayer.setStyle({ fillColor: highlightCol, fillOpacity: 1 });
                 return [
                     ...prevRegions,
