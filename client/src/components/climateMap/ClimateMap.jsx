@@ -104,6 +104,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                     {
                         id: gid,
                         name: name,
+                        country: country,
                         clearMe: () => targetLayer && targetLayer.setStyle({ fillColor: col, fillOpacity: 1 }),
                     },
                 ];

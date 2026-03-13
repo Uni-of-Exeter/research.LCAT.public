@@ -37,6 +37,7 @@ const IMDMap = ({ regions, regionType }) => {
     const [regionsCentre, setRegionsCentre] = useState(defaultState.mapCenter);
     const [zoomLevel, setZoomLevel] = useState(8);
     const hasTrackedCollapsibleOpen = useRef(false);
+    const englishRegions = regions.filter((r) => r.country === "England");
 
     useEffect(() => {
         // Set zoom level based on region type
@@ -71,7 +72,7 @@ const IMDMap = ({ regions, regionType }) => {
                     {isExpanded && (
                         <RegionCentreLoader
                             regionType={regionType}
-                            regions={regions}
+                            regions={englishRegions}
                             setRegionsCentre={setRegionsCentre}
                         />
                     )}
@@ -97,28 +98,32 @@ const IMDMap = ({ regions, regionType }) => {
                             , can also support local areas to understand climate vulnerability.
                         </p>
 
-                        <p>
-                            <a href={mapUrl} target="_blank" rel="noopener noreferrer">
-                                <LinkOutIcon size="2em" colour="black" />
-                                Click here to get mapped deprivation data
-                            </a>{" "}
-                            centered around{" "}
-                            {<strong className="text-emphasis">{andify(regions.map((e) => e.name))}</strong>}.
-                        </p>
+                        {englishRegions.length > 0 && (
+                            <p>
+                                <a href={mapUrl} target="_blank" rel="noopener noreferrer">
+                                    <LinkOutIcon size="2em" colour="black" />
+                                    Click here to get mapped deprivation data
+                                </a>{" "}
+                                centered around{" "}
+                                {<strong className="text-emphasis">{andify(englishRegions.map((e) => e.name))}</strong>}.
+                            </p>
+                        )}
                     </div>
-                    <div>
-                        <p className="note">
-                            Data source: Index of Multiple Deprivation (IMD) data are provided by the{" "}
-                            <a
-                                href="https://data.cdrc.ac.uk/dataset/index-multiple-deprivation-imd"
-                                target="_blank"
-                                rel="noreferrer"
-                            >
-                                Consumer Data Research Centre (CDRC).
-                            </a>{" "}
-                            The datasets used are the latest available.
-                        </p>
-                    </div>
+                    {englishRegions.length > 0 && (
+                        <div>
+                            <p className="note">
+                                Data source: Index of Multiple Deprivation (IMD) data are provided by the{" "}
+                                <a
+                                    href="https://data.cdrc.ac.uk/dataset/index-multiple-deprivation-imd"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    Consumer Data Research Centre (CDRC).
+                                </a>{" "}
+                                The datasets used are the latest available.
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
