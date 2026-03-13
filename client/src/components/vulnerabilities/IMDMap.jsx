@@ -15,28 +15,30 @@ Common Good Public License Beta 1.0 for more details. */
 import React, { useEffect, useRef,useState } from "react";
 import { useCollapse } from "react-collapsed";
 
-import { defaultState } from "../../utils/defaultState";
 import { andify } from "../../utils/utils";
-import RegionCentreLoader from "../loaders/RegionCentreLoader";
 import LinkOutIcon from "./LinkOutIcon";
 
-const zoomLevels = {
-    boundary_uk_counties: 8,
-    boundary_la_districts: 8,
-    boundary_parishes: 10,
-    boundary_msoa: 10,
-    boundary_sc_dz: 10,
-    boundary_lsoa: 10,
-    boundary_ni_dz: 10,
-    boundary_iom: 8,
+const zoomFromBbox = (bbox) => {
+    const span = Math.max(bbox.max_lat - bbox.min_lat, bbox.max_lon - bbox.min_lon);
+    if (span > 8) return 5;
+    if (span > 4) return 6;
+    if (span > 2) return 7;
+    if (span > 1) return 8;
+    if (span > 0.5) return 9;
+    if (span > 0.2) return 10;
+    return 11;
 };
+
+const centreFromBbox = (bbox) => ({
+    lat: (bbox.min_lat + bbox.max_lat) / 2,
+    lon: (bbox.min_lon + bbox.max_lon) / 2,
+});
 
 const IMDMap = ({ regions, regionType }) => {
     const [isExpanded, setExpanded] = useState(false);
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
-    const [regionsCentre, setRegionsCentre] = useState(defaultState.mapCenter);
-    const [scottishRegionsCentre, setScottishRegionsCentre] = useState(defaultState.mapCenter);
-    const [zoomLevel, setZoomLevel] = useState(8);
+    const [englishBbox, setEnglishBbox] = useState(null);
+    const [scottishBbox, setScottishBbox] = useState(null);
     const hasTrackedCollapsibleOpen = useRef(false);
 
     const englishRegions = regions.filter((r) => r.country === "England");
@@ -45,13 +47,48 @@ const IMDMap = ({ regions, regionType }) => {
     const niRegions = regions.filter((r) => r.country === "Northern Ireland");
 
     useEffect(() => {
-        // Set zoom level based on region type
-        setZoomLevel(zoomLevels[regionType]);
-    }, [regionType]);
+        if (!isExpanded || englishRegions.length === 0) return;
+        const prepend = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "";
+        const fetchBbox = async () => {
+            try {
+                const response = await fetch(`${prepend}/api/gids_bbox`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ boundary: regionType, gids: englishRegions.map((r) => r.id) }),
+                });
+                if (response.ok) setEnglishBbox(await response.json());
+            } catch (err) {
+                console.error("Error fetching English region bounds:", err);
+            }
+        };
+        fetchBbox();
+    }, [isExpanded, regions, regionType]);
+
+    useEffect(() => {
+        if (!isExpanded || scottishRegions.length === 0) return;
+        const prepend = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "";
+        const fetchBbox = async () => {
+            try {
+                const response = await fetch(`${prepend}/api/gids_bbox`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ boundary: regionType, gids: scottishRegions.map((r) => r.id) }),
+                });
+                if (response.ok) setScottishBbox(await response.json());
+            } catch (err) {
+                console.error("Error fetching Scottish region bounds:", err);
+            }
+        };
+        fetchBbox();
+    }, [isExpanded, regions, regionType]);
 
     // Construct links to deprivation map pages
-    const englandMapUrl = `https://mapmaker.cdrc.ac.uk/#/index-of-multiple-deprivation?d=01111100&m=imde25&lon=${regionsCentre.lon}&lat=${regionsCentre.lat}&zoom=${zoomLevel}`;
-    const scotlandMapUrl = `https://simd.scot/#/simd2020/BTTTFTT/${zoomLevel}/${scottishRegionsCentre.lon}/${scottishRegionsCentre.lat}/`;
+    const englishCentre = englishBbox ? centreFromBbox(englishBbox) : { lat: 52.5, lon: -1.5 };
+    const englishZoom = englishBbox ? zoomFromBbox(englishBbox) : 8;
+    const scottishCentre = scottishBbox ? centreFromBbox(scottishBbox) : { lat: 56.5, lon: -4.0 };
+    const scottishZoom = scottishBbox ? zoomFromBbox(scottishBbox) : 8;
+    const englandMapUrl = `https://mapmaker.cdrc.ac.uk/#/index-of-multiple-deprivation?d=01111100&m=imde25&lon=${englishCentre.lon}&lat=${englishCentre.lat}&zoom=${englishZoom}`;
+    const scotlandMapUrl = `https://simd.scot/#/simd2020/BTTTFTT/${scottishZoom}/${scottishCentre.lon}/${scottishCentre.lat}/`;
     const walesMapUrl = "https://datamap.gov.wales/maps/welsh-index-of-multiple-deprivation-wimd-2025/view#/";
     const niMapUrl = "https://datavis.nisra.gov.uk/Deprivation/deprivation%202017/SOA_Deprivation_Map/atlas.html";
 
@@ -77,20 +114,6 @@ const IMDMap = ({ regions, regionType }) => {
                     {isExpanded ? "Hide" : "Explore"} local deprivation data
                 </div>
                 <div {...getCollapseProps()}>
-                    {isExpanded && (
-                        <RegionCentreLoader
-                            regionType={regionType}
-                            regions={englishRegions}
-                            setRegionsCentre={setRegionsCentre}
-                        />
-                    )}
-                    {isExpanded && scottishRegions.length > 0 && (
-                        <RegionCentreLoader
-                            regionType={regionType}
-                            regions={scottishRegions}
-                            setRegionsCentre={setScottishRegionsCentre}
-                        />
-                    )}
                     <div>
                         <h1>Local Index of Multiple Deprivation Data</h1>
                         <p>

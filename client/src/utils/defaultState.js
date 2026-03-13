@@ -12,5 +12,4 @@ export const defaultState = {
     areAveragesLoading: false,
     selectedImpactHazard: "Extreme Storms",
     applyCoastalFilter: false,
-    mapCenter: {lat: 55.8, lng: -3.2},
 };

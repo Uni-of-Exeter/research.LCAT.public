@@ -237,8 +237,8 @@ router.get("/region", async function (req, res) {
     }
 });
 
-// Get the geometric centre of a number of regions
-router.post("/gids_centre", async function (req, res) {
+// Get the bounding box of a number of regions
+router.post("/gids_bbox", async function (req, res) {
     try {
         const { boundary, gids } = req.body;
 
@@ -246,22 +246,22 @@ router.post("/gids_centre", async function (req, res) {
             return res.status(400).send({ error: "Missing 'boundary' parameter" });
         }
 
+        if (!is_valid_boundary(boundary)) {
+            return res.status(400).send({ error: "Invalid boundary table" });
+        }
+
         if (!Array.isArray(gids) || gids.length === 0) {
             return res.status(400).send({ error: "Missing or invalid 'gids' array" });
         }
 
         const query = `
-            WITH centroids AS (
-                SELECT 
-                    ST_X(ST_Centroid(ST_Transform(geom, 4326))) AS lon,
-                    ST_Y(ST_Centroid(ST_Transform(geom, 4326))) AS lat
-                FROM ${boundary}
-                WHERE gid = ANY($1)
-            )
-            SELECT 
-                AVG(lon) AS lon,
-                AVG(lat) AS lat
-            FROM centroids
+            SELECT
+                ST_YMin(ST_Extent(ST_Transform(geom, 4326))) AS min_lat,
+                ST_YMax(ST_Extent(ST_Transform(geom, 4326))) AS max_lat,
+                ST_XMin(ST_Extent(ST_Transform(geom, 4326))) AS min_lon,
+                ST_XMax(ST_Extent(ST_Transform(geom, 4326))) AS max_lon
+            FROM ${boundary}
+            WHERE gid = ANY($1)
         `;
 
         const client = new Client(conString);
@@ -269,13 +269,10 @@ router.post("/gids_centre", async function (req, res) {
 
         try {
             const result = await client.query(query, [gids]);
-            if (result.rows.length === 0 || result.rows[0].lon === null || result.rows[0].lat === null) {
+            if (result.rows.length === 0 || result.rows[0].min_lat === null) {
                 return res.status(404).send({ error: "No geometries found for provided gids" });
             }
-            res.json({
-                lat: result.rows[0].lat,
-                lon: result.rows[0].lon,
-            });
+            res.json(result.rows[0]);
         } finally {
             await client.end();
         }
