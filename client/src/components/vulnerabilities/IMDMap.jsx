@@ -44,7 +44,7 @@ const IMDMap = ({ regions, regionType }) => {
     }, [regionType]);
 
     // Construct link to CDRC page
-    const mapUrl = `https://mapmaker.cdrc.ac.uk/#/index-of-multiple-deprivation?d=01111100&m=imdh19_dc&lon=${regionsCentre.lon}&lat=${regionsCentre.lat}&zoom=${zoomLevel}`;
+    const mapUrl = `https://mapmaker.cdrc.ac.uk/#/index-of-multiple-deprivation?d=01111100&m=imde25&lon=${regionsCentre.lon}&lat=${regionsCentre.lat}&zoom=${zoomLevel}`;
 
     useEffect(() => setExpanded(false), [regions]);
 
