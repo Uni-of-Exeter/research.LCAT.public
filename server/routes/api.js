@@ -12,6 +12,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 var express = require("express");
 var router = express.Router();
+const rateLimit = require("express-rate-limit");
 
 // PostgreSQL and PostGIS module and connection setup
 const { Client } = require("pg");
@@ -24,6 +25,16 @@ var password = process.env.DB_PASS;
 var host = process.env.DB_HOST;
 var database = process.env.DB_DATABASE;
 var conString = "postgres://" + username + ":" + password + "@" + host + "/" + database;
+
+// Rate limiter: max 60 requests per IP per minute for all DB-backed routes
+const apiLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 60,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: "Too many requests, please try again later." },
+});
+router.use(apiLimiter);
 
 // Load boundary details once at startup
 let all_boundary_details = {};
