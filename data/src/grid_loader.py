@@ -81,11 +81,10 @@ class GridLoader:
         try:
             data = xr.open_dataset(filepath, engine="netcdf4")
             print(f"Loaded file into xarray with sizes y: {data.y.size}, x: {data.x.size}, t: {data.time.size}")
+            return data
 
         except Exception as e:
-            print(f"netcdf file open failed with error: {e}")
-
-        return data
+            raise RuntimeError(f"netcdf file open failed: {e}") from e
 
     def open_netcdf_files(
         self,
