@@ -313,6 +313,28 @@ function buildAvgClimateCols(season, availableColumns = null) {
     return averageClimateColNames;
 }
 
+function getExpectedClimateColumnNames() {
+    const expectedColumns = [];
+    const baseVariables = ["tas", "sfcWind", "pr", "rsds", "tasmax_99_percentile", "tasmin_1_percentile"];
+    const derivedVariables = ["tropical_nights", "hot_heat_days", "heavy_rain_days", "dry_days", "windy_days"];
+    const allDecades = ["1980", "2030", "2040", "2050", "2060", "2070"];
+    const derivedDecades = ["1980", "2070"];
+
+    for (const variable of baseVariables) {
+        for (const decade of allDecades) {
+            expectedColumns.push(`${variable}_${decade}`);
+        }
+    }
+
+    for (const variable of derivedVariables) {
+        for (const decade of derivedDecades) {
+            expectedColumns.push(`${variable}_${decade}`);
+        }
+    }
+
+    return expectedColumns;
+}
+
 function getClimateSourceTable(boundaryDetails, method, rcp, season) {
     if (method === "cell") {
         return `chess_scape_${rcp}_${season}`;
@@ -412,6 +434,15 @@ router.get("/chess_scape", async (req, res) => {
 
         const climateSourceTable = getClimateSourceTable(boundaryDetails, method, rcp, season);
         const availableColumns = await getTableColumns(client, climateSourceTable);
+        const expectedColumns = getExpectedClimateColumnNames();
+        const missingColumns = expectedColumns.filter((columnName) => !availableColumns.has(columnName));
+
+        if (missingColumns.length > 0) {
+            console.warn(
+                `[chess_scape] Missing ${missingColumns.length} expected climate column(s) in table '${climateSourceTable}' for boundary '${boundaryTableName}' (${rcp}, ${season}): ${missingColumns.join(", ")}`
+            );
+        }
+
         const averageClimateColNames = buildAvgClimateCols(season, availableColumns);
 
         if (averageClimateColNames.length === 0) {
