@@ -89,7 +89,7 @@ const IMDMap = ({ regions, regionType }) => {
     const englishZoom = englishBbox ? zoomFromBbox(englishBbox) : 8;
     const scottishCentre = scottishBbox ? centreFromBbox(scottishBbox) : { lat: 56.5, lon: -4.0 };
     const scottishZoom = scottishBbox ? zoomFromBbox(scottishBbox) : 8;
-    const englandMapUrl = `https://mapmaker.cdrc.ac.uk/#/index-of-multiple-deprivation?d=01111100&m=imde25&lon=${englishCentre.lon}&lat=${englishCentre.lat}&zoom=${englishZoom}`;
+    const englandMapUrl = `https://mapmaker.geods.ac.uk/#/index-of-multiple-deprivation?d=01111100&m=imde25&lon=${englishCentre.lon}&lat=${englishCentre.lat}&zoom=${englishZoom}`;
     const scotlandMapUrl = `https://simd.scot/#/simd2020/BTTTFTT/${scottishZoom}/${scottishCentre.lon}/${scottishCentre.lat}/`;
     const walesMapUrl = "https://datamap.gov.wales/maps/welsh-index-of-multiple-deprivation-wimd-2025/view#/";
     const niMapUrl = "https://datavis.nisra.gov.uk/Deprivation/deprivation%202017/SOA_Deprivation_Map/atlas.html";
@@ -154,8 +154,8 @@ const IMDMap = ({ regions, regionType }) => {
                                 </p>
                                 <p className="note" style={{ marginTop: 0 }}>
                                     Data source: Index of Multiple Deprivation (IMD) data are provided by the{" "}
-                                    <a href="https://data.cdrc.ac.uk/dataset/index-multiple-deprivation-imd" target="_blank" rel="noreferrer">
-                                        Consumer Data Research Centre (CDRC).
+                                    <a href="https://data.geods.ac.uk/dataset/index-of-multiple-deprivation-imd" target="_blank" rel="noreferrer">
+                                        Geographic Data Service.
                                     </a>
                                 </p>
                             </>
