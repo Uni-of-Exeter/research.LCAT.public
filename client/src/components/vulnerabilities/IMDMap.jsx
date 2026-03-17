@@ -41,6 +41,7 @@ const IMDMap = ({ regions, regionType }) => {
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
     const [englishBbox, setEnglishBbox] = useState(null);
     const [scottishBbox, setScottishBbox] = useState(null);
+    const [welshBbox, setWelshBbox] = useState(null);
     const hasTrackedCollapsibleOpen = useRef(false);
 
     const englishRegions = useMemo(() => regions.filter((r) => r.country === "England"), [regions]);
@@ -84,20 +85,41 @@ const IMDMap = ({ regions, regionType }) => {
         fetchBbox();
     }, [isExpanded, scottishRegions, regionType]);
 
+    useEffect(() => {
+        if (!isExpanded || welshRegions.length === 0) return;
+        const prepend = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "";
+        const fetchBbox = async () => {
+            try {
+                const response = await fetch(`${prepend}/api/gids_bbox`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ boundary: regionType, gids: welshRegions.map((r) => r.id) }),
+                });
+                if (response.ok) setWelshBbox(await response.json());
+            } catch (err) {
+                console.error("Error fetching Welsh region bounds:", err);
+            }
+        };
+        fetchBbox();
+    }, [isExpanded, welshRegions, regionType]);
+
     // Construct links to deprivation map pages
     const englishCentre = englishBbox ? centreFromBbox(englishBbox) : { lat: 52.5, lon: -1.5 };
     const englishZoom = englishBbox ? zoomFromBbox(englishBbox) : 8;
     const scottishCentre = scottishBbox ? centreFromBbox(scottishBbox) : { lat: 56.5, lon: -4.0 };
     const scottishZoom = scottishBbox ? zoomFromBbox(scottishBbox) : 8;
+    const welshCentre = welshBbox ? centreFromBbox(welshBbox) : { lat: 52.3, lon: -3.8 };
+    const welshZoom = welshBbox ? zoomFromBbox(welshBbox) : 8;
     const englandMapUrl = `https://mapmaker.geods.ac.uk/#/index-of-multiple-deprivation?d=01111100&m=imde25&lon=${englishCentre.lon}&lat=${englishCentre.lat}&zoom=${englishZoom}`;
     const scotlandMapUrl = `https://simd.scot/#/simd2020/BTTTFTT/${scottishZoom}/${scottishCentre.lon}/${scottishCentre.lat}/`;
-    const walesMapUrl = "https://datamap.gov.wales/maps/welsh-index-of-multiple-deprivation-wimd-2025/view#/";
+    const walesMapUrl = `https://mapmaker.geods.ac.uk/#/index-of-multiple-deprivation?d=01111100&m=imdw25&lon=${welshCentre.lon}&lat=${welshCentre.lat}&zoom=${welshZoom}`;
     const niMapUrl = "https://datavis.nisra.gov.uk/Deprivation/deprivation%202017/SOA_Deprivation_Map/atlas.html";
 
     useEffect(() => {
         setExpanded(false);
         setEnglishBbox(null);
         setScottishBbox(null);
+        setWelshBbox(null);
     }, [regions]);
 
     function handleOnClick() {
@@ -153,7 +175,7 @@ const IMDMap = ({ regions, regionType }) => {
                                     {<strong className="text-emphasis">{andify(englishRegions.map((e) => e.name))}</strong>}.
                                 </p>
                                 <p className="note" style={{ marginTop: 0 }}>
-                                    Data source: Index of Multiple Deprivation (IMD) data are provided by the{" "}
+                                    TEMP Data source: Index of Multiple Deprivation (IMD) data are provided by the{" "}
                                     <a href="https://data.geods.ac.uk/dataset/index-of-multiple-deprivation-imd" target="_blank" rel="noreferrer">
                                         Geographic Data Service.
                                     </a>
@@ -184,10 +206,12 @@ const IMDMap = ({ regions, regionType }) => {
                                     <a href={walesMapUrl} target="_blank" rel="noopener noreferrer">
                                         <LinkOutIcon size="2em" colour="black" />
                                         Click here to get mapped deprivation data for Wales
-                                    </a>.
+                                    </a>{" "}
+                                    centered around{" "}
+                                    {<strong className="text-emphasis">{andify(welshRegions.map((e) => e.name))}</strong>}.
                                 </p>
                                 <p className="note" style={{ marginTop: 0 }}>
-                                    Data source: Welsh Index of Multiple Deprivation (WIMD) 2025 data are provided by{" "}
+                                    TEMP Data source: Welsh Index of Multiple Deprivation (WIMD) 2025 data are provided by{" "}
                                     <a href="https://www.gov.wales/welsh-index-multiple-deprivation" target="_blank" rel="noreferrer">
                                         Welsh Government / Stats Wales.
                                     </a>

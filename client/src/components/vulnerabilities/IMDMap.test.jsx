@@ -136,10 +136,14 @@ describe("IMDMap link rendering", () => {
         expect(link.href).toContain("/56.5/");
     });
 
-    it("Wales link points to the correct static URL", () => {
+    it("Wales link uses hardcoded default coordinates when no bbox is fetched", () => {
         render(<IMDMap regions={[WALES]} regionType="boundary_uk_counties" />);
         const link = screen.getByRole("link", { name: /deprivation data for Wales/i });
-        expect(link.href).toContain("datamap.gov.wales");
+        expect(link.href).toContain("mapmaker.geods.ac.uk");
+        expect(link.href).toContain("m=imdw25");
+        expect(link.href).toContain("lat=52.3");
+        expect(link.href).toContain("lon=-3.8");
+        expect(link.href).toContain("zoom=8");
     });
 
     it("Northern Ireland link points to the correct static URL", () => {
