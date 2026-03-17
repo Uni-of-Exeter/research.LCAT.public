@@ -120,7 +120,8 @@ class ClimateDataProcessor:
             target_months = season_months[season]
             filtered_files = []
 
-            for file_url, date_info in file_dates:
+            # Use the sorted list passed into this function so decade grouping is chronological.
+            for file_url, date_info in files:
                 if date_info["start_month"] in target_months:
                     filtered_files.append(file_url)
 
