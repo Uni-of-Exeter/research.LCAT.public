@@ -104,7 +104,6 @@ const App = () => {
         <>
             <div className="App">
                 <LCATHeader />
-                <h1>TEST TEST</h1>
                 <Introduction />
 
                 <AllRegionLoader regionType={regionType} setAllRegions={setAllRegions} />

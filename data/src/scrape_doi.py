@@ -1,56 +1,113 @@
 import urllib.request
+import urllib.error
 
 import xmltodict
 
 
-def scrape(row):
-    """
-    Scrapes reference information for a given row, based on DOI.
-    """
+CROSSREF_ACCEPT_HEADER = ("Accept", "application/vnd.crossref.unixsd+xml")
+DOI_BASE_URL = "https://doi.org/"
 
+
+def scrape(row, timeout=20):
+    """
+    Scrape Crossref metadata for a given row, based on DOI.
+
+    Returns:
+        dict: Parsed Crossref metadata derived from the DOI response.
+
+    Raises:
+        KeyError if DOI is missing from row
+        URLError / HTTPError for network issues
+        xmltodict parsing exceptions for malformed XML
+    """
     row_doi = row["DOI"]
-    row_type = row["Reference_Type"]
+    row_type = row.get("Reference_Type", "Unknown")
 
     opener = urllib.request.build_opener()
-    opener.addheaders = [("Accept", "application/vnd.crossref.unixsd+xml")]
+    opener.addheaders = [CROSSREF_ACCEPT_HEADER]
 
     print(f"Scraping {row_type}: {row_doi}...")
 
-    r = opener.open("http://dx.doi.org/" + row_doi)
-    d = xmltodict.parse(r.read())
+    # Use https://doi.org/ and ensure the response is closed
+    url = DOI_BASE_URL + row_doi
+    with opener.open(url, timeout=timeout) as r:
+        raw = r.read()
 
-    return r, d
+    d = xmltodict.parse(raw)
+    return d
+
+
+def _title_to_str(title):
+    if isinstance(title, dict):
+        return title.get("#text", "")
+    return title
+
+
+def _names_to_authors_string(names, require_role=None):
+    """
+    Convert Crossref person_name structure (dict or list) into "Given Surname, Given Surname".
+    If require_role is set (e.g. "author"), will filter list/dict by @contributor_role.
+    """
+    if not names:
+        return ""
+
+    people = names if isinstance(names, list) else [names]
+
+    out = []
+    for p in people:
+        if require_role is not None:
+            if p.get("@contributor_role") != require_role:
+                continue
+        given = p.get("given_name", "")
+        surname = p.get("surname", "")
+        full = (given + " " + surname).strip()
+        if full:
+            out.append(full)
+
+    return ", ".join(out)
+
+
+def _extract_year(publication_date):
+    """
+    publication_date can be dict or list of dicts.
+    Prefer print year, otherwise first available year.
+    """
+    if not publication_date:
+        return ""
+
+    if isinstance(publication_date, list):
+        # Prefer print if present
+        for item in publication_date:
+            if item.get("@media_type") == "print" and "year" in item:
+                return item["year"]
+        # Otherwise fall back to first year we can find
+        for item in publication_date:
+            if "year" in item:
+                return item["year"]
+        return ""
+
+    # dict
+    return publication_date.get("year", "")
 
 
 def read_article(row, d):
     """
     Read article data scraped by DOI.
+    More robust handling for:
+    - title as dict
+    - contributors list/dict with role filtering
+    - publication_date list with no print entry
     """
-
     journal = d["crossref_result"]["query_result"]["body"]["query"]["doi_record"]["crossref"]["journal"]
     article = journal["journal_article"]
-    title = article["titles"]["title"]
 
-    if isinstance(title, dict):
-        title = title["#text"]
+    title = _title_to_str(article["titles"]["title"])
 
-    authors = ""
+    # Contributors: include authors only, regardless of list/dict
+    names = article.get("contributors", {}).get("person_name")
+    authors = _names_to_authors_string(names, require_role="author")
 
-    alist = article["contributors"]["person_name"]
-    if isinstance(alist, list):
-        for contributor in alist:
-            if contributor["@contributor_role"] == "author":
-                authors += contributor["given_name"] + " " + contributor["surname"] + ", "
-    else:
-        authors += alist["given_name"] + " " + alist["surname"] + ", "
-
-    date = ""
-    if isinstance(article["publication_date"], list):
-        for d in article["publication_date"]:
-            if d["@media_type"] == "print":
-                date = d["year"]
-    else:
-        date = article["publication_date"]["year"]
+    date = _extract_year(article.get("publication_date"))
 
     journal_title = journal["journal_metadata"]["full_title"]
 
@@ -65,55 +122,53 @@ def read_article(row, d):
         "link": row["URL"],
         "link_replacement": row["Replacement_URL"],
         "title": title,
-        "authors": authors.strip(", "),
+        "authors": authors,
         "date": date,
         "journal": journal_title,
         "issue": issue,
     }
 
 
+def _org_to_str(org):
+    # org can be list[dict] or dict; prefer #text if present
+    if isinstance(org, list) and org:
+        org = org[0]
+    if isinstance(org, dict):
+        return org.get("#text", "")
+    if isinstance(org, str):
+        return org
+    return ""
+
+
 def read_book(row, d):
     """
     Read book data scraped by DOI.
+    More robust handling for:
+    - book_metadata vs book_series_metadata
+    - title as dict
+    - organization contributor shapes
     """
-
     book = d["crossref_result"]["query_result"]["body"]["query"]["doi_record"]["crossref"]["book"]
 
     main_key = "book_metadata"
     if main_key not in book:
         main_key = "book_series_metadata"
 
-    title = book[main_key]["titles"]["title"]
+    title = _title_to_str(book[main_key]["titles"]["title"])
 
     authors = ""
     if "content_item" in book:
-        names = book["content_item"]["contributors"]["person_name"]
-        if isinstance(names, list):
-            for contributor in names:
-                authors += contributor["given_name"] + " " + contributor["surname"] + ", "
-        else:
-            authors += names["given_name"] + " " + names["surname"] + ", "
+        names = book["content_item"].get("contributors", {}).get("person_name")
+        authors = _names_to_authors_string(names)
     else:
-        if "organization" in book[main_key]["contributors"]:
-            contributor = book[main_key]["contributors"]["organization"][0]
-            authors += contributor["#text"]
+        contrib = book[main_key].get("contributors", {})
+        if "organization" in contrib:
+            authors = _org_to_str(contrib["organization"])
         else:
-            names = book[main_key]["contributors"]["person_name"]
+            names = contrib.get("person_name")
+            authors = _names_to_authors_string(names)
 
-            if isinstance(names, list):
-                for contributor in names:
-                    authors += contributor["given_name"] + " " + contributor["surname"] + ", "
-
-            else:
-                contributor = book[main_key]["contributors"]["person_name"]
-                authors += contributor["given_name"] + " " + contributor["surname"] + ", "
-
-    date_struct = book[main_key]["publication_date"]
-
-    date = date_struct[0]["year"] if isinstance(date_struct, list) else date_struct["year"]
-
-    journal_title = ""
-    issue = ""
+    date = _extract_year(book[main_key].get("publication_date"))
 
     return {
         "type": row["Reference_Type"],
@@ -122,8 +177,8 @@ def read_book(row, d):
         "link": row["URL"],
         "link_replacement": row["Replacement_URL"],
         "title": title,
-        "authors": authors.strip(", "),
+        "authors": authors,
         "date": date,
-        "journal": journal_title,
-        "issue": issue,
+        "journal": "",
+        "issue": "",
     }

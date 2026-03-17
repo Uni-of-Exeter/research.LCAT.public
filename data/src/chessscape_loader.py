@@ -77,9 +77,13 @@ class ChessScapeLoader:
         """
         Load a given mask, and determine what data will be needed (i.e. bias corrected or non-bias corrected, or both).
         """
+        # Reset internal state first
+        self.mask = None
+        self.bias_corrected_keys = []
 
-        if 0 not in mask:
-            raise ValueError("Have you loaded a boolean mask? Please load labelled mask instead.")
+        # Reject boolean masks explicitly
+        if mask.dtype == bool:
+            raise ValueError("Boolean mask not allowed. Please provide labelled mask (0, 1, 2).")
 
         self.mask = mask
 
@@ -183,17 +187,18 @@ class ChessScapeLoader:
         """
 
         # Slice the time dimension only to perform some checks
-        time_slice = data.time[lower_bound:higher_bound:step].values
+        time_slice = data.time[lower_bound:higher_bound:step]
 
         # Check we always take mean, min and max over 10 year slice
-        if len(time_slice) != 10:
+        if time_slice.size != 10:
             raise ValueError("Dataset slice does not contain 10 values.")
 
         # Check we always only select time points in Jan and Jul in our seasonal time slice
         if self.season != "annual":
             month_check = 1 if self.season == "winter" else 7
 
-            if not np.all(np.array([date.month for date in time_slice]) == month_check):
+            months = time_slice.dt.month.values
+            if not np.all(months == month_check):
                 raise ValueError("Different months identified in time slice")
 
         # Perform the same slicing operation on the data itself

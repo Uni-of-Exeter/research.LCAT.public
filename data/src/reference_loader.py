@@ -81,6 +81,7 @@ class ReferenceLoader:
             "type",
             "doi",
             "link",
+            "link_replacement",
             "title",
             "authors",
             "date",

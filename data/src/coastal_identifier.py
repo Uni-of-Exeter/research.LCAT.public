@@ -111,7 +111,7 @@ class CoastalIdentifier:
             "parishes",
             "sc_dz",
             "ni_dz",
-            #"iom",
+            "iom",
         ]
 
         print("############################")
