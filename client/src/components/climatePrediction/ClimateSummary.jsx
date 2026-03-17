@@ -132,6 +132,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
 
 
     const isAnnual = season === "annual";
+    const dryDaysUnits = isAnnual ? "days/year" : "days/season";
 
     const renderDetails = () => {
         if (!selectedVariable) {
@@ -254,7 +255,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                         year={year}
                         variable="dry_days"
                         name="Dry Days"
-                        units="days/year"
+                        units={dryDaysUnits}
                         Icon={DryDaysSvg}
                         onClick={() => handleSelect("dry_days")}
                         isSelected={selectedVariable === "dry_days"}
