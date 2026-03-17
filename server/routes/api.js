@@ -277,30 +277,60 @@ router.post("/gids_centre", async function (req, res) {
 /// GET CHESS-SCAPE CLIMATE DATA FROM DB ///
 
 // CHESS-SCAPE helper function: generate climate column SQL
-function buildAvgClimateCols(season) {
+function buildAvgClimateCols(season, availableColumns = null) {
     const averageClimateColNames = [];
     const baseVariables = ["tas", "sfcWind", "pr", "rsds", "tasmax_99_percentile", "tasmin_1_percentile"];
     const derivedVariables = ["tropical_nights", "hot_heat_days", "heavy_rain_days", "dry_days", "windy_days"];
     const allDecades = ["1980", "2030", "2040", "2050", "2060", "2070"];
     const derivedDecades = ["1980", "2070"];
 
+    const hasColumn = (columnName) => {
+        if (!availableColumns) return true;
+        return availableColumns.has(columnName);
+    };
+
     // Base variables use all decades
     for (const variable of baseVariables) {
         for (const decade of allDecades) {
-            averageClimateColNames.push(`AVG("${variable}_${decade}") as "${variable}_${decade}"`);
+            const columnName = `${variable}_${decade}`;
+            if (hasColumn(columnName)) {
+                averageClimateColNames.push(`AVG("${columnName}") as "${columnName}"`);
+            }
         }
     }
 
-    // Derived variables only use 1980 and 2070, annually
-    if (season === "annual") {
-        for (const variable of derivedVariables) {
-            for (const decade of derivedDecades) {
-                averageClimateColNames.push(`AVG("${variable}_${decade}") as "${variable}_${decade}"`);
+    // Derived variables are currently consumed at 1980/2070 in the UI,
+    // but include them for any season if the backing table has the columns.
+    for (const variable of derivedVariables) {
+        for (const decade of derivedDecades) {
+            const columnName = `${variable}_${decade}`;
+            if (hasColumn(columnName)) {
+                averageClimateColNames.push(`AVG("${columnName}") as "${columnName}"`);
             }
         }
     }
 
     return averageClimateColNames;
+}
+
+function getClimateSourceTable(boundaryDetails, method, rcp, season) {
+    if (method === "cell") {
+        return `chess_scape_${rcp}_${season}`;
+    }
+
+    return `cache_${boundaryDetails.identifier}_to_${rcp}_${season}`;
+}
+
+async function getTableColumns(client, tableName) {
+    const query = `
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+        AND table_name = $1
+    `;
+
+    const result = await client.query(query, [tableName]);
+    return new Set(result.rows.map((row) => row.column_name));
 }
 
 // Build query string: cache method - uses cache tables in database (large regions)
@@ -309,7 +339,7 @@ function buildCacheQuery(boundaryDetails, locations, rcp, season, averageColName
     const locationGids = locations.join(",");
 
     return `
-        SELECT ${averageColNames}
+        SELECT ${averageColNames.join(",")}
         FROM ${cacheTable}
         WHERE gid IN (${locationGids});
         `;
@@ -375,7 +405,19 @@ router.get("/chess_scape", async (req, res) => {
 
         // Get query method
         const method = boundaryDetails.method;
-        const averageClimateColNames = buildAvgClimateCols(season);
+
+        // Connect and introspect columns so we only query fields that exist.
+        const client = new Client(conString);
+        await client.connect();
+
+        const climateSourceTable = getClimateSourceTable(boundaryDetails, method, rcp, season);
+        const availableColumns = await getTableColumns(client, climateSourceTable);
+        const averageClimateColNames = buildAvgClimateCols(season, availableColumns);
+
+        if (averageClimateColNames.length === 0) {
+            await client.end();
+            return res.status(500).send({ error: "No climate columns available for query" });
+        }
 
         // Build query based on variables and method
         let query;
@@ -384,10 +426,6 @@ router.get("/chess_scape", async (req, res) => {
         } else {
             query = buildCacheQuery(boundaryDetails, locations, rcp, season, averageClimateColNames);
         }
-
-        // Connect and execute
-        const client = new Client(conString);
-        await client.connect();
 
         const result = await client.query(query);
         res.json(result.rows);
