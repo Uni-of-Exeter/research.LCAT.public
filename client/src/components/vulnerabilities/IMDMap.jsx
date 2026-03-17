@@ -175,9 +175,13 @@ const IMDMap = ({ regions, regionType }) => {
                                     {<strong className="text-emphasis">{andify(englishRegions.map((e) => e.name))}</strong>}.
                                 </p>
                                 <p className="note" style={{ marginTop: 0 }}>
-                                    TEMP Data source: Index of Multiple Deprivation (IMD) data are provided by the{" "}
+                                    Data source: English Index of Multiple Deprivation (IMD) 2025 data are provided by the{" "}
                                     <a href="https://data.geods.ac.uk/dataset/index-of-multiple-deprivation-imd" target="_blank" rel="noreferrer">
-                                        Geographic Data Service.
+                                        Geographic Data Service
+                                    </a>
+                                    {" "}and the{" "}
+                                    <a href="https://www.gov.uk/government/statistics/english-indices-of-deprivation-2025" target="_blank" rel="noreferrer">
+                                        UK Government.
                                     </a>
                                 </p>
                             </>
@@ -211,7 +215,11 @@ const IMDMap = ({ regions, regionType }) => {
                                     {<strong className="text-emphasis">{andify(welshRegions.map((e) => e.name))}</strong>}.
                                 </p>
                                 <p className="note" style={{ marginTop: 0 }}>
-                                    TEMP Data source: Welsh Index of Multiple Deprivation (WIMD) 2025 data are provided by{" "}
+                                    Data source: Welsh Index of Multiple Deprivation (WIMD) 2025 data are provided by the{" "}
+                                    <a href="https://data.geods.ac.uk/dataset/index-of-multiple-deprivation-imd" target="_blank" rel="noreferrer">
+                                        Geographic Data Service
+                                    </a>
+                                    {" "}and{" "}
                                     <a href="https://www.gov.wales/welsh-index-multiple-deprivation" target="_blank" rel="noreferrer">
                                         Welsh Government / Stats Wales.
                                     </a>
