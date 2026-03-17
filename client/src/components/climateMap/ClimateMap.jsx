@@ -84,10 +84,10 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
         layer.on("click", () => toggleRegion(gid, name, layer));
     };
 
-    const toggleRegion = (gid, name, layer = null) => {
+    const toggleRegion = (gid, name, layer = null, countryOverride = null) => {
         const col = "#00000000";
         const targetLayer = layer || layerMap.current.get(gid);
-        const country = countryMap.current.get(gid);
+        const country = countryOverride ?? countryMap.current.get(gid);
 
         setRegions((prevRegions) => {
             const alreadySelected = prevRegions.some((r) => r.id === gid);
@@ -271,7 +271,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                                                         type="checkbox"
                                                         id={checkboxId}
                                                         checked={isSelected}
-                                                        onChange={() => toggleRegion(region.gid, region.name)}
+                                                        onChange={() => toggleRegion(region.gid, region.name, null, region.country)}
                                                     />
                                                     <label htmlFor={checkboxId}>{region.name}</label>
                                                 </div>

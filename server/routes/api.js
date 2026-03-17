@@ -103,8 +103,20 @@ router.get("/all_regions", async function (req, res) {
             return res.status(400).send({ error: "Invalid boundary table" });
         }
 
+        const countrySQL = {
+            "boundary_uk_counties":  `CASE LEFT(UPPER(ctyua23cd), 1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' WHEN 'S' THEN 'Scotland' WHEN 'N' THEN 'Northern Ireland' END`,
+            "boundary_la_districts": `CASE LEFT(UPPER(lad23cd),   1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' WHEN 'S' THEN 'Scotland' WHEN 'N' THEN 'Northern Ireland' END`,
+            "boundary_lsoa":         `CASE LEFT(UPPER(lsoa21cd),  1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
+            "boundary_msoa":         `CASE LEFT(UPPER(msoa21cd),  1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
+            "boundary_parishes":     `CASE LEFT(UPPER(par23cd),   1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
+            "boundary_sc_dz":        `'Scotland'`,
+            "boundary_ni_dz":        `'Northern Ireland'`,
+            "boundary_iom":          `'Isle of Man'`,
+        };
+        const countryExpr = countrySQL[boundary];
+
         const query = `
-            SELECT gid, ${boundaryDetails.name_col} AS name
+            SELECT gid, ${boundaryDetails.name_col} AS name${countryExpr ? `, ${countryExpr} AS country` : ""}
             FROM ${boundary};
         `;
 
@@ -266,13 +278,17 @@ router.post("/gids_bbox", async function (req, res) {
         }
 
         const query = `
+            WITH extent AS (
+                SELECT ST_Extent(ST_Transform(geom, 4326)) AS box
+                FROM ${boundary}
+                WHERE gid = ANY($1)
+            )
             SELECT
-                ST_YMin(ST_Extent(ST_Transform(geom, 4326))) AS min_lat,
-                ST_YMax(ST_Extent(ST_Transform(geom, 4326))) AS max_lat,
-                ST_XMin(ST_Extent(ST_Transform(geom, 4326))) AS min_lon,
-                ST_XMax(ST_Extent(ST_Transform(geom, 4326))) AS max_lon
-            FROM ${boundary}
-            WHERE gid = ANY($1)
+                ST_YMin(box) AS min_lat,
+                ST_YMax(box) AS max_lat,
+                ST_XMin(box) AS min_lon,
+                ST_XMax(box) AS max_lon
+            FROM extent
         `;
 
         const client = new Client(conString);

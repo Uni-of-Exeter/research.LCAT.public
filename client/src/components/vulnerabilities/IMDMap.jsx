@@ -12,7 +12,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 /* global gtag */
 
-import React, { useEffect, useRef,useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useCollapse } from "react-collapsed";
 
 import { andify } from "../../utils/utils";
@@ -43,10 +43,10 @@ const IMDMap = ({ regions, regionType }) => {
     const [scottishBbox, setScottishBbox] = useState(null);
     const hasTrackedCollapsibleOpen = useRef(false);
 
-    const englishRegions = regions.filter((r) => r.country === "England");
-    const scottishRegions = regions.filter((r) => r.country === "Scotland");
-    const welshRegions = regions.filter((r) => r.country === "Wales");
-    const niRegions = regions.filter((r) => r.country === "Northern Ireland");
+    const englishRegions = useMemo(() => regions.filter((r) => r.country === "England"), [regions]);
+    const scottishRegions = useMemo(() => regions.filter((r) => r.country === "Scotland"), [regions]);
+    const welshRegions = useMemo(() => regions.filter((r) => r.country === "Wales"), [regions]);
+    const niRegions = useMemo(() => regions.filter((r) => r.country === "Northern Ireland"), [regions]);
 
     useEffect(() => {
         if (!isExpanded || englishRegions.length === 0) return;
@@ -94,7 +94,11 @@ const IMDMap = ({ regions, regionType }) => {
     const walesMapUrl = "https://datamap.gov.wales/maps/welsh-index-of-multiple-deprivation-wimd-2025/view#/";
     const niMapUrl = "https://datavis.nisra.gov.uk/Deprivation/deprivation%202017/SOA_Deprivation_Map/atlas.html";
 
-    useEffect(() => setExpanded(false), [regions]);
+    useEffect(() => {
+        setExpanded(false);
+        setEnglishBbox(null);
+        setScottishBbox(null);
+    }, [regions]);
 
     function handleOnClick() {
         // Track first-time opening of collapsible
