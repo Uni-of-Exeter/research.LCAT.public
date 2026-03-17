@@ -8,7 +8,7 @@ import TemperatureIcon from '../../../images/climate/Temperature.png';
 import WindIcon from '../../../images/climate/WindSpeed.png';
 import { climateVariables, formatClimateData } from '../../../utils/climateUtils';
 import { LCAT_HANDBOOK_URL } from '../../../utils/constants';
-import { andify } from "../../../utils/utils";
+import { andify, rcpText, seasonText } from "../../../utils/utils";
 import { reportStyles as styles } from '../reportStyles';
 import { formatLineBreaks } from '../textFormattingUtils';
 
@@ -50,10 +50,10 @@ const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
                         For <Text style={[styles.bodyText, { fontWeight: 'bold' }]}>{andify(regions.map(region => region.name))}</Text>
                         {' '}under the
                         <Text style={[styles.bodyText, { fontWeight: 'bold' }]}>
-                            {rcp === 'rcp60' ? ' existing global policies ' : ' worst case scenario '}
+                            {' '}{rcpText[rcp]}{' '}
                         </Text>
                         (equivalent to global warming level of {rcp === 'rcp60' ? '2.0-3.7C which is RCP 6.0' : '3.2-5.4C which is RCP 8.5'})
-                        {' '}the <Text style={[styles.bodyText, { fontWeight: 'bold' }]}>{season}</Text>
+                        {' '}the <Text style={[styles.bodyText, { fontWeight: 'bold' }]}>{seasonText[season]}</Text>
                         {' '}average climate change for 2070 compared with local records for the 1980s is expected to be:
                     </Text>
                 </>

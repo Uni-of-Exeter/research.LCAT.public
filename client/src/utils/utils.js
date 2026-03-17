@@ -18,31 +18,6 @@ export function andify(a) {
     }
 }
 
-// TODO none of the functions below are used? Delete them if they are not needed.
-export function formatTextWrap(text, maxLineLength) {
-    const words = text.replace(/[\r\n]+/g, " ").split(" ");
-    let lineLength = 0;
-    let ret = [""];
-    for (let word of words) {
-        if (lineLength + word.length >= maxLineLength) {
-            lineLength = word.length;
-            ret.push([word]);
-        } else {
-            lineLength += word.length + 1;
-            ret[ret.length - 1] += word + " ";
-        }
-    }
-    return ret;
-}
-
-export function camelize(str) {
-    return str
-        .replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
-            return word.toUpperCase();
-        })
-        .replace(/\s+/g, "");
-}
-
 export const rcpText = {
     rcp60: "existing global policies",
     rcp85: "worst case scenario",
