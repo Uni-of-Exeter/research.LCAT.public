@@ -67,7 +67,6 @@ const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClic
                     type="button"
                     className={`climate-icon-button ${isSelected ? "climate-variable-selected" : ""}`}
                     onClick={onClick}
-                    disabled={!isAnnual}
                 >
                     <Icon
                         className="climate-arrow"
@@ -133,12 +132,14 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
 
     const isAnnual = season === "annual";
     const dryDaysUnits = isAnnual ? "days/year" : "days/season";
+    const derivedDayUnits = isAnnual ? "days/year" : "days/season";
+    const derivedNightUnits = isAnnual ? "nights/year" : "nights/season";
 
     const renderDetails = () => {
         if (!selectedVariable) {
             return (
                 <div className="climate-details-placeholder">
-                    <p>Please click a climate variable icon to view additional metrics (only annual predictions are available).
+                    <p>Please click a climate variable icon to view additional metrics.
                     </p>
                 </div>
             );
@@ -154,7 +155,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             year={year}
                             variable="tropical_nights"
                             name="Tropical Nights"
-                            units="nights/year"
+                            units={derivedNightUnits}
                             Icon={TropicalNightsSvg}
                         />
                         <DetailClimateVariable
@@ -162,7 +163,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             year={year}
                             variable="hot_heat_days"
                             name="Hot Heat Days"
-                            units="days/year"
+                            units={derivedDayUnits}
                             Icon={HotHeatDaysSvg}
                         />
 
@@ -181,7 +182,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             year={year}
                             variable="heavy_rain_days"
                             name="Heavy Rain Days"
-                            units="days/year"
+                            units={derivedDayUnits}
                             Icon={HeavyRainDaysSvg}
                         />
                     </div>
@@ -214,7 +215,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                         year={year}
                         variable="windy_days"
                         name="Windy Days"
-                        units="days/year"
+                            units={derivedDayUnits}
                         Icon={WindSvg}
                     />
                 </div>
@@ -273,7 +274,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                         isAnnual={isAnnual}
                     />
                 </div>
-                {isAnnual && renderDetails()}
+                {renderDetails()}
                 <p>
                     Note: Yearly average climate change does not always reflect the extremes of summer and winter.
                     Change the drop-down menu above to see the predictions for the different seasons.
