@@ -18,7 +18,7 @@ import { useCollapse } from "react-collapsed";
 import { andify } from "../../utils/utils";
 import LinkOutIcon from "./LinkOutIcon";
 
-const zoomFromBbox = (bbox) => {
+export const zoomFromBbox = (bbox) => {
     const span = Math.max(bbox.max_lat - bbox.min_lat, bbox.max_lon - bbox.min_lon);
     if (span > 8) return 5;
     if (span > 4) return 6;
@@ -29,7 +29,7 @@ const zoomFromBbox = (bbox) => {
     return 11;
 };
 
-const centreFromBbox = (bbox) => ({
+export const centreFromBbox = (bbox) => ({
     lat: (bbox.min_lat + bbox.max_lat) / 2,
     lon: (bbox.min_lon + bbox.max_lon) / 2,
 });

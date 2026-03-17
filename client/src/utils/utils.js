@@ -18,6 +18,7 @@ export function andify(a) {
     }
 }
 
+// TODO none of the functions below are used? Delete them if they are not needed.
 export function formatTextWrap(text, maxLineLength) {
     const words = text.replace(/[\r\n]+/g, " ").split(" ");
     let lineLength = 0;

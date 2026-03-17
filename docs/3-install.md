@@ -83,6 +83,12 @@ cp -R client/dist/* server/public
 
 This will use Vite to produce a minified application bundle that is suitable to be statically served. This occurs on port 3000: to view this, visit `localhost:3000` with the server running.
 
+### Running Tests
+From the `client` directory:
+
+```bash
+npm test
+```
 ## Running everything
 
 The application should now be fully functional. Launch the server and client (or serve the minified build), select a geographic region, and check that climate data can be viewed.
