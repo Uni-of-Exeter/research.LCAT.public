@@ -18,6 +18,7 @@ import { useCollapse } from "react-collapsed";
 import { andify } from "../../utils/utils";
 import LinkOutIcon from "./LinkOutIcon";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const zoomFromBbox = (bbox) => {
     const span = Math.max(bbox.max_lat - bbox.min_lat, bbox.max_lon - bbox.min_lon);
     if (span > 8) return 5;
@@ -29,6 +30,7 @@ export const zoomFromBbox = (bbox) => {
     return 11;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const centreFromBbox = (bbox) => ({
     lat: (bbox.min_lat + bbox.max_lat) / 2,
     lon: (bbox.min_lon + bbox.max_lon) / 2,
@@ -62,7 +64,7 @@ const IMDMap = ({ regions, regionType }) => {
             }
         };
         fetchBbox();
-    }, [isExpanded, regions, regionType]);
+    }, [isExpanded, englishRegions, regionType]);
 
     useEffect(() => {
         if (!isExpanded || scottishRegions.length === 0) return;
@@ -80,7 +82,7 @@ const IMDMap = ({ regions, regionType }) => {
             }
         };
         fetchBbox();
-    }, [isExpanded, regions, regionType]);
+    }, [isExpanded, scottishRegions, regionType]);
 
     // Construct links to deprivation map pages
     const englishCentre = englishBbox ? centreFromBbox(englishBbox) : { lat: 52.5, lon: -1.5 };
