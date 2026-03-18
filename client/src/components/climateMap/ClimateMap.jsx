@@ -119,6 +119,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
         setRegions([]);
         setGeojsonKey((prev) => prev + 1);
         layerMap.current.clear();
+        countryMap.current.clear();
     };
 
     const handleSetGeojson = (data) => {
@@ -184,6 +185,8 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                         setRegionType(e.target.value);
                         setRegions([]);
                         setTriggerLoadingIndicator(true);
+                        layerMap.current.clear();
+                        countryMap.current.clear();
                     }}
                     value={regionType}
                 >

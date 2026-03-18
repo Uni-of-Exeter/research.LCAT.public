@@ -151,4 +151,10 @@ describe("IMDMap link rendering", () => {
         const link = screen.getByRole("link", { name: /deprivation data for Northern Ireland/i });
         expect(link.href).toContain("datavis.nisra.gov.uk");
     });
+
+    it("shows no deprivation links for an unsupported country (e.g. Isle of Man)", () => {
+        const IOM = { id: 5, name: "Isle of Man", country: "Isle of Man" };
+        render(<IMDMap regions={[IOM]} regionType="boundary_iom" />);
+        expect(screen.queryByRole("link", { name: /deprivation data for/i })).toBeNull();
+    });
 });
