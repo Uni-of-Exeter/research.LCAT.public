@@ -12,6 +12,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 var express = require("express");
 var router = express.Router();
+const rateLimit = require("express-rate-limit");
 
 // PostgreSQL and PostGIS module and connection setup
 const { Client } = require("pg");
@@ -25,9 +26,31 @@ var host = process.env.DB_HOST;
 var database = process.env.DB_DATABASE;
 var conString = "postgres://" + username + ":" + password + "@" + host + "/" + database;
 
+// Rate limiter: max 60 requests per IP per minute for all DB-backed routes
+const apiLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 60,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: "Too many requests, please try again later." },
+});
+router.use(apiLimiter);
+
 // Load boundary details once at startup
 let all_boundary_details = {};
 initialiseBoundaryDetails();
+
+// Derive country from ONS area code prefix, or use a fixed string for single-country boundaries
+const countrySQL = {
+    "boundary_uk_counties":  `CASE LEFT(UPPER(ctyua23cd), 1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' WHEN 'S' THEN 'Scotland' WHEN 'N' THEN 'Northern Ireland' END`,
+    "boundary_la_districts": `CASE LEFT(UPPER(lad23cd),   1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' WHEN 'S' THEN 'Scotland' WHEN 'N' THEN 'Northern Ireland' END`,
+    "boundary_lsoa":         `CASE LEFT(UPPER(lsoa21cd),  1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
+    "boundary_msoa":         `CASE LEFT(UPPER(msoa21cd),  1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
+    "boundary_parishes":     `CASE LEFT(UPPER(par23cd),   1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
+    "boundary_sc_dz":        `'Scotland'`,
+    "boundary_ni_dz":        `'Northern Ireland'`,
+    "boundary_iom":          `'Isle of Man'`,
+};
 
 /// GET BOUNDARY DATA FROM DB ///
 
@@ -92,8 +115,10 @@ router.get("/all_regions", async function (req, res) {
             return res.status(400).send({ error: "Invalid boundary table" });
         }
 
+        const countryExpr = countrySQL[boundary];
+
         const query = `
-            SELECT gid, ${boundaryDetails.name_col} AS name
+            SELECT gid, ${boundaryDetails.name_col} AS name${countryExpr ? `, ${countryExpr} AS country` : ""}
             FROM ${boundary};
         `;
 
@@ -174,12 +199,11 @@ router.get("/region", async function (req, res) {
             return res.status(400).send({ error: "Invalid table" });
         }
 
-        // Use connection pool for better performance
         const client = new Client(conString);
         await client.connect();
 
-        // Placeholder for additional properties
-        const props = "";
+        const countryExpr = countrySQL[table];
+        const props = countryExpr ? `'country', ${countryExpr}` : "";
 
         // Query: Build GeoJSON object for the given bounding box
         const get_region_query = `
@@ -226,8 +250,8 @@ router.get("/region", async function (req, res) {
     }
 });
 
-// Get the geometric centre of a number of regions
-router.post("/gids_centre", async function (req, res) {
+// Get the bounding box of a number of regions
+router.post("/gids_bbox", async function (req, res) {
     try {
         const { boundary, gids } = req.body;
 
@@ -235,22 +259,26 @@ router.post("/gids_centre", async function (req, res) {
             return res.status(400).send({ error: "Missing 'boundary' parameter" });
         }
 
+        if (!is_valid_boundary(boundary)) {
+            return res.status(400).send({ error: "Invalid boundary table" });
+        }
+
         if (!Array.isArray(gids) || gids.length === 0) {
             return res.status(400).send({ error: "Missing or invalid 'gids' array" });
         }
 
         const query = `
-            WITH centroids AS (
-                SELECT 
-                    ST_X(ST_Centroid(ST_Transform(geom, 4326))) AS lon,
-                    ST_Y(ST_Centroid(ST_Transform(geom, 4326))) AS lat
+            WITH extent AS (
+                SELECT ST_Extent(ST_Transform(geom, 4326)) AS box
                 FROM ${boundary}
                 WHERE gid = ANY($1)
             )
-            SELECT 
-                AVG(lon) AS lon,
-                AVG(lat) AS lat
-            FROM centroids
+            SELECT
+                ST_YMin(box) AS min_lat,
+                ST_YMax(box) AS max_lat,
+                ST_XMin(box) AS min_lon,
+                ST_XMax(box) AS max_lon
+            FROM extent
         `;
 
         const client = new Client(conString);
@@ -258,13 +286,10 @@ router.post("/gids_centre", async function (req, res) {
 
         try {
             const result = await client.query(query, [gids]);
-            if (result.rows.length === 0 || result.rows[0].lon === null || result.rows[0].lat === null) {
+            if (result.rows.length === 0 || result.rows[0].min_lat === null) {
                 return res.status(404).send({ error: "No geometries found for provided gids" });
             }
-            res.json({
-                lat: result.rows[0].lat,
-                lon: result.rows[0].lon,
-            });
+            res.json(result.rows[0]);
         } finally {
             await client.end();
         }

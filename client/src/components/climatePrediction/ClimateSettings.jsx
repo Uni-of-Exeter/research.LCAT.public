@@ -12,7 +12,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import React from "react";
 
-import { andify } from "../../utils/utils";
+import { andify, rcpText, seasonText } from "../../utils/utils";
 
 const ClimateSettings = ({ regions, rcp, season, setRcp, setSeason }) => {
     if (regions.length === 0) {
@@ -27,17 +27,17 @@ const ClimateSettings = ({ regions, rcp, season, setRcp, setSeason }) => {
                 <span className="projected-regions">{andify(regions.map((e) => e.name))}</span>
                 &nbsp;under the&nbsp;
                 <select value={rcp} onChange={(e) => setRcp(e.target.value)}>
-                    <option value="rcp60">existing global policies</option>
-                    <option value="rcp85">worst case scenario</option>
+                    <option value="rcp60">{rcpText.rcp60}</option>
+                    <option value="rcp85">{rcpText.rcp85}</option>
                 </select>
                 &nbsp;
                 {rcp === "rcp60" && <span>(equivalent to global warming level of 2.0-3.7C which is RCP 6.0)</span>}
                 {rcp === "rcp85" && <span>(equivalent to global warming level of 3.2-5.4C which is RCP 8.5)</span>}
                 &nbsp;the&nbsp;
                 <select value={season} onChange={(e) => setSeason(e.target.value)}>
-                    <option value="annual">yearly</option>
-                    <option value="summer">summer</option>
-                    <option value="winter">winter</option>
+                    <option value="annual">{seasonText.annual}</option>
+                    <option value="summer">{seasonText.summer}</option>
+                    <option value="winter">{seasonText.winter}</option>
                 </select>
                 &nbsp;average climate change for 2070 compared with local records for the 1980s is expected to be:
             </p>
