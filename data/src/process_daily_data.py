@@ -415,6 +415,7 @@ class ClimateDataProcessor:
 
         # Reshape to work with all pixels at once
         data_reshaped = data.reshape(n_time, -1)  # (time, pixels)
+        valid_pixels = np.isfinite(data_reshaped).any(axis=0)
 
         # Apply threshold comparison
         if comparison == "gte":
@@ -443,6 +444,8 @@ class ClimateDataProcessor:
         # Count days meeting threshold and convert to mean per period
         threshold_counts = np.sum(meets_threshold, axis=0)
         mean_per_period = threshold_counts / n_periods
+        mean_per_period = mean_per_period.astype(float)
+        mean_per_period[~valid_pixels] = np.nan
 
         # Reshape back to grid
         return mean_per_period.reshape(n_y, n_x)
