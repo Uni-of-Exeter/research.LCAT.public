@@ -19,6 +19,9 @@ data/builder/__pycache__/*
 # Ignore data store
 data/store
 
+# Experimental data work
+data/experimental
+
 # Build files
 client/dist
 
