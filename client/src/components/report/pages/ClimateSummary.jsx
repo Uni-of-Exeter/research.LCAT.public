@@ -18,6 +18,11 @@ const getClimateIcon = (variable) => {
         'pr': RainIcon,
         'rsds': CloudIcon,
         'sfcWind': WindIcon,
+        'tropical_nights': TemperatureIcon,
+        'hot_heat_days': TemperatureIcon,
+        'heavy_rain_days': RainIcon,
+        'dry_days': CloudIcon,
+        'windy_days': WindIcon,
     };
     return iconMap[variable] || TemperatureIcon;
 };

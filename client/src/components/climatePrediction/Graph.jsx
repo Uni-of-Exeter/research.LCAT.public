@@ -18,6 +18,11 @@ import LoadingOverlay from "react-loading-overlay-ts";
 import Plot from "react-plotly.js";
 
 import { CHESS_SCAPE_URL, LCAT_HANDBOOK_URL } from "../../utils/constants";
+import {
+    getClimateVariableByKey,
+    getGraphDecadesForVariable,
+    graphSelectableClimateVariables,
+} from "../../utils/climateUtils";
 import { andify } from "../../utils/utils";
 
 // Define graph colours
@@ -66,15 +71,19 @@ const Graph = (props) => {
     }, []);
 
     const getYAxis = () => {
-        if (variable == "tas") return "Temperature (°C)";
-        if (variable == "pr") return "Rainfall (mm/day)";
-        if (variable == "sfcWind") return "Wind (m/s)";
-        return "Radiation (W/m²)";
+        const metric = getClimateVariableByKey(variable);
+        if (!metric) return "Climate metric";
+
+        if (metric.units === "days") {
+            return season === "annual" ? `${metric.name} (days/year)` : `${metric.name} (days/season)`;
+        }
+
+        return `${metric.name} (${metric.units})`;
     };
 
     useEffect(() => {
-        if (climatePrediction.length === 0 || !climatePrediction[0][`${variable}_1980`]) return;
-        const years = [1980, 2030, 2040, 2050, 2060, 2070];
+        if (climatePrediction.length === 0 || climatePrediction[0]?.[`${variable}_1980`] == null) return;
+        const years = getGraphDecadesForVariable(variable);
 
         const data = years.map((year) => ({
             x: year === 1980 ? "1980 baseline" : `${year}`,
@@ -124,6 +133,9 @@ const Graph = (props) => {
   const minY = data.map((d) => d.min);
   const maxY = data.map((d) => d.max);
   const avgY = avg.map((d) => d.y);
+    const showGapIndicator = xValues.length >= 2;
+    const gapCenter = showGapIndicator ? 0.5 / (xValues.length - 1) : 0.1;
+    const gapHalfWidth = 0.015;
 
   const formatHover = (y) => (y == null ? '' : Number(y).toFixed(2));
   const hoverTemplate = '%{customdata}<extra></extra>';
@@ -145,6 +157,25 @@ const Graph = (props) => {
       hovertemplate: hoverTemplate,
     },
   ];
+
+    if (showGapIndicator) {
+        traces.push({
+            x: [xValues[0]],
+            y: [Number.isFinite(yValues[0]) ? yValues[0] : 0],
+            type: "scatter",
+            mode: "markers",
+            name: "Baseline-to-projection gap",
+            marker: {
+                color: "rgb(165, 162, 162)",
+                symbol: "square",
+                size: 10,
+            },
+            hoverinfo: "skip",
+            visible: "legendonly",
+            showlegend: true,
+            legendgroup: "decade-gap",
+        });
+    }
 
   if (variable === "tas") {
     traces.push(
@@ -293,6 +324,11 @@ const Graph = (props) => {
         tas: [-10, 40],
         sfcWind: [0, 10],
         rsds: [0, 300],
+        tropical_nights: [0, 60],
+        hot_heat_days: [0, 40],
+        heavy_rain_days: [0, 50],
+        dry_days: [0, 280],
+        windy_days: [0, 360],
     };
 
   // Pad by 5% either side
@@ -318,28 +354,30 @@ const Graph = (props) => {
     yaxis: {
       title: { text: getYAxis(), standoff: isMobile ? 10 : 40 },
       automargin: true,
-      range: yAxisRanges[variable],
+            range: yAxisRanges[variable],
     },
     font: isMobile ? { size: 12 } : { size: 18 },
     height: 400, // fixed height for consistent appearance
     width: containerWidth, // let Plotly fill the container width
     paper_bgcolor: "rgba(0,0,0,0)", // transparent background
     plot_bgcolor: "rgba(0,0,0,0)",  // transparent plot area
-    // Vertical grey bar to indicate x axis discontinuity
-    shapes: [
-        {
-        type: "rect",
-        xref: "x",
-        yref: "paper",
-        x0: 0.46,
-        x1: 0.54,
-        y0: 0,
-        y1: 1,
-        fillcolor: "rgb(165, 162, 162)",
-        line: { width: 0 },
-        layer: "above"
-        }
-    ]
+    // Vertical grey bar to indicate the gap between baseline and first projection point.
+    shapes: showGapIndicator
+        ? [
+            {
+                type: "rect",
+                xref: "paper",
+                yref: "paper",
+                x0: Math.max(0, gapCenter - gapHalfWidth),
+                x1: Math.min(1, gapCenter + gapHalfWidth),
+                y0: 0,
+                y1: 1,
+                fillcolor: "rgb(165, 162, 162)",
+                line: { width: 0 },
+                layer: "above"
+            }
+        ]
+        : []
   };
 
     return (
@@ -385,14 +423,16 @@ const Graph = (props) => {
                                 </select>
                                 &nbsp;averages for&nbsp;
                                 <select
+                                    value={variable}
                                     onChange={(e) => {
                                         setVariable(e.target.value);
                                     }}
                                 >
-                                    <option value="tas">temperature</option>
-                                    <option value="pr">rain</option>
-                                    <option value="sfcWind">wind</option>
-                                    <option value="rsds">radiation</option>
+                                    {graphSelectableClimateVariables.map((item) => (
+                                        <option key={item.variable} value={item.variable}>
+                                            {item.graphLabel}
+                                        </option>
+                                    ))}
                                 </select>
                                 &nbsp;for&nbsp;
                                 <select
@@ -419,7 +459,7 @@ const Graph = (props) => {
                         Adjust the axes by dragging, or zoom in by drawing a box around an area of interest.  
                         Double-click the graph to reset the view.
                         <br />
-                        Note: The vertical grey bar indicates a 50-year gap between the 1980 baseline and 2030 data points.
+                        Note: The vertical grey bar indicates the gap between the 1980 baseline and the first future projection point.
                     </p>
                 </div>
             </div>

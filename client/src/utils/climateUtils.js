@@ -8,6 +8,9 @@ export const climateChange = (prediction, variable, year) => {
     return null;
 };
 
+const FULL_SERIES_DECADES = [1980, 2030, 2040, 2050, 2060, 2070];
+const DERIVED_SERIES_DECADES = [1980, 2070];
+
 // Function to format climate data for display
 export const formatClimateData = (prediction, variable, name, units, year = 2050) => {
     const value = climateChange(prediction, variable, year);
@@ -37,11 +40,24 @@ export const formatClimateData = (prediction, variable, name, units, year = 2050
 
 // Climate variables configuration
 export const climateVariables = [
-    { variable: 'tas', name: 'Temperature', units: '°C' },
-    { variable: 'pr', name: 'Rainfall', units: 'mm/day' },
-    { variable: 'rsds', name: 'Radiation', units: 'Watts/m²' },
-    { variable: 'sfcWind', name: 'Windiness', units: 'm/sec' },
+    { variable: 'tas', name: 'Temperature', units: '°C', graphLabel: 'temperature', graphDecades: FULL_SERIES_DECADES },
+    { variable: 'pr', name: 'Rainfall', units: 'mm/day', graphLabel: 'rain', graphDecades: FULL_SERIES_DECADES },
+    { variable: 'sfcWind', name: 'Windiness', units: 'm/sec', graphLabel: 'wind', graphDecades: FULL_SERIES_DECADES },
+    { variable: 'rsds', name: 'Radiation', units: 'Watts/m²', graphLabel: 'radiation', graphDecades: FULL_SERIES_DECADES },
+    { variable: 'tropical_nights', name: 'Tropical Nights', units: 'days', graphLabel: 'tropical nights', graphDecades: DERIVED_SERIES_DECADES },
+    { variable: 'hot_heat_days', name: 'Hot Heat Days', units: 'days', graphLabel: 'hot heat days', graphDecades: DERIVED_SERIES_DECADES },
+    { variable: 'heavy_rain_days', name: 'Heavy Rain Days', units: 'days', graphLabel: 'heavy rain days', graphDecades: DERIVED_SERIES_DECADES },
+    { variable: 'dry_days', name: 'Dry Days', units: 'days', graphLabel: 'dry days', graphDecades: DERIVED_SERIES_DECADES },
+    { variable: 'windy_days', name: 'Windy Days', units: 'days', graphLabel: 'windy days', graphDecades: DERIVED_SERIES_DECADES },
 ];
+
+export const getClimateVariableByKey = (variable) =>
+    climateVariables.find((item) => item.variable === variable);
+
+export const getGraphDecadesForVariable = (variable) =>
+    getClimateVariableByKey(variable)?.graphDecades || FULL_SERIES_DECADES;
+
+export const graphSelectableClimateVariables = climateVariables.filter((item) => item.graphLabel);
 
 // Get all climate data formatted
 export const getAllClimateData = (climatePrediction, year = 2050) => {
