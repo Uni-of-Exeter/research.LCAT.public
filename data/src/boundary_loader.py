@@ -1,4 +1,7 @@
 import os
+import shlex
+import shutil
+import subprocess
 
 import psycopg2
 
@@ -14,8 +17,28 @@ class BoundaryLoader:
         self.cur = None
         self.connection_string = None
         self.target_projection = None
+        self.pg_bin_path = self.conf.get("pg_bin_path")
 
         self.set_database_projection_code("27700")
+
+    def _resolve_pg_binary(self, binary_name):
+        """
+        Resolve a Postgres binary path using config pg_bin_path when available.
+        """
+
+        if self.pg_bin_path:
+            configured_path = os.path.join(self.pg_bin_path, binary_name)
+            if os.path.isfile(configured_path):
+                return configured_path
+
+        fallback = shutil.which(binary_name)
+        if fallback:
+            return fallback
+
+        raise FileNotFoundError(
+            f"Could not find required binary '{binary_name}'. "
+            "Set pg_bin_path in config.yml or add Postgres binaries to PATH."
+        )
 
     def set_database_projection_code(self, target_projection_code):
         """
@@ -69,13 +92,29 @@ class BoundaryLoader:
 
         table_name = f"boundary_{boundary_identifier}"
 
-        cmd = f'shp2pgsql -I -d -s {source_projection}:{self.target_projection} "{filepath}" {table_name} | psql {self.connection_string}'
+        shp2pgsql_bin = self._resolve_pg_binary("shp2pgsql")
+        psql_bin = self._resolve_pg_binary("psql")
+        quoted_file = shlex.quote(filepath)
+        quoted_conn = shlex.quote(self.connection_string)
+
+        cmd = (
+            f'{shlex.quote(shp2pgsql_bin)} -I -d -s {source_projection}:{self.target_projection} '
+            f"{quoted_file} {table_name} | {shlex.quote(psql_bin)} {quoted_conn}"
+        )
 
         try:
-            os.system(cmd)
+            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+
+            if result.returncode != 0:
+                stderr_tail = (result.stderr or "").strip()[-1200:]
+                raise RuntimeError(
+                    f"Failed loading boundary '{boundary_identifier}' with exit code "
+                    f"{result.returncode}.\n{stderr_tail}"
+                )
 
         except Exception as e:
             print(f"Error creating {boundary_identifier} table: {e}")
+            raise
 
     def load_all_boundaries(self):
         """
