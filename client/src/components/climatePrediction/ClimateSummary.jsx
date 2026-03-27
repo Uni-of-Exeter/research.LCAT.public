@@ -30,11 +30,11 @@ import HelpPopover from "./HelpPopover";
 
 // Variable explanations
 const VARIABLE_EXPLANATIONS = {
-    dry_days: "Dry days are defined as days with less than 1mm of precipitation.",
+    dry_days: "Dry days are defined as days with 1mm or less of precipitation.",
     heavy_rain_days: "Heavy rain days are defined as days with 50mm or more of precipitation.",
     tropical_nights: "Tropical nights occur when the minimum daily temperature does not drop below 20°C.",
-    hot_heat_days: "Hot heat days are defined as days when the maximum temperature exceeds 30°C.",
-    windy_days: "Windy days are defined as days with average wind speeds exceeding 8 m/s.",
+    hot_heat_days: "Hot heat days are defined as days when the maximum temperature is 30°C or higher.",
+    windy_days: "Windy days are defined as days with average wind speeds of 8 m/s or higher.",
 };
 
 // Function to render an arrow pointing up or down
