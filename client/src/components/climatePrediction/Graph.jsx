@@ -158,25 +158,6 @@ const Graph = (props) => {
     },
   ];
 
-    if (showGapIndicator) {
-        traces.push({
-            x: [xValues[0]],
-            y: [Number.isFinite(yValues[0]) ? yValues[0] : 0],
-            type: "scatter",
-            mode: "markers",
-            name: "Baseline-to-projection gap",
-            marker: {
-                color: "rgb(165, 162, 162)",
-                symbol: "square",
-                size: 10,
-            },
-            hoverinfo: "skip",
-            visible: "legendonly",
-            showlegend: true,
-            legendgroup: "decade-gap",
-        });
-    }
-
   if (variable === "tas") {
     traces.push(
         // Max line
@@ -342,7 +323,7 @@ const Graph = (props) => {
 
   const layout = {
     legend: isMobile
-        ? { orientation: "h", x: 0, y: -0.3, }
+        ? { orientation: "h", x: 0, y: -0.3 }
         : { orientation: "v", x: 1.02, y: 1 },
     margin: isMobile 
         ? { l: 0, r: 10, b: 60, t: 10 }
