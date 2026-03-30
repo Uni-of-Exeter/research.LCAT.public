@@ -356,27 +356,27 @@ async function getTableColumns(client, tableName) {
 }
 
 // Build query string: cache method - uses cache tables in database (large regions)
-function buildCacheQuery(boundaryDetails, locations, rcp, season, averageColNames) {
+function buildCacheQuery(boundaryDetails, rcp, season, averageColNames) {
     const cacheTable = `cache_${boundaryDetails.identifier}_to_${rcp}_${season}`;
-    const locationGids = locations.join(",");
 
-    return `
+    return {
+        text: `
         SELECT ${averageColNames.join(",")}
         FROM ${cacheTable}
-        WHERE gid IN (${locationGids});
-        `;
+        WHERE gid = ANY($1::int[]);
+        `,
+    };
 }
 
 // Build query string: cell method - performs calculations on the fly from CHESS-SCAPE tables
-function buildCellQuery(boundaryDetails, locations, rcp, season, averageColNames) {
+function buildCellQuery(boundaryDetails, rcp, season, averageColNames) {
     const gridTable = `grid_overlaps_${boundaryDetails.identifier}`;
     const chessTable = `chess_scape_${rcp}_${season}`;
-    const locationGids = locations.join(",");
 
     const innerSelectCellsQuery = `
         (SELECT DISTINCT grid_cell_id
         FROM ${gridTable} 
-        WHERE gid IN (${locationGids}))
+        WHERE gid = ANY($1::int[]))
         `;
 
     const selectClimateQuery = `
@@ -386,6 +386,26 @@ function buildCellQuery(boundaryDetails, locations, rcp, season, averageColNames
         `;
 
     return selectClimateQuery;
+}
+
+function parseIntegerArray(values) {
+    if (!Array.isArray(values) || values.length === 0) {
+        return null;
+    }
+
+    const parsedValues = values.map((value) => {
+        if (typeof value === "number") {
+            return Number.isSafeInteger(value) ? value : NaN;
+        }
+
+        if (typeof value !== "string" || !/^-?\d+$/.test(value.trim())) {
+            return NaN;
+        }
+
+        return Number(value);
+    });
+
+    return parsedValues.every((value) => Number.isSafeInteger(value)) ? parsedValues : null;
 }
 
 // Check table name helper function: check front end table name is valid
@@ -405,7 +425,12 @@ function is_valid_boundary(tableName) {
 // Route to get the CHESS-SCAPE climate prediction
 router.get("/chess_scape", async (req, res) => {
     try {
-        const locations = Array.isArray(req.query.locations) ? req.query.locations : [req.query.locations];
+        const rawLocations = Array.isArray(req.query.locations)
+            ? req.query.locations
+            : req.query.locations
+                ? [req.query.locations]
+                : [];
+        const locations = parseIntegerArray(rawLocations);
         const rcp = req.query.rcp;
         const season = req.query.season;
         const boundaryTableName = req.query.boundary;
@@ -451,14 +476,16 @@ router.get("/chess_scape", async (req, res) => {
         }
 
         // Build query based on variables and method
-        let query;
+        let queryConfig;
         if (method === "cell") {
-            query = buildCellQuery(boundaryDetails, locations, rcp, season, averageClimateColNames);
+            queryConfig = {
+                text: buildCellQuery(boundaryDetails, rcp, season, averageClimateColNames),
+            };
         } else {
-            query = buildCacheQuery(boundaryDetails, locations, rcp, season, averageClimateColNames);
+            queryConfig = buildCacheQuery(boundaryDetails, rcp, season, averageClimateColNames);
         }
 
-        const result = await client.query(query);
+        const result = await client.query(queryConfig.text, [locations]);
         res.json(result.rows);
 
         await client.end();
