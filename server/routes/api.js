@@ -424,6 +424,7 @@ function is_valid_boundary(tableName) {
 
 // Route to get the CHESS-SCAPE climate prediction
 router.get("/chess_scape", async (req, res) => {
+    let client;
     try {
         const rawLocations = Array.isArray(req.query.locations)
             ? req.query.locations
@@ -454,7 +455,7 @@ router.get("/chess_scape", async (req, res) => {
         const method = boundaryDetails.method;
 
         // Connect and introspect columns so we only query fields that exist.
-        const client = new Client(conString);
+        client = new Client(conString);
         await client.connect();
 
         const climateSourceTable = getClimateSourceTable(boundaryDetails, method, rcp, season);
@@ -471,7 +472,6 @@ router.get("/chess_scape", async (req, res) => {
         const averageClimateColNames = buildAvgClimateCols(season, availableColumns);
 
         if (averageClimateColNames.length === 0) {
-            await client.end();
             return res.status(500).send({ error: "No climate columns available for query" });
         }
 
@@ -487,11 +487,17 @@ router.get("/chess_scape", async (req, res) => {
 
         const result = await client.query(queryConfig.text, [locations]);
         res.json(result.rows);
-
-        await client.end();
     } catch (err) {
         console.error("Error while executing query:", err);
         res.status(500).send({ error: "An error occurred" });
+    } finally {
+        if (client) {
+            try {
+                await client.end();
+            } catch (closeErr) {
+                console.error("Error while closing DB client:", closeErr);
+            }
+        }
     }
 });
 
