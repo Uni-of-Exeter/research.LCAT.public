@@ -18,6 +18,12 @@
     color: #333;
 }
 
+.help-popover-trigger:focus-visible {
+    outline: 2px solid #1f6feb;
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
 .help-icon {
     width: 1em;
     height: 1em;
@@ -60,6 +66,13 @@
 
 .help-popover-close:hover {
     color: #333;
+}
+
+.help-popover-close:focus-visible {
+    color: #333;
+    outline: 2px solid #1f6feb;
+    outline-offset: 2px;
+    border-radius: 3px;
 }
 
 .help-popover-close svg {
