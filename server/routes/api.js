@@ -365,7 +365,38 @@ function getClimateSourceTable(boundaryDetails, method, rcp, season) {
     return `cache_${boundaryDetails.identifier}_to_${rcp}_${season}`;
 }
 
+// Defensive fallback for now while seasonal/derived schemas are still being aligned.
+// Cache table columns briefly so we avoid querying information_schema on every request.
+const TABLE_COLUMNS_CACHE_TTL_MS = 5 * 60 * 1000;
+const tableColumnsCache = new Map();
+
+function getCachedTableColumns(tableName) {
+    const cachedEntry = tableColumnsCache.get(tableName);
+    if (!cachedEntry) {
+        return null;
+    }
+
+    if (Date.now() >= cachedEntry.expiresAt) {
+        tableColumnsCache.delete(tableName);
+        return null;
+    }
+
+    return cachedEntry.columns;
+}
+
+function setCachedTableColumns(tableName, columns) {
+    tableColumnsCache.set(tableName, {
+        columns,
+        expiresAt: Date.now() + TABLE_COLUMNS_CACHE_TTL_MS,
+    });
+}
+
 async function getTableColumns(client, tableName) {
+    const cachedColumns = getCachedTableColumns(tableName);
+    if (cachedColumns) {
+        return cachedColumns;
+    }
+
     const query = `
         SELECT column_name
         FROM information_schema.columns
@@ -374,7 +405,10 @@ async function getTableColumns(client, tableName) {
     `;
 
     const result = await client.query(query, [tableName]);
-    return new Set(result.rows.map((row) => row.column_name));
+    const columns = new Set(result.rows.map((row) => row.column_name));
+    setCachedTableColumns(tableName, columns);
+
+    return columns;
 }
 
 // Build query string: cache method - uses cache tables in database (large regions)
