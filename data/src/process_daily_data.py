@@ -32,9 +32,20 @@ class ClimateDataProcessor:
         bias_corrected_suffix = "_bias-corrected" if self.bias_corrected else ""
         ensemble_str = f"{self.ensemble_member:02d}"
 
-        base_url = f"https://dap.ceda.ac.uk/badc/deposited2021/chess-scape/data/rcp{self.rcp}{bias_corrected_suffix}/{ensemble_str}/daily/{self.variable}/"
-        response = requests.get(base_url)
-        soup = BeautifulSoup(response.content, "html.parser")
+        base_url = (
+            "https://dap.ceda.ac.uk/badc/deposited2021/chess-scape/data/"
+            f"rcp{self.rcp}{bias_corrected_suffix}/{ensemble_str}/daily/{self.variable}/"
+        )
+
+        try:
+            response = requests.get(base_url, timeout=30)
+            response.raise_for_status()
+        except requests.RequestException as exc:
+            raise RuntimeError(
+                f"Failed to fetch NetCDF listing from {base_url}: {exc}"
+            ) from exc
+
+        soup = BeautifulSoup(response.text, "html.parser")
 
         # Find all .nc file links
         nc_files = []
@@ -42,6 +53,11 @@ class ClimateDataProcessor:
             href = link.get("href")
             if href and href.endswith(".nc"):
                 nc_files.append(base_url + href)
+
+        if not nc_files:
+            raise RuntimeError(
+                f"No .nc files found at {base_url}; endpoint may be unavailable or listing may have changed."
+            )
 
         self.file_urls = nc_files
 
