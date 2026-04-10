@@ -73,9 +73,9 @@ const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
                     return (
                         <View key={index} style={[styles.climateItem, { width: '24%' }]}>
                             <View style={styles.iconContainer}>
-                                {arrowSrc && (
-                                    <Image src={arrowSrc} style={styles.arrow} />
-                                )}
+                                <View style={{ width: 15, height: 12, marginBottom: 4 }}>
+                                    {arrowSrc && <Image src={arrowSrc} style={{ width: 15, height: 12 }} />}
+                                </View>
                                 <Image src={iconSrc} style={styles.icon} />
                             </View>
                             <Text style={styles.climateVariable}>{item.name}</Text>

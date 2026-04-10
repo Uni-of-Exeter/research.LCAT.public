@@ -39,7 +39,7 @@ const VARIABLE_EXPLANATIONS = {
 
 // Function to render an arrow pointing up or down
 const renderArrow = (value) => {
-    if (value == null) return null;
+    if (value == null || value === 0) return null;
     return value < 0 ? <DecreaseSvg className="climate-arrow" /> : <IncreaseSvg className="climate-arrow" />;
 };
 
