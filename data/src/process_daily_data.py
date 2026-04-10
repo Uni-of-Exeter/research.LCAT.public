@@ -94,6 +94,12 @@ class ClimateDataProcessor:
         - **calc_kwargs: additional arguments for the calculation function
         """
 
+        if not self.file_urls:
+            raise RuntimeError(
+                "No NetCDF file URLs available for processing. "
+                "Run get_file_links() successfully before process_data_by_decade()."
+            )
+
         # Get grid dimensions from first file
         print("Getting grid dimensions...")
         response = requests.get(self.file_urls[0], timeout=30)
