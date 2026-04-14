@@ -1,9 +1,8 @@
 .climate-summary .horiz-container {
     display: flex;
     flex-direction: row;
-    overflow-x: auto;
     flex-wrap: wrap;
-    /*    justify-content: center; */
+    overflow: visible;
 }
 
 .climate-summary .vert-container {
@@ -28,12 +27,7 @@
     display: inline-block;
 }
 
-.climate-icon-wrapper .help-popover-container {
-    position: absolute;
-    top: -0.25em;
-    right: -0.25em;
-    font-size: 0.875rem;
-}
+
 
 .climate-icon-button svg,
 .climate-icon-wrapper svg {
@@ -51,6 +45,20 @@
 .summary-text {
     width: 12em;
     font-size: 75%;
+}
+
+.summary-name-link {
+    text-decoration: underline;
+    cursor: pointer;
+    color: var(--color-header-text);
+}
+
+.summary-text .help-popover-container {
+    display: inline;
+}
+
+.summary-text .help-popover-trigger {
+    padding: 0;
 }
 
 .climate-icon-button {
@@ -91,6 +99,7 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    overflow: visible;
     justify-content: left;
 }
 

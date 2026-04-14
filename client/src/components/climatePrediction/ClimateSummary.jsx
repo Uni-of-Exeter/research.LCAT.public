@@ -44,11 +44,27 @@ const renderArrow = (value) => {
 };
 
 // Component to create summary text for each climate variable
-const PredictionSummary = ({ prediction, year, variable, name, units }) => {
+const PredictionSummary = ({ prediction, year, variable, name, units, explanation }) => {
     const climateData = formatClimateData(prediction, variable, name, units, year);
+
+    const NameNode = explanation ? (
+        <HelpPopover content={explanation}>
+            <span className="summary-name-link">{name}</span>
+        </HelpPopover>
+    ) : name;
+
+    let text;
+    if (climateData.value == null) {
+        text = climateData.change;
+    } else if (climateData.value === 0) {
+        text = <>No change in {NameNode}</>;
+    } else {
+        text = <>{NameNode} {climateData.direction} by {climateData.absoluteValue} {climateData.units}</>;
+    }
+
     return (
         <div className="summary-text">
-            {climateData.change}
+            {text}
         </div>
     );
 };
@@ -74,9 +90,6 @@ const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClic
                         isAnnual={isAnnual}
                     />
                 </button>
-                {explanation && (
-                    <HelpPopover content={explanation} />
-                )}
             </div>
             <PredictionSummary
                 prediction={prediction}
@@ -84,6 +97,7 @@ const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClic
                 variable={variable}
                 name={name}
                 units={units}
+                explanation={explanation}
             />
         </div>
     );
@@ -102,9 +116,6 @@ const DetailClimateVariable = ({ prediction, year, variable, name, units, Icon }
                 <Icon
                     className="climate-arrow"
                 />
-                {explanation && (
-                    <HelpPopover content={explanation} />
-                )}
             </div>
             <PredictionSummary
                 prediction={prediction}
@@ -112,6 +123,7 @@ const DetailClimateVariable = ({ prediction, year, variable, name, units, Icon }
                 variable={variable}
                 name={name}
                 units={units}
+                explanation={explanation}
             />
         </div>
     );
