@@ -48,5 +48,8 @@
         "prettier": "3.3.2",
         "vite": "^7.2.7",
         "vitest": "^4.1.0"
+    },
+    "overrides": {
+        "@react-pdf/layout": "4.5.1"
     }
 }
