@@ -77,7 +77,7 @@ class GridLoader:
         """
         Lazy load a netcdf file with xarray.
         """
-
+        data = None
         try:
             data = xr.open_dataset(filepath, engine="netcdf4")
             print(f"Loaded file into xarray with sizes y: {data.y.size}, x: {data.x.size}, t: {data.time.size}")
@@ -519,7 +519,6 @@ class GridLoader:
         """
         Run mask creation and database insert process.
         """
-
         self.process_masks(plot_labelled_mask=True)
         self.drop_table()
         self.create_table()

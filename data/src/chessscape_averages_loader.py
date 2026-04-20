@@ -140,6 +140,7 @@ class ChessScapeAveragesLoader:
 
         else:
             print(f"Incorrect filepath: {filepath}")
+            self.current_netcdf_data = None
 
     def calculate_uk_averages_min_mean_max(self, data, lower_bound, higher_bound, step):
         """
@@ -147,7 +148,7 @@ class ChessScapeAveragesLoader:
         """
 
         # Slice the time dimension only to perform some checks
-        time_slice = data.time[lower_bound:higher_bound:step].values
+        time_slice = data.time[lower_bound:higher_bound:step]
 
         # Check we always take mean over 10 years
         if len(time_slice) != 10:
@@ -157,7 +158,8 @@ class ChessScapeAveragesLoader:
         if self.season != "annual":
             month_check = 1 if self.season == "winter" else 7
 
-            if not np.all(np.array([date.month for date in time_slice]) == month_check):
+            months = time_slice.dt.month.values
+            if not np.all(months == month_check):
                 raise ValueError("Different months identified in time slice")
 
         # Perform the same slicing operation on the data itself
