@@ -6,6 +6,7 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
+        "test": "vitest",
         "format": "prettier --check .",
         "format:fix": "prettier --write .",
         "lint": "eslint . --ext .js,.jsx",
@@ -13,7 +14,7 @@
         "preview": "vite preview"
     },
     "dependencies": {
-        "@react-pdf/renderer": "^4.3.0",
+        "@react-pdf/renderer": "4.3.1",
         "@tanstack/react-virtual": "^3.13.9",
         "canvg": "^4.0.3",
         "colormap": "^2.3.2",
@@ -30,6 +31,8 @@
         "vite-plugin-svgr": "^4.2.0"
     },
     "devDependencies": {
+        "@testing-library/jest-dom": "^6.9.1",
+        "@testing-library/react": "^16.3.2",
         "@types/react": "^18.2.66",
         "@types/react-dom": "^18.2.22",
         "@vitejs/plugin-react": "^4.2.1",
@@ -41,7 +44,12 @@
         "eslint-plugin-react-hooks": "^4.6.2",
         "eslint-plugin-react-refresh": "^0.4.6",
         "eslint-plugin-simple-import-sort": "^12.1.0",
+        "jsdom": "^27.4.0",
         "prettier": "3.3.2",
-        "vite": "^7.2.7"
+        "vite": "^7.2.7",
+        "vitest": "^4.1.0"
+    },
+    "overrides": {
+        "@react-pdf/layout": "4.5.1"
     }
 }

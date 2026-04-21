@@ -18,7 +18,7 @@ import LoadingOverlay from "react-loading-overlay-ts";
 import Plot from "react-plotly.js";
 
 import { CHESS_SCAPE_URL, LCAT_HANDBOOK_URL } from "../../utils/constants";
-import { andify } from "../../utils/utils";
+import { andify, rcpText, seasonText } from "../../utils/utils";
 
 // Define graph colours
 const selectedRegionsLine = "rgba(33,99,49,1)";
@@ -357,8 +357,8 @@ const Graph = (props) => {
                                         setRcp(e.target.value);
                                     }}
                                 >
-                                    <option value="rcp60">existing global policies</option>
-                                    <option value="rcp85">worst case scenario</option>
+                                    <option value="rcp60">{rcpText.rcp60}</option>
+                                    <option value="rcp85">{rcpText.rcp85}</option>
                                 </select>
                                 &nbsp;
                                 {rcp == "rcp60" && (
@@ -374,9 +374,9 @@ const Graph = (props) => {
                                         setSeason(e.target.value);
                                     }}
                                 >
-                                    <option value="annual">yearly</option>
-                                    <option value="summer">summer</option>
-                                    <option value="winter">winter</option>
+                                    <option value="annual">{seasonText.annual}</option>
+                                    <option value="summer">{seasonText.summer}</option>
+                                    <option value="winter">{seasonText.winter}</option>
                                 </select>
                                 &nbsp;averages for&nbsp;
                                 <select
