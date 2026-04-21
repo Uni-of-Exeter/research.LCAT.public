@@ -11,20 +11,6 @@ The tool is under continual development, with features, styling, and underlying 
 
 Please view the documentation [here](https://github.com/Uni-of-Exeter/research.LCAT.public/blob/main/docs/). A PDF guide to how LCAT works can be found [here](https://github.com/Uni-of-Exeter/research.LCAT.public/blob/autumn-clean-up/docs/files/lcat_data_pipeline_overview.pdf).
 
-## Running the tests
-
-Unit tests cover the Python data processing modules and require [Poetry](https://python-poetry.org/) and Python 3.12.
-
-```bash
-# Install dependencies (from the repo root)
-poetry install
-
-# Run all tests with coverage
-poetry run pytest
-```
-
-Test files are located in `data/tests/unit/`. Coverage is reported in the terminal after each run.
-
 ## License
 
 - Development before 2024 Copyright © University of Exeter & Then Try This
