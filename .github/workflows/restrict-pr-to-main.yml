@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Fail if source branch is not dev
-        if: github.head_ref != 'dev'
+        if: github.head_ref != 'dev' || github.event.pull_request.head.repo.full_name != github.repository
         run: |
-          echo "PRs to main must come from dev. Source branch: ${{ github.head_ref }}"
+          echo "PRs to main must come from this repository's dev branch. Source branch: ${{ github.head_ref }}. Source repository: ${{ github.event.pull_request.head.repo.full_name }}"
           exit 1
