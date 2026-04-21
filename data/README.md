@@ -8,9 +8,11 @@
 
 ## Running the tests
 
-Unit tests are located in `data/tests/unit/` and are run from the **repo root** using Poetry:
+Unit tests are located in `data/tests/unit/` and are run from the `data/` directory using Poetry:
 
 ```bash
+cd data
+poetry install
 poetry run pytest
 ```
 
