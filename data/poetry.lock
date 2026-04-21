@@ -977,14 +977,14 @@ files = [
 
 [[package]]
 name = "geojson"
-version = "3.1.0"
+version = "3.2.0"
 description = "Python bindings and utilities for GeoJSON"
 optional = false
 python-versions = ">=3.7"
 groups = ["main"]
 files = [
-    {file = "geojson-3.1.0-py3-none-any.whl", hash = "sha256:68a9771827237adb8c0c71f8527509c8f5bef61733aa434cefc9c9d4f0ebe8f3"},
-    {file = "geojson-3.1.0.tar.gz", hash = "sha256:58a7fa40727ea058efc28b0e9ff0099eadf6d0965e04690830208d3ef571adac"},
+    {file = "geojson-3.2.0-py3-none-any.whl", hash = "sha256:69d14156469e13c79479672eafae7b37e2dcd19bdfd77b53f74fa8fe29910b52"},
+    {file = "geojson-3.2.0.tar.gz", hash = "sha256:b860baba1e8c6f71f8f5f6e3949a694daccf40820fa8f138b3f712bd85804903"},
 ]
 
 [[package]]
@@ -3739,4 +3739,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "d734a8c99d152c9dbd76ce0096348f6364ef83896c3e7ae902cd5ba9f1c11f7d"
+content-hash = "3b84d37bdff9fed46d970ee9bec59936c3cfc04c70fefe3b2b7b38986f770e40"
