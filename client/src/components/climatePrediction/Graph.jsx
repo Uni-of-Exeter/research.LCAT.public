@@ -15,10 +15,12 @@ Common Good Public License Beta 1.0 for more details. */
 import { useEffect, useRef, useState } from "react";
 import { useCollapse } from "react-collapsed";
 import LoadingOverlay from "react-loading-overlay-ts";
-import Plot from "react-plotly.js";
+import PlotModule from "react-plotly.js";
 
 import { CHESS_SCAPE_URL, LCAT_HANDBOOK_URL } from "../../utils/constants";
 import { andify, rcpText, seasonText } from "../../utils/utils";
+
+const Plot = PlotModule.default || PlotModule;
 
 // Define graph colours
 const selectedRegionsLine = "rgba(33,99,49,1)";
