@@ -12,6 +12,7 @@ Unit tests are located in `data/tests/unit/` and are run from the `data/` direct
 
 ```bash
 cd data
+poetry install
 poetry run pytest
 ```
 
