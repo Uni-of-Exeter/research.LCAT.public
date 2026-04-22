@@ -44,11 +44,11 @@ export const climateVariables = [
     { variable: 'pr', name: 'Rainfall', units: 'mm/day', graphLabel: 'rain', graphDecades: FULL_SERIES_DECADES },
     { variable: 'sfcWind', name: 'Windiness', units: 'm/sec', graphLabel: 'wind', graphDecades: FULL_SERIES_DECADES },
     { variable: 'rsds', name: 'Radiation', units: 'Watts/m²', graphLabel: 'radiation', graphDecades: FULL_SERIES_DECADES },
-    { variable: 'tropical_nights', name: 'Tropical Nights', units: 'days', graphLabel: 'tropical nights', graphDecades: DERIVED_SERIES_DECADES },
-    { variable: 'hot_heat_days', name: 'Hot Heat Days', units: 'days', graphLabel: 'hot heat days', graphDecades: DERIVED_SERIES_DECADES },
-    { variable: 'heavy_rain_days', name: 'Heavy Rain Days', units: 'days', graphLabel: 'heavy rain days', graphDecades: DERIVED_SERIES_DECADES },
-    { variable: 'dry_days', name: 'Dry Days', units: 'days', graphLabel: 'dry days', graphDecades: DERIVED_SERIES_DECADES },
-    { variable: 'windy_days', name: 'Windy Days', units: 'days', graphLabel: 'windy days', graphDecades: DERIVED_SERIES_DECADES },
+    // { variable: 'tropical_nights', name: 'Tropical Nights', units: 'days', graphLabel: 'tropical nights', graphDecades: DERIVED_SERIES_DECADES },
+    // { variable: 'hot_heat_days', name: 'Hot Heat Days', units: 'days', graphLabel: 'hot heat days', graphDecades: DERIVED_SERIES_DECADES },
+    // { variable: 'heavy_rain_days', name: 'Heavy Rain Days', units: 'days', graphLabel: 'heavy rain days', graphDecades: DERIVED_SERIES_DECADES },
+    // { variable: 'dry_days', name: 'Dry Days', units: 'days', graphLabel: 'dry days', graphDecades: DERIVED_SERIES_DECADES },
+    // { variable: 'windy_days', name: 'Windy Days', units: 'days', graphLabel: 'windy days', graphDecades: DERIVED_SERIES_DECADES },
 ];
 
 export const getClimateVariableByKey = (variable) =>
