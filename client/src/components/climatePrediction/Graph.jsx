@@ -435,16 +435,22 @@ const Graph = (props) => {
                             </div>
                         </div>
                     </LoadingOverlay>
-                    <p className="note">
+                    <p className="note" style={{ marginBottom: 0 }}>
+                        {variable === "tas" && (
+                            <span style={{ display: "block", marginBottom: "1rem" }}>
+                                The min and max numbers here do not account for extreme temperatures, which will still occur, but instead show the range of what normal and expected temperatures will be.
+                            </span>
+                        )}
                         You can hover over points to see their values. Use the legend to show or hide lines, or double-click to focus on a single line.  
                         Adjust the axes by dragging, or zoom in by drawing a box around an area of interest.  
                         Double-click the graph to reset the view.
                         <br />
                         Note: The vertical grey bar indicates the gap between the 1980 baseline and the first future projection point.
                     </p>
+                    <div style={{ height: "1rem" }} />
                 </div>
             </div>
-            <p className="note">
+            <p className="note" style={{ marginTop: 0 }}>
                 Data source: The current iteration of the tool uses climate data from the{" "}
                 <a
                     href={CHESS_SCAPE_URL}
