@@ -129,9 +129,7 @@ class ChessScapeAveragesLoader:
 
         # Create filepath
         sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/{season_folder}"
-        filename = (
-            f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{variable}_uk_1km_{season_folder}_19801201-20801130.nc"
-        )
+        filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{variable}_uk_1km_{season_folder}_19801201-20801130.nc"
         filepath = os.path.join(self.data_location, sub_folders, filename)
 
         # Load netcdf file
@@ -239,8 +237,8 @@ class ChessScapeAveragesLoader:
         if self.transform_performed:
             raise ValueError("Transforms already performed on values.")
 
-        for decade, min_mean_max_dict in self.extracted_data.items():
-            for key, value in min_mean_max_dict.items():
+        for min_mean_max_dict in self.extracted_data.values():
+            for value in min_mean_max_dict.values():
                 self.transform_dataset(value)
 
         # Flag that transforms have been performed

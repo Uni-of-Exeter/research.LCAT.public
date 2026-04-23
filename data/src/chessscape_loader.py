@@ -159,9 +159,7 @@ class ChessScapeLoader:
 
         # Create filepath
         sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/{season_folder}"
-        filename = (
-            f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{variable}_uk_1km_{season_folder}_19801201-20801130.nc"
-        )
+        filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{variable}_uk_1km_{season_folder}_19801201-20801130.nc"
         filepath = os.path.join(self.data_location, sub_folders, filename)
 
         # Load netcdf file
@@ -285,9 +283,9 @@ class ChessScapeLoader:
         if self.transform_performed:
             raise ValueError("Transforms already performed on values.")
 
-        for bias_key, data_by_decade in self.extracted_data.items():
-            for decade, min_mean_max_dict in data_by_decade.items():
-                for key, value in min_mean_max_dict.items():
+        for data_by_decade in self.extracted_data.values():
+            for min_mean_max_dict in data_by_decade.values():
+                for value in min_mean_max_dict.values():
                     self.transform_dataset(value)
 
         # Flag that transforms have been performed
@@ -386,13 +384,13 @@ class ChessScapeLoader:
             grid_cell_id = i * self.mask.shape[1] + j
 
             # Store data row in buffer
-            row = [grid_cell_id] + climate_data
+            row = [grid_cell_id, *climate_data]
             output.write(",".join(map(str, row)) + "\n")
 
         # Move cursor to start
         output.seek(0)
 
-        column_names = ["grid_cell_id"] + new_column_names
+        column_names = ["grid_cell_id", *new_column_names]
         self.cur.copy_from(output, self.table_name, sep=",", columns=column_names)
 
         self.conn.commit()

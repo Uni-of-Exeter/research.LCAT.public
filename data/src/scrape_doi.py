@@ -2,7 +2,6 @@ import urllib.request
 
 import xmltodict
 
-
 CROSSREF_ACCEPT_HEADER = ("Accept", "application/vnd.crossref.unixsd+xml")
 DOI_BASE_URL = "https://doi.org/"
 
@@ -54,9 +53,8 @@ def _names_to_authors_string(names, require_role=None):
 
     out = []
     for p in people:
-        if require_role is not None:
-            if p.get("@contributor_role") != require_role:
-                continue
+        if require_role is not None and p.get("@contributor_role") != require_role:
+            continue
         given = p.get("given_name", "")
         surname = p.get("surname", "")
         full = (given + " " + surname).strip()

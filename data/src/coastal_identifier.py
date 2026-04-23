@@ -48,9 +48,7 @@ class CoastalIdentifier:
         Alter a boundary table to add a boolean column to it, of a given name.
         """
 
-        alter_table_query = (
-            f'ALTER TABLE "boundary_{boundary_identifier}" ADD COLUMN IF NOT EXISTS "{column_name}" BOOLEAN'
-        )
+        alter_table_query = f'ALTER TABLE "boundary_{boundary_identifier}" ADD COLUMN IF NOT EXISTS "{column_name}" BOOLEAN'
 
         self.cur.execute(alter_table_query)
         self.conn.commit()

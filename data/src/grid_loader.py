@@ -102,15 +102,11 @@ class GridLoader:
             filename_bias_corrected = "data/rcp60_bias-corrected/01/annual/chess-scape_rcp60_bias-corrected_01_tas_uk_1km_annual_19801201-20801130.nc"
             filepath_bias_corrected = os.path.join(self.data_location, filename_bias_corrected)
 
-            filename_non_bias_corrected = (
-                "data/rcp60/01/annual/chess-scape_rcp60_01_tas_uk_1km_annual_19801201-20801130.nc"
-            )
+            filename_non_bias_corrected = "data/rcp60/01/annual/chess-scape_rcp60_01_tas_uk_1km_annual_19801201-20801130.nc"
             filepath_non_bias_corrected = os.path.join(self.data_location, filename_non_bias_corrected)
             variable = "tas"
 
-            print(
-                "At least one value not supplied. Loading bias and non-bias corrected netcdf files from folder structure for variable: tas."
-            )
+            print("At least one value not supplied. Loading bias and non-bias corrected netcdf files from folder structure for variable: tas.")
 
         self.data["bias_corrected"] = self.open_netcdf_file(filepath_bias_corrected)
         self.data["non_bias_corrected"] = self.open_netcdf_file(filepath_non_bias_corrected)
@@ -226,9 +222,7 @@ class GridLoader:
         but non-bias-corrected data over Northern Ireland and the Isles of Scilly.
         """
 
-        self.masks["aggregated_labelled"] = self.masks["bias_corrected"].astype(int) + 2 * self.masks[
-            "non_bias_corrected"
-        ].astype(int)
+        self.masks["aggregated_labelled"] = self.masks["bias_corrected"].astype(int) + 2 * self.masks["non_bias_corrected"].astype(int)
 
     def _create_filled_land_mask(self, land_mask, size_threshold=15):
         """

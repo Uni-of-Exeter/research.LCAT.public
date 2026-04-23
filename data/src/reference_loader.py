@@ -106,7 +106,7 @@ class ReferenceLoader:
         ON CONFLICT (article_id) DO NOTHING;
         """
 
-        for key, record in self.data.items():
+        for record in self.data.values():
             if self.validate_record(record):
                 self.cur.execute(
                     insert_query,

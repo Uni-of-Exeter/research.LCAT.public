@@ -11,7 +11,7 @@ def plot_geometry(geometry, ax=None, **kwargs):
     """
 
     if ax is None:
-        fig, ax = plt.subplots()
+        _fig, ax = plt.subplots()
 
     geom = wkb.loads(geometry, hex=True)
 
@@ -239,9 +239,7 @@ class OverlapCalculator:
             return None, None, None
 
         # Convert the candidate_cells list to a string that can be used in the VALUES clause
-        candidate_values = ", ".join(
-            [f"({cell_id}, '{geometry}', '{bias_corrected}')" for cell_id, geometry, bias_corrected in candidate_cells]
-        )
+        candidate_values = ", ".join([f"({cell_id}, '{geometry}', '{bias_corrected}')" for cell_id, geometry, bias_corrected in candidate_cells])
 
         find_closest_grid_cell_query = f"""
         SELECT g.grid_cell_id, g.geometry, g.bias_corrected
@@ -385,7 +383,7 @@ class OverlapCalculator:
         closest_grid_cell_id, _, _ = self.find_closest_grid_cell(region_geom, candidate_cells)
         closest_grid_cell_geom = self.get_grid_cell_geometry(closest_grid_cell_id)
 
-        fig, ax = plt.subplots()
+        _fig, ax = plt.subplots()
 
         # Plot the region
         ax = plot_geometry(region_geom, ax=ax, color="red", linewidth=1, label="Region")
@@ -416,9 +414,7 @@ class OverlapCalculator:
         ax.yaxis.set_major_formatter(ScalarFormatter(useMathText=True))
         ax.ticklabel_format(style="sci", axis="both", scilimits=(0, 0))
 
-        ax.set_title(
-            f"{boundary_identifier}: closest grid cell to no overlap region: {closest_grid_cell_id} - {region_name}"
-        )
+        ax.set_title(f"{boundary_identifier}: closest grid cell to no overlap region: {closest_grid_cell_id} - {region_name}")
         plt.show()
 
     #########################################################################

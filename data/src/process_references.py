@@ -44,7 +44,7 @@ class ProcessReferences:
         self.df["Reference_Type"] = self.df["Reference_Type"].map(string_mapping)
 
         # Finally replace NaNs with ""
-        self.df.fillna("", inplace=True)
+        self.df = self.df.fillna("")
 
     def doi_lookup_row(self, row):
         """
