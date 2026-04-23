@@ -54,9 +54,6 @@ jobs:
   data:
     name: Data
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: data
     steps:
       - uses: actions/checkout@v4
 
@@ -65,11 +62,20 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install ruff
-        run: pip install "ruff>=0.7.4"
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
 
       - name: Lint
-        run: ruff check .
+        run: poetry run ruff check data/
 
       - name: Format check
-        run: ruff format --check .
+        run: poetry run ruff format --check data/
+
+      - name: Run tests
+        run: poetry run pytest
