@@ -1,7 +1,9 @@
-name: CI
+name: PR Checks
 
 on:
   pull_request:
+    branches:
+      - dev
 
 jobs:
   client:
@@ -28,6 +30,9 @@ jobs:
 
       - name: Format check
         run: npm run format
+
+      - name: Run tests
+        run: npm test -- --run
 
   server:
     name: Server
