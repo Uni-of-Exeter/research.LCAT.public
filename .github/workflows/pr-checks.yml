@@ -20,8 +20,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24.x
-          cache: npm
-          cache-dependency-path: client/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -48,8 +46,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24.x
-          cache: npm
-          cache-dependency-path: server/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -60,6 +56,9 @@ jobs:
   data:
     name: Data
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: data
     steps:
       - uses: actions/checkout@v4
 
@@ -78,10 +77,10 @@ jobs:
         run: poetry install --no-interaction
 
       - name: Lint
-        run: poetry run ruff check data/
+        run: poetry run ruff check .
 
       - name: Format check
-        run: poetry run ruff format --check data/
+        run: poetry run ruff format --check .
 
       - name: Run tests
         run: poetry run pytest
