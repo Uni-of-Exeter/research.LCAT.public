@@ -42,14 +42,14 @@ initialiseBoundaryDetails();
 
 // Derive country from ONS area code prefix, or use a fixed string for single-country boundaries
 const countrySQL = {
-    "boundary_uk_counties":  `CASE LEFT(UPPER(ctyua23cd), 1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' WHEN 'S' THEN 'Scotland' WHEN 'N' THEN 'Northern Ireland' END`,
-    "boundary_la_districts": `CASE LEFT(UPPER(lad23cd),   1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' WHEN 'S' THEN 'Scotland' WHEN 'N' THEN 'Northern Ireland' END`,
-    "boundary_lsoa":         `CASE LEFT(UPPER(lsoa21cd),  1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
-    "boundary_msoa":         `CASE LEFT(UPPER(msoa21cd),  1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
-    "boundary_parishes":     `CASE LEFT(UPPER(par23cd),   1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
-    "boundary_sc_dz":        `'Scotland'`,
-    "boundary_ni_dz":        `'Northern Ireland'`,
-    "boundary_iom":          `'Isle of Man'`,
+    boundary_uk_counties: `CASE LEFT(UPPER(ctyua23cd), 1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' WHEN 'S' THEN 'Scotland' WHEN 'N' THEN 'Northern Ireland' END`,
+    boundary_la_districts: `CASE LEFT(UPPER(lad23cd),   1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' WHEN 'S' THEN 'Scotland' WHEN 'N' THEN 'Northern Ireland' END`,
+    boundary_lsoa: `CASE LEFT(UPPER(lsoa21cd),  1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
+    boundary_msoa: `CASE LEFT(UPPER(msoa21cd),  1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
+    boundary_parishes: `CASE LEFT(UPPER(par23cd),   1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
+    boundary_sc_dz: `'Scotland'`,
+    boundary_ni_dz: `'Northern Ireland'`,
+    boundary_iom: `'Isle of Man'`,
 };
 
 /// GET BOUNDARY DATA FROM DB ///
@@ -448,9 +448,9 @@ router.get("/chess_scape_uk_averages", async (req, res) => {
         const result = await client.query(query, queryParams);
         await client.end();
 
-       // Format: { [decade]: { min, mean, max } }
+        // Format: { [decade]: { min, mean, max } }
         const formattedData = Object.fromEntries(
-            result.rows.map((row) => [row.decade, { min: row.min, mean: row.mean, max: row.max }])
+            result.rows.map((row) => [row.decade, { min: row.min, mean: row.mean, max: row.max }]),
         );
         res.json(formattedData);
     } catch (err) {
@@ -467,7 +467,7 @@ router.get("/chess_scape_uk_variable_ranges", async (req, res) => {
 
         // not including baseline - 2030 decades
         const decades = ["1980", "2030", "2040", "2050", "2060", "2070"];
-    
+
         const query = `
             SELECT
                 variable,
@@ -491,11 +491,8 @@ router.get("/chess_scape_uk_variable_ranges", async (req, res) => {
 
         // Format as { variable: [min, max], ... }
         const ranges = {};
-        result.rows.forEach(row => {
-            ranges[row.variable] = [
-                Number(row.global_min),
-                Number(row.global_max)
-            ];
+        result.rows.forEach((row) => {
+            ranges[row.variable] = [Number(row.global_min), Number(row.global_max)];
         });
 
         res.json(ranges);
