@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import psycopg2
+import psycopg2.extras
 from matplotlib.ticker import ScalarFormatter
 from shapely import wkb
 from shapely.geometry import MultiPolygon, Polygon
@@ -238,17 +239,33 @@ class OverlapCalculator:
         if not candidate_cells:
             return None, None, None
 
-        # Convert the candidate_cells list to a string that can be used in the VALUES clause
-        candidate_values = ", ".join([f"({cell_id}, '{geometry}', '{bias_corrected}')" for cell_id, geometry, bias_corrected in candidate_cells])
+        # Use a session-scoped temp table so candidate rows are passed as parameters
+        # rather than interpolated into the SQL string.
+        self.cur.execute(
+            """
+            CREATE TEMP TABLE IF NOT EXISTS _candidate_cells (
+                grid_cell_id integer,
+                geometry geometry,
+                bias_corrected boolean
+            )
+            """
+        )
+        self.cur.execute("TRUNCATE _candidate_cells")
+        psycopg2.extras.execute_values(
+            self.cur,
+            "INSERT INTO _candidate_cells (grid_cell_id, geometry, bias_corrected) VALUES %s",
+            candidate_cells,
+        )
 
-        find_closest_grid_cell_query = f"""
-        SELECT g.grid_cell_id, g.geometry, g.bias_corrected
-        FROM (VALUES {candidate_values}) AS g(grid_cell_id, geometry, bias_corrected)
-        ORDER BY g.geometry <-> %s::geometry
-        LIMIT 1;
-        """
-
-        self.cur.execute(find_closest_grid_cell_query, (region_geom,))
+        self.cur.execute(
+            """
+            SELECT grid_cell_id, geometry, bias_corrected
+            FROM _candidate_cells
+            ORDER BY geometry <-> %s::geometry
+            LIMIT 1
+            """,
+            (region_geom,),
+        )
         closest_grid_cell_data = self.cur.fetchone()
 
         return closest_grid_cell_data[0], closest_grid_cell_data[1], closest_grid_cell_data[2]
