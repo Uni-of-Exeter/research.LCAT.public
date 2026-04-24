@@ -632,7 +632,6 @@ class ClimateDataProcessor:
                                 variable,
                                 season,
                                 self.calculate_tropical_nights,
-                                decades_to_include=[0, 9],  # 1980 and 2070 only
                                 temp_threshold=tropical_threshold,
                             )
 
@@ -650,7 +649,6 @@ class ClimateDataProcessor:
                                 variable,
                                 season,
                                 self.calculate_heat_days,
-                                decades_to_include=[0, 9],
                                 temp_threshold=heat_threshold,
                             )
 
@@ -668,7 +666,6 @@ class ClimateDataProcessor:
                                 variable,
                                 season,
                                 self.calculate_heavy_rain_days,
-                                decades_to_include=[0, 9],
                                 rain_threshold=rain_threshold,
                             )
 
@@ -687,7 +684,6 @@ class ClimateDataProcessor:
                                 variable,
                                 season,
                                 self.calculate_dry_days,
-                                decades_to_include=[0, 9],
                                 rain_threshold=dry_threshold,
                             )
 
@@ -704,7 +700,6 @@ class ClimateDataProcessor:
                                 variable,
                                 season,
                                 self.calculate_windy_days,
-                                decades_to_include=[0, 9],
                                 wind_threshold=wind_threshold,
                             )
 

@@ -304,7 +304,6 @@ function buildAvgClimateCols(season, availableColumns = null) {
     const baseVariables = ["tas", "sfcWind", "pr", "rsds", "tasmax_99_percentile", "tasmin_1_percentile"];
     const derivedVariables = ["tropical_nights", "hot_heat_days", "heavy_rain_days", "dry_days", "windy_days"];
     const allDecades = ["1980", "2030", "2040", "2050", "2060", "2070"];
-    const derivedDecades = ["1980", "2070"];
 
     const hasColumn = (columnName) => {
         if (!availableColumns) return true;
@@ -321,10 +320,9 @@ function buildAvgClimateCols(season, availableColumns = null) {
         }
     }
 
-    // Derived variables are currently consumed at 1980/2070 in the UI,
-    // but include them for any season if the backing table has the columns.
+    // Derived variables use all decades
     for (const variable of derivedVariables) {
-        for (const decade of derivedDecades) {
+        for (const decade of allDecades) {
             const columnName = `${variable}_${decade}`;
             if (hasColumn(columnName)) {
                 averageClimateColNames.push(`AVG("${columnName}") as "${columnName}"`);
@@ -340,7 +338,6 @@ function getExpectedClimateColumnNames() {
     const baseVariables = ["tas", "sfcWind", "pr", "rsds", "tasmax_99_percentile", "tasmin_1_percentile"];
     const derivedVariables = ["tropical_nights", "hot_heat_days", "heavy_rain_days", "dry_days", "windy_days"];
     const allDecades = ["1980", "2030", "2040", "2050", "2060", "2070"];
-    const derivedDecades = ["1980", "2070"];
 
     for (const variable of baseVariables) {
         for (const decade of allDecades) {
@@ -349,7 +346,7 @@ function getExpectedClimateColumnNames() {
     }
 
     for (const variable of derivedVariables) {
-        for (const decade of derivedDecades) {
+        for (const decade of allDecades) {
             expectedColumns.push(`${variable}_${decade}`);
         }
     }
