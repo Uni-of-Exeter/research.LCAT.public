@@ -40,9 +40,21 @@ const Reference = ({ link, title, type, article_id, authors, journal, issue, dat
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
 
     const handleToggle = () => setIsExpanded((prev) => !prev);
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleToggle();
+        }
+    };
 
     return (
-        <div className="reference-container" onClick={handleToggle}>
+        <div
+            className="reference-container"
+            onClick={handleToggle}
+            onKeyDown={handleKeyDown}
+            role="button"
+            tabIndex={0}
+        >
             <div className="reference-title" {...getToggleProps()}>
                 {title || `${link.slice(0, 40)}...`}
             </div>

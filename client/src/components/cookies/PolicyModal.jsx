@@ -89,7 +89,7 @@ export default function CookiePolicyModal({ open, onClose }) {
                     <p><strong>What are cookies?</strong> Cookies are small text files stored on your device to help websites function and collect information about your usage.</p>
                     <p><strong>How we use cookies:</strong> We use essential cookies for site functionality and, with your consent, analytics cookies to understand how visitors use our site. Analytics cookies are only set if you accept them.</p>
                     <p><strong>Essential cookies:</strong> We use a cookie named <code>cookie_consent</code> in your browser&apos;s local storage to remember your cookie preferences, so we do not repeatedly ask for your consent. This value does not expire automatically and will remain until you clear your browser storage or change your preference.</p>
-                    <p><strong>Third-party cookies:</strong> We use Google Analytics to collect anonymous usage statistics. For more information, see <a href="https://policies.google.com/technologies/cookies" target="_blank" rel="noopener noreferrer">Google's cookie policy</a>.</p>
+                    <p><strong>Third-party cookies:</strong> We use Google Analytics to collect anonymous usage statistics. For more information, see <a href="https://policies.google.com/technologies/cookies" target="_blank" rel="noopener noreferrer">Google&apos;s cookie policy</a>.</p>
                     <p><strong>Managing cookies:</strong> You can accept or reject analytics cookies at any time using the cookie banner or the &quot;Manage cookies&quot; link in the site footer.</p>
                 </div>
             </div>

@@ -66,7 +66,7 @@ export const vulnerabilityData = [
                 </p>
                 <ul>
                     <li>
-                        Climate Just's insight & advice:{" "}
+                        Climate Just&apos;s insight & advice:{" "}
                         <a href="https://climatejust.org.uk/messages/older-people" target="_blank" rel="noreferrer">
                             Older people | Climate Just
                         </a>
@@ -77,7 +77,7 @@ export const vulnerabilityData = [
                 </p>
                 <ul>
                     <li>
-                        Climate Just's mapping tool:{" "}
+                        Climate Just&apos;s mapping tool:{" "}
                         <a href="https://www.climatejust.org.uk/map.html" target="_blank" rel="noreferrer">
                             Mapping tool page | Climate Just
                         </a>
@@ -118,7 +118,7 @@ export const vulnerabilityData = [
                 </p>
                 <ul>
                     <li>
-                        Climate Just's insight & advice:{" "}
+                        Climate Just&apos;s insight & advice:{" "}
                         <a
                             href="https://climatejust.org.uk/messages/young-children-and-babies"
                             target="_blank"
@@ -133,7 +133,7 @@ export const vulnerabilityData = [
                 </p>
                 <ul>
                     <li>
-                        Climate Just's mapping tool:{" "}
+                        Climate Just&apos;s mapping tool:{" "}
                         <a href="https://www.climatejust.org.uk/map.html" target="_blank" rel="noreferrer">
                             Mapping tool page | Climate Just
                         </a>
@@ -162,14 +162,14 @@ export const vulnerabilityData = [
                 <ul>
                     <li>Health conditions being exacerbated or worsened by climate change.</li>
                     <li>
-                        Physical limitations and/or limited mobility impacting people's ability to adapt, prepare or
+                        Physical limitations and/or limited mobility impacting people&apos;s ability to adapt, prepare or
                         respond to changing climate and weather events.
                     </li>
-                    <li>Mental health conditions affecting people's ability to adapt or cope.</li>
-                    <li>Particular medications reducing people's physical ability to cope.</li>
+                    <li>Mental health conditions affecting people&apos;s ability to adapt or cope.</li>
+                    <li>Particular medications reducing people&apos;s physical ability to cope.</li>
                     <li>Being reliant on carers to help them adapt, respond and recover.</li>
                     <li>
-                        Extreme events, such as flooding, limiting people's access to vital healthcare, carers or
+                        Extreme events, such as flooding, limiting people&apos;s access to vital healthcare, carers or
                         medication.
                     </li>
                     <li>
@@ -182,7 +182,7 @@ export const vulnerabilityData = [
                 </p>
                 <ul>
                     <li>
-                        Climate Just's insight & advice:{" "}
+                        Climate Just&apos;s insight & advice:{" "}
                         <a
                             href="https://climatejust.org.uk/messages/people-poor-health"
                             target="_blank"
@@ -197,7 +197,7 @@ export const vulnerabilityData = [
                 </p>
                 <ul>
                     <li>
-                        Climate Just's mapping tool:{" "}
+                        Climate Just&apos;s mapping tool:{" "}
                         <a href="https://www.climatejust.org.uk/map.html" target="_blank" rel="noreferrer">
                             Mapping tool page | Climate Just
                         </a>
@@ -228,7 +228,7 @@ export const vulnerabilityData = [
                         a disability which means those on low incomes are a particularly high-risk group.
                     </li>
                     <li>
-                        More likely to be renting a property meaning they don't have the power to make changes or
+                        More likely to be renting a property meaning they don&apos;t have the power to make changes or
                         adaptations to that home.
                     </li>
                     <li>
@@ -246,7 +246,7 @@ export const vulnerabilityData = [
                 </p>
                 <ul>
                     <li>
-                        Climate Just's insight & advice:{" "}
+                        Climate Just&apos;s insight & advice:{" "}
                         <a
                             href="https://climatejust.org.uk/messages/people-low-incomes"
                             target="_blank"
@@ -261,7 +261,7 @@ export const vulnerabilityData = [
                 </p>
                 <ul>
                     <li>
-                        Climate Just's mapping tool:{" "}
+                        Climate Just&apos;s mapping tool:{" "}
                         <a href="https://www.climatejust.org.uk/map.html" target="_blank" rel="noreferrer">
                             Mapping tool page | Climate Just
                         </a>
@@ -297,7 +297,7 @@ export const vulnerabilityData = [
                         support them to understand local risk and then access support networks/ systems in times of
                         extreme weather events.
                     </li>
-                    <li>More likely to live in "purpose-built" flats which can be more vulnerable to extreme heat.</li>
+                    <li>More likely to live in &quot;purpose-built&quot; flats which can be more vulnerable to extreme heat.</li>
                     <li>
                         More likely to live in overcrowded homes impacting ventilation and rising the internal
                         temperatures during times of high/ extreme heat.
@@ -308,7 +308,7 @@ export const vulnerabilityData = [
                 </p>
                 <ul>
                     <li>
-                        Climate Just's insight & advice:{" "}
+                        Climate Just&apos;s insight & advice:{" "}
                         <a
                             href="https://climatejust.org.uk/messages/tenants-social-or-private-rented-housing"
                             target="_blank"
@@ -331,7 +331,7 @@ export const vulnerabilityData = [
                 </p>
                 <ul>
                     <li>
-                        Climate Just's mapping tool:{" "}
+                        Climate Just&apos;s mapping tool:{" "}
                         <a href="https://www.climatejust.org.uk/map.html" target="_blank" rel="noreferrer">
                             Mapping tool page | Climate Just
                         </a>
@@ -367,7 +367,7 @@ export const vulnerabilityData = [
                         factors such as poor-quality housing, insecure, low-paid work and physical and social isolation.
                     </li>
                     <li>
-                        For people who have come from other countries, low or no English proficiency may impact people's
+                        For people who have come from other countries, low or no English proficiency may impact people&apos;s
                         understanding of, and access to, local information on climate impacts.
                     </li>
                 </ul>
@@ -376,7 +376,7 @@ export const vulnerabilityData = [
                 </p>
                 <ul>
                     <li>
-                        Climate Just's insight & advice:{" "}
+                        Climate Just&apos;s insight & advice:{" "}
                         <a
                             href="https://climatejust.org.uk/messages/people-who-have-lived-area-short-time"
                             target="_blank"
@@ -391,7 +391,7 @@ export const vulnerabilityData = [
                 </p>
                 <ul>
                     <li>
-                        Climate Just's mapping tool provides a range of data including length of residency & English
+                        Climate Just&apos;s mapping tool provides a range of data including length of residency & English
                         proficiency:{" "}
                         <a href="https://www.climatejust.org.uk/map.html" target="_blank" rel="noreferrer">
                             Mapping tool page | Climate Just
@@ -440,7 +440,7 @@ export const vulnerabilityData = [
                 </p>
                 <ul>
                     <li>
-                        Climate Just's insight & advice:{" "}
+                        Climate Just&apos;s insight & advice:{" "}
                         <a
                             href="https://climatejust.org.uk/messages/people-who-are-socially-isolated"
                             target="_blank"
@@ -455,7 +455,7 @@ export const vulnerabilityData = [
                 </p>
                 <ul>
                     <li>
-                        Climate Just's mapping tool:{" "}
+                        Climate Just&apos;s mapping tool:{" "}
                         <a href="https://www.climatejust.org.uk/map.html" target="_blank" rel="noreferrer">
                             Mapping tool page | Climate Just
                         </a>
@@ -509,7 +509,7 @@ export const vulnerabilityData = [
                                 work, older communities and transient communities increasing overall vulnerability.
                             </li>
                             <li>
-                                Extreme weather events can reduce people's mobility by cutting off or disrupting
+                                Extreme weather events can reduce people&apos;s mobility by cutting off or disrupting
                                 transport infrastructure making it harder for communities affected to get help and help
                                 themselves.
                             </li>
@@ -521,7 +521,7 @@ export const vulnerabilityData = [
                 </p>
                 <ul>
                     <li>
-                        Climate Just's insight & advice, ensuring principles of social justice are included in
+                        Climate Just&apos;s insight & advice, ensuring principles of social justice are included in
                         adaptation planning:{" "}
                         <a
                             href="https://climatejust.org.uk/messages/people-low-personal-mobility"
@@ -537,7 +537,7 @@ export const vulnerabilityData = [
                 </p>
                 <ul>
                     <li>
-                        Climate Just's mapping tool:{" "}
+                        Climate Just&apos;s mapping tool:{" "}
                         <a href="https://www.climatejust.org.uk/map.html" target="_blank" rel="noreferrer">
                             Mapping tool page | Climate Just
                         </a>

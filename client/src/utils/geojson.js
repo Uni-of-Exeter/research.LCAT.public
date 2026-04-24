@@ -66,7 +66,7 @@ class Geojson {
         return (v - a) / (b - a);
     }
 
-    update(leaflet_map, net) {
+    update(leaflet_map) {
         let b = leaflet_map.getBounds();
 
         $.getJSON(
@@ -79,7 +79,7 @@ class Geojson {
                 top: b._northEast.lat,
                 tolerance: zoom_to_tol(leaflet_map.getZoom()),
             },
-            (data, status) => {
+            (data) => {
                 console.log(data);
                 L.geoJSON(data, {
                     onEachFeature: (feature, layer) => {

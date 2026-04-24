@@ -24,9 +24,7 @@ const Plot = PlotModule.default || PlotModule;
 
 // Define graph colours
 const selectedRegionsLine = "rgba(33,99,49,1)";
-const selectedRegionsShade = "rgba(33,99,49,0.15)";
 const averageUKLine = getComputedStyle(document.documentElement).getPropertyValue('--color-button-hover').trim();
-const averageUKShade = "rgba(245,130,31,0.15)"; // averageUKLine with 15% opacity
 
 const Graph = (props) => {
     const { regions, season, rcp, setSeason, setRcp, loading, climatePrediction, climateAverages, climateAverageRanges, variable, setVariable } =
