@@ -162,8 +162,8 @@ export const vulnerabilityData = [
                 <ul>
                     <li>Health conditions being exacerbated or worsened by climate change.</li>
                     <li>
-                        Physical limitations and/or limited mobility impacting people&apos;s ability to adapt, prepare or
-                        respond to changing climate and weather events.
+                        Physical limitations and/or limited mobility impacting people&apos;s ability to adapt, prepare
+                        or respond to changing climate and weather events.
                     </li>
                     <li>Mental health conditions affecting people&apos;s ability to adapt or cope.</li>
                     <li>Particular medications reducing people&apos;s physical ability to cope.</li>
@@ -297,7 +297,10 @@ export const vulnerabilityData = [
                         support them to understand local risk and then access support networks/ systems in times of
                         extreme weather events.
                     </li>
-                    <li>More likely to live in &quot;purpose-built&quot; flats which can be more vulnerable to extreme heat.</li>
+                    <li>
+                        More likely to live in &quot;purpose-built&quot; flats which can be more vulnerable to extreme
+                        heat.
+                    </li>
                     <li>
                         More likely to live in overcrowded homes impacting ventilation and rising the internal
                         temperatures during times of high/ extreme heat.
@@ -367,8 +370,8 @@ export const vulnerabilityData = [
                         factors such as poor-quality housing, insecure, low-paid work and physical and social isolation.
                     </li>
                     <li>
-                        For people who have come from other countries, low or no English proficiency may impact people&apos;s
-                        understanding of, and access to, local information on climate impacts.
+                        For people who have come from other countries, low or no English proficiency may impact
+                        people&apos;s understanding of, and access to, local information on climate impacts.
                     </li>
                 </ul>
                 <p>
@@ -391,8 +394,8 @@ export const vulnerabilityData = [
                 </p>
                 <ul>
                     <li>
-                        Climate Just&apos;s mapping tool provides a range of data including length of residency & English
-                        proficiency:{" "}
+                        Climate Just&apos;s mapping tool provides a range of data including length of residency &
+                        English proficiency:{" "}
                         <a href="https://www.climatejust.org.uk/map.html" target="_blank" rel="noreferrer">
                             Mapping tool page | Climate Just
                         </a>

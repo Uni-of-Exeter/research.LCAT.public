@@ -25,8 +25,8 @@ const ReferenceGroup = ({ type, references }) => {
 
     return (
         <div className="reference-group">
-            <div 
-                className="reference-group-header" 
+            <div
+                className="reference-group-header"
                 {...getToggleProps({ onClick: () => setIsExpanded((prev) => !prev) })}
             >
                 <span className="reference-type-label">
@@ -72,10 +72,10 @@ const StaticReferences = ({ referenceIds }) => {
 
     // Sort reference types for consistent ordering
     const sortedTypes = Object.keys(groupedRefs).sort((a, b) => {
-        const typeOrder = ['Journal Article', 'Book', 'Report', 'Web Page', 'Other'];
+        const typeOrder = ["Journal Article", "Book", "Report", "Web Page", "Other"];
         const aIndex = typeOrder.indexOf(a);
         const bIndex = typeOrder.indexOf(b);
-        
+
         if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
         if (aIndex !== -1) return -1;
         if (bIndex !== -1) return 1;
@@ -86,11 +86,7 @@ const StaticReferences = ({ referenceIds }) => {
         <div className="static-references">
             <b className="reference-emphasis">References:</b>
             {sortedTypes.map((type) => (
-                <ReferenceGroup
-                    key={type}
-                    type={type}
-                    references={groupedRefs[type]}
-                />
+                <ReferenceGroup key={type} type={type} references={groupedRefs[type]} />
             ))}
         </div>
     );

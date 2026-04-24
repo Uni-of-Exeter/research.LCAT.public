@@ -12,10 +12,12 @@ function loadGAScript() {
     document.head.appendChild(script);
 
     window.dataLayer = window.dataLayer || [];
-    function gtag(){window.dataLayer.push(arguments);}
+    function gtag() {
+        window.dataLayer.push(arguments);
+    }
     window.gtag = gtag;
     gtag("js", new Date());
-    gtag("config", GA_MEASUREMENT_ID, { 'anonymize_ip': true });
+    gtag("config", GA_MEASUREMENT_ID, { anonymize_ip: true });
 }
 
 export default function CookieConsent() {
@@ -31,17 +33,17 @@ export default function CookieConsent() {
             setShow(true);
         }
         const handler = () => setShow(true);
-        window.addEventListener('open_cookie_banner', handler);
-        return () => window.removeEventListener('open_cookie_banner', handler);
+        window.addEventListener("open_cookie_banner", handler);
+        return () => window.removeEventListener("open_cookie_banner", handler);
     }, []);
 
     useEffect(() => {
         if (!showPolicy) return;
         function onKeyDown(e) {
-            if (e.key === 'Escape') setShowPolicy(false);
+            if (e.key === "Escape") setShowPolicy(false);
         }
-        window.addEventListener('keydown', onKeyDown);
-        return () => window.removeEventListener('keydown', onKeyDown);
+        window.addEventListener("keydown", onKeyDown);
+        return () => window.removeEventListener("keydown", onKeyDown);
     }, [showPolicy]);
 
     const accept = () => {
@@ -59,18 +61,21 @@ export default function CookieConsent() {
 
     return (
         <>
-            <div style={{
-                position: "fixed",
-                bottom: 0,
-                left: 0,
-                right: 0,
-                background: "#fffbe7",
-                borderTop: "1px solid #ccc",
-                padding: "1em",
-                zIndex: 10000,
-                textAlign: "center"
-            }}>
-                We use cookies to improve your experience and to understand how people use our site. You can accept or reject non-essential cookies. For more information, see our {" "}
+            <div
+                style={{
+                    position: "fixed",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    background: "#fffbe7",
+                    borderTop: "1px solid #ccc",
+                    padding: "1em",
+                    zIndex: 10000,
+                    textAlign: "center",
+                }}
+            >
+                We use cookies to improve your experience and to understand how people use our site. You can accept or
+                reject non-essential cookies. For more information, see our{" "}
                 <button
                     style={{
                         background: "none",
@@ -79,27 +84,21 @@ export default function CookieConsent() {
                         textDecoration: "underline",
                         cursor: "pointer",
                         padding: 0,
-                        font: "inherit"
+                        font: "inherit",
                     }}
                     onClick={() => setShowPolicy(true)}
                     aria-haspopup="dialog"
                     aria-controls="cookie-policy-modal"
                 >
                     cookie policy
-                </button> and {" "}
-                <a 
-                    href="https://www.ecehh.org/privacy/" 
-                    target="_blank" 
-                    rel="noreferrer" 
-                    style={{color: "#0071c1"}}
-                >
+                </button>{" "}
+                and{" "}
+                <a href="https://www.ecehh.org/privacy/" target="_blank" rel="noreferrer" style={{ color: "#0071c1" }}>
                     ECEHH privacy policy
-                </a>.
+                </a>
+                .
                 <div style={{ marginTop: "0.5em" }}>
-                    <button
-                        onClick={accept}
-                        style={{marginRight: 20}}
-                    >
+                    <button onClick={accept} style={{ marginRight: 20 }}>
                         Accept all cookies
                     </button>
                     <button onClick={decline}>Reject non-essential cookies</button>

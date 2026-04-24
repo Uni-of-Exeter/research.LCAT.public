@@ -273,11 +273,7 @@
             "ccc adaptation theme": ["Nature", "Working lands and seas", "Food security"],
             "ipcc adaptation category": ["Ecosystem-based", "Behavioural", "Government policies and programs"],
             "case_studies": ["1430", "546", "1539", "1559"],
-            "aggregated_layers": [
-                "Flooding and Drought",
-                "Food and Personal Security",
-                "Marine Health Hazards"
-            ]
+            "aggregated_layers": ["Flooding and Drought", "Food and Personal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -1173,12 +1169,7 @@
             ],
             "ccc adaptation theme": ["Towns and cities"],
             "ipcc adaptation category": ["Engineered and built environment", "Technological "],
-            "aggregated_layers": [
-                "Extreme Storms",
-                "Temperature",
-                "Flooding and Drought",
-                "Marine Health Hazards"
-            ]
+            "aggregated_layers": ["Extreme Storms", "Temperature", "Flooding and Drought", "Marine Health Hazards"]
         }
     },
     {
@@ -1321,11 +1312,7 @@
             "ccc adaptation theme": ["Telecoms & ICT", "Health"],
             "ipcc adaptation category": ["Technological ", "Informational"],
             "case_studies": ["1208"],
-            "aggregated_layers": [
-                "Flooding and Drought",
-                "Food and Personal Security",
-                "Marine Health Hazards"
-            ]
+            "aggregated_layers": ["Flooding and Drought", "Food and Personal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -1823,11 +1810,7 @@
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas", "Community preparedness and response"],
             "ipcc adaptation category": ["Ecosystem-based"],
-            "aggregated_layers": [
-                "Flooding and Drought",
-                "Food and Personal Security",
-                "Marine Health Hazards"
-            ]
+            "aggregated_layers": ["Flooding and Drought", "Food and Personal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -2453,11 +2436,7 @@
                 "Ecosystem-based",
                 "Government policies and programs"
             ],
-            "aggregated_layers": [
-                "Flooding and Drought",
-                "Food and Personal Security",
-                "Marine Health Hazards"
-            ]
+            "aggregated_layers": ["Flooding and Drought", "Food and Personal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -3420,11 +3399,7 @@
             ],
             "ccc adaptation theme": ["Nature", "Working lands and seas", "Water supply"],
             "ipcc adaptation category": ["Technological ", "Services", "Informational"],
-            "aggregated_layers": [
-                "Flooding and Drought",
-                "Food and Personal Security",
-                "Marine Health Hazards"
-            ]
+            "aggregated_layers": ["Flooding and Drought", "Food and Personal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -3529,11 +3504,7 @@
                 "Government policies and programs"
             ],
             "case_studies": ["1497", "129"],
-            "aggregated_layers": [
-                "Flooding and Drought",
-                "Food and Personal Security",
-                "Marine Health Hazards"
-            ]
+            "aggregated_layers": ["Flooding and Drought", "Food and Personal Security", "Marine Health Hazards"]
         }
     },
     {
@@ -4377,11 +4348,7 @@
             ],
             "ipcc adaptation category": ["Ecosystem-based", "Laws and regulations"],
             "case_studies": ["544", "545", "546"],
-            "aggregated_layers": [
-                "Flooding and Drought",
-                "Food and Personal Security",
-                "Marine Health Hazards"
-            ]
+            "aggregated_layers": ["Flooding and Drought", "Food and Personal Security", "Marine Health Hazards"]
         }
     }
 ]

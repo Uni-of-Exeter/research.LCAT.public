@@ -124,10 +124,10 @@ const IMDMap = ({ regions, regionType }) => {
 
     function handleOnClick() {
         // Track first-time opening of collapsible
-        if (!isExpanded && !hasTrackedCollapsibleOpen.current && typeof gtag !== 'undefined') {
-            gtag('event', 'deprivation_details_opened');
+        if (!isExpanded && !hasTrackedCollapsibleOpen.current && typeof gtag !== "undefined") {
+            gtag("event", "deprivation_details_opened");
             hasTrackedCollapsibleOpen.current = true;
-        } 
+        }
         setExpanded(!isExpanded);
     }
 
@@ -172,15 +172,29 @@ const IMDMap = ({ regions, regionType }) => {
                                         Click here to get mapped deprivation data for England
                                     </a>{" "}
                                     centered around{" "}
-                                    {<strong className="text-emphasis">{andify(englishRegions.map((e) => e.name))}</strong>}.
+                                    {
+                                        <strong className="text-emphasis">
+                                            {andify(englishRegions.map((e) => e.name))}
+                                        </strong>
+                                    }
+                                    .
                                 </p>
                                 <p className="note" style={{ marginTop: 0 }}>
-                                    Data source: English Index of Multiple Deprivation (IMD) 2025 data are provided by the{" "}
-                                    <a href="https://data.geods.ac.uk/dataset/index-of-multiple-deprivation-imd" target="_blank" rel="noreferrer">
+                                    Data source: English Index of Multiple Deprivation (IMD) 2025 data are provided by
+                                    the{" "}
+                                    <a
+                                        href="https://data.geods.ac.uk/dataset/index-of-multiple-deprivation-imd"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
                                         Geographic Data Service
-                                    </a>
-                                    {" "}and the{" "}
-                                    <a href="https://www.gov.uk/government/statistics/english-indices-of-deprivation-2025" target="_blank" rel="noreferrer">
+                                    </a>{" "}
+                                    and the{" "}
+                                    <a
+                                        href="https://www.gov.uk/government/statistics/english-indices-of-deprivation-2025"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
                                         UK Government.
                                     </a>
                                 </p>
@@ -194,11 +208,21 @@ const IMDMap = ({ regions, regionType }) => {
                                         Click here to get mapped deprivation data for Scotland
                                     </a>{" "}
                                     centered around{" "}
-                                    {<strong className="text-emphasis">{andify(scottishRegions.map((e) => e.name))}</strong>}.
+                                    {
+                                        <strong className="text-emphasis">
+                                            {andify(scottishRegions.map((e) => e.name))}
+                                        </strong>
+                                    }
+                                    .
                                 </p>
                                 <p className="note" style={{ marginTop: 0 }}>
-                                    Data source: Scottish Index of Multiple Deprivation (SIMD) 2020 data are provided by the{" "}
-                                    <a href="https://www.gov.scot/collections/scottish-index-of-multiple-deprivation-2020/" target="_blank" rel="noreferrer">
+                                    Data source: Scottish Index of Multiple Deprivation (SIMD) 2020 data are provided by
+                                    the{" "}
+                                    <a
+                                        href="https://www.gov.scot/collections/scottish-index-of-multiple-deprivation-2020/"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
                                         Scottish Government.
                                     </a>
                                 </p>
@@ -212,15 +236,29 @@ const IMDMap = ({ regions, regionType }) => {
                                         Click here to get mapped deprivation data for Wales
                                     </a>{" "}
                                     centered around{" "}
-                                    {<strong className="text-emphasis">{andify(welshRegions.map((e) => e.name))}</strong>}.
+                                    {
+                                        <strong className="text-emphasis">
+                                            {andify(welshRegions.map((e) => e.name))}
+                                        </strong>
+                                    }
+                                    .
                                 </p>
                                 <p className="note" style={{ marginTop: 0 }}>
-                                    Data source: Welsh Index of Multiple Deprivation (WIMD) 2025 data are provided by the{" "}
-                                    <a href="https://data.geods.ac.uk/dataset/index-of-multiple-deprivation-imd" target="_blank" rel="noreferrer">
+                                    Data source: Welsh Index of Multiple Deprivation (WIMD) 2025 data are provided by
+                                    the{" "}
+                                    <a
+                                        href="https://data.geods.ac.uk/dataset/index-of-multiple-deprivation-imd"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
                                         Geographic Data Service
-                                    </a>
-                                    {" "}and{" "}
-                                    <a href="https://www.gov.wales/welsh-index-multiple-deprivation" target="_blank" rel="noreferrer">
+                                    </a>{" "}
+                                    and{" "}
+                                    <a
+                                        href="https://www.gov.wales/welsh-index-multiple-deprivation"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
                                         Welsh Government / Stats Wales.
                                     </a>
                                 </p>
@@ -232,11 +270,16 @@ const IMDMap = ({ regions, regionType }) => {
                                     <a href={niMapUrl} target="_blank" rel="noopener noreferrer">
                                         <LinkOutIcon size="2em" colour="black" />
                                         Click here to get mapped deprivation data for Northern Ireland
-                                    </a>.
+                                    </a>
+                                    .
                                 </p>
                                 <p className="note" style={{ marginTop: 0 }}>
                                     Data source: Multiple Deprivation Measure 2017 data are provided by{" "}
-                                    <a href="https://www.nisra.gov.uk/statistics/deprivation/northern-ireland-multiple-deprivation-measure-2017-nimdm2017" target="_blank" rel="noreferrer">
+                                    <a
+                                        href="https://www.nisra.gov.uk/statistics/deprivation/northern-ireland-multiple-deprivation-measure-2017-nimdm2017"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
                                         NISRA.
                                     </a>
                                 </p>

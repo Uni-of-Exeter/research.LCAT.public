@@ -80,8 +80,17 @@ const FooterText = () => {
             <p>
                 <button
                     type="button"
-                    style={{ background: "none", border: "none", color: "var(--color-header-text)", textDecoration: "underline", cursor: "pointer", padding: 0, font: "inherit", marginRight: "1em" }}
-                    onClick={() => window.dispatchEvent(new Event('open_cookie_banner'))}
+                    style={{
+                        background: "none",
+                        border: "none",
+                        color: "var(--color-header-text)",
+                        textDecoration: "underline",
+                        cursor: "pointer",
+                        padding: 0,
+                        font: "inherit",
+                        marginRight: "1em",
+                    }}
+                    onClick={() => window.dispatchEvent(new Event("open_cookie_banner"))}
                 >
                     Manage cookies
                 </button>

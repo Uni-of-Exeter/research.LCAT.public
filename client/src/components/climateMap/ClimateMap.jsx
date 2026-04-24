@@ -92,8 +92,8 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
             const alreadySelected = prevRegions.some((r) => r.id === gid);
             if (!alreadySelected) {
                 // Track region selection once
-                if (!hasTrackedRegionSelection.current && typeof gtag !== 'undefined') {
-                    gtag('event', 'region_selection');
+                if (!hasTrackedRegionSelection.current && typeof gtag !== "undefined") {
+                    gtag("event", "region_selection");
                     hasTrackedRegionSelection.current = true;
                 }
                 targetLayer && targetLayer.setStyle({ fillColor: highlightCol, fillOpacity: 1 });
@@ -273,7 +273,9 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                                                         type="checkbox"
                                                         id={checkboxId}
                                                         checked={isSelected}
-                                                        onChange={() => toggleRegion(region.gid, region.name, null, region.country)}
+                                                        onChange={() =>
+                                                            toggleRegion(region.gid, region.name, null, region.country)
+                                                        }
                                                     />
                                                     <label htmlFor={checkboxId}>{region.name}</label>
                                                 </div>

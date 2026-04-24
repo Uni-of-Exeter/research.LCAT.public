@@ -33,11 +33,7 @@ const renderArrow = (value, variable) => {
 // Component to create summary text for each climate variable
 const PredictionSummary = ({ prediction, year, variable, name, units }) => {
     const climateData = formatClimateData(prediction, variable, name, units, year);
-    return (
-        <div className="summary-text">
-            {climateData.change}
-        </div>
-    );
+    return <div className="summary-text">{climateData.change}</div>;
 };
 
 // Component for arrow + prediction + icon for each climate variable

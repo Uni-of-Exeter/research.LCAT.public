@@ -51,9 +51,7 @@ const StaticAdaptation = ({ adaptation, selectedHazards }) => {
                     <p>{attributes.description || "No description available"}</p>
                     {relatedHazards.length > 0 && (
                         <p className="pathways-inline">
-                            <strong>Related impact pathways:</strong> {
-                                relatedHazards
-                                .join(', ')}
+                            <strong>Related impact pathways:</strong> {relatedHazards.join(", ")}
                         </p>
                     )}
                     {caseStudyRefs.length > 0 && (
