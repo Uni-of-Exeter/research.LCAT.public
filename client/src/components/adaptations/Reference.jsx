@@ -41,19 +41,25 @@ const Reference = ({ link, title, type, article_id, authors, journal, issue, dat
 
     const handleToggle = () => setIsExpanded((prev) => !prev);
     const handleKeyDown = (e) => {
+        if (e.target !== e.currentTarget) return;
         if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             handleToggle();
         }
     };
+    const handleClick = (e) => {
+        if (e.target !== e.currentTarget) return;
+        handleToggle();
+    };
 
     return (
         <div
             className="reference-container"
-            onClick={handleToggle}
+            onClick={handleClick}
             onKeyDown={handleKeyDown}
             role="button"
             tabIndex={0}
+            aria-expanded={isExpanded}
         >
             <div className="reference-title" {...getToggleProps()}>
                 {title || `${link.slice(0, 40)}...`}
