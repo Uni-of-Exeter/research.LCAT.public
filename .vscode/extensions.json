@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        // Python — Ruff linter and formatter
+        "charliermarsh.ruff",
+        // JavaScript/JSX/CSS/JSON — Prettier formatter
+        "esbenp.prettier-vscode",
+        // JavaScript/JSX — ESLint
+        "dbaeumer.vscode-eslint"
+    ]
+}
