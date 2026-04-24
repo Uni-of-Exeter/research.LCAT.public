@@ -25,7 +25,7 @@ jobs:
           node-version: 24.x
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Lint
         run: npm run lint
@@ -51,7 +51,7 @@ jobs:
           node-version: 24.x
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Format check
         run: npm run format
