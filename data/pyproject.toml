@@ -28,7 +28,7 @@ h5netcdf = "^1.6.3"
 tqdm = "^4.67.1"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.15.11"
+ruff = "^0.15.12"
 pytest = "^9.0.3"
 pytest-cov = "^7.1.0"
 
