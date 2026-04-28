@@ -2,7 +2,7 @@ import json
 
 import pandas as pd
 
-from src import scrape_doi
+from data.src import scrape_doi
 
 
 class ProcessReferences:
@@ -56,11 +56,16 @@ class ProcessReferences:
         row_type = row["Reference_Type"]
         row_id = row["Reference_ID"]
 
+        if row_type not in {"Journal Article", "Report", "Book", "Book Section"}:
+            print("No DOI lookup performed")
+            return
+
         # Scrape data
         try:
-            response, data = scrape_doi.scrape(row)
+            data = scrape_doi.scrape(row)
         except Exception:
             self.failed_doi_lookups.append(row_id)
+            return
 
         # Parse result
         if row_type == "Journal Article" or row_type == "Report":
@@ -76,10 +81,6 @@ class ProcessReferences:
             except Exception:
                 print(f"DOI Book parsing failed for reference ID: {row_id}")
                 self.failed_doi_lookups.append(row_id)
-
-        else:
-            print("Neither Journal Article nor Book found: no DOI lookup performed")
-            return
 
     def perform_doi_lookups(self, scrape_all_rows=False):
         """

@@ -86,9 +86,15 @@ class ChessScapeLoader:
         """
         Load a given mask, and determine what data will be needed (i.e. bias corrected or non-bias corrected, or both).
         """
+        # Reset internal state first
+        self.mask = None
+        self.bias_corrected_keys = []
 
-        if 0 not in mask:
-            raise ValueError("Have you loaded a boolean mask? Please load labelled mask instead.")
+        # Reject boolean masks explicitly
+        if mask.dtype == bool:
+            raise ValueError(
+                "Boolean mask not allowed. Please provide labelled mask (0, 1, 2)."
+            )
 
         self.mask = mask
 
@@ -117,7 +123,9 @@ class ChessScapeLoader:
 
             print("Connecting using db config from config file...")
 
-        self.conn = psycopg2.connect(host=host, dbname=dbname, user=user, password=password)
+        self.conn = psycopg2.connect(
+            host=host, dbname=dbname, user=user, password=password
+        )
         self.cur = self.conn.cursor()
 
         print("Connection successful.")
@@ -171,7 +179,9 @@ class ChessScapeLoader:
         self.extracted_data[bias_corrected_key] = {}
 
         # Create filepath folder adjustments
-        bias_corrected_folder = "_bias-corrected" if bias_corrected_key == "bias_corrected" else ""
+        bias_corrected_folder = (
+            "_bias-corrected" if bias_corrected_key == "bias_corrected" else ""
+        )
         ensemble_str = f"{self.ensemble_member:02d}"
 
         if variable in [
@@ -260,7 +270,8 @@ class ChessScapeLoader:
         if self.season != "annual":
             month_check = 1 if self.season == "winter" else 7
 
-            if not np.all(np.array([date.month for date in time_slice]) == month_check):
+            months = time_slice.dt.month.values
+            if not np.all(months == month_check):
                 raise ValueError("Different months identified in time slice")
 
         # Perform the same slicing operation on the data itself
@@ -588,7 +599,10 @@ class ChessScapeLoader:
         self.drop_table(self.aggregated_table_name)
 
         base_table = f"{self.aggregated_table_name}_{variables[0]}"
-        table_name_joins = [f'JOIN "{self.aggregated_table_name}_{var}" USING (grid_cell_id)' for var in variables[1:]]
+        table_name_joins = [
+            f'JOIN "{self.aggregated_table_name}_{var}" USING (grid_cell_id)'
+            for var in variables[1:]
+        ]
         joins_string = " ".join(table_name_joins)
 
         join_table_query = f"""
@@ -644,9 +658,7 @@ class ChessScapeLoader:
                 "windy_days",
             ]:
                 season_folder = "seasonal" if season != "annual" else "annual"
-                sub_folders = (
-                    f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/{season_folder}"
-                )
+                sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/{season_folder}"
                 filename = (
                     f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_"
                     f"{var}_uk_1km_{season}_19801201-20801130.nc"

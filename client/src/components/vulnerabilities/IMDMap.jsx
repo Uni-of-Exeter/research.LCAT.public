@@ -12,41 +12,115 @@ Common Good Public License Beta 1.0 for more details. */
 
 /* global gtag */
 
-import React, { useEffect, useRef,useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useCollapse } from "react-collapsed";
 
-import { defaultState } from "../../utils/defaultState";
 import { andify } from "../../utils/utils";
-import RegionCentreLoader from "../loaders/RegionCentreLoader";
 import LinkOutIcon from "./LinkOutIcon";
 
-const zoomLevels = {
-    boundary_uk_counties: 8,
-    boundary_la_districts: 8,
-    boundary_parishes: 10,
-    boundary_msoa: 10,
-    boundary_sc_dz: 10,
-    boundary_lsoa: 10,
-    boundary_ni_dz: 10,
-    boundary_iom: 8,
+// eslint-disable-next-line react-refresh/only-export-components
+export const zoomFromBbox = (bbox) => {
+    const span = Math.max(bbox.max_lat - bbox.min_lat, bbox.max_lon - bbox.min_lon);
+    if (span > 8) return 5;
+    if (span > 4) return 6;
+    if (span > 2) return 7;
+    if (span > 1) return 8;
+    if (span > 0.5) return 9;
+    if (span > 0.2) return 10;
+    return 11;
 };
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const centreFromBbox = (bbox) => ({
+    lat: (bbox.min_lat + bbox.max_lat) / 2,
+    lon: (bbox.min_lon + bbox.max_lon) / 2,
+});
 
 const IMDMap = ({ regions, regionType }) => {
     const [isExpanded, setExpanded] = useState(false);
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
-    const [regionsCentre, setRegionsCentre] = useState(defaultState.mapCenter);
-    const [zoomLevel, setZoomLevel] = useState(8);
+    const [englishBbox, setEnglishBbox] = useState(null);
+    const [scottishBbox, setScottishBbox] = useState(null);
+    const [welshBbox, setWelshBbox] = useState(null);
     const hasTrackedCollapsibleOpen = useRef(false);
 
+    const englishRegions = useMemo(() => regions.filter((r) => r.country === "England"), [regions]);
+    const scottishRegions = useMemo(() => regions.filter((r) => r.country === "Scotland"), [regions]);
+    const welshRegions = useMemo(() => regions.filter((r) => r.country === "Wales"), [regions]);
+    const niRegions = useMemo(() => regions.filter((r) => r.country === "Northern Ireland"), [regions]);
+
     useEffect(() => {
-        // Set zoom level based on region type
-        setZoomLevel(zoomLevels[regionType]);
-    }, [regionType]);
+        if (!isExpanded || englishRegions.length === 0) return;
+        const prepend = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "";
+        const fetchBbox = async () => {
+            try {
+                const response = await fetch(`${prepend}/api/gids_bbox`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ boundary: regionType, gids: englishRegions.map((r) => r.id) }),
+                });
+                if (response.ok) setEnglishBbox(await response.json());
+            } catch (err) {
+                console.error("Error fetching English region bounds:", err);
+            }
+        };
+        fetchBbox();
+    }, [isExpanded, englishRegions, regionType]);
 
-    // Construct link to CDRC page
-    const mapUrl = `https://mapmaker.cdrc.ac.uk/#/index-of-multiple-deprivation?d=01111100&m=imdh19_dc&lon=${regionsCentre.lon}&lat=${regionsCentre.lat}&zoom=${zoomLevel}`;
+    useEffect(() => {
+        if (!isExpanded || scottishRegions.length === 0) return;
+        const prepend = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "";
+        const fetchBbox = async () => {
+            try {
+                const response = await fetch(`${prepend}/api/gids_bbox`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ boundary: regionType, gids: scottishRegions.map((r) => r.id) }),
+                });
+                if (response.ok) setScottishBbox(await response.json());
+            } catch (err) {
+                console.error("Error fetching Scottish region bounds:", err);
+            }
+        };
+        fetchBbox();
+    }, [isExpanded, scottishRegions, regionType]);
 
-    useEffect(() => setExpanded(false), [regions]);
+    useEffect(() => {
+        if (!isExpanded || welshRegions.length === 0) return;
+        const prepend = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "";
+        const fetchBbox = async () => {
+            try {
+                const response = await fetch(`${prepend}/api/gids_bbox`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ boundary: regionType, gids: welshRegions.map((r) => r.id) }),
+                });
+                if (response.ok) setWelshBbox(await response.json());
+            } catch (err) {
+                console.error("Error fetching Welsh region bounds:", err);
+            }
+        };
+        fetchBbox();
+    }, [isExpanded, welshRegions, regionType]);
+
+    // Construct links to deprivation map pages
+    const englishCentre = englishBbox ? centreFromBbox(englishBbox) : { lat: 52.5, lon: -1.5 };
+    const englishZoom = englishBbox ? zoomFromBbox(englishBbox) : 8;
+    const scottishCentre = scottishBbox ? centreFromBbox(scottishBbox) : { lat: 56.5, lon: -4.0 };
+    const scottishZoom = scottishBbox ? zoomFromBbox(scottishBbox) : 8;
+    const welshCentre = welshBbox ? centreFromBbox(welshBbox) : { lat: 52.3, lon: -3.8 };
+    const welshZoom = welshBbox ? zoomFromBbox(welshBbox) : 8;
+    const englandMapUrl = `https://mapmaker.geods.ac.uk/#/index-of-multiple-deprivation?d=01111100&m=imde25&lon=${englishCentre.lon}&lat=${englishCentre.lat}&zoom=${englishZoom}`;
+    const scotlandMapUrl = `https://simd.scot/#/simd2020/BTTTFTT/${scottishZoom}/${scottishCentre.lon}/${scottishCentre.lat}/`;
+    const walesMapUrl = `https://mapmaker.geods.ac.uk/#/index-of-multiple-deprivation?d=01111100&m=imdw25&lon=${welshCentre.lon}&lat=${welshCentre.lat}&zoom=${welshZoom}`;
+    const niMapUrl = "https://datavis.nisra.gov.uk/Deprivation/deprivation%202017/SOA_Deprivation_Map/atlas.html";
+
+    useEffect(() => {
+        setExpanded(false);
+        setEnglishBbox(null);
+        setScottishBbox(null);
+        setWelshBbox(null);
+    }, [regions]);
 
     function handleOnClick() {
         // Track first-time opening of collapsible
@@ -68,13 +142,6 @@ const IMDMap = ({ regions, regionType }) => {
                     {isExpanded ? "Hide" : "Explore"} local deprivation data
                 </div>
                 <div {...getCollapseProps()}>
-                    {isExpanded && (
-                        <RegionCentreLoader
-                            regionType={regionType}
-                            regions={regions}
-                            setRegionsCentre={setRegionsCentre}
-                        />
-                    )}
                     <div>
                         <h1>Local Index of Multiple Deprivation Data</h1>
                         <p>
@@ -97,27 +164,84 @@ const IMDMap = ({ regions, regionType }) => {
                             , can also support local areas to understand climate vulnerability.
                         </p>
 
-                        <p>
-                            <a href={mapUrl} target="_blank" rel="noopener noreferrer">
-                                <LinkOutIcon size="2em" colour="black" />
-                                Click here to get mapped deprivation data
-                            </a>{" "}
-                            centered around{" "}
-                            {<strong className="text-emphasis">{andify(regions.map((e) => e.name))}</strong>}.
-                        </p>
-                    </div>
-                    <div>
-                        <p className="note">
-                            Data source: Index of Multiple Deprivation (IMD) data are provided by the{" "}
-                            <a
-                                href="https://data.cdrc.ac.uk/dataset/index-multiple-deprivation-imd"
-                                target="_blank"
-                                rel="noreferrer"
-                            >
-                                Consumer Data Research Centre (CDRC).
-                            </a>{" "}
-                            The datasets used are the latest available.
-                        </p>
+                        {englishRegions.length > 0 && (
+                            <>
+                                <p style={{ marginBottom: 0 }}>
+                                    <a href={englandMapUrl} target="_blank" rel="noopener noreferrer">
+                                        <LinkOutIcon size="2em" colour="black" />
+                                        Click here to get mapped deprivation data for England
+                                    </a>{" "}
+                                    centered around{" "}
+                                    {<strong className="text-emphasis">{andify(englishRegions.map((e) => e.name))}</strong>}.
+                                </p>
+                                <p className="note" style={{ marginTop: 0 }}>
+                                    Data source: English Index of Multiple Deprivation (IMD) 2025 data are provided by the{" "}
+                                    <a href="https://data.geods.ac.uk/dataset/index-of-multiple-deprivation-imd" target="_blank" rel="noreferrer">
+                                        Geographic Data Service
+                                    </a>
+                                    {" "}and the{" "}
+                                    <a href="https://www.gov.uk/government/statistics/english-indices-of-deprivation-2025" target="_blank" rel="noreferrer">
+                                        UK Government.
+                                    </a>
+                                </p>
+                            </>
+                        )}
+                        {scottishRegions.length > 0 && (
+                            <>
+                                <p style={{ marginBottom: 0 }}>
+                                    <a href={scotlandMapUrl} target="_blank" rel="noopener noreferrer">
+                                        <LinkOutIcon size="2em" colour="black" />
+                                        Click here to get mapped deprivation data for Scotland
+                                    </a>{" "}
+                                    centered around{" "}
+                                    {<strong className="text-emphasis">{andify(scottishRegions.map((e) => e.name))}</strong>}.
+                                </p>
+                                <p className="note" style={{ marginTop: 0 }}>
+                                    Data source: Scottish Index of Multiple Deprivation (SIMD) 2020 data are provided by the{" "}
+                                    <a href="https://www.gov.scot/collections/scottish-index-of-multiple-deprivation-2020/" target="_blank" rel="noreferrer">
+                                        Scottish Government.
+                                    </a>
+                                </p>
+                            </>
+                        )}
+                        {welshRegions.length > 0 && (
+                            <>
+                                <p style={{ marginBottom: 0 }}>
+                                    <a href={walesMapUrl} target="_blank" rel="noopener noreferrer">
+                                        <LinkOutIcon size="2em" colour="black" />
+                                        Click here to get mapped deprivation data for Wales
+                                    </a>{" "}
+                                    centered around{" "}
+                                    {<strong className="text-emphasis">{andify(welshRegions.map((e) => e.name))}</strong>}.
+                                </p>
+                                <p className="note" style={{ marginTop: 0 }}>
+                                    Data source: Welsh Index of Multiple Deprivation (WIMD) 2025 data are provided by the{" "}
+                                    <a href="https://data.geods.ac.uk/dataset/index-of-multiple-deprivation-imd" target="_blank" rel="noreferrer">
+                                        Geographic Data Service
+                                    </a>
+                                    {" "}and{" "}
+                                    <a href="https://www.gov.wales/welsh-index-multiple-deprivation" target="_blank" rel="noreferrer">
+                                        Welsh Government / Stats Wales.
+                                    </a>
+                                </p>
+                            </>
+                        )}
+                        {niRegions.length > 0 && (
+                            <>
+                                <p style={{ marginBottom: 0 }}>
+                                    <a href={niMapUrl} target="_blank" rel="noopener noreferrer">
+                                        <LinkOutIcon size="2em" colour="black" />
+                                        Click here to get mapped deprivation data for Northern Ireland
+                                    </a>.
+                                </p>
+                                <p className="note" style={{ marginTop: 0 }}>
+                                    Data source: Multiple Deprivation Measure 2017 data are provided by{" "}
+                                    <a href="https://www.nisra.gov.uk/statistics/deprivation/northern-ireland-multiple-deprivation-measure-2017-nimdm2017" target="_blank" rel="noreferrer">
+                                        NISRA.
+                                    </a>
+                                </p>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

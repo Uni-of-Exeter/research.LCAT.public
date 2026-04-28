@@ -86,7 +86,9 @@ class ChessScapeAveragesLoader:
 
             print("Connecting using db config from config file...")
 
-        self.conn = psycopg2.connect(host=host, dbname=dbname, user=user, password=password)
+        self.conn = psycopg2.connect(
+            host=host, dbname=dbname, user=user, password=password
+        )
         self.cur = self.conn.cursor()
 
         print("Connection successful.")
@@ -272,7 +274,8 @@ class ChessScapeAveragesLoader:
         if self.season != "annual":
             month_check = 1 if self.season == "winter" else 7
 
-            if not np.all(np.array([date.month for date in time_slice]) == month_check):
+            months = time_slice.dt.month.values
+            if not np.all(months == month_check):
                 raise ValueError("Different months identified in time slice")
 
         # Perform the same slicing operation on the data itself
@@ -499,7 +502,9 @@ class ChessScapeAveragesLoader:
         variables = source_variables + derived_variables
 
         print("############################")
-        print(f"### Processing all variables for dataset: bias_corrected: {is_bias_corrected}, {season}, rcp{rcp}.\n")
+        print(
+            f"### Processing all variables for dataset: bias_corrected: {is_bias_corrected}, {season}, rcp{rcp}.\n"
+        )
 
         for variable in variables:
             print(f"### Processing variable: {variable}")
@@ -516,7 +521,9 @@ class ChessScapeAveragesLoader:
 
             print(f"### Processing complete: {variable}\n")
 
-        print(f"### Processing complete for dataset: bias_corrected: {is_bias_corrected}, {season}, rcp{rcp}.")
+        print(
+            f"### Processing complete for dataset: bias_corrected: {is_bias_corrected}, {season}, rcp{rcp}."
+        )
         print("############################\n")
 
     def process_all_seasons(

@@ -28,7 +28,6 @@ const tileLayer = {
 
 const center = [55.8, -3.2];
 const highlightCol = "#ffd768ff";
-
 const mapping = {
     boundary_uk_counties: "UK Counties and Unitary Authorities",
     boundary_la_districts: "Local Authority Districts",
@@ -50,12 +49,14 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
     const hasTrackedRegionSelection = useRef(false);
 
     const layerMap = useRef(new Map());
+    const countryMap = useRef(new Map());
     const parentRef = useRef(null);
 
     const onEachFeature = (feature, layer) => {
         const col = "#00000000";
         const gid = feature.properties.gid;
         const name = feature.properties.name;
+        const country = feature.properties.country;
         const isSelected = regions.some((e) => e.id === gid);
 
         layer.bindTooltip(name);
@@ -68,6 +69,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
 
         // Store the layer reference
         layerMap.current.set(gid, layer);
+        countryMap.current.set(gid, country);
 
         layer.on("mouseover", () => {
             layer.bringToFront();
@@ -81,9 +83,10 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
         layer.on("click", () => toggleRegion(gid, name, layer));
     };
 
-    const toggleRegion = (gid, name, layer = null) => {
+    const toggleRegion = (gid, name, layer = null, countryOverride = null) => {
         const col = "#00000000";
         const targetLayer = layer || layerMap.current.get(gid);
+        const country = countryOverride ?? countryMap.current.get(gid);
 
         setRegions((prevRegions) => {
             const alreadySelected = prevRegions.some((r) => r.id === gid);
@@ -99,6 +102,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                     {
                         id: gid,
                         name: name,
+                        country: country,
                         clearMe: () => targetLayer && targetLayer.setStyle({ fillColor: col, fillOpacity: 1 }),
                     },
                 ];
@@ -114,6 +118,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
         setRegions([]);
         setGeojsonKey((prev) => prev + 1);
         layerMap.current.clear();
+        countryMap.current.clear();
     };
 
     const handleSetGeojson = (data) => {
@@ -179,6 +184,8 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                         setRegionType(e.target.value);
                         setRegions([]);
                         setTriggerLoadingIndicator(true);
+                        layerMap.current.clear();
+                        countryMap.current.clear();
                     }}
                     value={regionType}
                 >
@@ -266,7 +273,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                                                         type="checkbox"
                                                         id={checkboxId}
                                                         checked={isSelected}
-                                                        onChange={() => toggleRegion(region.gid, region.name)}
+                                                        onChange={() => toggleRegion(region.gid, region.name, null, region.country)}
                                                     />
                                                     <label htmlFor={checkboxId}>{region.name}</label>
                                                 </div>

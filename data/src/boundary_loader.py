@@ -60,7 +60,9 @@ class BoundaryLoader:
 
             print("Connecting using db config from config file...")
 
-        self.conn = psycopg2.connect(host=host, dbname=dbname, user=user, password=password)
+        self.conn = psycopg2.connect(
+            host=host, dbname=dbname, user=user, password=password
+        )
         self.cur = self.conn.cursor()
 
         print("Connection successful.")
@@ -98,7 +100,7 @@ class BoundaryLoader:
         quoted_conn = shlex.quote(self.connection_string)
 
         cmd = (
-            f'{shlex.quote(shp2pgsql_bin)} -I -d -s {source_projection}:{self.target_projection} '
+            f"{shlex.quote(shp2pgsql_bin)} -I -d -s {source_projection}:{self.target_projection} "
             f"{quoted_file} {table_name} | {shlex.quote(psql_bin)} {quoted_conn}"
         )
 
