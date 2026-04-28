@@ -237,14 +237,11 @@ class ClimateDataProcessor:
             f"Files after season filtering: {len(filtered_files)} out of {len(self.file_urls)}"
         )
 
-        # Calculate step-based decades (assuming each file represents one step/year)
-        excluded_decades = [1, 2, 3, 4]
-
         decade_files = {}
         for i, file_url in enumerate(filtered_files):
             decade = i // 120 if season == "annual" else i // 30
 
-            if decade not in excluded_decades:
+            if decade not in self.excluded_decades:
                 # If decades_to_include is specified, only include those decades
                 if decades_to_include is not None and decade not in decades_to_include:
                     continue
