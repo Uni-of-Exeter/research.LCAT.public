@@ -12,12 +12,16 @@ import numpy as np
 import requests
 import xarray as xr
 from bs4 import BeautifulSoup
+from requests.adapters import HTTPAdapter
 from tqdm import tqdm
+from urllib3.util.retry import Retry
 
 
 class ClimateDataProcessor:
 
-    def __init__(self, config, ensemble_member=1):
+    def __init__(
+        self: "ClimateDataProcessor", config: dict, ensemble_member: int = 1
+    ) -> None:
         self.conf = config
         self.rcp = None
         self.bias_corrected = None
@@ -27,8 +31,47 @@ class ClimateDataProcessor:
         self.excluded_decades = []
         self.file_urls = []
         self.data_location = self.conf["chess_scape_netcdf_location"]
+        self.session = self._create_http_session()
+        self._thread_local = threading.local()
 
-    def get_file_links(self):
+    def _create_http_session(
+        self: "ClimateDataProcessor", pool_connections: int = 20, pool_maxsize: int = 20
+    ) -> requests.Session:
+        """Create a requests session with retry and connection pooling."""
+        session = requests.Session()
+        retry = Retry(
+            total=5,
+            connect=5,
+            read=5,
+            backoff_factor=0.5,
+            status_forcelist=(429, 500, 502, 503, 504),
+            allowed_methods=frozenset(["GET", "HEAD"]),
+            raise_on_status=False,
+        )
+        adapter = HTTPAdapter(
+            max_retries=retry,
+            pool_connections=pool_connections,
+            pool_maxsize=pool_maxsize,
+        )
+        session.mount("https://", adapter)
+        session.mount("http://", adapter)
+        return session
+
+    def _get_thread_session(
+        self: "ClimateDataProcessor", n_workers: int = 4
+    ) -> requests.Session:
+        """Get or create a per-thread session for concurrent downloads."""
+        session = getattr(self._thread_local, "session", None)
+        if session is None:
+            pool_size = max(8, n_workers * 2)
+            session = self._create_http_session(
+                pool_connections=pool_size,
+                pool_maxsize=pool_size,
+            )
+            self._thread_local.session = session
+        return session
+
+    def get_file_links(self: "ClimateDataProcessor") -> None:
         bias_corrected_suffix = "_bias-corrected" if self.bias_corrected else ""
         ensemble_str = f"{self.ensemble_member:02d}"
 
@@ -38,7 +81,7 @@ class ClimateDataProcessor:
         )
 
         try:
-            response = requests.get(base_url, timeout=30)
+            response = self.session.get(base_url, timeout=30)
             response.raise_for_status()
         except requests.RequestException as exc:
             raise RuntimeError(
@@ -51,7 +94,7 @@ class ClimateDataProcessor:
         nc_files = []
         for link in soup.find_all("a"):
             href = link.get("href")
-            if href and href.endswith(".nc"):
+            if href and isinstance(href, str) and href.endswith(".nc"):
                 nc_files.append(base_url + href)
 
         if not nc_files:
@@ -61,7 +104,9 @@ class ClimateDataProcessor:
 
         self.file_urls = nc_files
 
-    def _parse_filename_date(self, file_url):
+    def _parse_filename_date(
+        self: "ClimateDataProcessor", file_url: str
+    ) -> dict | None:
         """Extract date components from filename"""
         filename = file_url.split("/")[-1]
         date_match = re.search(r"(\d{4})(\d{2})(\d{2})-(\d{4})(\d{2})(\d{2})", filename)
@@ -76,12 +121,13 @@ class ClimateDataProcessor:
         return None
 
     def process_data_by_decade(
-        self,
+        self: "ClimateDataProcessor",
         variable_name,
         season,
-        calculation_func,
+        calculation_func=None,
         decades_to_include=None,
-        **calc_kwargs,
+        calculations=None,
+        **calc_kwargs: object,
     ):
         """
         Generic function to process files by decade and apply a calculation function
@@ -89,10 +135,44 @@ class ClimateDataProcessor:
         Parameters:
         - variable_name: name of the variable to extract
         - season: season to filter for
-        - calculation_func: function to apply to the decade data
+        - calculation_func: function to apply to the decade data (single-calculation mode)
         - decades_to_include: optional list of decade indices to process (e.g., [0, 9] for 1980 and 2070)
+        - calculations: optional list of calculations in the form:
+            {"name": str, "function": callable, "kwargs": dict}
         - **calc_kwargs: additional arguments for the calculation function
         """
+
+        single_calculation_mode = calculations is None
+        if single_calculation_mode:
+            if calculation_func is None:
+                raise ValueError(
+                    "Either calculation_func or calculations must be provided"
+                )
+            calculations = [
+                {
+                    "name": "default",
+                    "function": calculation_func,
+                    "kwargs": dict(calc_kwargs),
+                }
+            ]
+        elif not calculations:
+            raise ValueError("calculations must contain at least one calculation")
+
+        calculation_specs = []
+        calc_names = set()
+        for calc in calculations:
+            name = calc.get("name")
+            func = calc.get("function")
+            kwargs = dict(calc.get("kwargs", {}))
+
+            if not name or not callable(func):
+                raise ValueError(
+                    "Each calculation must provide a name and callable function"
+                )
+            if name in calc_names:
+                raise ValueError(f"Duplicate calculation name: {name}")
+            calc_names.add(name)
+            calculation_specs.append({"name": name, "function": func, "kwargs": kwargs})
 
         if not self.file_urls:
             raise RuntimeError(
@@ -102,11 +182,12 @@ class ClimateDataProcessor:
 
         # Get grid dimensions from first file
         print("Getting grid dimensions...")
-        response = requests.get(self.file_urls[0], timeout=30)
+        response = self.session.get(self.file_urls[0], timeout=30)
+        response.raise_for_status()
         file_obj = io.BytesIO(response.content)
         sample_ds = xr.open_dataset(file_obj, engine="h5netcdf")
-        y_coords = sample_ds.y.values
-        x_coords = sample_ds.x.values
+        y_coords = sample_ds.y.to_numpy()
+        x_coords = sample_ds.x.to_numpy()
         sample_ds.close()
         del sample_ds
         gc.collect()
@@ -176,7 +257,7 @@ class ClimateDataProcessor:
         )
 
         # Process each decade
-        decade_results = {}
+        decade_results_by_calc = {calc["name"]: {} for calc in calculation_specs}
         for decade in sorted(decade_files.keys()):
             print(
                 f"\nProcessing step-decade {decade} ({len(decade_files[decade])} files)..."
@@ -191,29 +272,46 @@ class ClimateDataProcessor:
 
             print(f"Step-decade {decade} data shape: {decade_data.shape}")
 
-            # Apply the calculation function
-            print(f"Applying calculation for step-decade {decade}...")
+            # Apply all requested calculations from the same loaded decade data.
+            for calc in calculation_specs:
+                print(
+                    f"Applying calculation '{calc['name']}' for step-decade {decade}..."
+                )
+                call_kwargs = dict(calc["kwargs"])
+                if "season" not in call_kwargs:
+                    try:
+                        params = inspect.signature(calc["function"]).parameters
+                    except (TypeError, ValueError):
+                        params = {}
+                    if "season" in params:
+                        call_kwargs["season"] = season
 
-            call_kwargs = dict(calc_kwargs)
-            if "season" not in call_kwargs:
-                try:
-                    params = inspect.signature(calculation_func).parameters
-                except (TypeError, ValueError):
-                    params = {}
-                if "season" in params:
-                    call_kwargs["season"] = season
-
-            result = calculation_func(decade_data, **call_kwargs)
-
-            decade_results[decade] = result
+                result = calc["function"](decade_data, **call_kwargs)
+                decade_results_by_calc[calc["name"]][decade] = result
 
             del decade_data
             gc.collect()
 
-        return self.create_combined_dataset(decade_results, y_coords, x_coords)
+        datasets = {}
+        for calc_name, decade_results in decade_results_by_calc.items():
+            if decade_results:
+                datasets[calc_name] = self.create_combined_dataset(
+                    decade_results,
+                    y_coords,
+                    x_coords,
+                )
+
+        if single_calculation_mode:
+            return datasets.get("default")
+        return datasets
 
     def load_decade_data(
-        self, file_urls, variable_name, n_workers=4, max_retries=5, base_delay=1.0
+        self: "ClimateDataProcessor",
+        file_urls,
+        variable_name,
+        n_workers=4,
+        max_retries=5,
+        base_delay=1.0,
     ):
         """Load and concatenate data from multiple files with retry logic"""
 
@@ -236,7 +334,8 @@ class ClimateDataProcessor:
                         )
                         time.sleep(delay)
 
-                    response = requests.get(file_url, timeout=60)  # Increased timeout
+                    session = self._get_thread_session(n_workers=n_workers)
+                    response = session.get(file_url, timeout=60)
 
                     if response.status_code != 200:
                         last_error = f"HTTP {response.status_code}"
@@ -246,8 +345,7 @@ class ClimateDataProcessor:
                             504,
                         ]:  # Rate limiting or server errors
                             continue  # Retry these
-                        else:
-                            break  # Don't retry for client errors like 404
+                        break  # Don't retry for client errors like 404
 
                     # Check if we got valid content
                     if len(response.content) < 1000:
@@ -266,7 +364,7 @@ class ClimateDataProcessor:
                         last_error = f"Variable '{variable_name}' not found"
                         break  # Don't retry for missing variables
 
-                    data = ds[variable_name].values
+                    data = ds[variable_name].to_numpy()
                     ds.close()
 
                     if np.isnan(data).all():
@@ -282,10 +380,10 @@ class ClimateDataProcessor:
                     last_error = "Read timeout"
                     continue  # Retry timeouts
                 except requests.exceptions.ConnectionError as e:
-                    last_error = f"Connection error: {str(e)}"
+                    last_error = f"Connection error: {e!s}"
                     continue  # Retry connection errors
                 except Exception as e:
-                    last_error = f"Unexpected error: {str(e)}"
+                    last_error = f"Unexpected error: {e!s}"
                     # For unexpected errors, retry a few times then give up
                     if attempt < 2:
                         continue
@@ -344,7 +442,9 @@ class ClimateDataProcessor:
 
         return np.concatenate(all_data, axis=0)
 
-    def create_combined_dataset(self, decade_results, y_coords, x_coords):
+    def create_combined_dataset(
+        self: "ClimateDataProcessor", decade_results, y_coords, x_coords
+    ):
         """Create xarray dataset from decade results"""
         decades = sorted(decade_results.keys())
 
@@ -377,7 +477,7 @@ class ClimateDataProcessor:
             coords={"decade": decade_coords, "y": y_coords, "x": x_coords},
         )
 
-    def calculate_quantiles(self, data, quantiles=None):
+    def calculate_quantiles(self: "ClimateDataProcessor", data, quantiles=None):
         """Calculate temperature quantiles"""
 
         n_time, n_y, n_x = data.shape
@@ -385,11 +485,11 @@ class ClimateDataProcessor:
         if quantiles is None:
             quantiles = [95, 99]
 
-        if "tas" in self.variable:
+        if "tas" in (self.variable or ""):
             # Convert temperature from Kelvin to Celsius
             data = data - 273.15
 
-        if "pr" in self.variable:
+        if "pr" in (self.variable or ""):
             # Convert precipitation from kg m-2 s-1 to mm/day
             data = data * 86400
 
@@ -405,7 +505,7 @@ class ClimateDataProcessor:
         return results
 
     def calculate_threshold_days(
-        self,
+        self: "ClimateDataProcessor",
         data,
         threshold,
         comparison="gte",
@@ -473,7 +573,9 @@ class ClimateDataProcessor:
         return mean_per_period.reshape(n_y, n_x)
 
     # Convenience wrappers for backward compatibility
-    def calculate_tropical_nights(self, data, temp_threshold=20.0, season="annual"):
+    def calculate_tropical_nights(
+        self: "ClimateDataProcessor", data, temp_threshold=20.0, season="annual"
+    ):
         """Calculate mean tropical nights per period (tasmin >= threshold)."""
         return self.calculate_threshold_days(
             data,
@@ -483,7 +585,9 @@ class ClimateDataProcessor:
             season=season,
         )
 
-    def calculate_heat_days(self, data, temp_threshold=30.0, season="annual"):
+    def calculate_heat_days(
+        self: "ClimateDataProcessor", data, temp_threshold=30.0, season="annual"
+    ):
         """Calculate mean hot/extreme heat days per period (tasmax >= threshold)."""
         return self.calculate_threshold_days(
             data,
@@ -493,7 +597,9 @@ class ClimateDataProcessor:
             season=season,
         )
 
-    def calculate_heavy_rain_days(self, data, rain_threshold=50.0, season="annual"):
+    def calculate_heavy_rain_days(
+        self: "ClimateDataProcessor", data, rain_threshold=50.0, season="annual"
+    ):
         """Calculate mean heavy rain days per period (pr >= threshold)."""
         return self.calculate_threshold_days(
             data,
@@ -503,7 +609,9 @@ class ClimateDataProcessor:
             season=season,
         )
 
-    def calculate_dry_days(self, data, rain_threshold=1.0, season="annual"):
+    def calculate_dry_days(
+        self: "ClimateDataProcessor", data, rain_threshold=1.0, season="annual"
+    ):
         """Calculate mean dry days per period (pr <= threshold)."""
         return self.calculate_threshold_days(
             data,
@@ -513,14 +621,16 @@ class ClimateDataProcessor:
             season=season,
         )
 
-    def calculate_windy_days(self, data, wind_threshold=8.0, season="annual"):
+    def calculate_windy_days(
+        self: "ClimateDataProcessor", data, wind_threshold=8.0, season="annual"
+    ):
         """Calculate mean windy days per period (wind speed >= threshold)."""
         return self.calculate_threshold_days(
             data, wind_threshold, comparison="gte", season=season
         )
 
     def generate_data(
-        self,
+        self: "ClimateDataProcessor",
         *,
         quantiles_config=None,
         tropical_nights_enabled=True,
@@ -602,12 +712,16 @@ class ClimateDataProcessor:
                         )
                         os.makedirs(output_dir, exist_ok=True)
 
+                        requested_calculations = []
+                        output_targets = []
+
                         if compute_quantiles:
-                            quantile_dataset = self.process_data_by_decade(
-                                variable,
-                                season,
-                                self.calculate_quantiles,
-                                quantiles=quantiles,
+                            requested_calculations.append(
+                                {
+                                    "name": "quantiles",
+                                    "function": self.calculate_quantiles,
+                                    "kwargs": {"quantiles": quantiles},
+                                }
                             )
 
                             quantile_fragment = "_".join(str(q) for q in quantiles)
@@ -622,97 +736,135 @@ class ClimateDataProcessor:
                                 f"chess-scape_rcp{rcp}{bias_suffix}_{ensemble_str}_{quantile_label}_"
                                 f"uk_1km_{season}_19801201-20801130.nc"
                             )
-                            quantile_path = os.path.join(output_dir, quantile_filename)
-                            quantile_dataset.to_netcdf(quantile_path)
-                            print(f"Saved dataset to {quantile_path}")
-                            saved_datasets.append(quantile_path)
+                            output_targets.append(
+                                (
+                                    "quantiles",
+                                    os.path.join(output_dir, quantile_filename),
+                                )
+                            )
 
                         if compute_tropical:
-                            tropical_dataset = self.process_data_by_decade(
-                                variable,
-                                season,
-                                self.calculate_tropical_nights,
-                                temp_threshold=tropical_threshold,
+                            requested_calculations.append(
+                                {
+                                    "name": "tropical_nights",
+                                    "function": self.calculate_tropical_nights,
+                                    "kwargs": {"temp_threshold": tropical_threshold},
+                                }
                             )
 
                             tropical_filename = (
                                 f"chess-scape_rcp{rcp}{bias_suffix}_{ensemble_str}_tropical_nights_"
                                 f"uk_1km_{season}_19801201-20801130.nc"
                             )
-                            tropical_path = os.path.join(output_dir, tropical_filename)
-                            tropical_dataset.to_netcdf(tropical_path)
-                            print(f"Saved dataset to {tropical_path}")
-                            saved_datasets.append(tropical_path)
+                            output_targets.append(
+                                (
+                                    "tropical_nights",
+                                    os.path.join(output_dir, tropical_filename),
+                                )
+                            )
 
                         if compute_hot_days:
-                            hot_days_dataset = self.process_data_by_decade(
-                                variable,
-                                season,
-                                self.calculate_heat_days,
-                                temp_threshold=heat_threshold,
+                            requested_calculations.append(
+                                {
+                                    "name": "hot_heat_days",
+                                    "function": self.calculate_heat_days,
+                                    "kwargs": {"temp_threshold": heat_threshold},
+                                }
                             )
 
                             hot_days_filename = (
                                 f"chess-scape_rcp{rcp}{bias_suffix}_{ensemble_str}_hot_heat_days_"
                                 f"uk_1km_{season}_19801201-20801130.nc"
                             )
-                            hot_days_path = os.path.join(output_dir, hot_days_filename)
-                            hot_days_dataset.to_netcdf(hot_days_path)
-                            print(f"Saved dataset to {hot_days_path}")
-                            saved_datasets.append(hot_days_path)
+                            output_targets.append(
+                                (
+                                    "hot_heat_days",
+                                    os.path.join(output_dir, hot_days_filename),
+                                )
+                            )
 
                         if compute_heavy_rain:
-                            heavy_rain_dataset = self.process_data_by_decade(
-                                variable,
-                                season,
-                                self.calculate_heavy_rain_days,
-                                rain_threshold=rain_threshold,
+                            requested_calculations.append(
+                                {
+                                    "name": "heavy_rain_days",
+                                    "function": self.calculate_heavy_rain_days,
+                                    "kwargs": {"rain_threshold": rain_threshold},
+                                }
                             )
 
                             heavy_rain_filename = (
                                 f"chess-scape_rcp{rcp}{bias_suffix}_{ensemble_str}_heavy_rain_days_"
                                 f"uk_1km_{season}_19801201-20801130.nc"
                             )
-                            heavy_rain_path = os.path.join(
-                                output_dir, heavy_rain_filename
+                            output_targets.append(
+                                (
+                                    "heavy_rain_days",
+                                    os.path.join(output_dir, heavy_rain_filename),
+                                )
                             )
-                            heavy_rain_dataset.to_netcdf(heavy_rain_path)
-                            print(f"Saved dataset to {heavy_rain_path}")
-                            saved_datasets.append(heavy_rain_path)
+
                         if compute_dry_days:
-                            dry_days_dataset = self.process_data_by_decade(
-                                variable,
-                                season,
-                                self.calculate_dry_days,
-                                rain_threshold=dry_threshold,
+                            requested_calculations.append(
+                                {
+                                    "name": "dry_days",
+                                    "function": self.calculate_dry_days,
+                                    "kwargs": {"rain_threshold": dry_threshold},
+                                }
                             )
 
                             dry_days_filename = (
                                 f"chess-scape_rcp{rcp}{bias_suffix}_{ensemble_str}_dry_days_"
                                 f"uk_1km_{season}_19801201-20801130.nc"
                             )
-                            dry_days_path = os.path.join(output_dir, dry_days_filename)
-                            dry_days_dataset.to_netcdf(dry_days_path)
-                            print(f"Saved dataset to {dry_days_path}")
-                            saved_datasets.append(dry_days_path)
+                            output_targets.append(
+                                (
+                                    "dry_days",
+                                    os.path.join(output_dir, dry_days_filename),
+                                )
+                            )
+
                         if compute_windy_days:
-                            windy_days_dataset = self.process_data_by_decade(
-                                variable,
-                                season,
-                                self.calculate_windy_days,
-                                wind_threshold=wind_threshold,
+                            requested_calculations.append(
+                                {
+                                    "name": "windy_days",
+                                    "function": self.calculate_windy_days,
+                                    "kwargs": {"wind_threshold": wind_threshold},
+                                }
                             )
 
                             windy_days_filename = (
                                 f"chess-scape_rcp{rcp}{bias_suffix}_{ensemble_str}_windy_days_"
                                 f"uk_1km_{season}_19801201-20801130.nc"
                             )
-                            windy_days_path = os.path.join(
-                                output_dir, windy_days_filename
+                            output_targets.append(
+                                (
+                                    "windy_days",
+                                    os.path.join(output_dir, windy_days_filename),
+                                )
                             )
-                            windy_days_dataset.to_netcdf(windy_days_path)
-                            print(f"Saved dataset to {windy_days_path}")
-                            saved_datasets.append(windy_days_path)
+
+                        calculation_datasets_raw = self.process_data_by_decade(
+                            variable,
+                            season,
+                            calculations=requested_calculations,
+                        )
+
+                        if not isinstance(calculation_datasets_raw, dict):
+                            raise RuntimeError(
+                                "Expected multiple calculation datasets but got single result"
+                            )
+
+                        calculation_datasets = calculation_datasets_raw
+
+                        for calc_name, output_path in output_targets:
+                            dataset = calculation_datasets.get(calc_name)
+                            if dataset is None:
+                                raise RuntimeError(
+                                    f"Missing dataset for calculation '{calc_name}'"
+                                )
+                            dataset.to_netcdf(output_path)
+                            print(f"Saved dataset to {output_path}")
+                            saved_datasets.append(output_path)
 
         print("\n" + "=" * 60)
         print(f"SUMMARY: {len(saved_datasets)} datasets saved")
