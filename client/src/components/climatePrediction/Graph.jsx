@@ -12,40 +12,36 @@ Common Good Public License Beta 1.0 for more details. */
 
 /* global gtag */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useCollapse } from "react-collapsed";
 import LoadingOverlay from "react-loading-overlay-ts";
 import Plot from "react-plotly.js";
 
-import { CHESS_SCAPE_URL, LCAT_HANDBOOK_URL } from "../../utils/constants";
 import {
     getClimateVariableByKey,
     getGraphDecadesForVariable,
     graphSelectableClimateVariables,
 } from "../../utils/climateUtils";
+import { CHESS_SCAPE_URL, LCAT_HANDBOOK_URL } from "../../utils/constants";
 import { andify } from "../../utils/utils";
 
 // Define graph colours
 const selectedRegionsLine = "rgba(33,99,49,1)";
 const selectedRegionsShade = "rgba(33,99,49,0.15)";
 const averageUKLine = getComputedStyle(document.documentElement).getPropertyValue('--color-button-hover').trim();
-const averageUKShade = "rgba(245,130,31,0.15)"; // averageUKLine with 15% opacity
 
 const Graph = (props) => {
-    const { regions, season, rcp, setSeason, setRcp, loading, climatePrediction, climateAverages, climateAverageRanges, variable, setVariable } =
+    const { regions, season, rcp, setSeason, setRcp, loading, climatePrediction, climateAverages, variable, setVariable } =
         props;
 
-    const [data, setData] = useState([]);
-    const [avg, setAvg] = useState([]);
     const [showAverage, setShowAverage] = useState(false);
     const [isExpanded, setExpanded] = useState(false);
-    const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
+    const effectiveExpanded = isExpanded && regions.length > 0;
+    const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded: effectiveExpanded });
     const graphContainerRef = useRef(null);
     const [isMobile, setIsMobile] = useState(false);
     const [containerWidth, setContainerWidth] = useState(undefined);
     const hasTrackedCollapsibleOpen = useRef(false);
-    // const [avgMin, setAvgMin] = useState([]);
-    // const [avgMax, setAvgMax] = useState([]);
 
     useEffect(() => {
         // Responsive layout for mobile devices
@@ -81,33 +77,25 @@ const Graph = (props) => {
         return `${metric.name} (${metric.units})`;
     };
 
-    useEffect(() => {
-        if (climatePrediction.length === 0 || climatePrediction[0]?.[`${variable}_1980`] == null) return;
+    const data = useMemo(() => {
+        if (climatePrediction.length === 0 || climatePrediction[0]?.[`${variable}_1980`] == null) return [];
         const years = getGraphDecadesForVariable(variable);
-
-        const data = years.map((year) => ({
+        return years.map((year) => ({
             x: year === 1980 ? "1980 baseline" : `${year}`,
             y: climatePrediction[0]?.[`${variable}_${year}`] ?? null,
             min: climatePrediction[0]?.[`tasmin_1_percentile_${year}`] ?? null,
             max: climatePrediction[0]?.[`tasmax_99_percentile_${year}`] ?? null,
         }));
+    }, [climatePrediction, variable]);
 
-        const av = years.map((year) => ({ x: year === 1980 ? "1980 baseline" : `${year}`, y: climateAverages[year] ?? null }));
-        // const avMin = years.map((year) => climateAverages[year]?.min ?? null);
-        // const avMax = years.map((year) => climateAverages[year]?.max ?? null);
-
-        setAvg(av);
-        setData(data);
-        // setAvgMin(avMin);
-        // setAvgMax(avMax);
-    }, [climatePrediction, rcp, season, showAverage, variable, climateAverages, climateAverageRanges]);
+    const avg = useMemo(() => {
+        if (climatePrediction.length === 0 || climatePrediction[0]?.[`${variable}_1980`] == null) return [];
+        const years = getGraphDecadesForVariable(variable);
+        return years.map((year) => ({ x: year === 1980 ? "1980 baseline" : `${year}`, y: climateAverages[year] ?? null }));
+    }, [climatePrediction, variable, climateAverages]);
 
     useEffect(() => {
         if (regions.length === 0) {
-            setExpanded(false);
-            setAvg([]);
-            setData([]);
-            // Reset tracking flag when no regions selected  
             hasTrackedCollapsibleOpen.current = false;
         }
     }, [regions]);
@@ -221,37 +209,7 @@ const Graph = (props) => {
     )
   }
 
-  if (showAverage) {
-    // UK max line
-    // traces.push({
-    //   x: xValues,
-    //   y: avgMax,
-    //   type: "scatter",
-    //   mode: "lines+markers",
-    //   name: "UK average (max)",
-    //   marker: { color: averageUKLine, symbol: "circle-open" },
-    //   line: { color: averageUKLine, width: 2, dash: "dot" },
-    //   opacity: 0.5,
-    //   hoverinfo: "y",
-    //   legendgroup: "uk-average-max",
-    //   showlegend: true,
-    //   visible: "legendonly",
-    //   customdata: avgMax.map(formatHover),
-    //   hovertemplate: hoverTemplate,
-    // });
-    // // Shading between UK mean and max (linked to max line)
-    // traces.push({
-    //   x: [...xValues, ...xValues.slice().reverse()],
-    //   y: [...avgY, ...avgMax.slice().reverse()],
-    //   fill: "toself",
-    //   fillcolor: averageUKShade,
-    //   line: { color: "rgba(0,0,0,0)" },
-    //   hoverinfo: "skip",
-    //   name: "UK average (mean-max range)",
-    //   showlegend: false,
-    //   legendgroup: "uk-average-max",
-    //   visible: "legendonly",
-    // });
+    if (showAverage) {
     // UK mean line
     traces.push({
       x: xValues,
@@ -267,59 +225,20 @@ const Graph = (props) => {
       customdata: avgY.map(formatHover),
       hovertemplate: hoverTemplate,
     });
-    // Shading between UK min and mean (linked to min line)
-    // traces.push({
-    //   x: [...xValues, ...xValues.slice().reverse()],
-    //   y: [...avgMin, ...avgY.slice().reverse()],
-    //   fill: "toself",
-    //   fillcolor: averageUKShade,
-    //   line: { color: "rgba(0,0,0,0)" },
-    //   hoverinfo: "skip",
-    //   name: "UK average (min-mean range)",
-    //   showlegend: false,
-    //   legendgroup: "uk-average-min",
-    //   visible: "legendonly",
-    // });
-    // // UK min line
-    // traces.push({
-    //   x: xValues,
-    //   y: avgMin,
-    //   type: "scatter",
-    //   mode: "lines+markers",
-    //   name: "UK average (min)",
-    //   marker: { color: averageUKLine, symbol: "circle-open" },
-    //   line: { color: averageUKLine, width: 2, dash: "dot" },
-    //   opacity: 0.5,
-    //   hoverinfo: "y",
-    //   legendgroup: "uk-average-min",
-    //   showlegend: true,
-    //   visible: "legendonly",
-    //   customdata: avgMin.map(formatHover),
-    //   hovertemplate: hoverTemplate,
-    // });
   }
 
-    // Temporary hardcoded y-axis ranges
+    // 'Temporary' hardcoded y-axis ranges
     const yAxisRanges = {
-        pr: [0, 10],
+        pr: [0, 15],
         tas: [-10, 40],
         sfcWind: [0, 10],
         rsds: [0, 300],
-        tropical_nights: [0, 60],
-        hot_heat_days: [0, 40],
-        heavy_rain_days: [0, 50],
-        dry_days: [0, 280],
-        windy_days: [0, 360],
+        tropical_nights: [0, 50],
+        hot_heat_days: [0, 35],
+        heavy_rain_days: [0, 10],
+        dry_days: [0, 290],
+        windy_days: [0, 195],
     };
-
-  // Pad by 5% either side
-//   const variableRange = climateAverageRanges && climateAverageRanges[variable];
-//     const paddedRange = variableRange
-//         ? [
-//             variableRange[0] - 0.05 * (variableRange[1] - variableRange[0]),
-//             variableRange[1] + 0.05 * (variableRange[1] - variableRange[0])
-//         ]
-//         : undefined;
 
   const layout = {
     legend: isMobile
@@ -364,7 +283,15 @@ const Graph = (props) => {
     return (
         <div>
             <div className="collapsible">
-                <div className="header" style={{ margin: "1em" }} {...getToggleProps({ onClick: handleOnClick })}>
+                <div
+                    className="header"
+                    style={{ margin: "1em" }}
+                    role="button"
+                    tabIndex={0}
+                    {...getToggleProps({})}
+                    onClick={handleOnClick}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleOnClick(); }}
+                >
                     {isExpanded ? "Hide" : "Explore"} climate details
                 </div>
                 <div {...getCollapseProps()}>
