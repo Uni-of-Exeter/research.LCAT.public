@@ -13,13 +13,8 @@
         "lint:fix": "npm eslint . --fix"
     },
     "dependencies": {
-<<<<<<< HEAD
-        "dotenv": "^16.4.5",
-        "express": "^4.19.2",
-=======
         "dotenv": "^17.4.2",
         "express": "^5.2.1",
->>>>>>> dev
         "express-rate-limit": "^8.3.1",
         "morgan": "^1.10.0",
         "pg": "^8.11.5",
