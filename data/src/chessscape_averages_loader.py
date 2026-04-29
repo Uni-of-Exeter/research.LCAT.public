@@ -264,7 +264,8 @@ class ChessScapeAveragesLoader:
         """
 
         # Slice the time dimension only to perform some checks
-        time_slice = data.time[lower_bound:higher_bound:step].to_numpy()
+        time_da = data.time[lower_bound:higher_bound:step]
+        time_slice = time_da.to_numpy()
 
         # Check we always take mean over 10 years
         if len(time_slice) != 10:
@@ -274,7 +275,7 @@ class ChessScapeAveragesLoader:
         if self.season != "annual":
             month_check = 1 if self.season == "winter" else 7
 
-            months = time_slice.dt.month.values
+            months = time_da.dt.month.to_numpy()
             if not np.all(months == month_check):
                 raise ValueError("Different months identified in time slice")
 

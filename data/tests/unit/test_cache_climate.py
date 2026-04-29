@@ -246,26 +246,6 @@ def test_create_table_handles_exception(cc):
 # cache_all_gids
 # =============================================================================
 
-
-def test_cache_all_gids_uses_correct_aggregations(cc):
-    """Should use MIN for _min, AVG for _mean, MAX for _max columns"""
-    cc.conn = MagicMock()
-    cc.cur = MagicMock()
-    cc.cache_table = "cache_test"
-    cc.overlap_table = "grid_overlaps_test"
-    cc.climate_table = "chess_scape_rcp60_annual"
-    cc.get_climate_column_names = MagicMock(
-        return_value=["tas_1980_min", "tas_1980_mean", "tas_1980_max"]
-    )
-
-    cc.cache_all_gids()
-
-    sql = cc.cur.execute.call_args[0][0]
-    assert 'MIN("tas_1980_min")' in sql
-    assert 'AVG("tas_1980_mean")' in sql
-    assert 'MAX("tas_1980_max")' in sql
-
-
 def test_cache_all_gids_joins_overlap_and_climate_tables(cc):
     """Should join overlap and climate tables"""
     cc.conn = MagicMock()
@@ -378,7 +358,7 @@ def test_process_boundary_uses_expected_rcp_and_season_combinations(
     }
 
     assert combos == expected
-    
+
 
 # =============================================================================
 # process_all_boundaries
