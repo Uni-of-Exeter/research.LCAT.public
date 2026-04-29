@@ -77,7 +77,6 @@ const App = () => {
     const [allRegions, setAllRegions] = useState(defaultState.allRegions);
     const [climatePrediction, setClimatePrediction] = useState(defaultState.climatePrediction);
     const [climateAverages, setClimateAverages] = useState(defaultState.climateAverages);
-    // const [climateAverageRanges, setClimateAverageRanges] = useState(defaultState.climateAverageRanges);
     const [season, setSeason] = useState(defaultState.season);
     const [rcp, setRcp] = useState(defaultState.rcp);
     const [year] = useState(defaultState.year);
@@ -137,10 +136,6 @@ const App = () => {
                 setAreAveragesLoading={setAreAveragesLoading}
             />
 
-             {/* <ClimateAverageRangesLoader
-                setClimateAverageRanges={setClimateAverageRanges}
-            /> */}
-
                 <div data-section="map" className="white-section">
                     <ClimateMap
                         regions={regions}
@@ -177,8 +172,7 @@ const App = () => {
                         setRcp={setRcp}
                         climatePrediction={climatePrediction}
                         loading={isPredictionLoading || areAveragesLoading}
-                        climateAverages={climateAverages}
-                        climateAverageRanges={0}
+                            climateAverages={climateAverages}
                         variable={variable}
                         setVariable={setVariable}
                     />

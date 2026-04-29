@@ -18,9 +18,9 @@ import LoadingOverlay from "react-loading-overlay-ts";
 import PlotModule from "react-plotly.js";
 
 import {
+    climateVariables,
     getClimateVariableByKey,
     getGraphDecadesForVariable,
-    graphSelectableClimateVariables,
 } from "../../utils/climateUtils";
 import { CHESS_SCAPE_URL, LCAT_HANDBOOK_URL } from "../../utils/constants";
 import { andify, rcpText, seasonText } from "../../utils/utils";
@@ -338,7 +338,7 @@ const Graph = (props) => {
                                         setVariable(e.target.value);
                                     }}
                                 >
-                                    {graphSelectableClimateVariables.map((item) => (
+                                    {climateVariables.map((item) => (
                                         <option key={item.variable} value={item.variable}>
                                             {item.graphLabel}
                                         </option>

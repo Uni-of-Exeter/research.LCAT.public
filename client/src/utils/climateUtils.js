@@ -39,15 +39,15 @@ export const formatClimateData = (prediction, variable, name, units, year = 2050
 
 // Climate variables configuration
 export const climateVariables = [
-    { variable: 'tas', name: 'Temperature', units: '°C', graphLabel: 'temperature', graphDecades: FULL_SERIES_DECADES },
-    { variable: 'pr', name: 'Rainfall', units: 'mm/day', graphLabel: 'rain', graphDecades: FULL_SERIES_DECADES },
-    { variable: 'sfcWind', name: 'Windiness', units: 'm/sec', graphLabel: 'wind', graphDecades: FULL_SERIES_DECADES },
-    { variable: 'rsds', name: 'Radiation', units: 'Watts/m²', graphLabel: 'radiation', graphDecades: FULL_SERIES_DECADES },
-    { variable: 'tropical_nights', name: 'Tropical Nights', units: 'days', graphLabel: 'tropical nights', graphDecades: FULL_SERIES_DECADES },
-    { variable: 'hot_heat_days', name: 'Hot Heat Days', units: 'days', graphLabel: 'hot heat days', graphDecades: FULL_SERIES_DECADES },
-    { variable: 'heavy_rain_days', name: 'Heavy Rain Days', units: 'days', graphLabel: 'heavy rain days', graphDecades: FULL_SERIES_DECADES },
-    { variable: 'dry_days', name: 'Dry Days', units: 'days', graphLabel: 'dry days', graphDecades: FULL_SERIES_DECADES },
-    { variable: 'windy_days', name: 'Windy Days', units: 'days', graphLabel: 'windy days', graphDecades: FULL_SERIES_DECADES },
+    { variable: 'tas', name: 'Temperature', units: '°C', graphLabel: 'temperature' },
+    { variable: 'pr', name: 'Rainfall', units: 'mm/day', graphLabel: 'rain' },
+    { variable: 'sfcWind', name: 'Windiness', units: 'm/sec', graphLabel: 'wind' },
+    { variable: 'rsds', name: 'Radiation', units: 'Watts/m²', graphLabel: 'radiation' },
+    { variable: 'tropical_nights', name: 'Tropical Nights', units: 'days', graphLabel: 'tropical nights' },
+    { variable: 'hot_heat_days', name: 'Hot Heat Days', units: 'days', graphLabel: 'hot heat days' },
+    { variable: 'heavy_rain_days', name: 'Heavy Rain Days', units: 'days', graphLabel: 'heavy rain days' },
+    { variable: 'dry_days', name: 'Dry Days', units: 'days', graphLabel: 'dry days' },
+    { variable: 'windy_days', name: 'Windy Days', units: 'days', graphLabel: 'windy days' },
 ];
 
 export const getClimateVariableByKey = (variable) =>
@@ -56,11 +56,4 @@ export const getClimateVariableByKey = (variable) =>
 export const getGraphDecadesForVariable = (variable) =>
     getClimateVariableByKey(variable)?.graphDecades || FULL_SERIES_DECADES;
 
-export const graphSelectableClimateVariables = climateVariables.filter((item) => item.graphLabel);
 
-// Get all climate data formatted
-export const getAllClimateData = (climatePrediction, year = 2050) => {
-    return climateVariables.map(({ variable, name, units }) => 
-        formatClimateData(climatePrediction, variable, name, units, year)
-    );
-};
