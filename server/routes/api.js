@@ -302,113 +302,27 @@ router.post("/gids_bbox", async function (req, res) {
 /// GET CHESS-SCAPE CLIMATE DATA FROM DB ///
 
 // CHESS-SCAPE helper function: generate climate column SQL
-function buildAvgClimateCols(season, availableColumns = null) {
+function buildAvgClimateCols() {
     const averageClimateColNames = [];
     const baseVariables = ["tas", "sfcWind", "pr", "rsds", "tasmax_99_percentile", "tasmin_1_percentile"];
     const derivedVariables = ["tropical_nights", "hot_heat_days", "heavy_rain_days", "dry_days", "windy_days"];
     const allDecades = ["1980", "2030", "2040", "2050", "2060", "2070"];
 
-    const hasColumn = (columnName) => {
-        if (!availableColumns) return true;
-        return availableColumns.has(columnName);
-    };
-
-    // Base variables use all decades
     for (const variable of baseVariables) {
         for (const decade of allDecades) {
             const columnName = `${variable}_${decade}`;
-            if (hasColumn(columnName)) {
-                averageClimateColNames.push(`AVG("${columnName}") as "${columnName}"`);
-            }
+            averageClimateColNames.push(`AVG("${columnName}") as "${columnName}"`);
         }
     }
 
-    // Derived variables use all decades
     for (const variable of derivedVariables) {
         for (const decade of allDecades) {
             const columnName = `${variable}_${decade}`;
-            if (hasColumn(columnName)) {
-                averageClimateColNames.push(`AVG("${columnName}") as "${columnName}"`);
-            }
+            averageClimateColNames.push(`AVG("${columnName}") as "${columnName}"`);
         }
     }
 
     return averageClimateColNames;
-}
-
-function getExpectedClimateColumnNames() {
-    const expectedColumns = [];
-    const baseVariables = ["tas", "sfcWind", "pr", "rsds", "tasmax_99_percentile", "tasmin_1_percentile"];
-    const derivedVariables = ["tropical_nights", "hot_heat_days", "heavy_rain_days", "dry_days", "windy_days"];
-    const allDecades = ["1980", "2030", "2040", "2050", "2060", "2070"];
-
-    for (const variable of baseVariables) {
-        for (const decade of allDecades) {
-            expectedColumns.push(`${variable}_${decade}`);
-        }
-    }
-
-    for (const variable of derivedVariables) {
-        for (const decade of allDecades) {
-            expectedColumns.push(`${variable}_${decade}`);
-        }
-    }
-
-    return expectedColumns;
-}
-
-function getClimateSourceTable(boundaryDetails, method, rcp, season) {
-    if (method === "cell") {
-        return `chess_scape_${rcp}_${season}`;
-    }
-
-    return `cache_${boundaryDetails.identifier}_to_${rcp}_${season}`;
-}
-
-// Defensive fallback for now while seasonal/derived schemas are still being aligned.
-// Cache table columns briefly so we avoid querying information_schema on every request.
-const TABLE_COLUMNS_CACHE_TTL_MS = 5 * 60 * 1000;
-const tableColumnsCache = new Map();
-
-function getCachedTableColumns(tableName) {
-    const cachedEntry = tableColumnsCache.get(tableName);
-    if (!cachedEntry) {
-        return null;
-    }
-
-    if (Date.now() >= cachedEntry.expiresAt) {
-        tableColumnsCache.delete(tableName);
-        return null;
-    }
-
-    return cachedEntry.columns;
-}
-
-function setCachedTableColumns(tableName, columns) {
-    tableColumnsCache.set(tableName, {
-        columns,
-        expiresAt: Date.now() + TABLE_COLUMNS_CACHE_TTL_MS,
-    });
-}
-
-async function getTableColumns(client, tableName) {
-    const cachedColumns = getCachedTableColumns(tableName);
-    if (cachedColumns) {
-        return cachedColumns;
-    }
-
-    const query = `
-        SELECT column_name
-        FROM information_schema.columns
-        WHERE table_schema = 'public'
-        AND table_name = $1
-    `;
-
-    const result = await client.query(query, [tableName]);
-    const columns = new Set(result.rows.map((row) => row.column_name));
-    setCachedTableColumns(tableName, columns);
-
-    return columns;
 }
 
 // Build query string: cache method - uses cache tables in database (large regions)
@@ -510,26 +424,10 @@ router.get("/chess_scape", async (req, res) => {
         // Get query method
         const method = boundaryDetails.method;
 
-        // Connect and introspect columns so we only query fields that exist.
         client = new Client(conString);
         await client.connect();
 
-        const climateSourceTable = getClimateSourceTable(boundaryDetails, method, rcp, season);
-        const availableColumns = await getTableColumns(client, climateSourceTable);
-        const expectedColumns = getExpectedClimateColumnNames();
-        const missingColumns = expectedColumns.filter((columnName) => !availableColumns.has(columnName));
-
-        if (missingColumns.length > 0) {
-            console.warn(
-                `[chess_scape] Missing ${missingColumns.length} expected climate column(s) in table '${climateSourceTable}' for boundary '${boundaryTableName}' (${rcp}, ${season}): ${missingColumns.join(", ")}`
-            );
-        }
-
-        const averageClimateColNames = buildAvgClimateCols(season, availableColumns);
-
-        if (averageClimateColNames.length === 0) {
-            return res.status(500).send({ error: "No climate columns available for query" });
-        }
+        const averageClimateColNames = buildAvgClimateCols();
 
         // Build query based on variables and method
         let queryConfig;
