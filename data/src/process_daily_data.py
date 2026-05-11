@@ -534,7 +534,6 @@ class ClimateDataProcessor:
 
         # Reshape to work with all pixels at once
         data_reshaped = data.reshape(n_time, -1)  # (time, pixels)
-        valid_pixels = np.isfinite(data_reshaped).any(axis=0)
 
         # Apply threshold comparison
         if comparison == "gte":
@@ -563,6 +562,12 @@ class ClimateDataProcessor:
                 f"using {n_complete_periods} complete periods"
             )
             meets_threshold = meets_threshold[: n_complete_periods * days_per_period]
+
+        if n_complete_periods == 0:
+            raise ValueError(
+                f"Not enough data for even one complete {season} period: "
+                f"got {n_time} days, need at least {days_per_period}."
+            )
 
         print(
             f"Processing {n_time} days ({n_complete_periods} {season} periods) of data"

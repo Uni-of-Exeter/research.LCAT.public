@@ -499,52 +499,6 @@ router.get("/chess_scape_uk_averages", async (req, res) => {
     }
 });
 
-// Route to get the CHESS-SCAPE UK smallest min and largest max values per variable
-router.get("/chess_scape_uk_variable_ranges", async (req, res) => {
-    try {
-        // Query parameters
-        const isBiasCorrected = req.query.is_bias_corrected;
-
-        // not including baseline - 2030 decades
-        const decades = ["1980", "2030", "2040", "2050", "2060", "2070"];
-    
-        const query = `
-            SELECT
-                variable,
-                MIN(min) AS global_min,
-                MAX(max) AS global_max
-            FROM chess_scape_uk_averages
-            WHERE is_bias_corrected =  $1
-            AND decade IN (${decades.map((_, i) => `$${i + 2}`).join(", ")})
-            GROUP BY variable;
-        `;
-
-        // Query parameters
-        const queryParams = [isBiasCorrected, ...decades];
-
-        // Connect and execute
-        const client = new Client(conString);
-        await client.connect();
-
-        const result = await client.query(query, queryParams);
-        await client.end();
-
-        // Format as { variable: [min, max], ... }
-        const ranges = {};
-        result.rows.forEach(row => {
-            ranges[row.variable] = [
-                Number(row.global_min),
-                Number(row.global_max)
-            ];
-        });
-
-        res.json(ranges);
-    } catch (err) {
-        console.error("Error while executing query:", err);
-        res.status(500).json({ error: "An error occurred" });
-    }
-});
-
 /// OTHER ROUTES ///
 
 router.get("/ping", function (req, res) {

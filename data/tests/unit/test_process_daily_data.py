@@ -107,6 +107,22 @@ class TestCalculateThresholdDays:
         )
         np.testing.assert_array_almost_equal(result, 0.0)
 
+    def test_zero_periods_raises_annual(self, processor):
+        """Fewer days than one annual period must raise ValueError, not silently produce inf."""
+        data = make_data(30)  # 30 < 360 days/annual period
+        with pytest.raises(
+            ValueError, match="Not enough data for even one complete annual period"
+        ):
+            processor.calculate_threshold_days(data, threshold=3.0, season="annual")
+
+    def test_zero_periods_raises_seasonal(self, processor):
+        """Same guard applies to seasonal: fewer days than 90-day period."""
+        data = make_data(10)  # 10 < 90 days/summer period
+        with pytest.raises(
+            ValueError, match="Not enough data for even one complete summer period"
+        ):
+            processor.calculate_threshold_days(data, threshold=3.0, season="summer")
+
     def test_invalid_comparison_raises(self, processor):
         data = make_data(360)
         with pytest.raises(ValueError, match="Invalid comparison"):
