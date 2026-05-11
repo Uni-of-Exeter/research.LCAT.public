@@ -118,17 +118,8 @@ class CacheClimate:
         # Get all column names in climate table
         column_names = self.get_climate_column_names()
 
-        # Take the min of the min cells, mean of the mean cells, max of the max cells
-        select_clause = ", ".join(
-            [
-                f'MIN("{col}") AS "{col}"'
-                if col.endswith("_min")
-                else f'AVG("{col}") AS "{col}"'
-                if col.endswith("_mean")
-                else f'MAX("{col}") AS "{col}"'
-                for col in column_names
-            ]
-        )
+        # Take the mean of cells
+        select_clause = ", ".join([f'AVG("{col}") AS {col}' for col in column_names])
 
         insert_clause = ", ".join([f'"{col}"' for col in column_names])
 

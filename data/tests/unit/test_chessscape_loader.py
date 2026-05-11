@@ -286,50 +286,43 @@ def test_load_netcdf_sets_aggregated_table_name(mock_exists, mock_open, csl):
 
 
 # =============================================================================
-# calculate_min_mean_max
+# calculate_mean
 # =============================================================================
 
 
-def test_calculate_min_mean_max_returns_dict(csl, sample_annual_dataset):
-    """Should return dict with min, mean, max keys."""
+def test_calculate_mean_returns_dataarray(csl, sample_annual_dataset):
+    """Should return an xarray DataArray."""
     csl.season = "annual"
     csl.variable = "tas"
-    
-    result = csl.calculate_min_mean_max(sample_annual_dataset, 0, 10, 1)
-    
-    assert "min" in result
-    assert "mean" in result
-    assert "max" in result
+    result = csl.calculate_mean(sample_annual_dataset["tas"], 0, 10, 1)
+    assert isinstance(result, xr.DataArray)
 
 
-def test_calculate_min_mean_max_raises_for_wrong_slice_size(csl, sample_annual_dataset):
-    """Should raise ValueError if slice doesn't contain exactly 10 values."""
+def test_calculate_mean_raises_for_wrong_slice_size(csl, sample_annual_dataset):
     csl.season = "annual"
     csl.variable = "tas"
-    
     with pytest.raises(ValueError, match="10 values"):
-        csl.calculate_min_mean_max(sample_annual_dataset, 0, 5, 1)
+        csl.calculate_mean(sample_annual_dataset["tas"], 0, 5, 1)
 
 
-def test_calculate_min_mean_max_winter_step_4_passes_month_check(csl, sample_seasonal_dataset):
-    """Winter seasonal slicing with step=4 should only select January timestamps and pass month check."""
+def test_calculate_mean_winter_step_4_passes_month_check(csl, sample_seasonal_dataset):
     csl.season = "winter"
     csl.variable = "tas"
+    result = csl.calculate_mean(
+        sample_seasonal_dataset["tas"], lower_bound=0, higher_bound=40, step=4
+    )
+    assert isinstance(result, xr.DataArray)
 
-    # For seasonal data: first winter decade is indices 0..40 stepping by 4 -> 10 points, all month==1
-    result = csl.calculate_min_mean_max(sample_seasonal_dataset, lower_bound=0, higher_bound=40, step=4)
 
-    assert set(result.keys()) == {"min", "mean", "max"}
-
-
-def test_calculate_min_mean_max_winter_wrong_step_raises_month_check_error(csl, sample_seasonal_dataset):
-    """Winter seasonal slicing with step=1 should include non-January months and raise month check error."""
+def test_calculate_mean_winter_wrong_step_raises_month_check_error(
+    csl, sample_seasonal_dataset
+):
     csl.season = "winter"
     csl.variable = "tas"
-
-    # 10 values (size check passes), but months will be 1,4,7,10,... so month check should fail
     with pytest.raises(ValueError, match="Different months identified"):
-        csl.calculate_min_mean_max(sample_seasonal_dataset, lower_bound=0, higher_bound=10, step=1)
+        csl.calculate_mean(
+            sample_seasonal_dataset["tas"], lower_bound=0, higher_bound=10, step=1
+        )
 
 
 # =============================================================================
@@ -341,9 +334,9 @@ def test_process_decade_returns_dict_by_decade(csl, sample_annual_dataset):
     """Should return dict keyed by decade start year."""
     csl.season = "annual"
     csl.variable = "tas"
-    
-    result = csl.process_decade(sample_annual_dataset)
-    
+
+    result = csl.process_decade(sample_annual_dataset["tas"])
+
     assert isinstance(result, dict)
     assert 1980 in result 
     assert 2070 in result
@@ -355,10 +348,10 @@ def test_process_decade_winter_calls_calculate_with_step_4_and_start_0(csl, samp
     csl.season = "winter"
     csl.variable = "tas"
 
-    dummy = {"min": None, "mean": None, "max": None}
+    dummy = xr.DataArray(np.zeros((3, 3)))
 
-    with patch.object(csl, "calculate_min_mean_max", return_value=dummy) as spy_calc:
-        result = csl.process_decade(sample_seasonal_dataset)
+    with patch.object(csl, "calculate_mean", return_value=dummy) as spy_calc:
+        result = csl.process_decade(sample_seasonal_dataset["tas"])
 
     # sanity: still produced 10 decades
     assert isinstance(result, dict)
@@ -377,10 +370,10 @@ def test_process_decade_summer_calls_calculate_with_step_4_and_start_2(csl, samp
     csl.season = "summer"
     csl.variable = "tas"
 
-    dummy = {"min": None, "mean": None, "max": None}
+    dummy = xr.DataArray(np.zeros((3, 3)))
 
-    with patch.object(csl, "calculate_min_mean_max", return_value=dummy) as spy_calc:
-        result = csl.process_decade(sample_seasonal_dataset)
+    with patch.object(csl, "calculate_mean", return_value=dummy) as spy_calc:
+        result = csl.process_decade(sample_seasonal_dataset["tas"])
 
     assert isinstance(result, dict)
     assert len(result) == 10
@@ -397,10 +390,10 @@ def test_process_decade_annual_calls_calculate_with_step_1_and_period_10(csl, sa
     csl.season = "annual"
     csl.variable = "tas"
 
-    dummy = {"min": None, "mean": None, "max": None}
+    dummy = xr.DataArray(np.zeros((3, 3)))
 
-    with patch.object(csl, "calculate_min_mean_max", return_value=dummy) as spy_calc:
-        result = csl.process_decade(sample_annual_dataset)
+    with patch.object(csl, "calculate_mean", return_value=dummy) as spy_calc:
+        result = csl.process_decade(sample_annual_dataset["tas"])
 
     assert isinstance(result, dict)
     assert len(result) == 10
@@ -456,26 +449,15 @@ def test_transform_all_means_transforms_all_decades(csl):
     """Should apply transforms to all decades in extracted_data."""
     csl.variable = "tas"
     csl.transform_performed = False
-    
+
     csl.extracted_data = {
         "bias_corrected": {
-            1980: {
-                "min": xr.DataArray([273.15]),
-                "mean": xr.DataArray([283.15]),
-                "max": xr.DataArray([293.15]),
-            },
-            1990: {
-                "min": xr.DataArray([274.15]),
-                "mean": xr.DataArray([284.15]),
-                "max": xr.DataArray([294.15]),
-            },
+            1980: xr.DataArray([283.15]),
+            1990: xr.DataArray([284.15]),
         }
     }
-    
     csl.transform_all_means()
-    
-    assert csl.extracted_data["bias_corrected"][1980]["mean"].values[0] == pytest.approx(10.0)
-    assert csl.transform_performed is True
+    assert csl.extracted_data["bias_corrected"][1980].values[0] == pytest.approx(10.0)
 
 
 def test_transform_all_means_raises_if_already_transformed(csl):
@@ -602,18 +584,10 @@ def test_insert_data_multiple_decades_writes_correct_rows_and_skips_zero_mask(cs
     # Create deterministic extracted data
     csl.extracted_data = {
         "bias_corrected": {
-            1980: {
-                "min": xr.DataArray(np.ones((3, 3)) * 10),
-                "mean": xr.DataArray(np.ones((3, 3)) * 15),
-                "max": xr.DataArray(np.ones((3, 3)) * 20),
-            },
+            1980: xr.DataArray(np.ones((3, 3)) * 15),
         },
         "non_bias_corrected": {
-            1980: {
-                "min": xr.DataArray(np.ones((3, 3)) * 11),
-                "mean": xr.DataArray(np.ones((3, 3)) * 16),
-                "max": xr.DataArray(np.ones((3, 3)) * 21),
-            },
+            1980: xr.DataArray(np.ones((3, 3)) * 16),
         },
     }
 
@@ -648,15 +622,15 @@ def test_insert_data_multiple_decades_writes_correct_rows_and_skips_zero_mask(cs
     def gid(i, j):
         return i * sample_mask.shape[1] + j
 
-    # Check mask == 1 (bias_corrected → 10,15,20)
+    # Check mask == 1 (bias_corrected → 15)
     for i, j in zip(*np.where(sample_mask == 1)):
         values = parsed[gid(i, j)]
-        assert values == [10.0, 15.0, 20.0]
+        assert values == [15.0]
 
-    # Check mask == 2 (non_bias_corrected → 11,16,21)
+    # Check mask == 2 (non_bias_corrected → 16)
     for i, j in zip(*np.where(sample_mask == 2)):
         values = parsed[gid(i, j)]
-        assert values == [11.0, 16.0, 21.0]
+        assert values == [16.0]
 
     # Ensure mask == 0 cells are not present
     for i, j in zip(*np.where(sample_mask == 0)):

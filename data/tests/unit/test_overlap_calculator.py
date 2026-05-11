@@ -298,6 +298,7 @@ def test_process_no_overlap_regions_only_show_plots_calls_plotter(oc):
 def test_process_all_boundary_overlaps_calls_expected_steps_per_boundary(
     mock_set, mock_drop, mock_create, mock_index, mock_insert, mock_no_overlap, oc
 ):
+    oc.conn = MagicMock()
     oc.process_all_boundary_overlaps(process_no_overlaps=False)
 
     # 8 boundaries
@@ -322,6 +323,7 @@ def test_process_all_boundary_overlaps_calls_expected_steps_per_boundary(
 def test_process_all_boundary_overlaps_processes_no_overlaps_when_requested(
     mock_set, mock_drop, mock_create, mock_index, mock_insert, mock_no_overlap, oc
 ):
+    oc.conn = MagicMock()
     oc.process_all_boundary_overlaps(process_no_overlaps=True)
     assert mock_no_overlap.call_count == 8
 

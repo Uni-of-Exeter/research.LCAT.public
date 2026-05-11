@@ -73,13 +73,13 @@ def test_open_netcdf_file_calls_xarray_open_dataset(monkeypatch, gl):
     assert out is fake_ds
 
 
-def test_open_netcdf_file_returns_none_on_error(monkeypatch, gl):
+def test_open_netcdf_file_raises_on_error(monkeypatch, gl):
     fake_xr = MagicMock()
     fake_xr.open_dataset.side_effect = FileNotFoundError("nope")
     monkeypatch.setattr(grid_loader_module, "xr", fake_xr)
 
-    out = gl.open_netcdf_file("/missing/file.nc")
-    assert out is None
+    with pytest.raises(RuntimeError, match="netcdf file open failed"):
+        gl.open_netcdf_file("/missing/file.nc")
 
 
 def test_open_netcdf_files_uses_provided_paths_and_sets_state(gl):

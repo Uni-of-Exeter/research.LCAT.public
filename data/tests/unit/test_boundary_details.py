@@ -147,9 +147,10 @@ def test_drop_table_handles_exception(bl):
 # =============================================================================
 
 
-@patch("data.src.boundary_loader.os.system")
-def test_load_boundary_builds_correct_command(mock_system, bl):
+@patch("data.src.boundary_loader.subprocess.run")
+def test_load_boundary_builds_correct_command(mock_run, bl):
     """Should build correct shp2pgsql command"""
+    mock_run.return_value = MagicMock(returncode=0, stderr="")
     bl.connection_string = "postgresql://user:pass@localhost/db"
     bl.target_projection = "27700"
 
@@ -159,7 +160,7 @@ def test_load_boundary_builds_correct_command(mock_system, bl):
         filepath="/path/to/counties.shp",
     )
 
-    cmd = mock_system.call_args[0][0]
+    cmd = mock_run.call_args[0][0]
     assert "shp2pgsql" in cmd
     assert "-s 27700:27700" in cmd
     assert "/path/to/counties.shp" in cmd
@@ -167,9 +168,10 @@ def test_load_boundary_builds_correct_command(mock_system, bl):
     assert "postgresql://user:pass@localhost/db" in cmd
 
 
-@patch("data.src.boundary_loader.os.system")
-def test_load_boundary_uses_config_filepath_when_not_provided(mock_system, bl):
+@patch("data.src.boundary_loader.subprocess.run")
+def test_load_boundary_uses_config_filepath_when_not_provided(mock_run, bl):
     """Should fall back to config for filepath"""
+    mock_run.return_value = MagicMock(returncode=0, stderr="")
     bl.connection_string = "postgresql://user:pass@localhost/db"
     bl.target_projection = "27700"
 
@@ -179,13 +181,14 @@ def test_load_boundary_uses_config_filepath_when_not_provided(mock_system, bl):
         # No filepath provided
     )
 
-    cmd = mock_system.call_args[0][0]
+    cmd = mock_run.call_args[0][0]
     assert "/path/to/counties.shp" in cmd  # From config
 
 
-@patch("data.src.boundary_loader.os.system")
-def test_load_boundary_handles_different_projections(mock_system, bl):
+@patch("data.src.boundary_loader.subprocess.run")
+def test_load_boundary_handles_different_projections(mock_run, bl):
     """Should handle source != target projection"""
+    mock_run.return_value = MagicMock(returncode=0, stderr="")
     bl.connection_string = "postgresql://user:pass@localhost/db"
     bl.target_projection = "4326"
 
@@ -195,43 +198,45 @@ def test_load_boundary_handles_different_projections(mock_system, bl):
         filepath="/path/to/ni.shp",
     )
 
-    cmd = mock_system.call_args[0][0]
+    cmd = mock_run.call_args[0][0]
     assert "-s 29902:4326" in cmd
 
 
-@patch("data.src.boundary_loader.os.system")
-def test_load_boundary_includes_create_index_flag(mock_system, bl):
+@patch("data.src.boundary_loader.subprocess.run")
+def test_load_boundary_includes_create_index_flag(mock_run, bl):
     """Should include -I flag for creating index"""
+    mock_run.return_value = MagicMock(returncode=0, stderr="")
     bl.connection_string = "postgresql://user:pass@localhost/db"
     bl.target_projection = "27700"
 
     bl.load_boundary("test", "27700", "/path/to/test.shp")
 
-    cmd = mock_system.call_args[0][0]
+    cmd = mock_run.call_args[0][0]
     assert "-I" in cmd
 
 
-@patch("data.src.boundary_loader.os.system")
-def test_load_boundary_includes_drop_flag(mock_system, bl):
+@patch("data.src.boundary_loader.subprocess.run")
+def test_load_boundary_includes_drop_flag(mock_run, bl):
     """Should include -d flag for dropping table"""
+    mock_run.return_value = MagicMock(returncode=0, stderr="")
     bl.connection_string = "postgresql://user:pass@localhost/db"
     bl.target_projection = "27700"
 
     bl.load_boundary("test", "27700", "/path/to/test.shp")
 
-    cmd = mock_system.call_args[0][0]
+    cmd = mock_run.call_args[0][0]
     assert "-d" in cmd
 
 
-@patch("data.src.boundary_loader.os.system")
-def test_load_boundary_handles_exception(mock_system, bl):
-    """Should handle exceptions gracefully"""
+@patch("data.src.boundary_loader.subprocess.run")
+def test_load_boundary_handles_exception(mock_run, bl):
+    """Should raise when subprocess fails"""
+    mock_run.return_value = MagicMock(returncode=1, stderr="some error")
     bl.connection_string = "postgresql://user:pass@localhost/db"
     bl.target_projection = "27700"
-    mock_system.side_effect = Exception("System error")
 
-    # Should not raise exception
-    bl.load_boundary("test", "27700", "/path/to/test.shp")
+    with pytest.raises((RuntimeError, Exception)):
+        bl.load_boundary("test", "27700", "/path/to/test.shp")
 
 
 # =============================================================================

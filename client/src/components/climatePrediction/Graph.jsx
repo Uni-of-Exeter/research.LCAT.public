@@ -12,11 +12,16 @@ Common Good Public License Beta 1.0 for more details. */
 
 /* global gtag */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useCollapse } from "react-collapsed";
 import LoadingOverlay from "react-loading-overlay-ts";
 import PlotModule from "react-plotly.js";
 
+import {
+    climateVariables,
+    getClimateVariableByKey,
+    getGraphDecadesForVariable,
+} from "../../utils/climateUtils";
 import { CHESS_SCAPE_URL, LCAT_HANDBOOK_URL } from "../../utils/constants";
 import { andify, rcpText, seasonText } from "../../utils/utils";
 
@@ -26,23 +31,19 @@ const Plot = PlotModule.default || PlotModule;
 const selectedRegionsLine = "rgba(33,99,49,1)";
 const selectedRegionsShade = "rgba(33,99,49,0.15)";
 const averageUKLine = getComputedStyle(document.documentElement).getPropertyValue('--color-button-hover').trim();
-const averageUKShade = "rgba(245,130,31,0.15)"; // averageUKLine with 15% opacity
 
 const Graph = (props) => {
-    const { regions, season, rcp, setSeason, setRcp, loading, climatePrediction, climateAverages, climateAverageRanges, variable, setVariable } =
+    const { regions, season, rcp, setSeason, setRcp, loading, climatePrediction, climateAverages, variable, setVariable } =
         props;
 
-    const [data, setData] = useState([]);
-    const [avg, setAvg] = useState([]);
     const [showAverage, setShowAverage] = useState(false);
     const [isExpanded, setExpanded] = useState(false);
-    const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded });
+    const effectiveExpanded = isExpanded && regions.length > 0;
+    const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded: effectiveExpanded });
     const graphContainerRef = useRef(null);
     const [isMobile, setIsMobile] = useState(false);
     const [containerWidth, setContainerWidth] = useState(undefined);
     const hasTrackedCollapsibleOpen = useRef(false);
-    // const [avgMin, setAvgMin] = useState([]);
-    // const [avgMax, setAvgMax] = useState([]);
 
     useEffect(() => {
         // Responsive layout for mobile devices
@@ -68,39 +69,35 @@ const Graph = (props) => {
     }, []);
 
     const getYAxis = () => {
-        if (variable == "tas") return "Temperature (°C)";
-        if (variable == "pr") return "Rainfall (mm/day)";
-        if (variable == "sfcWind") return "Wind (m/s)";
-        return "Cloudiness (W/m²)";
+        const metric = getClimateVariableByKey(variable);
+        if (!metric) return "Climate metric";
+
+        if (metric.units === "days") {
+            return season === "annual" ? `${metric.name} (days/year)` : `${metric.name} (days/season)`;
+        }
+
+        return `${metric.name} (${metric.units})`;
     };
 
-    useEffect(() => {
-        if (climatePrediction.length === 0 || !climatePrediction[0][`${variable}_1980_mean`]) return;
-        const years = [1980, 2030, 2040, 2050, 2060, 2070];
-
-        const data = years.map((year) => ({
+    const data = useMemo(() => {
+        if (climatePrediction.length === 0 || climatePrediction[0]?.[`${variable}_1980`] == null) return [];
+        const years = getGraphDecadesForVariable(variable);
+        return years.map((year) => ({
             x: year === 1980 ? "1980 baseline" : `${year}`,
-            y: climatePrediction[0]?.[`${variable}_${year}_mean`] ?? null,
-            // min: climatePrediction[0]?.[`${variable}_${year}_min`] ?? null,
-            // max: climatePrediction[0]?.[`${variable}_${year}_max`] ?? null,
+            y: climatePrediction[0]?.[`${variable}_${year}`] ?? null,
+            min: climatePrediction[0]?.[`tasmin_1_percentile_${year}`] ?? null,
+            max: climatePrediction[0]?.[`tasmax_99_percentile_${year}`] ?? null,
         }));
+    }, [climatePrediction, variable]);
 
-        const av = years.map((year) => ({ x: year === 1980 ? "1980 baseline" : `${year}`, y: climateAverages[year]?.mean ?? null }));
-        // const avMin = years.map((year) => climateAverages[year]?.min ?? null);
-        // const avMax = years.map((year) => climateAverages[year]?.max ?? null);
-
-        setAvg(av);
-        setData(data);
-        // setAvgMin(avMin);
-        // setAvgMax(avMax);
-    }, [climatePrediction, rcp, season, showAverage, variable, climateAverages, climateAverageRanges]);
+    const avg = useMemo(() => {
+        if (climatePrediction.length === 0 || climatePrediction[0]?.[`${variable}_1980`] == null) return [];
+        const years = getGraphDecadesForVariable(variable);
+        return years.map((year) => ({ x: year === 1980 ? "1980 baseline" : `${year}`, y: climateAverages[year] ?? null }));
+    }, [climatePrediction, variable, climateAverages]);
 
     useEffect(() => {
         if (regions.length === 0) {
-            setExpanded(false);
-            setAvg([]);
-            setData([]);
-            // Reset tracking flag when no regions selected  
             hasTrackedCollapsibleOpen.current = false;
         }
     }, [regions]);
@@ -123,43 +120,17 @@ const Graph = (props) => {
       // Extract arrays for Plotly
   const xValues = data.map((d) => d.x);
   const yValues = data.map((d) => d.y);
-//   const minY = data.map((d) => d.min);
-//   const maxY = data.map((d) => d.max);
+  const minY = data.map((d) => d.min);
+  const maxY = data.map((d) => d.max);
   const avgY = avg.map((d) => d.y);
+    const showGapIndicator = xValues.length >= 2;
+    const gapCenter = showGapIndicator ? 0.5 / (xValues.length - 1) : 0.1;
+    const gapHalfWidth = 0.015;
 
   const formatHover = (y) => (y == null ? '' : Number(y).toFixed(2));
   const hoverTemplate = '%{customdata}<extra></extra>';
 
   const traces = [
-    // Max line
-    // {
-    //   x: xValues,
-    //   y: maxY,
-    //   type: "scatter",
-    //   mode: "lines+markers",
-    //   name: "Your areas (max)",
-    //   marker: { color: selectedRegionsLine, symbol: "circle-open" },
-    //   line: { color: selectedRegionsLine, width: 2, dash: "dot" },
-    //   opacity: 0.5,
-    //   hoverinfo: "y",
-    //   legendgroup: "your-areas-max",
-    //   showlegend: true,
-    //   customdata: maxY.map(formatHover),
-    //   hovertemplate: hoverTemplate,
-    // },
-    // // Shading between mean and max (linked to max line)
-    // {
-    //   x: [...xValues, ...xValues.slice().reverse()],
-    //   y: [...yValues, ...maxY.slice().reverse()],
-    //   fill: "toself",
-    //   fillcolor: selectedRegionsShade,
-    //   line: { color: "rgba(0,0,0,0)" },
-    //   hoverinfo: "skip",
-    //   name: "Your areas (mean-max range)",
-    //   showlegend: false,
-    //   legendgroup: "your-areas-max",
-    //   visible: true,
-    // },
     // Mean line
     {
       x: xValues,
@@ -175,68 +146,72 @@ const Graph = (props) => {
       customdata: yValues.map(formatHover),
       hovertemplate: hoverTemplate,
     },
-    // Shading between min and mean (linked to min line)
-    // {
-    //   x: [...xValues, ...xValues.slice().reverse()],
-    //   y: [...minY, ...yValues.slice().reverse()],
-    //   fill: "toself",
-    //   fillcolor: selectedRegionsShade,
-    //   line: { color: "rgba(0,0,0,0)" },
-    //   hoverinfo: "skip",
-    //   name: "Your areas (min-mean range)",
-    //   showlegend: false,
-    //   legendgroup: "your-areas-min",
-    //   visible: true,
-    // },
-    // // Min line
-    // {
-    //   x: xValues,
-    //   y: minY,
-    //   type: "scatter",
-    //   mode: "lines+markers",
-    //   name: "Your areas (min)",
-    //   marker: { color: selectedRegionsLine, symbol: "circle-open" },
-    //   line: { color: selectedRegionsLine, width: 2, dash: "dot" },
-    //   opacity: 0.5,
-    //   hoverinfo: "y",
-    //   legendgroup: "your-areas-min",
-    //   showlegend: true,
-    //   customdata: minY.map(formatHover),
-    //   hovertemplate: hoverTemplate,
-    // },
   ];
 
-  if (showAverage) {
-    // UK max line
-    // traces.push({
-    //   x: xValues,
-    //   y: avgMax,
-    //   type: "scatter",
-    //   mode: "lines+markers",
-    //   name: "UK average (max)",
-    //   marker: { color: averageUKLine, symbol: "circle-open" },
-    //   line: { color: averageUKLine, width: 2, dash: "dot" },
-    //   opacity: 0.5,
-    //   hoverinfo: "y",
-    //   legendgroup: "uk-average-max",
-    //   showlegend: true,
-    //   visible: "legendonly",
-    //   customdata: avgMax.map(formatHover),
-    //   hovertemplate: hoverTemplate,
-    // });
-    // // Shading between UK mean and max (linked to max line)
-    // traces.push({
-    //   x: [...xValues, ...xValues.slice().reverse()],
-    //   y: [...avgY, ...avgMax.slice().reverse()],
-    //   fill: "toself",
-    //   fillcolor: averageUKShade,
-    //   line: { color: "rgba(0,0,0,0)" },
-    //   hoverinfo: "skip",
-    //   name: "UK average (mean-max range)",
-    //   showlegend: false,
-    //   legendgroup: "uk-average-max",
-    //   visible: "legendonly",
-    // });
+  if (variable === "tas") {
+    traces.push(
+        // Max line
+        {
+            x: xValues,
+            y: maxY,
+            type: "scatter",
+            mode: "lines+markers",
+            name: "Your areas (max)",
+            marker: { color: selectedRegionsLine, symbol: "circle-open" },
+            line: { color: selectedRegionsLine, width: 2, dash: "dot" },
+            opacity: 0.5,
+            hoverinfo: "y",
+            legendgroup: "your-areas-max",
+            showlegend: true,
+            customdata: maxY.map(formatHover),
+            hovertemplate: hoverTemplate,
+        },
+        // Shading between mean and max (linked to max line)
+        {
+            x: [...xValues, ...xValues.slice().reverse()],
+            y: [...yValues, ...maxY.slice().reverse()],
+            fill: "toself",
+            fillcolor: selectedRegionsShade,
+            line: { color: "rgba(0,0,0,0)" },
+            hoverinfo: "skip",
+            name: "Your areas (mean-max range)",
+            showlegend: false,
+            legendgroup: "your-areas-max",
+            visible: true,
+        },
+        // Shading between min and mean (linked to min line)
+        {
+            x: [...xValues, ...xValues.slice().reverse()],
+            y: [...minY, ...yValues.slice().reverse()],
+            fill: "toself",
+            fillcolor: selectedRegionsShade,
+            line: { color: "rgba(0,0,0,0)" },
+            hoverinfo: "skip",
+            name: "Your areas (min-mean range)",
+            showlegend: false,
+            legendgroup: "your-areas-min",
+            visible: true,
+        },
+        // Min line
+        {
+            x: xValues,
+            y: minY,
+            type: "scatter",
+            mode: "lines+markers",
+            name: "Your areas (min)",
+            marker: { color: selectedRegionsLine, symbol: "circle-open" },
+            line: { color: selectedRegionsLine, width: 2, dash: "dot" },
+            opacity: 0.5,
+            hoverinfo: "y",
+            legendgroup: "your-areas-min",
+            showlegend: true,
+            customdata: minY.map(formatHover),
+            hovertemplate: hoverTemplate,
+        },
+    )
+  }
+
+    if (showAverage) {
     // UK mean line
     traces.push({
       x: xValues,
@@ -252,58 +227,24 @@ const Graph = (props) => {
       customdata: avgY.map(formatHover),
       hovertemplate: hoverTemplate,
     });
-    // Shading between UK min and mean (linked to min line)
-    // traces.push({
-    //   x: [...xValues, ...xValues.slice().reverse()],
-    //   y: [...avgMin, ...avgY.slice().reverse()],
-    //   fill: "toself",
-    //   fillcolor: averageUKShade,
-    //   line: { color: "rgba(0,0,0,0)" },
-    //   hoverinfo: "skip",
-    //   name: "UK average (min-mean range)",
-    //   showlegend: false,
-    //   legendgroup: "uk-average-min",
-    //   visible: "legendonly",
-    // });
-    // // UK min line
-    // traces.push({
-    //   x: xValues,
-    //   y: avgMin,
-    //   type: "scatter",
-    //   mode: "lines+markers",
-    //   name: "UK average (min)",
-    //   marker: { color: averageUKLine, symbol: "circle-open" },
-    //   line: { color: averageUKLine, width: 2, dash: "dot" },
-    //   opacity: 0.5,
-    //   hoverinfo: "y",
-    //   legendgroup: "uk-average-min",
-    //   showlegend: true,
-    //   visible: "legendonly",
-    //   customdata: avgMin.map(formatHover),
-    //   hovertemplate: hoverTemplate,
-    // });
   }
 
-    // Temporary hardcoded y-axis ranges
+    // 'Temporary' hardcoded y-axis ranges
     const yAxisRanges = {
-        pr: [0, 10],
-        tas: [0, 25],
+        pr: [0, 15],
+        tas: [-10, 40],
         sfcWind: [0, 10],
         rsds: [0, 300],
+        tropical_nights: [0, 50],
+        hot_heat_days: [0, 35],
+        heavy_rain_days: [0, 10],
+        dry_days: [0, 290],
+        windy_days: [0, 195],
     };
-
-  // Pad by 5% either side
-//   const variableRange = climateAverageRanges && climateAverageRanges[variable];
-//     const paddedRange = variableRange
-//         ? [
-//             variableRange[0] - 0.05 * (variableRange[1] - variableRange[0]),
-//             variableRange[1] + 0.05 * (variableRange[1] - variableRange[0])
-//         ]
-//         : undefined;
 
   const layout = {
     legend: isMobile
-        ? { orientation: "h", x: 0, y: -0.3, }
+        ? { orientation: "h", x: 0, y: -0.3 }
         : { orientation: "v", x: 1.02, y: 1 },
     margin: isMobile 
         ? { l: 0, r: 10, b: 60, t: 10 }
@@ -315,34 +256,44 @@ const Graph = (props) => {
     yaxis: {
       title: { text: getYAxis(), standoff: isMobile ? 10 : 40 },
       automargin: true,
-      range: yAxisRanges[variable],
+            range: yAxisRanges[variable],
     },
     font: isMobile ? { size: 12 } : { size: 18 },
     height: 400, // fixed height for consistent appearance
     width: containerWidth, // let Plotly fill the container width
     paper_bgcolor: "rgba(0,0,0,0)", // transparent background
     plot_bgcolor: "rgba(0,0,0,0)",  // transparent plot area
-    // Vertical grey bar to indicate x axis discontinuity
-    shapes: [
-        {
-        type: "rect",
-        xref: "x",
-        yref: "paper",
-        x0: 0.46,
-        x1: 0.54,
-        y0: 0,
-        y1: 1,
-        fillcolor: "rgb(165, 162, 162)",
-        line: { width: 0 },
-        layer: "above"
-        }
-    ]
+    // Vertical grey bar to indicate the gap between baseline and first projection point.
+    shapes: showGapIndicator
+        ? [
+            {
+                type: "rect",
+                xref: "paper",
+                yref: "paper",
+                x0: Math.max(0, gapCenter - gapHalfWidth),
+                x1: Math.min(1, gapCenter + gapHalfWidth),
+                y0: 0,
+                y1: 1,
+                fillcolor: "rgb(165, 162, 162)",
+                line: { width: 0 },
+                layer: "above"
+            }
+        ]
+        : []
   };
 
     return (
         <div>
             <div className="collapsible">
-                <div className="header" style={{ margin: "1em" }} {...getToggleProps({ onClick: handleOnClick })}>
+                <div
+                    className="header"
+                    style={{ margin: "1em" }}
+                    role="button"
+                    tabIndex={0}
+                    {...getToggleProps({})}
+                    onClick={handleOnClick}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleOnClick(); }}
+                >
                     {isExpanded ? "Hide" : "Explore"} climate details
                 </div>
                 <div {...getCollapseProps()}>
@@ -382,14 +333,16 @@ const Graph = (props) => {
                                 </select>
                                 &nbsp;averages for&nbsp;
                                 <select
+                                    value={variable}
                                     onChange={(e) => {
                                         setVariable(e.target.value);
                                     }}
                                 >
-                                    <option value="tas">temperature</option>
-                                    <option value="pr">rain</option>
-                                    <option value="sfcWind">wind</option>
-                                    <option value="rsds">cloudiness</option>
+                                    {climateVariables.map((item) => (
+                                        <option key={item.variable} value={item.variable}>
+                                            {item.graphLabel}
+                                        </option>
+                                    ))}
                                 </select>
                                 &nbsp;for&nbsp;
                                 <select
@@ -411,16 +364,22 @@ const Graph = (props) => {
                             </div>
                         </div>
                     </LoadingOverlay>
-                    <p className="note">
+                    <p className="note" style={{ marginBottom: 0 }}>
+                        {variable === "tas" && (
+                            <span style={{ display: "block", marginBottom: "1rem" }}>
+                                The min and max numbers here do not account for extreme temperatures, which will still occur, but instead show the range of what normal and expected temperatures will be.
+                            </span>
+                        )}
                         You can hover over points to see their values. Use the legend to show or hide lines, or double-click to focus on a single line.  
                         Adjust the axes by dragging, or zoom in by drawing a box around an area of interest.  
                         Double-click the graph to reset the view.
                         <br />
-                        Note: The vertical grey bar indicates a 50-year gap between the 1980 baseline and 2030 data points.
+                        Note: The vertical grey bar indicates the gap between the 1980 baseline and the first future projection point.
                     </p>
+                    <div style={{ height: "1rem" }} />
                 </div>
             </div>
-            <p className="note">
+            <p className="note" style={{ marginTop: 0 }}>
                 Data source: The current iteration of the tool uses climate data from the{" "}
                 <a
                     href={CHESS_SCAPE_URL}

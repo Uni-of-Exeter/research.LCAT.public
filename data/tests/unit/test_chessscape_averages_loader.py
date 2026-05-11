@@ -283,72 +283,64 @@ def test_load_netcdf_sets_current_data_to_none_if_file_missing(mock_exists, csal
 
 
 # =============================================================================
-# calculate_uk_averages_min_mean_max
+# calculate_uk_averages_mean
 # =============================================================================
 
 
-def test_calculate_uk_averages_min_mean_max_returns_dict(csal, sample_annual_dataset):
-    """Should return dict with min, mean, max keys"""
+def test_calculate_uk_averages_mean_returns_dataarray(csal, sample_annual_dataset):
+    """Should return an xarray DataArray"""
     csal.season = "annual"
     csal.variable = "tas"
-    
-    result = csal.calculate_uk_averages_min_mean_max(sample_annual_dataset, 0, 10, 1)
-    
-    assert "min" in result
-    assert "mean" in result
-    assert "max" in result
+
+    result = csal.calculate_uk_averages_mean(sample_annual_dataset["tas"], 0, 10, 1)
+
+    assert isinstance(result, xr.DataArray)
 
 
-def test_calculate_uk_averages_min_mean_max_returns_scalar_values(csal, sample_annual_dataset):
-    """Should return scalar values, not arrays"""
+def test_calculate_uk_averages_mean_returns_scalar(csal, sample_annual_dataset):
+    """Should return scalar value (DataArray with no dimensions)"""
     csal.season = "annual"
     csal.variable = "tas"
-    
-    result = csal.calculate_uk_averages_min_mean_max(sample_annual_dataset, 0, 10, 1)
-    
-    # Values should be scalars (xarray DataArrays with no dimensions)
-    assert result["min"].dims == ()
-    assert result["mean"].dims == ()
-    assert result["max"].dims == ()
+
+    result = csal.calculate_uk_averages_mean(sample_annual_dataset["tas"], 0, 10, 1)
+
+    assert result.dims == ()
 
 
-def test_calculate_uk_averages_min_mean_max_validates_winter_months(csal, sample_seasonal_dataset):
+def test_calculate_uk_averages_mean_validates_winter_months(
+    csal, sample_seasonal_dataset
+):
     """Should validate that winter data contains only January"""
     csal.season = "winter"
     csal.variable = "tas"
-    
-    # Winter starts at offset 0 (January)
-    # The real implementation checks months via pandas Timestamp.month
-    # Our sample dataset should have the right structure
-    result = csal.calculate_uk_averages_min_mean_max(sample_seasonal_dataset, 0, 40, 4)
+
+    result = csal.calculate_uk_averages_mean(sample_seasonal_dataset["tas"], 0, 40, 4)
     assert result is not None
 
 
-def test_calculate_uk_averages_min_mean_max_validates_summer_months(csal, sample_seasonal_dataset):
+def test_calculate_uk_averages_mean_validates_summer_months(
+    csal, sample_seasonal_dataset
+):
     """Should validate that summer data contains only July"""
     csal.season = "summer"
-    csal.variable = "tas"  # Fixed typo: was 'csl'
-    
-    # Summer starts at offset 2 (July)
-    result = csal.calculate_uk_averages_min_mean_max(sample_seasonal_dataset, 2, 42, 4)
+    csal.variable = "tas"
+
+    result = csal.calculate_uk_averages_mean(sample_seasonal_dataset["tas"], 2, 42, 4)
     assert result is not None
 
 
-def test_calculate_uk_averages_min_mean_max_raises_for_wrong_winter_month(
+def test_calculate_uk_averages_mean_raises_for_wrong_winter_month(
     csal, sample_seasonal_dataset
 ):
     """Should raise ValueError if winter slice does not contain January months"""
-
     csal.season = "winter"
     csal.variable = "tas"
 
-    # Offset 1 corresponds to April in the seasonal dataset
-    # This should fail the month check for winter (expects month == 1)
     with pytest.raises(ValueError, match="Different months"):
-        csal.calculate_uk_averages_min_mean_max(
-            sample_seasonal_dataset,
-            lower_bound=1,   # April
-            higher_bound=41, # 40 seasonal points = 10 years
+        csal.calculate_uk_averages_mean(
+            sample_seasonal_dataset["tas"],
+            lower_bound=1,
+            higher_bound=41,
             step=4,
         )
 
@@ -377,7 +369,7 @@ def test_process_decade_annual_produces_expected_keys_and_stats(csal, sample_ann
     assert len(csal.extracted_data) == 10
 
     first_decade = csal.extracted_data[expected_keys[0]]
-    assert set(first_decade.keys()) == {"min", "mean", "max"}
+    assert isinstance(first_decade, xr.DataArray)
 
 
 def test_process_decade_winter_seasonal_produces_expected_keys(csal, sample_seasonal_dataset):
@@ -405,11 +397,11 @@ def test_process_decade_summer_starts_at_index_2_and_uses_step_4(csal, sample_se
     csal.season = "summer"
     csal.variable = "tas"
 
-    dummy = {"min": xr.DataArray(0.0), "mean": xr.DataArray(0.0), "max": xr.DataArray(0.0)}
+    dummy = xr.DataArray(0.0)
 
     with patch.object(
         ChessScapeAveragesLoader,
-        "calculate_uk_averages_min_mean_max",
+        "calculate_uk_averages_mean",
         return_value=dummy,
     ) as mock_calc:
         csal.process_decade(sample_seasonal_dataset)
@@ -459,23 +451,15 @@ def test_transform_data_transforms_all_decades(csal):
     """Should apply transforms to all decades in extracted_data"""
     csal.variable = "tas"
     csal.transform_performed = False
-    
+
     csal.extracted_data = {
-        1980: {
-            "min": xr.DataArray(273.15),
-            "mean": xr.DataArray(283.15),
-            "max": xr.DataArray(293.15),
-        },
-        1990: {
-            "min": xr.DataArray(274.15),
-            "mean": xr.DataArray(284.15),
-            "max": xr.DataArray(294.15),
-        },
+        1980: xr.DataArray(283.15),
+        1990: xr.DataArray(284.15),
     }
-    
+
     csal.transform_data()
-    
-    assert csal.extracted_data[1980]["mean"].values == pytest.approx(10.0)
+
+    assert float(csal.extracted_data[1980].values) == pytest.approx(10.0)
     assert csal.transform_performed is True
 
 
@@ -492,15 +476,11 @@ def test_transform_data_sets_transform_flag(csal):
     csal.variable = "tas"
     csal.transform_performed = False
     csal.extracted_data = {
-        1980: {
-            "min": xr.DataArray(273.15),
-            "mean": xr.DataArray(283.15),
-            "max": xr.DataArray(293.15),
-        },
+        1980: xr.DataArray(283.15),
     }
-    
+
     csal.transform_data()
-    
+
     assert csal.transform_performed is True
 
 
@@ -624,11 +604,7 @@ def test_insert_data_multiple_decades_calls_copy_from_with_expected_args(mock_ps
     csal.row_id = 0
 
     csal.extracted_data = {
-        1980: {
-            "min": xr.DataArray(10.0),
-            "mean": xr.DataArray(15.0),
-            "max": xr.DataArray(20.0),
-        },
+        1980: xr.DataArray(15.0),
     }
 
     csal.insert_data_multiple_decades()
@@ -649,9 +625,7 @@ def test_insert_data_multiple_decades_calls_copy_from_with_expected_args(mock_ps
         "season",
         "variable",
         "decade",
-        "min",
         "mean",
-        "max",
     ]
 
 @patch("data.src.chessscape_averages_loader.psycopg2")
@@ -668,18 +642,10 @@ def test_insert_data_multiple_decades_increments_row_id(mock_psycopg2, csal):
     csal.season = "annual"
     csal.variable = "tas"
     csal.row_id = 0
-    
+
     csal.extracted_data = {
-        1980: {
-            "min": xr.DataArray(10.0),
-            "mean": xr.DataArray(15.0),
-            "max": xr.DataArray(20.0),
-        },
-        1990: {
-            "min": xr.DataArray(11.0),
-            "mean": xr.DataArray(16.0),
-            "max": xr.DataArray(21.0),
-        },
+        1980: xr.DataArray(15.0),
+        1990: xr.DataArray(16.0),
     }
 
     csal.insert_data_multiple_decades()
@@ -701,13 +667,9 @@ def test_insert_data_multiple_decades_commits_transaction(mock_psycopg2, csal):
     csal.season = "annual"
     csal.variable = "tas"
     csal.row_id = 0
-    
+
     csal.extracted_data = {
-        1980: {
-            "min": xr.DataArray(10.0),
-            "mean": xr.DataArray(15.0),
-            "max": xr.DataArray(20.0),
-        },
+        1980: xr.DataArray(15.0),
     }
 
     csal.insert_data_multiple_decades()
@@ -730,13 +692,9 @@ def test_insert_data_multiple_decades_rolls_back_on_error(mock_psycopg2, csal):
     csal.season = "annual"
     csal.variable = "tas"
     csal.row_id = 0
-    
+
     csal.extracted_data = {
-        1980: {
-            "min": xr.DataArray(10.0),
-            "mean": xr.DataArray(15.0),
-            "max": xr.DataArray(20.0),
-        },
+        1980: xr.DataArray(15.0),
     }
 
     csal.insert_data_multiple_decades()
