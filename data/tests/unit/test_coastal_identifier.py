@@ -104,7 +104,7 @@ def test_process_boundary_calls_add_column(mock_add_column, ci):
     ci.process_boundary("uk_counties")
 
     mock_add_column.assert_called_once_with("uk_counties", "is_coastal")
-    
+
 
 def test_process_boundary_normal_boundary_updates_with_expected_sql_and_params(ci):
     ci.conn = MagicMock()
@@ -165,17 +165,19 @@ def test_process_boundary_add_column_then_update_execute_order(ci):
     """
     Verifies the sequence is:
     1) ALTER TABLE ... (from add_column)
-    2) UPDATE ... (from process_boundary)
+    2) SELECT EXISTS ... (checks grid_overlaps table exists)
+    3) SELECT COUNT(*) ... (checks grid_overlaps table has rows)
+    4) UPDATE ... (from process_boundary)
     """
     ci.conn = MagicMock()
     ci.cur = MagicMock()
 
     ci.process_boundary("lsoa")
 
-    assert ci.cur.execute.call_count == 2
+    assert ci.cur.execute.call_count == 4
 
     alter_sql = ci.cur.execute.call_args_list[0][0][0]
-    update_sql = ci.cur.execute.call_args_list[1][0][0]
+    update_sql = ci.cur.execute.call_args_list[3][0][0]
 
     assert alter_sql.startswith('ALTER TABLE "boundary_lsoa"')
     assert "UPDATE boundary_lsoa b" in update_sql
@@ -202,4 +204,3 @@ def test_process_all_boundaries_processes_expected_boundaries_in_order(mock_proc
     ]
 
     assert [c.args[0] for c in mock_process_boundary.call_args_list] == expected
-

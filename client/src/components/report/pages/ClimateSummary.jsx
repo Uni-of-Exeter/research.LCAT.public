@@ -18,6 +18,11 @@ const getClimateIcon = (variable) => {
         'pr': RainIcon,
         'rsds': CloudIcon,
         'sfcWind': WindIcon,
+        'tropical_nights': TemperatureIcon,
+        'hot_heat_days': TemperatureIcon,
+        'heavy_rain_days': RainIcon,
+        'dry_days': CloudIcon,
+        'windy_days': WindIcon,
     };
     return iconMap[variable] || TemperatureIcon;
 };
@@ -68,9 +73,9 @@ const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
                     return (
                         <View key={index} style={[styles.climateItem, { width: '24%' }]}>
                             <View style={styles.iconContainer}>
-                                {arrowSrc && (
-                                    <Image src={arrowSrc} style={styles.arrow} />
-                                )}
+                                <View style={{ width: 15, height: 12, marginBottom: 4 }}>
+                                    {arrowSrc && <Image src={arrowSrc} style={{ width: 15, height: 12 }} />}
+                                </View>
                                 <Image src={iconSrc} style={styles.icon} />
                             </View>
                             <Text style={styles.climateVariable}>{item.name}</Text>
