@@ -555,16 +555,22 @@ class ClimateDataProcessor:
                 f"Invalid season: {season}. Must be 'annual', 'summer', or 'winter'"
             )
 
-        n_periods = n_time / days_per_period
+        n_complete_periods = n_time // days_per_period
+        remainder = n_time % days_per_period
+        if remainder != 0:
+            print(
+                f"WARNING: {remainder} trailing days excluded (incomplete period); "
+                f"using {n_complete_periods} complete periods"
+            )
+            meets_threshold = meets_threshold[: n_complete_periods * days_per_period]
 
-        print(f"Processing {n_time} days ({n_periods:.1f} {season} periods) of data")
+        print(
+            f"Processing {n_time} days ({n_complete_periods} {season} periods) of data"
+        )
         print(f"Threshold: {threshold}, Comparison: {comparison}, Season: {season}")
 
-        # Count days meeting threshold and convert to mean per period
         threshold_counts = np.sum(meets_threshold, axis=0)
-        mean_per_period = threshold_counts / n_periods
-        mean_per_period = mean_per_period.astype(float)
-        mean_per_period[~valid_pixels] = np.nan
+        mean_per_period = threshold_counts / n_complete_periods
 
         # Reshape back to grid
         return mean_per_period.reshape(n_y, n_x)
