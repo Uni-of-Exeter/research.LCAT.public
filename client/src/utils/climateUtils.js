@@ -24,7 +24,8 @@ export const formatClimateData = (prediction, variable, name, units, year = 2050
     }
     
     const absoluteValue = Math.abs(value).toFixed(2);
-    const direction = value === 0 ? "No change in" : value > 0 ? "increases" : "decreases";
+    const isPlural = /days$/i.test(name) || /nights$/i.test(name);
+    const direction = value === 0 ? "No change in" : value > 0 ? (isPlural ? "increase" : "increases") : (isPlural ? "decrease" : "decreases");
     
     return {
         name,
