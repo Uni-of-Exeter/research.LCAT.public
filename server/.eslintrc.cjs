@@ -6,5 +6,7 @@ module.exports = {
     parserOptions: { ecmaVersion: "latest", sourceType: "module" },
     settings: { react: { version: "18.2" } },
     plugins: [],
-    rules: {},
+    rules: {
+        "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    },
 };
