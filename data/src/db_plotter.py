@@ -552,6 +552,56 @@ class DBPlotter:
 
         plt.show()
 
+    def plot_region_and_overlapping_cells_coloured_by_coastal(self, boundary_identifier, region_gid):
+        """
+        Plot a region from a boundary, and its overlapping grid cells, coloured by the coastal_info column.
+        """
+
+        # Get data to do with region
+        region_geometry = self.get_geometry_by_gid(boundary_identifier, region_gid)
+        region_name = self.get_region_name_by_gid(boundary_identifier, region_gid)
+
+        data = []
+        for row in region_geometry:
+            geom = wkb.loads(row[1], hex=True)
+            data.append({"id": row[0], "geometry": geom})
+
+        gdf = gpd.GeoDataFrame(data, geometry="geometry")
+
+        # Get overlapping cell data
+        cell_geometry = self.get_overlapping_cells(boundary_identifier, region_gid)
+
+        data = []
+        for row in cell_geometry:
+            geom = wkb.loads(row[1], hex=True)
+            data.append(
+                {"id": row[0], "geometry": geom, "bias_corrected": row[2], "is_overlap": row[3], "coastal_info": row[4]}
+            )
+
+        cell_gdf = gpd.GeoDataFrame(data, geometry="geometry")
+
+        # Create plot
+        fig, ax = plt.subplots(figsize=(10, 10))
+
+        # Plot GeoDataFrame with color based on 'coastal_info'
+        cell_gdf.plot(
+            ax=ax, column="coastal_info", cmap="viridis", legend=True, linewidth=0.5, edgecolor="black", alpha=0.5
+        )
+        gdf.plot(ax=ax, color="none", edgecolor="black")
+
+        # Other things
+        ax.set_title(
+            f"Overlapping grid cells coloured by coastal proximity: {self.clean_boundary_names[boundary_identifier]} - {region_gid}, {region_name}",
+            fontsize=14,
+        )
+        ax.set_xlabel("Eastings", fontsize=14)
+        ax.set_ylabel("Northings", fontsize=14)
+        ax.xaxis.set_major_formatter(ScalarFormatter(useMathText=True))
+        ax.yaxis.set_major_formatter(ScalarFormatter(useMathText=True))
+        ax.ticklabel_format(style="sci", axis="both", scilimits=(0, 0))
+
+        plt.show()
+
     def plot_region_and_overlapping_cells_with_colour(self, boundary_identifier, region_gid, rcp, season, variable, decade):
         """
         Plot a region from a boundary, and its overlapping grid cells, colored by the data values
