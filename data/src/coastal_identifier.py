@@ -57,27 +57,48 @@ class CoastalIdentifier:
         """
         Tag all regions in a boundary as coastal or not coastal. This was very slow in Python and very fast in
         PostgreSQL. For Northern Ireland, we deem all regions coastal, as the NetCDF data deems the land border with
-        the rest of Ireland as coastline.
+        the rest of Ireland as coastline. Isle of Man is also all automatically coastal.
         """
 
-        # Add a new boolean column if it doesn't exist
         self.add_column(boundary_identifier, self.coastal_column_name)
 
         try:
-            if boundary_identifier == "ni_dz":
-                # If the boundary is "ni_dz", mark all regions as coastal
+            # Check if grid_overlaps table exists
+            check_query = f"""
+                SELECT EXISTS (
+                    SELECT FROM information_schema.tables 
+                    WHERE table_name = 'grid_overlaps_{boundary_identifier}'
+                );
+            """
+            self.cur.execute(check_query)
+            table_exists = self.cur.fetchone()[0]
+
+            if not table_exists:
+                print(
+                    f"Warning: grid_overlaps_{boundary_identifier} does not exist. Skipping."
+                )
+                return
+
+            # Check if overlaps table has any rows
+            count_query = f"SELECT COUNT(*) FROM grid_overlaps_{boundary_identifier};"
+            self.cur.execute(count_query)
+            overlap_count = self.cur.fetchone()[0]
+
+            if overlap_count == 0:
+                print(
+                    f"Warning: grid_overlaps_{boundary_identifier} is empty. Skipping."
+                )
+                return
+
+            # IoM and NI: mark all regions as coastal
+            if boundary_identifier in ["ni_dz", "iom"]:
                 update_query = f"""
                     UPDATE boundary_{boundary_identifier}
                     SET is_coastal = TRUE;
                 """
                 self.cur.execute(update_query)
-                self.conn.commit()
-
             else:
-                # Make coastal values a tuple
                 coastal_values = tuple(self.coastal_values)
-
-                # Update all regions in a single query
                 update_query = f"""
                     UPDATE boundary_{boundary_identifier} b
                     SET is_coastal = EXISTS (
@@ -88,8 +109,8 @@ class CoastalIdentifier:
                     );
                 """
                 self.cur.execute(update_query, (coastal_values,))
-                self.conn.commit()
 
+            self.conn.commit()
             print(f"Boundary {boundary_identifier} processed successfully.")
 
         except psycopg2.Error as e:

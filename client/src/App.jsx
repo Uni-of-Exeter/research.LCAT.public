@@ -39,33 +39,35 @@ import { defaultState } from "./utils/defaultState";
 
 const useScrollTracking = () => {
     const sectionsRef = useRef(new Set());
-
+    
     useEffect(() => {
+        
         const handleScroll = () => {
-            const sections = document.querySelectorAll("[data-section]");
-
-            sections.forEach((section) => {
+            const sections = document.querySelectorAll('[data-section]');
+            
+            sections.forEach(section => {
                 const rect = section.getBoundingClientRect();
                 const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
-
+                                
                 if (isVisible && !sectionsRef.current.has(section.dataset.section)) {
+                    
                     // Track section view
-                    if (typeof gtag !== "undefined") {
-                        gtag("event", "section_view", {
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'section_view', {
                             section_name: section.dataset.section,
-                            timestamp: Date.now(),
+                            timestamp: Date.now()
                         });
                     }
-
+                    
                     sectionsRef.current.add(section.dataset.section);
                 }
             });
         };
 
-        window.addEventListener("scroll", handleScroll);
+        window.addEventListener('scroll', handleScroll);
         handleScroll(); // Check initial state
-
-        return () => window.removeEventListener("scroll", handleScroll);
+        
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 };
 
@@ -75,7 +77,6 @@ const App = () => {
     const [allRegions, setAllRegions] = useState(defaultState.allRegions);
     const [climatePrediction, setClimatePrediction] = useState(defaultState.climatePrediction);
     const [climateAverages, setClimateAverages] = useState(defaultState.climateAverages);
-    //const [climateAverageRanges, setClimateAverageRanges] = useState(defaultState.climateAverageRanges);
     const [season, setSeason] = useState(defaultState.season);
     const [rcp, setRcp] = useState(defaultState.rcp);
     const [year] = useState(defaultState.year);
@@ -87,12 +88,12 @@ const App = () => {
 
     const [selectedAdaptationHazards, setSelectedAdaptationHazards] = useState([defaultState.selectedImpactHazard]);
     const [filterName, setFilterName] = useState(defaultFilterName);
-
+    
     useScrollTracking();
 
     // If a new impact hazard is selected, update the adaptation hazards to match
     useEffect(() => {
-        if (selectedImpactHazard && typeof selectedImpactHazard === "string") {
+        if (selectedImpactHazard && typeof selectedImpactHazard === 'string') {
             setSelectedAdaptationHazards([selectedImpactHazard]);
         }
     }, [selectedImpactHazard]);
@@ -102,10 +103,10 @@ const App = () => {
             setSeason(defaultState.season);
             setRcp(defaultState.rcp);
             setVariable(defaultState.variable);
-            setClimatePrediction(defaultState.climatePrediction);
-            setClimateAverages(defaultState.climateAverages);
-            setSelectedImpactHazard(defaultState.selectedImpactHazard);
-            setApplyCoastalFilter(defaultState.applyCoastalFilter);
+            setClimatePrediction(defaultState.climatePrediction)
+            setClimateAverages(defaultState.climateAverages)
+            setSelectedImpactHazard(defaultState.selectedImpactHazard)
+            setApplyCoastalFilter(defaultState.applyCoastalFilter)
         }
     }, [regions]);
 
@@ -116,11 +117,7 @@ const App = () => {
                 <Introduction />
 
                 <AllRegionLoader regionType={regionType} setAllRegions={setAllRegions} />
-                <IsCoastalLoader
-                    regionType={regionType}
-                    regions={regions}
-                    setApplyCoastalFilter={setApplyCoastalFilter}
-                />
+                <IsCoastalLoader regionType={regionType} regions={regions} setApplyCoastalFilter={setApplyCoastalFilter} />
 
                 <ClimatePredictionLoader
                     regions={regions}
@@ -131,17 +128,13 @@ const App = () => {
                     setIsPredictionLoading={setIsPredictionLoading}
                 />
 
-                <ClimateAveragesLoader
-                    rcp={rcp}
-                    season={season}
-                    variable={variable}
-                    setClimateAverages={setClimateAverages}
-                    setAreAveragesLoading={setAreAveragesLoading}
-                />
-
-                {/* <ClimateAverageRangesLoader
-                setClimateAverageRanges={setClimateAverageRanges}
-            /> */}
+            <ClimateAveragesLoader
+                rcp={rcp}
+                season={season}
+                variable={variable}
+                setClimateAverages={setClimateAverages}
+                setAreAveragesLoading={setAreAveragesLoading}
+            />
 
                 <div data-section="map" className="white-section">
                     <ClimateMap
@@ -168,23 +161,23 @@ const App = () => {
                             year={year}
                             regions={regions}
                             loading={isPredictionLoading}
+                            season={season}
                         />
 
-                        <Graph
-                            regions={regions}
-                            season={season}
-                            rcp={rcp}
-                            setSeason={setSeason}
-                            setRcp={setRcp}
-                            climatePrediction={climatePrediction}
-                            loading={isPredictionLoading || areAveragesLoading}
+                    <Graph
+                        regions={regions}
+                        season={season}
+                        rcp={rcp}
+                        setSeason={setSeason}
+                        setRcp={setRcp}
+                        climatePrediction={climatePrediction}
+                        loading={isPredictionLoading || areAveragesLoading}
                             climateAverages={climateAverages}
-                            climateAverageRanges={0}
-                            variable={variable}
-                            setVariable={setVariable}
-                        />
-                    </div>
-                )}
+                        variable={variable}
+                        setVariable={setVariable}
+                    />
+                </div>
+            )}
 
                 {regions.length > 0 && (
                     <div data-section="hazard" className="white-section">
@@ -228,7 +221,7 @@ const App = () => {
                     </div>
                 )}
 
-                <Footer
+                <Footer 
                     regions={regions}
                     climatePrediction={climatePrediction}
                     selectedImpactHazard={selectedImpactHazard}

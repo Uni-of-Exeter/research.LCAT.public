@@ -1,13 +1,14 @@
 // Function to parse the float values from the prediction
-
 export const climateChange = (prediction, variable, year) => {
     if (prediction.length > 0) {
-        const baseline = parseFloat(prediction[0][`${variable}_1980_mean`]);
-        const predict = parseFloat(prediction[0][`${variable}_${year}_mean`]);
-        return baseline != null && predict != null ? predict - baseline : null;
+        const baseline = parseFloat(prediction[0][`${variable}_1980`]);
+        const predict = parseFloat(prediction[0][`${variable}_${year}`]);
+        return Number.isFinite(baseline) && Number.isFinite(predict) ? predict - baseline : null;
     }
     return null;
 };
+
+const FULL_SERIES_DECADES = [1980, 2030, 2040, 2050, 2060, 2070];
 
 // Function to format climate data for display
 export const formatClimateData = (prediction, variable, name, units, year = 2050) => {
@@ -16,22 +17,21 @@ export const formatClimateData = (prediction, variable, name, units, year = 2050
         return {
             name,
             value: null,
-            change: "No data yet for this area, coming soon.",
+            change: 'No data yet for this area, coming soon.',
             arrow: null,
             direction: null,
         };
     }
-
-    // Invert value for rsds (more radiation = less cloud)
-    const adjustedValue = variable === "rsds" ? -value : value;
-    const absoluteValue = Math.abs(adjustedValue).toFixed(2);
-    const direction = adjustedValue === 0 ? "No change in" : adjustedValue > 0 ? "increases" : "decreases";
-
+    
+    const absoluteValue = Math.abs(value).toFixed(2);
+    const isPlural = /days$/i.test(name) || /nights$/i.test(name);
+    const direction = value === 0 ? "No change in" : value > 0 ? (isPlural ? "increase" : "increases") : (isPlural ? "decrease" : "decreases");
+    
     return {
         name,
-        value: adjustedValue,
-        change: adjustedValue === 0 ? `${direction} ${name}` : `${name} ${direction} by ${absoluteValue} ${units}`,
-        arrow: adjustedValue === 0 ? "none" : adjustedValue > 0 ? "up" : "down",
+        value: value,
+        change: value === 0 ? `${direction} ${name}` : `${name} ${direction} by ${absoluteValue} ${units}`,
+        arrow: value === 0 ? 'none' : value > 0 ? 'up' : 'down',
         direction,
         absoluteValue,
         units,
@@ -40,15 +40,21 @@ export const formatClimateData = (prediction, variable, name, units, year = 2050
 
 // Climate variables configuration
 export const climateVariables = [
-    { variable: "tas", name: "Temperature", units: "°C" },
-    { variable: "pr", name: "Rainfall", units: "mm/day" },
-    { variable: "rsds", name: "Cloudiness", units: "Watts/m²" },
-    { variable: "sfcWind", name: "Windiness", units: "m/sec" },
+    { variable: 'tas', name: 'Temperature', units: '°C', graphLabel: 'temperature' },
+    { variable: 'pr', name: 'Rainfall', units: 'mm/day', graphLabel: 'rain' },
+    { variable: 'sfcWind', name: 'Windiness', units: 'm/sec', graphLabel: 'wind' },
+    { variable: 'rsds', name: 'Radiation', units: 'Watts/m²', graphLabel: 'radiation' },
+    { variable: 'tropical_nights', name: 'Tropical Nights', units: 'days', graphLabel: 'tropical nights' },
+    { variable: 'hot_heat_days', name: 'Hot Heat Days', units: 'days', graphLabel: 'hot heat days' },
+    { variable: 'heavy_rain_days', name: 'Heavy Rain Days', units: 'days', graphLabel: 'heavy rain days' },
+    { variable: 'dry_days', name: 'Dry Days', units: 'days', graphLabel: 'dry days' },
+    { variable: 'windy_days', name: 'Windy Days', units: 'days', graphLabel: 'windy days' },
 ];
 
-// Get all climate data formatted
-export const getAllClimateData = (climatePrediction, year = 2050) => {
-    return climateVariables.map(({ variable, name, units }) =>
-        formatClimateData(climatePrediction, variable, name, units, year),
-    );
-};
+export const getClimateVariableByKey = (variable) =>
+    climateVariables.find((item) => item.variable === variable);
+
+export const getGraphDecadesForVariable = (variable) =>
+    getClimateVariableByKey(variable)?.graphDecades || FULL_SERIES_DECADES;
+
+

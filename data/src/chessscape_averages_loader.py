@@ -5,12 +5,13 @@ from functools import wraps
 
 import numpy as np
 import psycopg2
+import psycopg2.extensions
 import xarray as xr
 
 
 def timefn(fn):
     @wraps(fn)
-    def measure_time(*args, **kwargs):
+    def measure_time(*args: object, **kwargs: object) -> object:
         t1 = time.time()
         result = fn(*args, **kwargs)
         t2 = time.time()
@@ -32,14 +33,14 @@ class ChessScapeAveragesLoader:
     twice, once in the original class, and once in this class. TODO: aggregate these classes.
     """
 
-    def __init__(self, config):
+    def __init__(self: "ChessScapeAveragesLoader", config: dict) -> None:
         self.conf = config
-        self.conn = None
-        self.cur = None
+        self.conn: psycopg2.extensions.connection | None = None
+        self.cur: psycopg2.extensions.cursor | None = None
 
         self.data_location = None
 
-        self.current_netcdf_data = {}
+        self.current_netcdf_data = None
         self.extracted_data = {}
 
         self.season = None
@@ -53,7 +54,9 @@ class ChessScapeAveragesLoader:
         self.transform_performed = False
         self.set_data_location()
 
-    def set_data_location(self, filepath=None):
+    def set_data_location(
+        self: "ChessScapeAveragesLoader", filepath: str | None = None
+    ) -> None:
         """
         Set the location of the CHESS-SCAPE netcdf data folder.
         """
@@ -64,7 +67,13 @@ class ChessScapeAveragesLoader:
 
         self.data_location = filepath
 
-    def connect_to_db(self, host=None, dbname=None, user=None, password=None):
+    def connect_to_db(
+        self: "ChessScapeAveragesLoader",
+        host: str | None = None,
+        dbname: str | None = None,
+        user: str | None = None,
+        password: str | None = None,
+    ) -> None:
         """
         Connect to database with provided credentials, or those in config file.
         """
@@ -77,12 +86,16 @@ class ChessScapeAveragesLoader:
 
             print("Connecting using db config from config file...")
 
-        self.conn = psycopg2.connect(host=host, dbname=dbname, user=user, password=password)
+        self.conn = psycopg2.connect(
+            host=host, dbname=dbname, user=user, password=password
+        )
         self.cur = self.conn.cursor()
 
         print("Connection successful.")
 
-    def open_netcdf_file(self, filepath):
+    def open_netcdf_file(
+        self: "ChessScapeAveragesLoader", filepath: str
+    ) -> xr.Dataset | None:
         """
         Lazy load a netcdf file with xarray and return.
         """
@@ -93,14 +106,21 @@ class ChessScapeAveragesLoader:
         except Exception as e:
             print(f"netcdf file open failed with error: {e}")
 
-    def close_netcdf_file(self):
+    def close_netcdf_file(self: "ChessScapeAveragesLoader") -> None:
         """
         Close netcdf file and release any resources associated with it.
         """
+        if self.current_netcdf_data is not None:
+            self.current_netcdf_data.close()
+            self.current_netcdf_data = None
 
-        self.current_netcdf_data.close()
-
-    def load_netcdf(self, is_bias_corrected, season, rcp, variable):
+    def load_netcdf(
+        self: "ChessScapeAveragesLoader",
+        is_bias_corrected: bool,
+        season: str,
+        rcp: int,
+        variable: str,
+    ) -> None:
         """
         Given parameters and data required, load the correct netcdf file, and set some variables.
         Note that folder structure matches raw data in repository.
@@ -123,14 +143,7 @@ class ChessScapeAveragesLoader:
         # Ensure extracted data is cleared
         self.extracted_data = {}
 
-        # Create filepath folder adjustments
-        bias_corrected_folder = "_bias-corrected" if is_bias_corrected else ""
-        season_folder = "seasonal" if season != "annual" else "annual"
-
-        # Create filepath
-        sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/{season_folder}"
-        filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{variable}_uk_1km_{season_folder}_19801201-20801130.nc"
-        filepath = os.path.join(self.data_location, sub_folders, filename)
+        filepath = self.get_netcdf_filepath(is_bias_corrected, season, rcp, variable)
 
         # Load netcdf file
         if os.path.exists(filepath):
@@ -140,13 +153,119 @@ class ChessScapeAveragesLoader:
             print(f"Incorrect filepath: {filepath}")
             self.current_netcdf_data = None
 
-    def calculate_uk_averages_min_mean_max(self, data, lower_bound, higher_bound, step):
+    def get_netcdf_filepath(
+        self: "ChessScapeAveragesLoader",
+        is_bias_corrected: bool,
+        season: str,
+        rcp: int,
+        variable: str,
+    ) -> str:
         """
-        Calculate min, mean, and max values of netcdf file in time dimension, and then in spatial dimensions (i, j).
+        Build filepath for source and derived files.
+        """
+        if not self.data_location:
+            raise ValueError("Data location is not set")
+
+        bias_corrected_folder = "_bias-corrected" if is_bias_corrected else ""
+        season_folder = "seasonal" if season != "annual" else "annual"
+
+        sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/01/{season_folder}"
+
+        if variable in [
+            "tropical_nights",
+            "hot_heat_days",
+            "heavy_rain_days",
+            "dry_days",
+            "windy_days",
+        ]:
+            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{variable}_uk_1km_{season}_19801201-20801130.nc"
+        elif variable == "tasmax_99_percentile":
+            filename = (
+                f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_tasmax_99_percentile"
+                f"_uk_1km_{season}_19801201-20801130.nc"
+            )
+        elif variable == "tasmin_1_percentile":
+            filename = (
+                f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_tasmin_1_percentile"
+                f"_uk_1km_{season}_19801201-20801130.nc"
+            )
+        else:
+            filename = (
+                f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{variable}"
+                f"_uk_1km_{season_folder}_19801201-20801130.nc"
+            )
+
+        return os.path.join(self.data_location, sub_folders, filename)
+
+    def _normalise_decade_coord(
+        self: "ChessScapeAveragesLoader", decade_coord: int
+    ) -> int | None:
+        """
+        Convert decade coordinate values into decade years.
+        """
+        decade_coord = int(decade_coord)
+
+        if decade_coord >= 1900:
+            return decade_coord
+
+        if 0 <= decade_coord <= 20:
+            return 1980 + decade_coord * 10
+
+        return None
+
+    def _get_dataset_variable_data(
+        self: "ChessScapeAveragesLoader", dataset: xr.Dataset, variable: str
+    ) -> xr.DataArray | None:
+        """
+        Select the relevant data variable from a dataset for source and derived variables.
+        """
+        if variable in dataset.data_vars:
+            return dataset[variable]
+
+        if variable == "tasmax_99_percentile" and "quantile_99" in dataset.data_vars:
+            return dataset["quantile_99"]
+
+        if variable == "tasmin_1_percentile" and "quantile_1" in dataset.data_vars:
+            return dataset["quantile_1"]
+
+        if variable in [
+            "tropical_nights",
+            "hot_heat_days",
+            "heavy_rain_days",
+            "dry_days",
+            "windy_days",
+        ]:
+            if "variable" in dataset.data_vars:
+                return dataset["variable"]
+
+            for var_name in dataset.data_vars:
+                var_name_lower = str(var_name).lower()
+                if any(
+                    token in var_name_lower
+                    for token in ["tropical", "hot", "rain", "dry", "windy"]
+                ):
+                    return dataset[var_name]
+
+        for var_name in dataset.data_vars:
+            if "quantile" in str(var_name).lower():
+                return dataset[var_name]
+
+        return None
+
+    def calculate_uk_averages_mean(
+        self: "ChessScapeAveragesLoader",
+        data: xr.DataArray,
+        lower_bound: int,
+        higher_bound: int,
+        step: int,
+    ) -> xr.DataArray:
+        """
+        Calculate mean values of netcdf file in time dimension, and then in spatial dimensions (i, j).
         """
 
         # Slice the time dimension only to perform some checks
-        time_slice = data.time[lower_bound:higher_bound:step]
+        time_da = data.time[lower_bound:higher_bound:step]
+        time_slice = time_da.to_numpy()
 
         # Check we always take mean over 10 years
         if len(time_slice) != 10:
@@ -156,21 +275,14 @@ class ChessScapeAveragesLoader:
         if self.season != "annual":
             month_check = 1 if self.season == "winter" else 7
 
-            months = time_slice.dt.month.values
+            months = time_da.dt.month.to_numpy()
             if not np.all(months == month_check):
                 raise ValueError("Different months identified in time slice")
 
         # Perform the same slicing operation on the data itself
-        data_slice = data[self.variable][lower_bound:higher_bound:step]
+        return data[lower_bound:higher_bound:step].mean(dim="time").mean()
 
-        # Return dict of three scalar values
-        return {
-            "min": data_slice.min(dim="time").min(),
-            "mean": data_slice.mean(dim="time").mean(),
-            "max": data_slice.max(dim="time").max(),
-        }
-
-    def process_decade(self, data):
+    def process_decade(self: "ChessScapeAveragesLoader", data: xr.Dataset) -> None:
         """
         Process NetCDF files by decade. Mins, means, and maxes are taken across decades.
         We perform this operation manually, rather than using xarray.resample.
@@ -189,6 +301,25 @@ class ChessScapeAveragesLoader:
         indexes 0, 1, 2, 3 respectively.
         """
 
+        data_array = self._get_dataset_variable_data(data, self.variable or "")
+        if data_array is None:
+            raise ValueError(f"Could not find data variable for '{self.variable}'")
+
+        # Derived outputs already contain decade coordinates.
+        if "decade" in data_array.dims:
+            data_by_decade = {}
+            for decade_coord in data_array.decade.to_numpy():
+                decade_tag = self._normalise_decade_coord(decade_coord)
+                if decade_tag is None:
+                    print(f"Skipping unrecognized decade coordinate: {decade_coord}")
+                    continue
+
+                decade_slice = data_array.sel(decade=decade_coord)
+                data_by_decade[decade_tag] = decade_slice.mean()
+
+            self.extracted_data = dict(sorted(data_by_decade.items()))
+            return
+
         # Set slice period and step. Seasonal: 1 decade is 40 data points. Annual: 1 decade is 10 data points
         period = 10 if self.season == "annual" else 40
         step = int(period / 10)
@@ -197,7 +328,7 @@ class ChessScapeAveragesLoader:
         start = 2 if self.season == "summer" else 0
 
         # Get total years from the dataset
-        stop = len(data.time)
+        stop = len(data_array.time)
 
         # Create all data values
         data_by_decade = {}
@@ -207,12 +338,16 @@ class ChessScapeAveragesLoader:
             higher_bound = int(lower_bound + period)
             decade_tag = 1980 + int(lower_bound / step)
 
-            # Get extracted data dict containing min, mean and max and key by decade
-            data_by_decade[decade_tag] = self.calculate_uk_averages_min_mean_max(data, lower_bound, higher_bound, step)
+            # Get extracted data dict containing mean and key by decade
+            data_by_decade[decade_tag] = self.calculate_uk_averages_mean(
+                data_array, lower_bound, higher_bound, step
+            )
 
         self.extracted_data = data_by_decade
 
-    def transform_dataset(self, data):
+    def transform_dataset(
+        self: "ChessScapeAveragesLoader", data: xr.DataArray
+    ) -> xr.DataArray:
         """
         Perform any transformations necessary on a dataset.
         """
@@ -229,7 +364,7 @@ class ChessScapeAveragesLoader:
 
         return data
 
-    def transform_data(self):
+    def transform_data(self: "ChessScapeAveragesLoader") -> None:
         """
         Perform transformations on data values away from SI units, where required.
         """
@@ -237,29 +372,28 @@ class ChessScapeAveragesLoader:
         if self.transform_performed:
             raise ValueError("Transforms already performed on values.")
 
-        for min_mean_max_dict in self.extracted_data.values():
-            for value in min_mean_max_dict.values():
-                self.transform_dataset(value)
+        for data_by_decade in self.extracted_data.values():
+            self.transform_dataset(data_by_decade)
 
         # Flag that transforms have been performed
         self.transform_performed = True
 
-    def create_table(self):
+    def create_table(self: "ChessScapeAveragesLoader") -> None:
         """
         Create table if it does not already exist.
         """
 
+        assert self.cur is not None, "Not connected. Call connect_to_db() first."
+        assert self.conn is not None, "Not connected. Call connect_to_db() first."
         create_table_query = f"""
         CREATE TABLE IF NOT EXISTS "{self.table_name}" (
             row_id INTEGER PRIMARY KEY,
             is_bias_corrected BOOLEAN,
             rcp VARCHAR(10),
             season VARCHAR(10),
-            variable VARCHAR(10),
+            variable VARCHAR(64),
             decade INTEGER,
-            min FLOAT,
-            mean FLOAT,
-            max FLOAT
+            mean FLOAT
         );
         """
 
@@ -270,11 +404,13 @@ class ChessScapeAveragesLoader:
         except Exception as e:
             print(f"Error creating CHESS-SCAPE table: {e}")
 
-    def drop_table(self):
+    def drop_table(self: "ChessScapeAveragesLoader") -> None:
         """
         Drop the table associated with the current variables if it exists.
         """
 
+        assert self.cur is not None, "Not connected. Call connect_to_db() first."
+        assert self.conn is not None, "Not connected. Call connect_to_db() first."
         try:
             drop_table_query = f'DROP TABLE IF EXISTS "{self.table_name}";'
             self.cur.execute(drop_table_query)
@@ -283,19 +419,17 @@ class ChessScapeAveragesLoader:
         except Exception as e:
             print(f"Error dropping CHESS-SCAPE table: {e}")
 
-    def insert_data_multiple_decades(self):
+    def insert_data_multiple_decades(self: "ChessScapeAveragesLoader") -> None:
         """
         Create rows from the extracted averages data, and insert into the database with a stringIO buffer.
         """
 
+        assert self.cur is not None, "Not connected. Call connect_to_db() first."
+        assert self.conn is not None, "Not connected. Call connect_to_db() first."
         output = io.StringIO()
 
         try:
-            for decade, min_mean_max_dict in self.extracted_data.items():
-                min_val = min_mean_max_dict["min"].values
-                mean_val = min_mean_max_dict["mean"].values
-                max_val = min_mean_max_dict["max"].values
-
+            for decade, data_array in self.extracted_data.items():
                 # Prepare row and convert to string format
                 row = [
                     self.row_id,
@@ -304,9 +438,7 @@ class ChessScapeAveragesLoader:
                     self.season,
                     self.variable,
                     decade,
-                    min_val,
-                    mean_val,
-                    max_val,
+                    data_array.to_numpy(),
                 ]
                 output.write(",".join(map(str, row)) + "\n")
 
@@ -316,7 +448,15 @@ class ChessScapeAveragesLoader:
             # Move cursor to start of buffer
             output.seek(0)
 
-            column_names = ["row_id", "is_bias_corrected", "rcp", "season", "variable", "decade", "min", "mean", "max"]
+            column_names = [
+                "row_id",
+                "is_bias_corrected",
+                "rcp",
+                "season",
+                "variable",
+                "decade",
+                "mean",
+            ]
 
             self.cur.copy_from(output, self.table_name, sep=",", columns=column_names)
             self.conn.commit()
@@ -330,20 +470,51 @@ class ChessScapeAveragesLoader:
         finally:
             output.close()
 
-    def process_all_variables(self, season, rcp, is_bias_corrected):
+    def process_all_variables(
+        self: "ChessScapeAveragesLoader", season: str, rcp: int, is_bias_corrected: bool
+    ) -> None:
         """
         Create a table of data for a single variable, containing an ID column and 10 decade averaged columns.
         """
 
-        variables = ["pr", "rsds", "sfcWind", "tas", "tasmax", "tasmin"]
+        source_variables = ["pr", "rsds", "sfcWind", "tas", "tasmax", "tasmin"]
+        potential_derived = [
+            "tasmax_99_percentile",
+            "tasmin_1_percentile",
+            "tropical_nights",
+            "hot_heat_days",
+            "heavy_rain_days",
+            "dry_days",
+            "windy_days",
+        ]
+
+        derived_variables = []
+        for variable in potential_derived:
+            filepath = self.get_netcdf_filepath(
+                is_bias_corrected, season, rcp, variable
+            )
+            if os.path.exists(filepath):
+                derived_variables.append(variable)
+            else:
+                print(
+                    f"Derived variable file not found, skipping: {os.path.basename(filepath)}"
+                )
+
+        variables = source_variables + derived_variables
 
         print("############################")
-        print(f"### Processing all variables for dataset: bias_corrected: {is_bias_corrected}, {season}, rcp{rcp}.\n")
+        print(
+            f"### Processing all variables for dataset: bias_corrected: {is_bias_corrected}, {season}, rcp{rcp}.\n"
+        )
 
         for variable in variables:
             print(f"### Processing variable: {variable}")
 
             self.load_netcdf(is_bias_corrected, season, rcp, variable)
+            if self.current_netcdf_data is None:
+                print(f"### Skipping variable (failed to load): {variable}\n")
+                continue
+
             self.process_decade(self.current_netcdf_data)
             self.transform_data()
             self.insert_data_multiple_decades()
@@ -351,10 +522,14 @@ class ChessScapeAveragesLoader:
 
             print(f"### Processing complete: {variable}\n")
 
-        print(f"### Processing complete for dataset: bias_corrected: {is_bias_corrected}, {season}, rcp{rcp}.")
+        print(
+            f"### Processing complete for dataset: bias_corrected: {is_bias_corrected}, {season}, rcp{rcp}."
+        )
         print("############################\n")
 
-    def process_all_seasons(self, rcp, is_bias_corrected):
+    def process_all_seasons(
+        self: "ChessScapeAveragesLoader", rcp: int, is_bias_corrected: bool
+    ) -> None:
         """
         Process all variables for all seasons.
         """
@@ -364,7 +539,9 @@ class ChessScapeAveragesLoader:
         for season in seasons:
             self.process_all_variables(season, rcp, is_bias_corrected)
 
-    def process_all_rcps(self, is_bias_corrected):
+    def process_all_rcps(
+        self: "ChessScapeAveragesLoader", is_bias_corrected: bool
+    ) -> None:
         """
         Process all seasons and variables for all RCPs.
         """
@@ -375,7 +552,7 @@ class ChessScapeAveragesLoader:
             self.process_all_seasons(rcp, is_bias_corrected)
 
     @timefn
-    def process_all_data(self):
+    def process_all_data(self: "ChessScapeAveragesLoader") -> None:
         """
         Process all bias and non bias corrected averages data.
         """

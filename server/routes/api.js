@@ -42,14 +42,14 @@ initialiseBoundaryDetails();
 
 // Derive country from ONS area code prefix, or use a fixed string for single-country boundaries
 const countrySQL = {
-    boundary_uk_counties: `CASE LEFT(UPPER(ctyua23cd), 1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' WHEN 'S' THEN 'Scotland' WHEN 'N' THEN 'Northern Ireland' END`,
-    boundary_la_districts: `CASE LEFT(UPPER(lad23cd),   1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' WHEN 'S' THEN 'Scotland' WHEN 'N' THEN 'Northern Ireland' END`,
-    boundary_lsoa: `CASE LEFT(UPPER(lsoa21cd),  1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
-    boundary_msoa: `CASE LEFT(UPPER(msoa21cd),  1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
-    boundary_parishes: `CASE LEFT(UPPER(par23cd),   1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
-    boundary_sc_dz: `'Scotland'`,
-    boundary_ni_dz: `'Northern Ireland'`,
-    boundary_iom: `'Isle of Man'`,
+    "boundary_uk_counties":  `CASE LEFT(UPPER(ctyua23cd), 1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' WHEN 'S' THEN 'Scotland' WHEN 'N' THEN 'Northern Ireland' END`,
+    "boundary_la_districts": `CASE LEFT(UPPER(lad23cd),   1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' WHEN 'S' THEN 'Scotland' WHEN 'N' THEN 'Northern Ireland' END`,
+    "boundary_lsoa":         `CASE LEFT(UPPER(lsoa21cd),  1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
+    "boundary_msoa":         `CASE LEFT(UPPER(msoa21cd),  1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
+    "boundary_parishes":     `CASE LEFT(UPPER(par23cd),   1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
+    "boundary_sc_dz":        `'Scotland'`,
+    "boundary_ni_dz":        `'Northern Ireland'`,
+    "boundary_iom":          `'Isle of Man'`,
 };
 
 /// GET BOUNDARY DATA FROM DB ///
@@ -304,15 +304,21 @@ router.post("/gids_bbox", async function (req, res) {
 // CHESS-SCAPE helper function: generate climate column SQL
 function buildAvgClimateCols() {
     const averageClimateColNames = [];
-    const variables = ["tas", "sfcWind", "pr", "rsds"];
-    const decades = ["1980", "1990", "2000", "2010", "2020", "2030", "2040", "2050", "2060", "2070"];
-    const stats = ["min", "mean", "max"];
+    const baseVariables = ["tas", "sfcWind", "pr", "rsds", "tasmax_99_percentile", "tasmin_1_percentile"];
+    const derivedVariables = ["tropical_nights", "hot_heat_days", "heavy_rain_days", "dry_days", "windy_days"];
+    const allDecades = ["1980", "2030", "2040", "2050", "2060", "2070"];
 
-    for (const variable of variables) {
-        for (const decade of decades) {
-            for (const stat of stats) {
-                averageClimateColNames.push(`AVG("${variable}_${decade}_${stat}") as "${variable}_${decade}_${stat}"`);
-            }
+    for (const variable of baseVariables) {
+        for (const decade of allDecades) {
+            const columnName = `${variable}_${decade}`;
+            averageClimateColNames.push(`AVG("${columnName}") as "${columnName}"`);
+        }
+    }
+
+    for (const variable of derivedVariables) {
+        for (const decade of allDecades) {
+            const columnName = `${variable}_${decade}`;
+            averageClimateColNames.push(`AVG("${columnName}") as "${columnName}"`);
         }
     }
 
@@ -320,27 +326,27 @@ function buildAvgClimateCols() {
 }
 
 // Build query string: cache method - uses cache tables in database (large regions)
-function buildCacheQuery(boundaryDetails, locations, rcp, season, averageColNames) {
+function buildCacheQuery(boundaryDetails, rcp, season, averageColNames) {
     const cacheTable = `cache_${boundaryDetails.identifier}_to_${rcp}_${season}`;
-    const locationGids = locations.join(",");
 
-    return `
-        SELECT ${averageColNames}
+    return {
+        text: `
+        SELECT ${averageColNames.join(",")}
         FROM ${cacheTable}
-        WHERE gid IN (${locationGids});
-        `;
+        WHERE gid = ANY($1::int[]);
+        `,
+    };
 }
 
 // Build query string: cell method - performs calculations on the fly from CHESS-SCAPE tables
-function buildCellQuery(boundaryDetails, locations, rcp, season, averageColNames) {
+function buildCellQuery(boundaryDetails, rcp, season, averageColNames) {
     const gridTable = `grid_overlaps_${boundaryDetails.identifier}`;
     const chessTable = `chess_scape_${rcp}_${season}`;
-    const locationGids = locations.join(",");
 
     const innerSelectCellsQuery = `
         (SELECT DISTINCT grid_cell_id
         FROM ${gridTable} 
-        WHERE gid IN (${locationGids}))
+        WHERE gid = ANY($1::int[]))
         `;
 
     const selectClimateQuery = `
@@ -350,6 +356,26 @@ function buildCellQuery(boundaryDetails, locations, rcp, season, averageColNames
         `;
 
     return selectClimateQuery;
+}
+
+function parseIntegerArray(values) {
+    if (!Array.isArray(values) || values.length === 0) {
+        return null;
+    }
+
+    const parsedValues = values.map((value) => {
+        if (typeof value === "number") {
+            return Number.isSafeInteger(value) ? value : NaN;
+        }
+
+        if (typeof value !== "string" || !/^-?\d+$/.test(value.trim())) {
+            return NaN;
+        }
+
+        return Number(value);
+    });
+
+    return parsedValues.every((value) => Number.isSafeInteger(value)) ? parsedValues : null;
 }
 
 // Check table name helper function: check front end table name is valid
@@ -368,8 +394,14 @@ function is_valid_boundary(tableName) {
 
 // Route to get the CHESS-SCAPE climate prediction
 router.get("/chess_scape", async (req, res) => {
+    let client;
     try {
-        const locations = Array.isArray(req.query.locations) ? req.query.locations : [req.query.locations];
+        const rawLocations = Array.isArray(req.query.locations)
+            ? req.query.locations
+            : req.query.locations
+                ? [req.query.locations]
+                : [];
+        const locations = parseIntegerArray(rawLocations);
         const rcp = req.query.rcp;
         const season = req.query.season;
         const boundaryTableName = req.query.boundary;
@@ -391,27 +423,35 @@ router.get("/chess_scape", async (req, res) => {
 
         // Get query method
         const method = boundaryDetails.method;
+
+        client = new Client(conString);
+        await client.connect();
+
         const averageClimateColNames = buildAvgClimateCols();
 
         // Build query based on variables and method
-        let query;
+        let queryConfig;
         if (method === "cell") {
-            query = buildCellQuery(boundaryDetails, locations, rcp, season, averageClimateColNames);
+            queryConfig = {
+                text: buildCellQuery(boundaryDetails, rcp, season, averageClimateColNames),
+            };
         } else {
-            query = buildCacheQuery(boundaryDetails, locations, rcp, season, averageClimateColNames);
+            queryConfig = buildCacheQuery(boundaryDetails, rcp, season, averageClimateColNames);
         }
 
-        // Connect and execute
-        const client = new Client(conString);
-        await client.connect();
-
-        const result = await client.query(query);
+        const result = await client.query(queryConfig.text, [locations]);
         res.json(result.rows);
-
-        await client.end();
     } catch (err) {
         console.error("Error while executing query:", err);
         res.status(500).send({ error: "An error occurred" });
+    } finally {
+        if (client) {
+            try {
+                await client.end();
+            } catch (closeErr) {
+                console.error("Error while closing DB client:", closeErr);
+            }
+        }
     }
 });
 
@@ -424,11 +464,11 @@ router.get("/chess_scape_uk_averages", async (req, res) => {
         const season = req.query.season;
         const variable = req.query.variable;
 
-        const decades = ["1980", "1990", "2000", "2010", "2020", "2030", "2040", "2050", "2060", "2070"];
+        const decades = ["1980", "2030", "2040", "2050", "2060", "2070"];
 
-        // Construct query to get min, mean, max for each decade
+        // Construct query to get mean for each decade
         const query = `
-            SELECT decade, min, mean, max
+            SELECT decade, mean
             FROM chess_scape_uk_averages
             WHERE is_bias_corrected = $1
             AND rcp = $2
@@ -448,54 +488,11 @@ router.get("/chess_scape_uk_averages", async (req, res) => {
         const result = await client.query(query, queryParams);
         await client.end();
 
-        // Format: { [decade]: { min, mean, max } }
+        // Format: { [decade]: mean }
         const formattedData = Object.fromEntries(
-            result.rows.map((row) => [row.decade, { min: row.min, mean: row.mean, max: row.max }]),
+            result.rows.map((row) => [row.decade, row.mean])
         );
         res.json(formattedData);
-    } catch (err) {
-        console.error("Error while executing query:", err);
-        res.status(500).json({ error: "An error occurred" });
-    }
-});
-
-// Route to get the CHESS-SCAPE UK smallest min and largest max values per variable
-router.get("/chess_scape_uk_variable_ranges", async (req, res) => {
-    try {
-        // Query parameters
-        const isBiasCorrected = req.query.is_bias_corrected;
-
-        // not including baseline - 2030 decades
-        const decades = ["1980", "2030", "2040", "2050", "2060", "2070"];
-
-        const query = `
-            SELECT
-                variable,
-                MIN(min) AS global_min,
-                MAX(max) AS global_max
-            FROM chess_scape_uk_averages
-            WHERE is_bias_corrected =  $1
-            AND decade IN (${decades.map((_, i) => `$${i + 2}`).join(", ")})
-            GROUP BY variable;
-        `;
-
-        // Query parameters
-        const queryParams = [isBiasCorrected, ...decades];
-
-        // Connect and execute
-        const client = new Client(conString);
-        await client.connect();
-
-        const result = await client.query(query, queryParams);
-        await client.end();
-
-        // Format as { variable: [min, max], ... }
-        const ranges = {};
-        result.rows.forEach((row) => {
-            ranges[row.variable] = [Number(row.global_min), Number(row.global_max)];
-        });
-
-        res.json(ranges);
     } catch (err) {
         console.error("Error while executing query:", err);
         res.status(500).json({ error: "An error occurred" });
