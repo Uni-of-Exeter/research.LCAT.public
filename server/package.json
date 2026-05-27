@@ -9,8 +9,8 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "format": "prettier --check .",
         "format:fix": "prettier --write .",
-        "lint": "npx eslint .",
-        "lint:fix": "npx eslint . --fix"
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix"
     },
     "dependencies": {
         "dotenv": "^17.4.2",
