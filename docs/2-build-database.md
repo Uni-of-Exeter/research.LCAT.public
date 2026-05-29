@@ -102,21 +102,21 @@ user: example_db_username
 user_pass: example_db_password
 
 # CHESS-SCAPE DATA
-chess_scape_netcdf_location: "/data_store/chess-scape"
+chess_scape_netcdf_location: "/store/chess-scape"
 
 # BOUNDARY DATA: SHAPEFILES
-uk_counties_shp: "/data_store/boundaries/uk_counties.shp"
-la_districts_shp: "/data_store/boundaries/la_districts.shp"
-lsoa_shp: "/data_store/boundaries/lsoa.shp"
-msoa_shp: "/data_store/boundaries/msoa.shp"
-parishes_shp: "/data_store/boundaries/parishes.shp"
-sc_dz_shp: "/data_store/boundaries/sc_dz.shp"
-ni_dz_shp: "/data_store/boundaries/ni_dz.shp"
-iom_shp: "/data_store/boundaries/iom.shp"
+uk_counties_shp: "/store/boundaries/uk_counties.shp"
+la_districts_shp: "/store/boundaries/la_districts.shp"
+lsoa_shp: "/store/boundaries/lsoa.shp"
+msoa_shp: "/store/boundaries/msoa.shp"
+parishes_shp: "/store/boundaries/parishes.shp"
+sc_dz_shp: "/store/boundaries/sc_dz.shp"
+ni_dz_shp: "/store/boundaries/ni_dz.shp"
+iom_shp: "/store/boundaries/iom.shp"
 
 # REFERENCES & KUMU EXPORT: .CSV (from Google Sheets) and JSON
-references_csv: "/data_store/references/references.csv"
-kumu_json: "/data_store/references/kumu_export.json"
+references_csv: "/store/references/references.csv"
+kumu_json: "/store/references/kumu_export.json"
 ```
 
 ## Build database
