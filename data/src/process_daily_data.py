@@ -13,7 +13,7 @@ import requests
 import xarray as xr
 from tqdm import tqdm
 
-from data.src.download_chessscape_data import ChessScapeDownloader
+from .download_chessscape_data import ChessScapeDownloader
 
 
 class ClimateDataProcessor:
