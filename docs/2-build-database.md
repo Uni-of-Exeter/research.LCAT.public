@@ -72,14 +72,18 @@ A `.venv` folder will be created in the data module root. We will be able to sel
 
 ## Collect data files
 
-Before we start, we will need to collect the data files required for processing by the data scripts, and set up the paths in `data/config.yml`. You will need the following files, as listed in `docs/sources.md`:
+Before we start, we will need to collect or download the data files required for processing, and set up the paths in `data/config.yml`.
 
-* CHESS-SCAPE data files (a subset, listed in the docs)
+**CHESS-SCAPE files** are sourced automatically:
+
+* **Base annual/seasonal files** (`tas`, `pr`, `sfcWind`, `tasmin`, `tasmax`, `rsds`): Downloaded automatically from the [CEDA DAP server](https://dap.ceda.ac.uk) by the `build_db.ipynb` notebook using `ChessScapeDownloader`. No manual collection needed — an internet connection is required.
+* **Daily files**: Streamed directly from CEDA during the derived metric generation step. They are not stored locally; an internet connection is required at processing time.
+
+**The following files must be collected manually**, as listed in `docs/4-sources.md`:
+
 * Boundary Shapefiles (.shp)
 * A references file (.csv)
 * A Kumu export file (.json)
-
-In the future, we hope to provide these files for download via an S3 bucket.
 
 ## Set up paths
 
