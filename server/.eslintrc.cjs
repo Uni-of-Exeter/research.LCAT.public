@@ -7,6 +7,6 @@ module.exports = {
     settings: { react: { version: "18.2" } },
     plugins: [],
     rules: {
-        "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+        "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
     },
 };

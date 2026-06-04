@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
 import "./HelpPopover.css";
+
+import React, { useEffect,useRef, useState } from "react";
 
 const HelpPopover = ({ children, content }) => {
     const [isOpen, setIsOpen] = useState(false);

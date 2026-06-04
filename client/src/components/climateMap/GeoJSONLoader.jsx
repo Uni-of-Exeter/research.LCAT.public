@@ -61,7 +61,7 @@ const GeoJSONLoader = ({ apicall, table, setLoading, handleSetGeojson }) => {
 
     useEffect(() => {
         getGeojson();
-    }, [table]);
+    }, [table]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return null;
 };

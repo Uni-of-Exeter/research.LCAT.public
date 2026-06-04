@@ -131,9 +131,9 @@ const DetailClimateVariable = ({ prediction, year, variable, name, units, Icon }
 
 // Final component for climate summary section
 const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) => {
-    if (regions.length === 0) return null;
-
     const [selectedVariable, setSelectedVariable] = useState(null);
+
+    if (regions.length === 0) return null;
 
     const handleSelect = (variableKey) => {
         setSelectedVariable((prev) =>

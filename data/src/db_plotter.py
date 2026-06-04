@@ -581,7 +581,7 @@ class DBPlotter:
         cell_gdf = gpd.GeoDataFrame(data, geometry="geometry")
 
         # Create plot
-        fig, ax = plt.subplots(figsize=(10, 10))
+        _fig, ax = plt.subplots(figsize=(10, 10))
 
         # Plot GeoDataFrame with color based on 'coastal_info'
         cell_gdf.plot(
