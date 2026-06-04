@@ -72,14 +72,18 @@ A `.venv` folder will be created in the data module root. We will be able to sel
 
 ## Collect data files
 
-Before we start, we will need to collect the data files required for processing by the data scripts, and set up the paths in `data/config.yml`. You will need the following files, as listed in `docs/sources.md`:
+Before we start, we will need to collect or download the data files required for processing, and set up the paths in `data/config.yml`.
 
-* CHESS-SCAPE data files (a subset, listed in the docs)
+**CHESS-SCAPE files** are sourced automatically:
+
+* **Base annual/seasonal files** (`tas`, `pr`, `sfcWind`, `tasmin`, `tasmax`, `rsds`): Downloaded automatically from the [CEDA DAP server](https://dap.ceda.ac.uk) by the `build_db.ipynb` notebook using `ChessScapeDownloader`. No manual collection needed — an internet connection is required.
+* **Daily files**: Streamed directly from CEDA during the derived metric generation step. They are not stored locally; an internet connection is required at processing time.
+
+**The following files must be collected manually**, as listed in `docs/4-sources.md`:
+
 * Boundary Shapefiles (.shp)
 * A references file (.csv)
 * A Kumu export file (.json)
-
-In the future, we hope to provide these files for download via an S3 bucket.
 
 ## Set up paths
 
@@ -102,21 +106,21 @@ user: example_db_username
 user_pass: example_db_password
 
 # CHESS-SCAPE DATA
-chess_scape_netcdf_location: "/data_store/chess-scape"
+chess_scape_netcdf_location: "/store/chess-scape"
 
 # BOUNDARY DATA: SHAPEFILES
-uk_counties_shp: "/data_store/boundaries/uk_counties.shp"
-la_districts_shp: "/data_store/boundaries/la_districts.shp"
-lsoa_shp: "/data_store/boundaries/lsoa.shp"
-msoa_shp: "/data_store/boundaries/msoa.shp"
-parishes_shp: "/data_store/boundaries/parishes.shp"
-sc_dz_shp: "/data_store/boundaries/sc_dz.shp"
-ni_dz_shp: "/data_store/boundaries/ni_dz.shp"
-iom_shp: "/data_store/boundaries/iom.shp"
+uk_counties_shp: "/store/boundaries/uk_counties.shp"
+la_districts_shp: "/store/boundaries/la_districts.shp"
+lsoa_shp: "/store/boundaries/lsoa.shp"
+msoa_shp: "/store/boundaries/msoa.shp"
+parishes_shp: "/store/boundaries/parishes.shp"
+sc_dz_shp: "/store/boundaries/sc_dz.shp"
+ni_dz_shp: "/store/boundaries/ni_dz.shp"
+iom_shp: "/store/boundaries/iom.shp"
 
 # REFERENCES & KUMU EXPORT: .CSV (from Google Sheets) and JSON
-references_csv: "/data_store/references/references.csv"
-kumu_json: "/data_store/references/kumu_export.json"
+references_csv: "/store/references/references.csv"
+kumu_json: "/store/references/kumu_export.json"
 ```
 
 ## Build database
