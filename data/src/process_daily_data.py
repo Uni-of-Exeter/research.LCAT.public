@@ -11,10 +11,9 @@ import time
 import numpy as np
 import requests
 import xarray as xr
-from bs4 import BeautifulSoup
-from requests.adapters import HTTPAdapter
 from tqdm import tqdm
-from urllib3.util.retry import Retry
+
+from .download_chessscape_data import ChessScapeDownloader
 
 
 class ClimateDataProcessor:
@@ -31,31 +30,9 @@ class ClimateDataProcessor:
         self.excluded_decades = []
         self.file_urls = []
         self.data_location = self.conf["chess_scape_netcdf_location"]
-        self.session = self._create_http_session()
-        self._thread_local = threading.local()
-
-    def _create_http_session(
-        self: "ClimateDataProcessor", pool_connections: int = 20, pool_maxsize: int = 20
-    ) -> requests.Session:
-        """Create a requests session with retry and connection pooling."""
-        session = requests.Session()
-        retry = Retry(
-            total=5,
-            connect=5,
-            read=5,
-            backoff_factor=0.5,
-            status_forcelist=(429, 500, 502, 503, 504),
-            allowed_methods=frozenset(["GET", "HEAD"]),
-            raise_on_status=False,
-        )
-        adapter = HTTPAdapter(
-            max_retries=retry,
-            pool_connections=pool_connections,
-            pool_maxsize=pool_maxsize,
-        )
-        session.mount("https://", adapter)
-        session.mount("http://", adapter)
-        return session
+        self._downloader = ChessScapeDownloader(config, ensemble_member)
+        self.session = self._downloader.session
+        self._thread_local = self._downloader._thread_local
 
     def _get_thread_session(
         self: "ClimateDataProcessor", n_workers: int = 4
@@ -64,7 +41,7 @@ class ClimateDataProcessor:
         session = getattr(self._thread_local, "session", None)
         if session is None:
             pool_size = max(8, n_workers * 2)
-            session = self._create_http_session(
+            session = self._downloader._create_http_session(
                 pool_connections=pool_size,
                 pool_maxsize=pool_size,
             )
@@ -72,37 +49,10 @@ class ClimateDataProcessor:
         return session
 
     def get_file_links(self: "ClimateDataProcessor") -> None:
-        bias_corrected_suffix = "_bias-corrected" if self.bias_corrected else ""
-        ensemble_str = f"{self.ensemble_member:02d}"
-
-        base_url = (
-            "https://dap.ceda.ac.uk/badc/deposited2021/chess-scape/data/"
-            f"rcp{self.rcp}{bias_corrected_suffix}/{ensemble_str}/daily/{self.variable}/"
+        """Populate self.file_urls with daily NetCDF URLs for the current scenario."""
+        self.file_urls = self._downloader.get_daily_file_links(
+            self.rcp, self.bias_corrected, self.variable
         )
-
-        try:
-            response = self.session.get(base_url, timeout=30)
-            response.raise_for_status()
-        except requests.RequestException as exc:
-            raise RuntimeError(
-                f"Failed to fetch NetCDF listing from {base_url}: {exc}"
-            ) from exc
-
-        soup = BeautifulSoup(response.text, "html.parser")
-
-        # Find all .nc file links
-        nc_files = []
-        for link in soup.find_all("a"):
-            href = link.get("href")
-            if href and isinstance(href, str) and href.endswith(".nc"):
-                nc_files.append(base_url + href)
-
-        if not nc_files:
-            raise RuntimeError(
-                f"No .nc files found at {base_url}; endpoint may be unavailable or listing may have changed."
-            )
-
-        self.file_urls = nc_files
 
     def _parse_filename_date(
         self: "ClimateDataProcessor", file_url: str

@@ -21,13 +21,18 @@ LCAT uses a number of boundary datasets, which are used to communicate local cli
 
 Climate data used in LCAT are through the CHESS-SCAPE dataset. This is an ensemble dataset derived from the 2018 UK Climate Projections, itself produced by the Met Office Hadley Centre. CHESS-SCAPE provides future projections of meteorological variables across the United Kingdom and Northern Ireland, downscaling them to a 1 km grid.
 
-This data can be accessed through the CEDA archive [here](https://catalogue.ceda.ac.uk/uuid/8194b416cbee482b89e0dfbe17c5786c/). Please note that the whole dataset is 11 TB: LCAT uses only 10 GB of this, as daily variable predictions are not required in the tool. Details on exactly which files are used will be provided soon. Further details on CHESS-SCAPE can be found in the accompanying documents, for example, in the [release article](https://essd.copernicus.org/articles/15/5371/2023/).
+This data can be accessed through the CEDA archive [here](https://catalogue.ceda.ac.uk/uuid/8194b416cbee482b89e0dfbe17c5786c/). The whole dataset is ~11 TB; LCAT uses only a small subset:
+
+* **Base annual/seasonal files** (~10 GB) — downloaded automatically from the [CEDA DAP server](https://dap.ceda.ac.uk) by the `build_db.ipynb` notebook using `ChessScapeDownloader`. No manual collection is needed.
+* **Daily files** — streamed directly from CEDA at processing time by `ClimateDataProcessor` to compute derived metrics (`tropical_nights`, `hot_heat_days`, etc.). They are not stored locally.
+
+Further details on CHESS-SCAPE can be found in the accompanying documents, for example, in the [release article](https://essd.copernicus.org/articles/15/5371/2023/).
 
 Please note that LCAT now processes the raw NetCDF files directly to create its intermediate tables and database. These scripts will be provided so that interested parties can run the tool locally if desired.
 
 | Type | Notes | Time span | Regions | Original Format | Coordinate system | Source URL | Authority |
 | -| - | - | - | - | - | - | - |
-| NetCDF climate projections | Annual and Seasonal files for RCP 6.0 and RCP 8.5 | 1980-2079 | Great Britain & IoM | NetCDF | EPSG 27700 | <https://uk-scape.ceh.ac.uk> | CEDA |
+| NetCDF climate projections | Annual and seasonal files for RCP 6.0 and RCP 8.5 (auto-downloaded); daily files streamed at processing time | 1980-2079 | Great Britain & IoM | NetCDF | EPSG 27700 | <https://dap.ceda.ac.uk> | CEDA |
 
 ### Climate variables
 
