@@ -69,9 +69,7 @@ class ChessScapeLoader:
         self.set_data_location()
         self.load_mask(mask)
 
-    def set_data_location(
-        self: "ChessScapeLoader", filepath: str | None = None
-    ) -> None:
+    def set_data_location(self: "ChessScapeLoader", filepath: str | None = None) -> None:
         """
         Set the location of the CHESS-SCAPE netcdf data folder.
         """
@@ -92,9 +90,7 @@ class ChessScapeLoader:
 
         # Reject boolean masks explicitly
         if mask.dtype == bool:
-            raise ValueError(
-                "Boolean mask not allowed. Please provide labelled mask (0, 1, 2)."
-            )
+            raise ValueError("Boolean mask not allowed. Please provide labelled mask (0, 1, 2).")
 
         self.mask = mask
 
@@ -123,9 +119,7 @@ class ChessScapeLoader:
 
             print("Connecting using db config from config file...")
 
-        self.conn = psycopg2.connect(
-            host=host, dbname=dbname, user=user, password=password
-        )
+        self.conn = psycopg2.connect(host=host, dbname=dbname, user=user, password=password)
         self.cur = self.conn.cursor()
 
         print("Connection successful.")
@@ -179,9 +173,7 @@ class ChessScapeLoader:
         self.extracted_data[bias_corrected_key] = {}
 
         # Create filepath folder adjustments
-        bias_corrected_folder = (
-            "_bias-corrected" if bias_corrected_key == "bias_corrected" else ""
-        )
+        bias_corrected_folder = "_bias-corrected" if bias_corrected_key == "bias_corrected" else ""
         ensemble_str = f"{self.ensemble_member:02d}"
 
         if variable in [
@@ -192,21 +184,14 @@ class ChessScapeLoader:
             "windy_days",
         ]:
             season_folder = "seasonal" if season != "annual" else "annual"
-            sub_folders = (
-                f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/{season_folder}"
-            )
-            filename = (
-                f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_"
-                f"{variable}_uk_1km_{season}_19801201-20801130.nc"
-            )
+            sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/{season_folder}"
+            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_{variable}_uk_1km_{season}_19801201-20801130.nc"
         elif variable in ["tasmax_99_percentile", "tasmin_1_percentile"] and season in [
             "summer",
             "winter",
         ]:
             # New single-season quantile files
-            sub_folders = (
-                f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/seasonal"
-            )
+            sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/seasonal"
             quantile_num = "99" if "99" in variable else "1"
             base_var = "tasmax" if "tasmax" in variable else "tasmin"
             filename = (
@@ -216,13 +201,8 @@ class ChessScapeLoader:
         else:
             # Original files
             season_folder = "seasonal" if season != "annual" else "annual"
-            sub_folders = (
-                f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/{season_folder}"
-            )
-            filename = (
-                f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_"
-                f"{variable}_uk_1km_{season_folder}_19801201-20801130.nc"
-            )
+            sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/{season_folder}"
+            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_{variable}_uk_1km_{season_folder}_19801201-20801130.nc"
 
         if self.data_location is None:
             raise RuntimeError("Data location not set. Call set_data_location() first.")
@@ -230,15 +210,11 @@ class ChessScapeLoader:
 
         # Load netcdf file
         if os.path.exists(filepath):
-            self.current_netcdf_data[bias_corrected_key] = self.open_netcdf_file(
-                filepath
-            )
+            self.current_netcdf_data[bias_corrected_key] = self.open_netcdf_file(filepath)
         else:
             print(f"File not found: {filepath}")
 
-    def load_all_netcdf(
-        self: "ChessScapeLoader", season: str, rcp: int, variable: str
-    ) -> None:
+    def load_all_netcdf(self: "ChessScapeLoader", season: str, rcp: int, variable: str) -> None:
         """
         Load the correct data sets for the current parameters, given the labels in the mask.
         """
@@ -278,9 +254,7 @@ class ChessScapeLoader:
         # Perform the same slicing operation on the data itself
         return data[lower_bound:higher_bound:step].mean(dim="time")
 
-    def _get_dataset_variable_data(
-        self: "ChessScapeLoader", dataset: xr.Dataset, variable: str
-    ) -> xr.DataArray | None:
+    def _get_dataset_variable_data(self: "ChessScapeLoader", dataset: xr.Dataset, variable: str) -> xr.DataArray | None:
         """
         Select the relevant data variable from a dataset for source and derived variables.
         """
@@ -305,10 +279,7 @@ class ChessScapeLoader:
 
             for var_name in dataset.data_vars:
                 var_name_lower = str(var_name).lower()
-                if any(
-                    token in var_name_lower
-                    for token in ["tropical", "hot", "rain", "dry", "windy"]
-                ):
+                if any(token in var_name_lower for token in ["tropical", "hot", "rain", "dry", "windy"]):
                     return dataset[var_name]
 
         for var_name in dataset.data_vars:
@@ -317,9 +288,7 @@ class ChessScapeLoader:
 
         return None
 
-    def _normalise_decade_coord(
-        self: "ChessScapeLoader", decade_coord: int
-    ) -> int | None:
+    def _normalise_decade_coord(self: "ChessScapeLoader", decade_coord: int) -> int | None:
         """
         Convert decade coordinate values into decade years.
         """
@@ -331,9 +300,7 @@ class ChessScapeLoader:
 
         return None
 
-    def process_decade(
-        self: "ChessScapeLoader", data: xr.DataArray
-    ) -> dict[int, xr.DataArray]:
+    def process_decade(self: "ChessScapeLoader", data: xr.DataArray) -> dict[int, xr.DataArray]:
         """
         Process NetCDF files by decade. Mins, means, and maxes are taken across decades.
         We perform this operation manually, rather than using xarray.resample.
@@ -371,15 +338,11 @@ class ChessScapeLoader:
             decade_tag = 1980 + int(lower_bound / step)
 
             # Get extracted data dict containing mean and key by decade
-            data_by_decade[decade_tag] = self.calculate_mean(
-                data, lower_bound, higher_bound, step
-            )
+            data_by_decade[decade_tag] = self.calculate_mean(data, lower_bound, higher_bound, step)
 
         return data_by_decade
 
-    def _extract_decades(
-        self: "ChessScapeLoader", data: xr.DataArray
-    ) -> dict[int, xr.DataArray]:
+    def _extract_decades(self: "ChessScapeLoader", data: xr.DataArray) -> dict[int, xr.DataArray]:
         """
         Extract decade-keyed data from either decade- or time-indexed arrays.
         """
@@ -411,9 +374,7 @@ class ChessScapeLoader:
 
             dataset = self.current_netcdf_data[bias_corrected_key]
             if dataset is None:
-                print(
-                    f"### WARNING: Dataset is None for bias key: {bias_corrected_key}"
-                )
+                print(f"### WARNING: Dataset is None for bias key: {bias_corrected_key}")
                 continue
 
             if self.variable is None:
@@ -422,9 +383,7 @@ class ChessScapeLoader:
 
             target_data = self._get_dataset_variable_data(dataset, self.variable)
             if target_data is None:
-                print(
-                    f"### WARNING: Could not find data for variable '{self.variable}' in {bias_corrected_key}."
-                )
+                print(f"### WARNING: Could not find data for variable '{self.variable}' in {bias_corrected_key}.")
                 print(f"Available variables: {list(dataset.data_vars.keys())}")
                 continue
 
@@ -522,19 +481,11 @@ class ChessScapeLoader:
         assert self.cur is not None, "Not connected. Call connect_to_db() first."
         assert self.conn is not None, "Not connected. Call connect_to_db() first."
         assert self.mask is not None, "Mask not loaded. Call load_mask() first."
-        assert (
-            self.table_name is not None
-        ), "Table name not set. Call load_netcdf() first."
+        assert self.table_name is not None, "Table name not set. Call load_netcdf() first."
         # Build a shared ordered decade list across available bias keys.
         # Derived files can sometimes have different decade coverage between
         # bias and non-bias datasets, so rows must still include all columns.
-        available_decades = sorted(
-            {
-                decade
-                for decade_map in self.extracted_data.values()
-                for decade in decade_map
-            }
-        )
+        available_decades = sorted({decade for decade_map in self.extracted_data.values() for decade in decade_map})
 
         if not available_decades:
             print("### WARNING: No data extracted for this variable.")
@@ -600,10 +551,7 @@ class ChessScapeLoader:
         self.drop_table(self.aggregated_table_name)
 
         base_table = f"{self.aggregated_table_name}_{variables[0]}"
-        table_name_joins = [
-            f'JOIN "{self.aggregated_table_name}_{var}" USING (grid_cell_id)'
-            for var in variables[1:]
-        ]
+        table_name_joins = [f'JOIN "{self.aggregated_table_name}_{var}" USING (grid_cell_id)' for var in variables[1:]]
         joins_string = " ".join(table_name_joins)
 
         join_table_query = f"""
@@ -643,11 +591,7 @@ class ChessScapeLoader:
 
         for var in potential_derived:
             # Check file existence
-            bias_corrected_folder = (
-                "_bias-corrected"
-                if "bias_corrected" in self.bias_corrected_keys
-                else ""
-            )
+            bias_corrected_folder = "_bias-corrected" if "bias_corrected" in self.bias_corrected_keys else ""
 
             ensemble_str = f"{self.ensemble_member:02d}"
 
@@ -660,14 +604,9 @@ class ChessScapeLoader:
             ]:
                 season_folder = "seasonal" if season != "annual" else "annual"
                 sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/{season_folder}"
-                filename = (
-                    f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_"
-                    f"{var}_uk_1km_{season}_19801201-20801130.nc"
-                )
+                filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_{ensemble_str}_{var}_uk_1km_{season}_19801201-20801130.nc"
             elif season in ["summer", "winter"]:
-                sub_folders = (
-                    f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/seasonal"
-                )
+                sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/seasonal"
                 quantile_num = "99" if "99" in var else "1"
                 base_var = "tasmax" if "tasmax" in var else "tasmin"
                 filename = (
@@ -676,9 +615,7 @@ class ChessScapeLoader:
                 )
             elif season == "annual":
                 # Annual quantiles are in annual folder
-                sub_folders = (
-                    f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/annual"
-                )
+                sub_folders = f"data/rcp{rcp}{bias_corrected_folder}/{ensemble_str}/annual"
                 quantile_num = "99" if "99" in var else "1"
                 base_var = "tasmax" if "tasmax" in var else "tasmin"
                 filename = (
@@ -689,9 +626,7 @@ class ChessScapeLoader:
                 continue
 
             if self.data_location is None:
-                raise RuntimeError(
-                    "Data location not set. Call set_data_location() first."
-                )
+                raise RuntimeError("Data location not set. Call set_data_location() first.")
 
             filepath = os.path.join(self.data_location, sub_folders, filename)
 
@@ -703,7 +638,6 @@ class ChessScapeLoader:
         variables = source_variables + derived_variables
 
         for variable in variables:
-
             self.load_all_netcdf(season, rcp, variable)
             self.process_bias_keys()
 

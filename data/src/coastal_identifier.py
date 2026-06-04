@@ -74,9 +74,7 @@ class CoastalIdentifier:
             table_exists = self.cur.fetchone()[0]
 
             if not table_exists:
-                print(
-                    f"Warning: grid_overlaps_{boundary_identifier} does not exist. Skipping."
-                )
+                print(f"Warning: grid_overlaps_{boundary_identifier} does not exist. Skipping.")
                 return
 
             # Check if overlaps table has any rows
@@ -85,9 +83,7 @@ class CoastalIdentifier:
             overlap_count = self.cur.fetchone()[0]
 
             if overlap_count == 0:
-                print(
-                    f"Warning: grid_overlaps_{boundary_identifier} is empty. Skipping."
-                )
+                print(f"Warning: grid_overlaps_{boundary_identifier} is empty. Skipping.")
                 return
 
             # IoM and NI: mark all regions as coastal

@@ -574,9 +574,7 @@ class DBPlotter:
         data = []
         for row in cell_geometry:
             geom = wkb.loads(row[1], hex=True)
-            data.append(
-                {"id": row[0], "geometry": geom, "bias_corrected": row[2], "is_overlap": row[3], "coastal_info": row[4]}
-            )
+            data.append({"id": row[0], "geometry": geom, "bias_corrected": row[2], "is_overlap": row[3], "coastal_info": row[4]})
 
         cell_gdf = gpd.GeoDataFrame(data, geometry="geometry")
 
@@ -584,9 +582,7 @@ class DBPlotter:
         _fig, ax = plt.subplots(figsize=(10, 10))
 
         # Plot GeoDataFrame with color based on 'coastal_info'
-        cell_gdf.plot(
-            ax=ax, column="coastal_info", cmap="viridis", legend=True, linewidth=0.5, edgecolor="black", alpha=0.5
-        )
+        cell_gdf.plot(ax=ax, column="coastal_info", cmap="viridis", legend=True, linewidth=0.5, edgecolor="black", alpha=0.5)
         gdf.plot(ax=ax, color="none", edgecolor="black")
 
         # Other things
