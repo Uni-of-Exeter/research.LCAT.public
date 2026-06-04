@@ -15,7 +15,7 @@ Common Good Public License Beta 1.0 for more details. */
 import "./ClimateMap.css";
 
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
 import LoadingOverlay from "react-loading-overlay-ts";
 
@@ -121,7 +121,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
         countryMap.current.clear();
     };
 
-    const handleSetGeojson = (data) => {
+    const handleSetGeojson = useCallback((data) => {
         const geojsonData = data.features ? data : { features: [] };
 
         const map = new Map();
@@ -132,7 +132,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
         setGeojson(geojsonData);
         setGeojsonKey((prev) => prev + 1);
         setTriggerLoadingIndicator(false);
-    };
+    }, []);
 
     const regionTypeToName = (mapping, type) => {
         return mapping[type] || "";

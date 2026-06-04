@@ -10,7 +10,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 Common Good Public License Beta 1.0 for more details. */
 
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useMap, useMapEvents } from "react-leaflet";
 
 // Meters/Pixel Zoom Level (1-19) - requires geometry in OS 27700
@@ -19,16 +19,16 @@ const m2px = [
     4.78, 2.39, 1.19, 0.6, 0.3,
 ];
 
+// Base URL prepend for development
+const getBaseURL = () => {
+    return process.env.NODE_ENV === "development" ? "http://localhost:3000" : "";
+};
+
 const GeoJSONLoader = ({ apicall, table, setLoading, handleSetGeojson }) => {
     const map = useMap();
 
-    // Base URL prepend for development
-    const getBaseURL = () => {
-        return process.env.NODE_ENV === "development" ? "http://localhost:3000" : "";
-    };
-
     // Function to fetch GeoJSON data
-    const getGeojson = async () => {
+    const getGeojson = useCallback(async () => {
         setLoading(true);
         try {
             const bounds = map.getBounds();
@@ -52,7 +52,7 @@ const GeoJSONLoader = ({ apicall, table, setLoading, handleSetGeojson }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [apicall, table, setLoading, handleSetGeojson, map]);
 
     // Trigger GeoJSON load on region table change or map movement
     useMapEvents({
@@ -61,7 +61,7 @@ const GeoJSONLoader = ({ apicall, table, setLoading, handleSetGeojson }) => {
 
     useEffect(() => {
         getGeojson();
-    }, [table]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [getGeojson]);
 
     return null;
 };
