@@ -7,6 +7,19 @@ LCAT has been developed by the University of Exeter’s European Centre for Huma
 
 The tool is under continual development, with features, styling, and underlying data sets liable to change. Where possible, major changes will be signposted. Code previously developed for LCAT can be found in the archived repository [here](https://github.com/UniExeterRSE/LCAT-archived).
 
+## Architecture overview
+
+LCAT is composed of four main layers:
+
+| Layer | Technology | Purpose |
+|---|---|---|
+| **Data pipeline** | Python, NetCDF, GeoPandas | Ingest CHESS-SCAPE climate data and boundary shapefiles into PostgreSQL |
+| **Database** | PostgreSQL + PostGIS | Store climate projections, boundary geometries, and pre-computed overlaps |
+| **API server** | Node.js / Express | Serve climate and boundary data to the frontend via a rate-limited REST API |
+| **Frontend** | React, Leaflet, Plotly | Interactive map and data visualisations for end users |
+
+A full component-level diagram is available at [docs/software-architecture-diagrams/lcat-architecture.puml](docs/software-architecture-diagrams/lcat-architecture.puml) (PlantUML).
+
 ## Installation & documentation
 
 Please view the documentation [here](https://github.com/Uni-of-Exeter/research.LCAT.public/blob/main/docs/). A PDF guide to how LCAT works can be found [here](https://github.com/Uni-of-Exeter/research.LCAT.public/blob/autumn-clean-up/docs/files/lcat_data_pipeline_overview.pdf).

@@ -67,12 +67,12 @@ package "Python Data Pipeline" as python_layer {
   component "Data Processors" as processors {
     [ProcessKumu]
     [ProcessReferences]
+    [ProcessDailyData]
     [OverlapCalculator]
     [CoastalIdentifier]
   }
   
   component "Analysis Tools" as analysis {
-    [DBPlotter]
     [DetailsGenerator]
   }
 }
@@ -84,13 +84,13 @@ package "Server Layer" as server_layer {
   }
   
   component "API Routes" as api {
+    note right: Rate-limited via express-rate-limit
     [/api/all_regions]
     [/api/are_gids_coastal]
     [/api/region]
-    [/api/gids_centre]
+    [/api/gids_bbox]
     [/api/chess_scape]
     [/api/chess_scape_uk_averages]
-    [/api/chess_scape_uk_variable_ranges]
     [/api/ping]
   }
 }
@@ -106,6 +106,7 @@ package "React Frontend" as client_layer {
     [ClimateSettings] 
     [ClimateSummary]
     [Graph]
+    [HelpPopover]
     [ClimatePrediction]
   }
   
@@ -139,7 +140,6 @@ package "React Frontend" as client_layer {
     [ClimatePredictionLoader]
     [ClimateAveragesLoader]
     [CoastalFilterLoader]
-    [RegionCentreLoader]
     [GeoJSONLoader]
   }
 }
@@ -163,7 +163,7 @@ client_layer --> browser : "React Components\n(HTML/CSS/JS)"
 db_manager --> database : "Setup & Management"
 loaders --> database : "Bulk Data Loading"
 processors --> database : "Data Processing"
-analysis --> database : "Visualization"
+analysis --> database : "Query & Summarise"
 
 app --> api : "Route Handling"
 api --> database : "Database Queries"
