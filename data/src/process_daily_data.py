@@ -45,13 +45,9 @@ class ClimateDataProcessor:
 
     def get_file_links(self: "ClimateDataProcessor") -> None:
         """Populate self.file_urls with daily NetCDF URLs for the current scenario."""
-        self.file_urls = self._downloader.get_daily_file_links(
-            self.rcp, self.bias_corrected, self.variable
-        )
+        self.file_urls = self._downloader.get_daily_file_links(self.rcp, self.bias_corrected, self.variable)
 
-    def _parse_filename_date(
-        self: "ClimateDataProcessor", file_url: str
-    ) -> dict | None:
+    def _parse_filename_date(self: "ClimateDataProcessor", file_url: str) -> dict | None:
         """Extract date components from filename"""
         filename = file_url.split("/")[-1]
         date_match = re.search(r"(\d{4})(\d{2})(\d{2})-(\d{4})(\d{2})(\d{2})", filename)
