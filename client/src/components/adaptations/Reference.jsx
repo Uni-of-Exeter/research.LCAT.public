@@ -61,7 +61,7 @@ const Reference = ({ link, title, type, article_id, authors, journal, issue, dat
             tabIndex={0}
             aria-expanded={isExpanded}
         >
-            <div className="reference-title" {...getToggleProps()}>
+            <div className="reference-title" {...getToggleProps({ onClick: handleToggle })}>
                 {title || `${link.slice(0, 40)}...`}
             </div>
             <div className="reference-info" {...getCollapseProps()}>
