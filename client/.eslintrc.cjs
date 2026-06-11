@@ -19,5 +19,10 @@ module.exports = {
         "react/react-in-jsx-scope": "off",
         "simple-import-sort/imports": "error",
         "simple-import-sort/exports": "error",
+        // React Compiler rules introduced in eslint-plugin-react-hooks v7 are too strict
+        // for existing code patterns (valid setState-in-effect and ref library usage)
+        "react-hooks/set-state-in-effect": "off",
+        "react-hooks/refs": "off",
+        "react-hooks/incompatible-library": "off",
     },
 };

@@ -1,0 +1,16 @@
+{
+    "recommendations": [
+        // Python — Ruff linter and formatter
+        "charliermarsh.ruff",
+        // Python — language support (IntelliSense, go-to-definition, etc.)
+        "ms-python.python",
+        // Python — Jupyter notebook support
+        "ms-toolsai.jupyter",
+        // JavaScript/JSX/CSS/JSON — Prettier formatter
+        "esbenp.prettier-vscode",
+        // JavaScript/JSX — ESLint
+        "dbaeumer.vscode-eslint",
+        // GitHub Actions — autocompletion and validation for workflow YAML files
+        "github.vscode-github-actions"
+    ]
+}

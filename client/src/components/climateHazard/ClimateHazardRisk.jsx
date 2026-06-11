@@ -33,11 +33,11 @@ const ClimateHazardRisk = ({ applyCoastalFilter }) => {
     }, [applyCoastalFilter]);
 
     const handleHazardClick = (hazardName) => {
-        if (!hasTrackedHazardClick.current && typeof gtag !== 'undefined') {
-            gtag('event', 'hazard_icon_clicked');
+        if (!hasTrackedHazardClick.current && typeof gtag !== "undefined") {
+            gtag("event", "hazard_icon_clicked");
             hasTrackedHazardClick.current = true;
         }
-        
+
         setSelectedHazard(hazardName);
     };
 

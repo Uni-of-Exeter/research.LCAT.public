@@ -147,8 +147,9 @@ def test_drop_table_handles_exception(bl):
 # =============================================================================
 
 
+@patch.object(BoundaryLoader, "_resolve_pg_binary", return_value="shp2pgsql")
 @patch("data.src.boundary_loader.subprocess.run")
-def test_load_boundary_builds_correct_command(mock_run, bl):
+def test_load_boundary_builds_correct_command(mock_run, _mock_resolve, bl):
     """Should build correct shp2pgsql command"""
     mock_run.return_value = MagicMock(returncode=0, stderr="")
     bl.connection_string = "postgresql://user:pass@localhost/db"
@@ -168,8 +169,9 @@ def test_load_boundary_builds_correct_command(mock_run, bl):
     assert "postgresql://user:pass@localhost/db" in cmd
 
 
+@patch.object(BoundaryLoader, "_resolve_pg_binary", return_value="shp2pgsql")
 @patch("data.src.boundary_loader.subprocess.run")
-def test_load_boundary_uses_config_filepath_when_not_provided(mock_run, bl):
+def test_load_boundary_uses_config_filepath_when_not_provided(mock_run, _mock_resolve, bl):
     """Should fall back to config for filepath"""
     mock_run.return_value = MagicMock(returncode=0, stderr="")
     bl.connection_string = "postgresql://user:pass@localhost/db"
@@ -185,8 +187,9 @@ def test_load_boundary_uses_config_filepath_when_not_provided(mock_run, bl):
     assert "/path/to/counties.shp" in cmd  # From config
 
 
+@patch.object(BoundaryLoader, "_resolve_pg_binary", return_value="shp2pgsql")
 @patch("data.src.boundary_loader.subprocess.run")
-def test_load_boundary_handles_different_projections(mock_run, bl):
+def test_load_boundary_handles_different_projections(mock_run, _mock_resolve, bl):
     """Should handle source != target projection"""
     mock_run.return_value = MagicMock(returncode=0, stderr="")
     bl.connection_string = "postgresql://user:pass@localhost/db"
@@ -202,8 +205,9 @@ def test_load_boundary_handles_different_projections(mock_run, bl):
     assert "-s 29902:4326" in cmd
 
 
+@patch.object(BoundaryLoader, "_resolve_pg_binary", return_value="shp2pgsql")
 @patch("data.src.boundary_loader.subprocess.run")
-def test_load_boundary_includes_create_index_flag(mock_run, bl):
+def test_load_boundary_includes_create_index_flag(mock_run, _mock_resolve, bl):
     """Should include -I flag for creating index"""
     mock_run.return_value = MagicMock(returncode=0, stderr="")
     bl.connection_string = "postgresql://user:pass@localhost/db"
@@ -215,8 +219,9 @@ def test_load_boundary_includes_create_index_flag(mock_run, bl):
     assert "-I" in cmd
 
 
+@patch.object(BoundaryLoader, "_resolve_pg_binary", return_value="shp2pgsql")
 @patch("data.src.boundary_loader.subprocess.run")
-def test_load_boundary_includes_drop_flag(mock_run, bl):
+def test_load_boundary_includes_drop_flag(mock_run, _mock_resolve, bl):
     """Should include -d flag for dropping table"""
     mock_run.return_value = MagicMock(returncode=0, stderr="")
     bl.connection_string = "postgresql://user:pass@localhost/db"

@@ -27,8 +27,6 @@
     display: inline-block;
 }
 
-
-
 .climate-icon-button svg,
 .climate-icon-wrapper svg {
     display: block;
@@ -68,7 +66,6 @@
     padding: 0.3em;
     line-height: 0;
 }
-
 
 /* optional, only if you want to pad the details area */
 .climate-selected-details,

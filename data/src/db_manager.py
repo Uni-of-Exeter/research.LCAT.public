@@ -45,9 +45,9 @@ class DBManager:
             connection.autocommit = True
             cursor = connection.cursor()
 
-            query = sql.SQL(
-                "CREATE ROLE {user} WITH PASSWORD %s NOSUPERUSER CREATEDB CREATEROLE INHERIT LOGIN;"
-            ).format(user=sql.Identifier(self.user))
+            query = sql.SQL("CREATE ROLE {user} WITH PASSWORD %s NOSUPERUSER CREATEDB CREATEROLE INHERIT LOGIN;").format(
+                user=sql.Identifier(self.user)
+            )
             cursor.execute(query, (self.user_pass,))
             cursor.close()
             connection.close()

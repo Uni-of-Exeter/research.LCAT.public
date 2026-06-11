@@ -14,7 +14,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./KumuImpactPathway.css";
 
-import { useEffect, useRef,useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCollapse } from "react-collapsed";
 
 import { defaultState } from "../../utils/defaultState.js";
@@ -69,10 +69,10 @@ const KumuImpactPathway = ({ regions, selectedImpactHazard, setSelectedImpactHaz
 
     function handleOnClick() {
         // Track first-time opening of collapsible
-        if (!isExpanded && !hasTrackedCollapsibleOpen.current && typeof gtag !== 'undefined') {
-            gtag('event', 'impact_details_opened');
+        if (!isExpanded && !hasTrackedCollapsibleOpen.current && typeof gtag !== "undefined") {
+            gtag("event", "impact_details_opened");
             hasTrackedCollapsibleOpen.current = true;
-        } 
+        }
         setExpanded(!isExpanded);
     }
 

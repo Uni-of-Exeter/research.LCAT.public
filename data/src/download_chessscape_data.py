@@ -41,9 +41,7 @@ class ChessScapeDownloader:
         self.session = self._create_http_session()
         self._thread_local = threading.local()
 
-    def _create_http_session(
-        self: "ChessScapeDownloader", pool_connections: int = 20, pool_maxsize: int = 20
-    ) -> requests.Session:
+    def _create_http_session(self: "ChessScapeDownloader", pool_connections: int = 20, pool_maxsize: int = 20) -> requests.Session:
         """Create a requests session with retry and connection pooling."""
         session = requests.Session()
         retry = Retry(
@@ -76,16 +74,10 @@ class ChessScapeDownloader:
             response = self.session.get(url, timeout=30)
             response.raise_for_status()
         except requests.RequestException as exc:
-            raise RuntimeError(
-                f"Failed to fetch NetCDF listing from {url}: {exc}"
-            ) from exc
+            raise RuntimeError(f"Failed to fetch NetCDF listing from {url}: {exc}") from exc
 
         soup = BeautifulSoup(response.text, "html.parser")
-        return [
-            a["href"]
-            for a in soup.find_all("a", href=True)
-            if isinstance(a["href"], str) and a["href"].endswith(".nc")
-        ]
+        return [a["href"] for a in soup.find_all("a", href=True) if isinstance(a["href"], str) and a["href"].endswith(".nc")]
 
     def _download_file(self: "ChessScapeDownloader", url: str, dest: str) -> None:
         """Stream-download a single file to dest, cleaning up on failure."""
@@ -131,9 +123,7 @@ class ChessScapeDownloader:
             for bias in bias_options:
                 for aggregation in ["annual", "seasonal"]:
                     bias_suffix = self._bias_suffix(bias)
-                    url = (
-                        f"{CEDA_BASE}/rcp{rcp}{bias_suffix}/{ensemble_str}/{aggregation}/"
-                    )
+                    url = f"{CEDA_BASE}/rcp{rcp}{bias_suffix}/{ensemble_str}/{aggregation}/"
 
                     try:
                         nc_files = self._list_nc_files(url)
@@ -143,10 +133,7 @@ class ChessScapeDownloader:
                         continue
 
                     # Filter to base variables only
-                    nc_files = [
-                        f for f in nc_files
-                        if any(f"_{v}_" in f for v in BASE_VARIABLES)
-                    ]
+                    nc_files = [f for f in nc_files if any(f"_{v}_" in f for v in BASE_VARIABLES)]
 
                     for filename in nc_files:
                         folder = "seasonal" if aggregation == "seasonal" else "annual"
@@ -167,10 +154,7 @@ class ChessScapeDownloader:
 
                         if max_downloads is not None and downloaded >= max_downloads:
                             print(f"  Reached max_downloads={max_downloads}, stopping.")
-                            print(
-                                f"\nDone — downloaded: {downloaded}, "
-                                f"skipped: {skipped}, failed: {failed}"
-                            )
+                            print(f"\nDone — downloaded: {downloaded}, skipped: {skipped}, failed: {failed}")
                             return
 
                         try:
@@ -181,13 +165,9 @@ class ChessScapeDownloader:
                             print(f"  FAILED {filename}: {exc}")
                             failed += 1
 
-        print(
-            f"\nDone — downloaded: {downloaded}, skipped: {skipped}, failed: {failed}"
-        )
+        print(f"\nDone — downloaded: {downloaded}, skipped: {skipped}, failed: {failed}")
 
-    def get_daily_file_links(
-        self: "ChessScapeDownloader", rcp: int, bias: bool, variable: str
-    ) -> list[str]:
+    def get_daily_file_links(self: "ChessScapeDownloader", rcp: int, bias: bool, variable: str) -> list[str]:
         """Return full URLs for all daily NetCDF files for a given scenario and variable.
 
         Daily files are stored in per-variable subfolders on CEDA:
@@ -203,16 +183,11 @@ class ChessScapeDownloader:
         """
         bias_suffix = self._bias_suffix(bias)
         ensemble_str = self._ensemble_str()
-        base_url = (
-            f"{CEDA_BASE}/rcp{rcp}{bias_suffix}/{ensemble_str}/daily/{variable}/"
-        )
+        base_url = f"{CEDA_BASE}/rcp{rcp}{bias_suffix}/{ensemble_str}/daily/{variable}/"
 
         nc_files = self._list_nc_files(base_url)
 
         if not nc_files:
-            raise RuntimeError(
-                f"No .nc files found at {base_url}; endpoint may be unavailable "
-                "or listing may have changed."
-            )
+            raise RuntimeError(f"No .nc files found at {base_url}; endpoint may be unavailable or listing may have changed.")
 
         return [base_url + f for f in nc_files]

@@ -28,9 +28,7 @@ class ProcessKumu:
         keys_to_drop = ["element type", "climate_hazard", "un_sdg", "vulnerability"]
 
         adaptation_elements = [
-            e
-            for e in self.data["elements"]
-            if "element type" in e["attributes"] and e["attributes"]["element type"] == "Action"
+            e for e in self.data["elements"] if "element type" in e["attributes"] and e["attributes"]["element type"] == "Action"
         ].copy()
 
         self.filtered_data = [

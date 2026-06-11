@@ -1,27 +1,27 @@
-import './PageSelectionModal.css';
+import "./PageSelectionModal.css";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 const PageSelectionModal = ({ isOpen, onClose, onGenerate, availablePages }) => {
     const [selectedPages, setSelectedPages] = useState(
-        availablePages.reduce((acc, page) => ({ ...acc, [page.id]: page.defaultSelected }), {})
+        availablePages.reduce((acc, page) => ({ ...acc, [page.id]: page.defaultSelected }), {}),
     );
 
     const handlePageToggle = (pageId) => {
-        setSelectedPages(prev => ({
+        setSelectedPages((prev) => ({
             ...prev,
-            [pageId]: !prev[pageId]
+            [pageId]: !prev[pageId],
         }));
     };
 
     const handleGenerate = () => {
-        const selectedPageIds = Object.keys(selectedPages).filter(id => selectedPages[id]);
+        const selectedPageIds = Object.keys(selectedPages).filter((id) => selectedPages[id]);
         onGenerate(selectedPageIds);
         onClose();
     };
 
     const handleKeyDown = (event) => {
-        if (event.key === 'Escape') {
+        if (event.key === "Escape") {
             onClose();
         }
     };
@@ -38,8 +38,8 @@ const PageSelectionModal = ({ isOpen, onClose, onGenerate, availablePages }) => 
     if (!isOpen) return null;
 
     return (
-        <div 
-            className="modal-overlay" 
+        <div
+            className="modal-overlay"
             onClick={handleOverlayClick}
             onKeyDown={handleKeyDown}
             role="button"
@@ -48,9 +48,9 @@ const PageSelectionModal = ({ isOpen, onClose, onGenerate, availablePages }) => 
         >
             <div className="modal-content">
                 <h3 id="modal-title">Select Report Pages</h3>
-                
+
                 <div className="page-options">
-                    {availablePages.map(page => (
+                    {availablePages.map((page) => (
                         <label key={page.id} className="page-option">
                             <input
                                 type="checkbox"
@@ -69,12 +69,8 @@ const PageSelectionModal = ({ isOpen, onClose, onGenerate, availablePages }) => 
                     <button onClick={onClose} className="btn-secondary">
                         Cancel
                     </button>
-                    <button 
-                        onClick={handleGenerate} 
-                        className="btn-primary"
-                        disabled={selectedCount === 0}
-                    >
-                        Generate Report <br />({selectedCount} page{selectedCount !== 1 ? 's' : ''})
+                    <button onClick={handleGenerate} className="btn-primary" disabled={selectedCount === 0}>
+                        Generate Report <br />({selectedCount} page{selectedCount !== 1 ? "s" : ""})
                     </button>
                 </div>
             </div>

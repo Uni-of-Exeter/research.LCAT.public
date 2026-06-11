@@ -187,6 +187,6 @@ button:hover {
 }
 
 :root {
-  --color-button-hover: rgba(245,130,31,1);
-  --color-header-text: #115158ff;
+    --color-button-hover: rgba(245, 130, 31, 1);
+    --color-header-text: #115158ff;
 }

@@ -54,9 +54,7 @@ class ChessScapeAveragesLoader:
         self.transform_performed = False
         self.set_data_location()
 
-    def set_data_location(
-        self: "ChessScapeAveragesLoader", filepath: str | None = None
-    ) -> None:
+    def set_data_location(self: "ChessScapeAveragesLoader", filepath: str | None = None) -> None:
         """
         Set the location of the CHESS-SCAPE netcdf data folder.
         """
@@ -86,16 +84,12 @@ class ChessScapeAveragesLoader:
 
             print("Connecting using db config from config file...")
 
-        self.conn = psycopg2.connect(
-            host=host, dbname=dbname, user=user, password=password
-        )
+        self.conn = psycopg2.connect(host=host, dbname=dbname, user=user, password=password)
         self.cur = self.conn.cursor()
 
         print("Connection successful.")
 
-    def open_netcdf_file(
-        self: "ChessScapeAveragesLoader", filepath: str
-    ) -> xr.Dataset | None:
+    def open_netcdf_file(self: "ChessScapeAveragesLoader", filepath: str) -> xr.Dataset | None:
         """
         Lazy load a netcdf file with xarray and return.
         """
@@ -180,26 +174,15 @@ class ChessScapeAveragesLoader:
         ]:
             filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{variable}_uk_1km_{season}_19801201-20801130.nc"
         elif variable == "tasmax_99_percentile":
-            filename = (
-                f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_tasmax_99_percentile"
-                f"_uk_1km_{season}_19801201-20801130.nc"
-            )
+            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_tasmax_99_percentile_uk_1km_{season}_19801201-20801130.nc"
         elif variable == "tasmin_1_percentile":
-            filename = (
-                f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_tasmin_1_percentile"
-                f"_uk_1km_{season}_19801201-20801130.nc"
-            )
+            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_tasmin_1_percentile_uk_1km_{season}_19801201-20801130.nc"
         else:
-            filename = (
-                f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{variable}"
-                f"_uk_1km_{season_folder}_19801201-20801130.nc"
-            )
+            filename = f"chess-scape_rcp{rcp}{bias_corrected_folder}_01_{variable}_uk_1km_{season_folder}_19801201-20801130.nc"
 
         return os.path.join(self.data_location, sub_folders, filename)
 
-    def _normalise_decade_coord(
-        self: "ChessScapeAveragesLoader", decade_coord: int
-    ) -> int | None:
+    def _normalise_decade_coord(self: "ChessScapeAveragesLoader", decade_coord: int) -> int | None:
         """
         Convert decade coordinate values into decade years.
         """
@@ -213,9 +196,7 @@ class ChessScapeAveragesLoader:
 
         return None
 
-    def _get_dataset_variable_data(
-        self: "ChessScapeAveragesLoader", dataset: xr.Dataset, variable: str
-    ) -> xr.DataArray | None:
+    def _get_dataset_variable_data(self: "ChessScapeAveragesLoader", dataset: xr.Dataset, variable: str) -> xr.DataArray | None:
         """
         Select the relevant data variable from a dataset for source and derived variables.
         """
@@ -240,10 +221,7 @@ class ChessScapeAveragesLoader:
 
             for var_name in dataset.data_vars:
                 var_name_lower = str(var_name).lower()
-                if any(
-                    token in var_name_lower
-                    for token in ["tropical", "hot", "rain", "dry", "windy"]
-                ):
+                if any(token in var_name_lower for token in ["tropical", "hot", "rain", "dry", "windy"]):
                     return dataset[var_name]
 
         for var_name in dataset.data_vars:
@@ -339,15 +317,11 @@ class ChessScapeAveragesLoader:
             decade_tag = 1980 + int(lower_bound / step)
 
             # Get extracted data dict containing mean and key by decade
-            data_by_decade[decade_tag] = self.calculate_uk_averages_mean(
-                data_array, lower_bound, higher_bound, step
-            )
+            data_by_decade[decade_tag] = self.calculate_uk_averages_mean(data_array, lower_bound, higher_bound, step)
 
         self.extracted_data = data_by_decade
 
-    def transform_dataset(
-        self: "ChessScapeAveragesLoader", data: xr.DataArray
-    ) -> xr.DataArray:
+    def transform_dataset(self: "ChessScapeAveragesLoader", data: xr.DataArray) -> xr.DataArray:
         """
         Perform any transformations necessary on a dataset.
         """
@@ -470,9 +444,7 @@ class ChessScapeAveragesLoader:
         finally:
             output.close()
 
-    def process_all_variables(
-        self: "ChessScapeAveragesLoader", season: str, rcp: int, is_bias_corrected: bool
-    ) -> None:
+    def process_all_variables(self: "ChessScapeAveragesLoader", season: str, rcp: int, is_bias_corrected: bool) -> None:
         """
         Create a table of data for a single variable, containing an ID column and 10 decade averaged columns.
         """
@@ -490,22 +462,16 @@ class ChessScapeAveragesLoader:
 
         derived_variables = []
         for variable in potential_derived:
-            filepath = self.get_netcdf_filepath(
-                is_bias_corrected, season, rcp, variable
-            )
+            filepath = self.get_netcdf_filepath(is_bias_corrected, season, rcp, variable)
             if os.path.exists(filepath):
                 derived_variables.append(variable)
             else:
-                print(
-                    f"Derived variable file not found, skipping: {os.path.basename(filepath)}"
-                )
+                print(f"Derived variable file not found, skipping: {os.path.basename(filepath)}")
 
         variables = source_variables + derived_variables
 
         print("############################")
-        print(
-            f"### Processing all variables for dataset: bias_corrected: {is_bias_corrected}, {season}, rcp{rcp}.\n"
-        )
+        print(f"### Processing all variables for dataset: bias_corrected: {is_bias_corrected}, {season}, rcp{rcp}.\n")
 
         for variable in variables:
             print(f"### Processing variable: {variable}")
@@ -522,14 +488,10 @@ class ChessScapeAveragesLoader:
 
             print(f"### Processing complete: {variable}\n")
 
-        print(
-            f"### Processing complete for dataset: bias_corrected: {is_bias_corrected}, {season}, rcp{rcp}."
-        )
+        print(f"### Processing complete for dataset: bias_corrected: {is_bias_corrected}, {season}, rcp{rcp}.")
         print("############################\n")
 
-    def process_all_seasons(
-        self: "ChessScapeAveragesLoader", rcp: int, is_bias_corrected: bool
-    ) -> None:
+    def process_all_seasons(self: "ChessScapeAveragesLoader", rcp: int, is_bias_corrected: bool) -> None:
         """
         Process all variables for all seasons.
         """
@@ -539,9 +501,7 @@ class ChessScapeAveragesLoader:
         for season in seasons:
             self.process_all_variables(season, rcp, is_bias_corrected)
 
-    def process_all_rcps(
-        self: "ChessScapeAveragesLoader", is_bias_corrected: bool
-    ) -> None:
+    def process_all_rcps(self: "ChessScapeAveragesLoader", is_bias_corrected: bool) -> None:
         """
         Process all seasons and variables for all RCPs.
         """

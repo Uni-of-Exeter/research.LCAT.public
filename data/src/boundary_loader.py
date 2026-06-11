@@ -35,10 +35,7 @@ class BoundaryLoader:
         if fallback:
             return fallback
 
-        raise FileNotFoundError(
-            f"Could not find required binary '{binary_name}'. "
-            "Set pg_bin_path in config.yml or add Postgres binaries to PATH."
-        )
+        raise FileNotFoundError(f"Could not find required binary '{binary_name}'. Set pg_bin_path in config.yml or add Postgres binaries to PATH.")
 
     def set_database_projection_code(self, target_projection_code):
         """
@@ -60,9 +57,7 @@ class BoundaryLoader:
 
             print("Connecting using db config from config file...")
 
-        self.conn = psycopg2.connect(
-            host=host, dbname=dbname, user=user, password=password
-        )
+        self.conn = psycopg2.connect(host=host, dbname=dbname, user=user, password=password)
         self.cur = self.conn.cursor()
 
         print("Connection successful.")
@@ -109,10 +104,7 @@ class BoundaryLoader:
 
             if result.returncode != 0:
                 stderr_tail = (result.stderr or "").strip()[-1200:]
-                raise RuntimeError(
-                    f"Failed loading boundary '{boundary_identifier}' with exit code "
-                    f"{result.returncode}.\n{stderr_tail}"
-                )
+                raise RuntimeError(f"Failed loading boundary '{boundary_identifier}' with exit code {result.returncode}.\n{stderr_tail}")
 
         except Exception as e:
             print(f"Error creating {boundary_identifier} table: {e}")

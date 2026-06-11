@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
 import "./HelpPopover.css";
+
+import React, { useEffect, useRef, useState } from "react";
 
 const HelpPopover = ({ children, content }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -94,12 +95,7 @@ const HelpPopover = ({ children, content }) => {
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                 >
-                    <button
-                        type="button"
-                        className="help-popover-close"
-                        onClick={handleClose}
-                        aria-label="Close"
-                    >
+                    <button type="button" className="help-popover-close" onClick={handleClose} aria-label="Close">
                         <svg
                             viewBox="0 0 24 24"
                             fill="none"
