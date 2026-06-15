@@ -18,7 +18,15 @@ From repo root:
 cd client
 npm install
 npm run lint
-npm run test
+npm run format
+npm test -- --run
+```
+
+If formatting needs fixing:
+
+```bash
+cd client
+npm run format:fix
 ```
 
 For active development:

@@ -16,7 +16,16 @@ From repo root:
 ```bash
 cd data
 poetry install
+poetry run ruff check .
+poetry run ruff format --check .
 poetry run pytest
+```
+
+If formatting needs fixing:
+
+```bash
+cd data
+poetry run ruff format .
 ```
 
 For targeted work, run narrow tests first:
