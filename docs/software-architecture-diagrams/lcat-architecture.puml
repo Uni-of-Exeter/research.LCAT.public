@@ -55,7 +55,12 @@ package "Python Data Pipeline" as python_layer {
   component "DBManager" as db_manager {
     note right: Database setup\nand management
   }
-  
+
+  component "Data Downloaders" as downloaders {
+    [ChessScapeDownloader]
+    note right: Fetches CHESS-SCAPE\nNetCDF files from source
+  }
+
   component "Data Loaders" as loaders {
     [BoundaryLoader]
     [ChessScapeLoader]
@@ -161,6 +166,7 @@ client_layer --> browser : "React Components\n(HTML/CSS/JS)"
 
 ' Internal connections
 db_manager --> database : "Setup & Management"
+downloaders --> loaders : "NetCDF files"
 loaders --> database : "Bulk Data Loading"
 processors --> database : "Data Processing"
 analysis --> database : "Query & Summarise"
