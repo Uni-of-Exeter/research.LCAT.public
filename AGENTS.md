@@ -52,7 +52,14 @@ When adding logic, add or update tests in the same module whenever practical.
 - Do: keep docs concise and actionable.
 - Don’t: add long architecture narratives in task-focused edits.
 
-## 6) Module-specific guidance
+## 6) Writing style and British English
+
+- Always write in British English in all code comments, documentation, docstrings, and communication.
+- Use British spelling conventions (e.g., "colour", "organise", "favour", "realise", "centre", "analyse", "recognised").
+- Use British conventions for terminology (e.g., "car boot" not "trunk", "flat" not "apartment").
+- This applies to: commit messages, pull request descriptions, code review feedback, documentation, and generated content.
+
+## 7) Module-specific guidance
 
 - Use `client/AGENTS.md` for frontend commands, test patterns, and canonical examples.
 - Use `data/AGENTS.md` for offline data-processing commands, test patterns, and canonical examples.
@@ -60,7 +67,7 @@ When adding logic, add or update tests in the same module whenever practical.
 
 Follow local module style before introducing a new pattern.
 
-## 7) References (load only when needed)
+## 8) References (load only when needed)
 
 - Installation and run flow: `docs/3-install.md`.
 - Data module usage and tests: `data/README.md`.
@@ -74,7 +81,7 @@ Scoped guides:
 
 Only open additional docs when the current task requires them.
 
-## 8) External infra repository (optional, on-demand)
+## 9) External infra repository (optional, on-demand)
 
 - Primary source for infra context: sibling repo at `../research.LCAT`.
 - Secondary reference only: `https://github.com/Uni-of-Exeter/research.LCAT`.
