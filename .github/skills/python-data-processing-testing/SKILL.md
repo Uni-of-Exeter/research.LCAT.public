@@ -16,13 +16,13 @@ Focus on deterministic unit tests that validate transformation logic, edge cases
 
 ## Goal
 
-Write tests that are readable, stable, and specific to behavior that matters for data quality and reproducibility.
+Write tests that are readable, stable, and specific to behaviour that matters for data quality and reproducibility.
 
 Prefer a small number of clear tests over large, brittle tests that over-specify implementation details.
 
 ## What To Test
 
-- Normal behavior on representative arrays, frames, and records.
+- Normal behaviour on representative arrays, frames, and records.
 - Edge cases: empty input, partial periods, invalid parameter values, and shape mismatches.
 - Conversion and normalization paths (unit conversions, naming cleanup, filtering rules).
 - Failure paths and guardrails: expected `ValueError`, skipped processing, and warning output.
@@ -35,7 +35,7 @@ Prefer a small number of clear tests over large, brittle tests that over-specify
 - Prefer explicit assertions over snapshots.
 - Use `pytest.mark.parametrize` for compact coverage of input/output permutations.
 - Mock only external boundaries (database, file I/O, network, third-party scraping).
-- Keep one behavior focus per test; split tests that assert unrelated outcomes.
+- Keep one behaviour focus per test; split tests that assert unrelated outcomes.
 
 ## Repo Conventions
 
@@ -56,13 +56,13 @@ poetry run pytest
 - Validate exact outputs for deterministic numeric transformations.
 - Add regression tests for known bugs (for example trailing-partial-period handling).
 - Assert specific exception messages where they communicate contract guarantees.
-- Check that optional flags actually affect behavior (`convert_kelvin`, `convert_precip`, etc.).
+- Check that optional flags actually affect behaviour (`convert_kelvin`, `convert_precip`, etc.).
 - Verify output shape and dtype expectations for array-based processors.
 
 ## Keep It Readable
 
 - Use arrange-act-assert structure.
-- Keep test names explicit and behavior-focused.
+- Keep test names explicit and behaviour-focused.
 - Use helper functions like `make_data(...)` for repeated input generation.
 - Keep mocks local to the test unless they are reused broadly.
 - Avoid over-randomized fixtures; prefer deterministic values.

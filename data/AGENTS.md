@@ -37,7 +37,7 @@ poetry run pytest tests/unit/test_process_daily_data.py
 
 ## 3) Implementation rules
 
-- Prefer deterministic transformations and explicit failure behavior.
+- Prefer deterministic transformations and explicit failure behaviour.
 - Keep function signatures and output schema stable unless task requires change.
 - Avoid broad pipeline refactors in task-focused fixes.
 
@@ -53,7 +53,7 @@ Decision table:
 | Situation | Action |
 | --- | --- |
 | Numeric transform logic changed | Add exact-value assertions (`numpy`/`pandas` helpers as needed) |
-| New parameter branch | Add parameterized branch tests |
+| New parameter branch | Add parameterised branch tests |
 | Expected exception/warning path | Assert message and trigger condition |
 
 ## 5) Canonical examples

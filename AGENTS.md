@@ -18,7 +18,7 @@ When working inside `client/` or `data/`, read that folder's local `AGENTS.md` f
 
 | Task type | Primary module | First command |
 | --- | --- | --- |
-| UI rendering, interactions, component behavior | `client/` | `cd client && npm run test` |
+| UI rendering, interactions, component behaviour | `client/` | `cd client && npm run test` |
 | API route logic, DB query plumbing, server startup | `server/` | `cd server && npm run lint` |
 | Climate preprocessing, loaders, cached table generation | `data/` | `cd data && poetry run pytest` |
 
@@ -28,13 +28,13 @@ When working inside `client/` or `data/`, read that folder's local `AGENTS.md` f
 2. Make the smallest change that satisfies the task.
 3. Run the narrowest relevant checks.
 4. If checks fail, fix before expanding scope.
-5. Summarize what changed, why, and what was run.
+5. Summarise what changed, why, and what was run.
 
 ## 4) Testing expectations
 
-- Client: test visible behavior and interactions; avoid over-testing implementation details.
+- Client: test visible behaviour and interactions; avoid over-testing implementation details.
 - Data: test deterministic transformations, edge cases, and explicit failure paths.
-- Server: lint at minimum; if route behavior changes, validate by running server and hitting affected endpoint.
+- Server: lint at minimum; if route behaviour changes, validate by running server and hitting affected endpoint.
 
 When adding logic, add or update tests in the same module whenever practical.
 
@@ -43,7 +43,7 @@ When adding logic, add or update tests in the same module whenever practical.
 - Do: prefer module-local fixes and module-local tests.
 - Don’t: edit unrelated modules "for cleanup" in the same change.
 
-- Do: use existing patterns from neighboring files.
+- Do: use existing patterns from neighbouring files.
 - Don’t: introduce new frameworks or patterns without need.
 
 - Do: pair each warning with a concrete action.

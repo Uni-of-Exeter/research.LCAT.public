@@ -10,7 +10,7 @@ Use this skill when adding or improving tests for the client app in `client/`.
 
 ## Goal
 
-Write tests that protect user-facing behavior without becoming brittle or over-specified. Prefer a small number of clear tests that show what the component renders and how it responds to user actions.
+Write tests that protect user-facing behaviour without becoming brittle or over-specified. Prefer a small number of clear tests that show what the component renders and how it responds to user actions.
 
 ## What To Test
 
@@ -21,9 +21,9 @@ Write tests that protect user-facing behavior without becoming brittle or over-s
 
 ## How To Write The Tests
 
-- Start from the public behavior of the component, not its internals.
+- Start from the public behaviour of the component, not its internals.
 - Prefer `screen.getByRole`, `getByLabelText`, and `getByText` over querying implementation details.
-- Give tests short, descriptive names that read like the behavior being checked.
+- Give tests short, descriptive names that read like the behaviour being checked.
 - Keep each test focused on one visible outcome or one interaction path.
 - Use small fixtures that are easy to understand at a glance.
 - Mock only external boundaries such as network calls, browser APIs, or heavy third-party widgets.
@@ -33,7 +33,7 @@ Write tests that protect user-facing behavior without becoming brittle or over-s
 
 - The test stack is Vitest plus Testing Library.
 - Jest DOM matchers are already available through `client/src/test-setup.js`.
-- Favor `afterEach(cleanup)` only when the file needs it explicitly; let Testing Library do the default cleanup when possible.
+- Favour `afterEach(cleanup)` only when the file needs it explicitly; let Testing Library do the default cleanup when possible.
 - When testing a collapsible or fetch-on-open component, render the component, trigger the user action, then assert the visible result.
 
 ## Good Coverage Patterns
@@ -51,7 +51,7 @@ Write tests that protect user-facing behavior without becoming brittle or over-s
 - Use helper fixtures instead of repeating large object literals.
 - If a test needs a lot of setup, extract the setup into a small local helper.
 - If the test starts asserting too many unrelated things, split it.
-- Prefer the simplest mock that makes the behavior testable.
+- Prefer the simplest mock that makes the behaviour testable.
 
 ## Example Approach
 
@@ -72,4 +72,4 @@ it("shows England link and hides others for an English region", () => {
 });
 ```
 
-This is usually enough. Do not test implementation details unless they are part of the public behavior.
+This is usually enough. Do not test implementation details unless they are part of the public behaviour.
