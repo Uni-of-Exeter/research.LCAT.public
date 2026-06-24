@@ -1,8 +1,0 @@
-
-  warn no-orphans: src/utils/geojson.js
-  warn no-orphans: src/utils/decile.js
-  warn no-orphans: src/components/loaders/ClimateAverageRangesLoader.jsx
-  warn no-orphans: src/components/feedback/Feedback.jsx
-
-x 4 dependency violations (0 errors, 4 warnings). 112 modules, 118 dependencies cruised.
-

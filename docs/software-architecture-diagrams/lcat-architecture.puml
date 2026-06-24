@@ -72,7 +72,7 @@ package "Python Data Pipeline" as python_layer {
   component "Data Processors" as processors {
     [ProcessKumu]
     [ProcessReferences]
-    [ProcessDailyData]
+    [ClimateDataProcessor]
     [OverlapCalculator]
     [CoastalIdentifier]
   }
@@ -152,7 +152,7 @@ package "React Frontend" as client_layer {
 ' Web Browser
 node "User Browser" as browser {
   component "Interactive Map\n(Leaflet)" as map
-  component "Data Visualizations\n(D3/Charts)" as charts
+  component "Data Visualizations\n(Plotly)" as charts
   component "User Interface" as ui
 }
 
@@ -197,7 +197,7 @@ end note
 ' Technology Stack
 note as tech_stack
 **Technology Stack:**
-- **Frontend:** React, Leaflet Maps, D3.js
+- **Frontend:** React, Leaflet Maps, Plotly
 - **Backend:** Node.js, Express.js
 - **Database:** PostgreSQL + PostGIS
 - **Data Processing:** Python, NetCDF, Pandas
