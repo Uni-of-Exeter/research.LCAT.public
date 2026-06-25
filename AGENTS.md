@@ -18,7 +18,7 @@ When working inside `client/` or `data/`, read that folder's local `AGENTS.md` f
 
 | Task type | Primary module | First command |
 | --- | --- | --- |
-| UI rendering, interactions, component behaviour | `client/` | `cd client && npm run test` |
+| UI rendering, interactions, component behaviour | `client/` | `cd client && npm test -- --run` |
 | API route logic, DB query plumbing, server startup | `server/` | `cd server && npm run lint` |
 | Climate preprocessing, loaders, cached table generation | `data/` | `cd data && poetry run pytest` |
 
