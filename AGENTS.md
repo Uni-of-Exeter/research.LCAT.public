@@ -52,6 +52,9 @@ When adding logic, add or update tests in the same module whenever practical.
 - Do: keep docs concise and actionable.
 - Don’t: add long architecture narratives in task-focused edits.
 
+- Do: when you change the system architecture, update `docs/software-architecture-diagrams/lcat-architecture.puml` (and re-export its PNG) so the diagram stays in sync.
+- Don't: let the architecture diagram drift from the actual code.
+
 ## 6) Writing style and British English
 
 - Always write in British English in all code comments, documentation, docstrings, and communication.

@@ -1,9 +1,17 @@
-@startuml LCAT Architecture
+@startuml
 !theme plain
 title LCAT (Local Climate Adaptation Tool) - System Architecture
 
-' Define package colors
+' The system has TWO distinct data flows that meet at the database:
+'   * an OFFLINE build pipeline (Sources -> Python) that populates the DB ahead of time (writes)
+'   * the RUNTIME request/response path (Database <-> Server <-> Client <-> Browser)
+' Each layer is laid out as a compact two-column grid so the image stays roughly
+' title-width and the layers stack top to bottom.
+top to bottom direction
+skinparam nodesep 8
+skinparam ranksep 22
 skinparam packageStyle rectangle
+skinparam shadowing false
 skinparam component {
   BackgroundColor LightBlue
   BorderColor Blue
@@ -17,191 +25,94 @@ skinparam node {
   BorderColor Orange
 }
 
-' External Systems
-node "Climate Data Sources" as climate_sources {
-  component "CHESS-SCAPE\nNetCDF Files" as chessscape
-  component "Boundary\nShapefiles" as boundaries
-  component "Reference\nData (CSV)" as references
+' ===== Offline build pipeline (runs ahead of time, writes into the DB) =====
+rectangle "Offline build pipeline  ·  run ahead of serving to populate the database" as build_phase #FFF8E1;line:B8860B {
+
+  node "Climate Data Sources" as climate_sources {
+    component "CHESS-SCAPE NetCDF files" as chessscape
+    component "Boundary shapefiles" as boundaries
+    component "Reference data (CSV)" as references
+  }
+
+  package "Python Data Pipeline" as python_layer {
+    component "**Data Downloaders**\n----\nChessScapeDownloader" as downloaders
+    component "**Data Loaders**\n----\nBoundaryLoader\nChessScapeLoader\nChessScapeAveragesLoader\nReferenceLoader\nGridLoader" as loaders
+    component "**Data Processors**\n----\nProcessKumu\nProcessReferences\nClimateDataProcessor\nOverlapCalculator\nCoastalIdentifier" as processors
+    component "**Analysis Tools**\n----\nDetailsGenerator" as analysis
+    component "**DBManager**\n----\nDatabase setup & management" as db_manager
+  }
 }
 
-' Database Layer
+' ===== Database (the hub where both flows meet) =====
 database "PostgreSQL + PostGIS" as database {
-  component "Climate Data Tables" as climate_tables {
-    [chess_scape_rcp60_*]
-    [chess_scape_rcp85_*]
-    [chess_scape_uk_averages]
-  }
-  
-  component "Boundary Tables" as boundary_tables {
-    [boundary_uk_counties]
-    [boundary_la_districts]
-    [boundary_lsoa]
-    [boundary_msoa]
-    [boundary_parishes]
-    [boundary_sc_dz]
-    [boundary_ni_dz]
-    [boundary_iom]
-  }
-  
-  component "Reference Tables" as reference_tables {
-    [boundary_details]
-    [grid_overlaps_*]
-    [cache_*_to_*]
-  }
+  component "**Climate Data Tables**\n----\nchess_scape_rcp60_*\nchess_scape_rcp85_*\nchess_scape_uk_averages" as climate_tables
+  component "**Boundary Tables**\n----\nboundary_uk_counties\nboundary_la_districts\nboundary_lsoa\nboundary_msoa\nboundary_parishes\nboundary_sc_dz\nboundary_ni_dz\nboundary_iom" as boundary_tables
+  component "**Reference Tables**\n----\nboundary_details\ngrid_overlaps_*\ncache_*_to_*" as reference_tables
 }
 
-' Python Data Processing Layer
-package "Python Data Pipeline" as python_layer {
-  component "DBManager" as db_manager {
-    note right: Database setup\nand management
-  }
-
-  component "Data Downloaders" as downloaders {
-    [ChessScapeDownloader]
-    note right: Fetches CHESS-SCAPE\nNetCDF files from source
-  }
-
-  component "Data Loaders" as loaders {
-    [BoundaryLoader]
-    [ChessScapeLoader]
-    [ChessScapeAveragesLoader]
-    [ReferenceLoader]
-    [GridLoader]
-  }
-  
-  component "Data Processors" as processors {
-    [ProcessKumu]
-    [ProcessReferences]
-    [ClimateDataProcessor]
-    [OverlapCalculator]
-    [CoastalIdentifier]
-  }
-  
-  component "Analysis Tools" as analysis {
-    [DetailsGenerator]
-  }
-}
-
-' Server Layer (Node.js/Express)
+' ===== Server (Node.js / Express) — queries the DB at request time =====
 package "Server Layer" as server_layer {
-  component "Express App" as app {
-    note right: Main application\nCORS configuration\nStatic file serving
-  }
-  
-  component "API Routes" as api {
-    note right: Rate-limited via express-rate-limit
-    [/api/all_regions]
-    [/api/are_gids_coastal]
-    [/api/region]
-    [/api/gids_bbox]
-    [/api/chess_scape]
-    [/api/chess_scape_uk_averages]
-    [/api/ping]
-  }
+  component "**Express App**\n----\nCORS config, static file serving" as app
+  component "**API Routes** (rate-limited)\n----\n/api/all_regions\n/api/are_gids_coastal\n/api/region\n/api/gids_bbox\n/api/chess_scape\n/api/chess_scape_uk_averages\n/api/ping" as api
 }
 
-' Client Layer (React)
+' ===== Client (React) =====
 package "React Frontend" as client_layer {
-  component "Main App" as main_app {
-    note right: State management\nScroll tracking\nGoogle Analytics
-  }
-  
-  component "Climate Components" as climate_components {
-    [ClimateMap]
-    [ClimateSettings] 
-    [ClimateSummary]
-    [Graph]
-    [HelpPopover]
-    [ClimatePrediction]
-  }
-  
-  component "Impact Components" as impact_components {
-    [ClimateHazardRisk]
-    [ClimateImpactSummary]
-    [KumuImpactPathway]
-  }
-  
-  component "Vulnerability Components" as vuln_components {
-    [PersonalSocialVulnerabilities]
-    [IMDMap]
-  }
-  
-  component "Adaptation Components" as adapt_components {
-    [StaticAdaptations]
-    [StaticAdaptation]
-    [StaticReferences]
-  }
-  
-  component "Utility Components" as util_components {
-    [Header]
-    [Footer]
-    [Introduction]
-    [CookieConsent]
-    [Feedback]
-  }
-  
-  component "Data Loaders" as client_loaders {
-    [AllRegionLoader]
-    [ClimatePredictionLoader]
-    [ClimateAveragesLoader]
-    [CoastalFilterLoader]
-    [GeoJSONLoader]
-  }
+  component "**Main App**\n----\nState management, analytics" as main_app
+  component "**Climate Components**\n----\nClimateMap, ClimateSettings, ClimateSummary,\nGraph, HelpPopover, ClimatePrediction" as climate_components
+  component "**Impact Components**\n----\nClimateHazardRisk, ClimateImpactSummary,\nKumuImpactPathway" as impact_components
+  component "**Vulnerability Components**\n----\nPersonalSocialVulnerabilities, IMDMap" as vuln_components
+  component "**Adaptation Components**\n----\nStaticAdaptations, StaticAdaptation,\nStaticReferences" as adapt_components
+  component "**Utility Components**\n----\nHeader, Footer, Introduction,\nCookieConsent, Feedback" as util_components
+  component "**Data Loaders**\n----\nAllRegionLoader, ClimatePredictionLoader,\nClimateAveragesLoader, CoastalFilterLoader,\nGeoJSONLoader" as client_loaders
 }
 
-' Web Browser
+' ===== User browser =====
 node "User Browser" as browser {
-  component "Interactive Map\n(Leaflet)" as map
-  component "Data Visualizations\n(Plotly)" as charts
-  component "User Interface" as ui
+  component "Interactive map (Leaflet)" as map
+  component "Data visualisations (Plotly)" as charts
+  component "User interface" as ui
 }
 
-' Data Flow Connections
-climate_sources --> python_layer : "Data Ingestion"
-python_layer --> database : "Load & Process Data"
+' ===== Two-column grid within each layer (keeps it ~title-width) =====
+chessscape -[hidden]right-> boundaries
+chessscape -[hidden]down-> references
 
-database --> server_layer : "SQL Queries\n(PostgreSQL Client)"
-server_layer --> client_layer : "REST API\n(JSON responses)"
-client_layer --> browser : "React Components\n(HTML/CSS/JS)"
+downloaders -[hidden]right-> loaders
+processors -[hidden]right-> analysis
+downloaders -[hidden]down-> processors
+processors -[hidden]down-> db_manager
 
-' Internal connections
-db_manager --> database : "Setup & Management"
-downloaders --> loaders : "NetCDF files"
-loaders --> database : "Bulk Data Loading"
-processors --> database : "Data Processing"
-analysis --> database : "Query & Summarise"
+climate_tables -[hidden]right-> boundary_tables
+climate_tables -[hidden]down-> reference_tables
 
-app --> api : "Route Handling"
-api --> database : "Database Queries"
+app -[hidden]right-> api
 
-main_app --> climate_components
-main_app --> impact_components
-main_app --> vuln_components
-main_app --> adapt_components
-main_app --> util_components
-main_app --> client_loaders
+main_app -[hidden]right-> climate_components
+impact_components -[hidden]right-> vuln_components
+adapt_components -[hidden]right-> util_components
+main_app -[hidden]down-> impact_components
+impact_components -[hidden]down-> adapt_components
+adapt_components -[hidden]down-> client_loaders
 
-client_loaders --> server_layer : "HTTP Requests"
+map -[hidden]right-> charts
+map -[hidden]down-> ui
 
-' Key Data Flows
-note as data_flow
-**Key Data Flows:**
-1. Climate data ingested from NetCDF files
-2. Boundary data loaded from shapefiles
-3. Reference data processed from CSV
-4. Frontend requests climate predictions
-5. Map interactions trigger data loading
-6. Real-time climate visualization
-end note
+' ===== Build-time flow: Sources -> Python -> Database (one-way writes, dashed) =====
+references -[#B8860B,dashed]down-> downloaders : "ingest"
+db_manager -[#B8860B,dashed]down-> climate_tables : "load & write\n(build-time)"
 
-' Technology Stack
-note as tech_stack
-**Technology Stack:**
-- **Frontend:** React, Leaflet Maps, Plotly
-- **Backend:** Node.js, Express.js
-- **Database:** PostgreSQL + PostGIS
-- **Data Processing:** Python, NetCDF, Pandas
-- **Deployment:** Static files + API server
-end note
+' ===== Runtime flow: request travels down to the DB, response back up (two-way) =====
+reference_tables <-down-> api : "SQL queries / results"
+api <-down-> main_app : "REST API\nrequest / JSON response"
+client_loaders <-down-> map : "render / user interaction"
+
+legend bottom
+Two flows meet at the database:
+**- - - Offline build pipeline** loads the climate sources into PostgreSQL ahead of serving.
+**<-> Runtime path** serves data on demand: Browser <-> React <-> Express API <-> Database.
+====
+**Technology stack** — Frontend: React, Leaflet, Plotly | Backend: Node.js, Express | Database: PostgreSQL + PostGIS | Data pipeline: Python, NetCDF, GeoPandas
+endlegend
 
 @enduml

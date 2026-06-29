@@ -18,7 +18,11 @@ LCAT is composed of four main layers:
 | **API server** | Node.js / Express | Serve climate and boundary data to the frontend via a rate-limited REST API |
 | **Frontend** | React, Leaflet, Plotly | Interactive map and data visualisations for end users |
 
-A full component-level diagram is available at [docs/software-architecture-diagrams/lcat-architecture.puml](docs/software-architecture-diagrams/lcat-architecture.puml) (PlantUML).
+A full component-level diagram is shown below (source: [lcat-architecture.puml](docs/software-architecture-diagrams/lcat-architecture.puml), rendered with [PlantUML](https://plantuml.com/) — see the [visualisation guide](docs/software-architecture-diagrams/visualization-guide.md) to edit it):
+
+<p align="center">
+  <img src="docs/software-architecture-diagrams/lcat-architecture.png" alt="LCAT system architecture diagram" width="100%">
+</p>
 
 ## Installation & documentation
 
