@@ -3,7 +3,6 @@ import {
   climateChange,
   formatClimateData,
   climateVariables,
-  getAllClimateData,
 } from './climateUtils'
 
 const buildPrediction = (overrides = {}) => [
@@ -121,30 +120,5 @@ describe('climateVariables', () => {
         expect.objectContaining({ variable: 'rsds', name: 'Radiation', units: 'Watts/m²' }),
       ])
     )
-  })
-})
-
-describe('getAllClimateData', () => {
-  it('formats climate data for each climate variable', () => {
-    const prediction = [
-      {
-        tas_1980: '10',
-        tas_2100: '11',
-        pr_1980: '3',
-        pr_2100: '5',
-        rsds_1980: '8',
-        rsds_2100: '7',
-        sfcWind_1980: '2',
-        sfcWind_2100: '4',
-      },
-    ]
-    const result = getAllClimateData(prediction, 2100)
-
-    expect(result).toHaveLength(climateVariables.length)
-    expect(result[0]).toMatchObject({
-      name: 'Temperature',
-      value: 1,
-      arrow: 'up',
-    })
   })
 })

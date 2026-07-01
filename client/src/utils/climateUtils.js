@@ -64,9 +64,3 @@ export const getClimateVariableByKey = (variable) => climateVariables.find((item
 
 export const getGraphDecadesForVariable = (variable) =>
     getClimateVariableByKey(variable)?.graphDecades || FULL_SERIES_DECADES;
-
-export const getAllClimateData = (climatePrediction, year = 2050) => {
-    return climateVariables.map(({ variable, name, units }) =>
-        formatClimateData(climatePrediction, variable, name, units, year)
-    );
-};
