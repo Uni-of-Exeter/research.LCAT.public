@@ -9,21 +9,26 @@ Skill followed: `.github/skills/frontend-testing/SKILL.md`
 Add thorough, behaviour-focused tests for the untested React components in
 `client/src/components`, protecting user-facing behaviour without becoming
 brittle. Cover components that render cleanly under Testing Library (no heavy
-third-party mocking). Defer wrappers around Leaflet, Plotly, Kumu, react-pdf,
-and fetch to a later pass.
+third-party mocking), and rewrite the one bad legacy component test
+(`ClimateSummary.test.jsx`) in the same style. Defer wrappers around Leaflet,
+Plotly, Kumu, react-pdf, and fetch to a later pass.
 
 ## Current state
 
 - Test stack: Vitest + Testing Library, jsdom, jest-dom matchers via
   `client/src/test-setup.js`. Config in `client/vite.config.js` (svgr + react
   plugins apply in tests).
-- Already tested (leave untouched — all passing):
-  - `vulnerabilities/IMDMap.test.jsx`, `adaptations/Reference.test.jsx`
-    (canonical Testing-Library style — the model to follow)
-  - `climatePrediction/ClimateSummary.test.jsx` (older `renderToStaticMarkup`
-    + heavy-mock style — an outlier we do NOT replicate)
+- Freshly-written, canonical Testing-Library style (keep as-is — the model to
+  follow): `vulnerabilities/IMDMap.test.jsx`,
+  `adaptations/Reference.test.jsx`.
+- Legacy tests brought over from `first-frontend-tests` (commit `6f1df8d`):
+  - `climatePrediction/ClimateSummary.test.jsx` — **bad; to be rewritten**
+    (see "Legacy rewrite" below). Uses `renderToStaticMarkup` and mocks every
+    icon/CSS/child/util, asserting on raw markup regex — brittle and against
+    the SKILL.
   - `utils/climateUtils.test.js`, `utils/utils.test.js`,
-    `report/textFormattingUtils.test.js`
+    `report/textFormattingUtils.test.js` — acceptable pure-function tests;
+    left as-is this pass.
 
 ## Verified technical assumptions
 
@@ -111,6 +116,28 @@ accessible names.
 `header/Header` (renders only the logo) is optional — a single render smoke
 test if cheap; skip if it adds no meaningful coverage.
 
+### Legacy rewrite — `climatePrediction/ClimateSummary.test.jsx`
+
+Replace the existing brittle test wholesale with a canonical Testing-Library
+version. `ClimateSummary` is a rich interactive component, not a static block,
+so drive it with real `climateUtils` and a small fixture `climatePrediction`
+(rows keyed like `tas_1980` / `tas_2050`); do NOT mock icons, CSS, `HelpPopover`
+or the util functions. Cover:
+
+- Returns null when `regions` is empty.
+- Renders the four main variables (Temperature, Rainfall, Dry Days, Windiness)
+  with summary text derived from the fixture (increase / decrease / "No change
+  in").
+- Clicking a variable's icon button reveals its detail metrics (e.g. clicking
+  Temperature shows the "temperature metrics" heading with Tropical Nights and
+  Hot Heat Days); clicking again returns to the placeholder.
+- Shows the placeholder prompt before any selection.
+- Surfaces the loading overlay text ("Loading climate data") when `loading`.
+- Season affects derived units where visible (annual vs seasonal wording), if
+  cheaply assertable.
+
+Query by role/heading/text throughout; no markup-regex assertions.
+
 ## Deferred (out of scope this pass — heavy deps)
 
 `footer/Footer` (react-pdf `usePDF`), `climateMap/ClimateMap` &
@@ -124,11 +151,13 @@ test if cheap; skip if it adds no meaningful coverage.
   `npx vitest run` after each batch; every test green before continuing.
 - Final gate: full `npx vitest run` green and `npm run lint` clean on new
   files (`eslint . --ext .js,.jsx`).
-- All commits land on the `react-tests` branch in its worktree.
+- All commits land on the `react-tests` branch.
 
 ## Out of scope
 
-- Refactoring the three existing outlier test files.
+- The three acceptable legacy util-style tests (`utils/utils.test.js`,
+  `utils/climateUtils.test.js`, `report/textFormattingUtils.test.js`) are left
+  as-is; only `ClimateSummary.test.jsx` is rewritten.
 - Testing pure data modules (`*Data.jsx`) directly — covered indirectly via the
   components that consume them.
 - Analytics (`gtag`) assertions.
