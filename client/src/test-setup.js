@@ -1,18 +1,21 @@
 import "@testing-library/jest-dom/vitest";
 import { beforeAll } from "vitest";
 
-// Patch localStorage to add missing methods if needed
+// Node 25 ships an experimental global `localStorage` that is present but non-functional:
+// it requires `--localstorage-file` and prints a warning; `getItem`/`clear`/etc. are not
+// functions. This shadows jsdom's own implementation, breaking any test that uses
+// localStorage. The guard below (`typeof localStorage.getItem !== "function"`) installs a
+// minimal in-memory replacement ONLY when the broken Node global is detected, making it a
+// no-op in environments where the real Storage API is available.
 beforeAll(() => {
-    // Check if localStorage is broken (missing standard methods)
     if (typeof localStorage !== "undefined" && typeof localStorage.getItem !== "function") {
-        // Recreate Storage interface
         const storage = {};
 
         Object.defineProperty(window, "localStorage", {
             value: {
                 length: 0,
                 getItem(key) {
-                    return storage[key] || null;
+                    return Object.prototype.hasOwnProperty.call(storage, key) ? storage[key] : null;
                 },
                 setItem(key, value) {
                     storage[key] = String(value);
