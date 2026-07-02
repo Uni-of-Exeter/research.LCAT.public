@@ -1,5 +1,5 @@
-import { cleanup,render, screen } from "@testing-library/react";
-import { afterEach,describe, expect, it } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { LCAT_HANDBOOK_URL } from "../../utils/constants";
 import Introduction from "./Introduction";

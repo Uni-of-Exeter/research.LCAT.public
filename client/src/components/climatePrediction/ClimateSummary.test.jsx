@@ -54,10 +54,11 @@ describe("ClimateSummary", () => {
         // Dry Days summary text is split across elements because the name has a HelpPopover;
         // use a custom function matcher on the parent summary-text div.
         expect(
-            screen.getByText((_, el) =>
-                el?.classList?.contains("summary-text") &&
-                /Dry Days/i.test(el.textContent) &&
-                /increase by 3\.00 days\/year/i.test(el.textContent),
+            screen.getByText(
+                (_, el) =>
+                    el?.classList?.contains("summary-text") &&
+                    /Dry Days/i.test(el.textContent) &&
+                    /increase by 3\.00 days\/year/i.test(el.textContent),
             ),
         ).toBeInTheDocument();
         expect(screen.getByText(/No change in/i)).toHaveTextContent(/Windiness/i);

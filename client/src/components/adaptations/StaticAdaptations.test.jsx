@@ -71,6 +71,8 @@ describe("StaticAdaptations", () => {
         renderAdaptations();
         expect(screen.queryByText(/The adaptation data is based on published scientific literature/i)).toBeNull();
         fireEvent.click(screen.getByRole("button", { name: /reference source information/i }));
-        expect(screen.getByText(/The adaptation data is based on published scientific literature/i)).toBeInTheDocument();
+        expect(
+            screen.getByText(/The adaptation data is based on published scientific literature/i),
+        ).toBeInTheDocument();
     });
 });

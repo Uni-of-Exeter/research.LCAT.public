@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 
-import { beforeAll } from "vitest";
+import { beforeAll, beforeEach } from "vitest";
 
 // Node 25 ships an experimental global `localStorage` that is present but non-functional:
 // it requires `--localstorage-file` and prints a warning; `getItem`/`clear`/etc. are not
@@ -27,17 +27,24 @@ beforeAll(() => {
                     this.length = Object.keys(storage).length;
                 },
                 clear() {
-                    Object.keys(storage).forEach(key => {
+                    Object.keys(storage).forEach((key) => {
                         delete storage[key];
                     });
                     this.length = 0;
                 },
                 key(index) {
-                    return Object.keys(storage)[index] || null;
+                    const k = Object.keys(storage)[index];
+                    return k === undefined ? null : k;
                 },
             },
             writable: true,
             configurable: true,
         });
+    }
+});
+
+beforeEach(() => {
+    if (typeof localStorage?.clear === "function") {
+        localStorage.clear();
     }
 });
