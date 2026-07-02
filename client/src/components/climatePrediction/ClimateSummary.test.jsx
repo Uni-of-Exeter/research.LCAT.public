@@ -1,146 +1,94 @@
-import React from 'react'
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { renderToStaticMarkup } from 'react-dom/server'
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 
-vi.mock('./ClimateSummary.css', () => ({}))
+import ClimateSummary from "./ClimateSummary";
 
-vi.mock('react-loading-overlay-ts', () => ({
-  default: ({ active, text, children }) => (
-    <div data-active={String(active)} data-text={text}>
-      {children}
-    </div>
-  ),
-}))
-
-vi.mock('../../images/buttons/decrease', () => ({
-  default: () => <span data-icon="down">down</span>,
-}))
-
-vi.mock('../../images/buttons/increase', () => ({
-  default: () => <span data-icon="up">up</span>,
-}))
-
-vi.mock('../../images/climate/DryDays', () => ({
-  default: () => <span>DryDaysIcon</span>,
-}))
-
-vi.mock('../../images/climate/HeavyRainDays.svg', () => ({
-  ReactComponent: () => <span>HeavyRainIcon</span>,
-}))
-
-vi.mock('../../images/climate/HotHeatDays.svg', () => ({
-  ReactComponent: () => <span>HotHeatIcon</span>,
-}))
-
-vi.mock('../../images/climate/Radiation.svg', () => ({
-  ReactComponent: () => <span>RadiationIcon</span>,
-}))
-
-vi.mock('../../images/climate/Rain', () => ({
-  default: () => <span>RainIcon</span>,
-}))
-
-vi.mock('../../images/climate/Temperature', () => ({
-  default: () => <span>TempIcon</span>,
-}))
-
-vi.mock('../../images/climate/TropicalNights.svg', () => ({
-  ReactComponent: () => <span>TropicalNightsIcon</span>,
-}))
-
-vi.mock('../../images/climate/WindSpeed', () => ({
-  default: () => <span>WindIcon</span>,
-}))
-
-vi.mock('./HelpPopover', () => ({
-  default: ({ children }) => <span>{children}</span>,
-}))
-
-vi.mock('../../utils/climateUtils', () => ({
-  climateChange: vi.fn(),
-  formatClimateData: vi.fn(),
-}))
-
-import ClimateSummary from './ClimateSummary'
-import { climateChange, formatClimateData } from '../../utils/climateUtils'
-
-const climateChangeMock = climateChange
-const formatClimateDataMock = formatClimateData
+const prediction = [
+    {
+        tas_1980: "10",
+        tas_2050: "12",
+        pr_1980: "2",
+        pr_2050: "1",
+        dry_days_1980: "5",
+        dry_days_2050: "8",
+        sfcWind_1980: "4",
+        sfcWind_2050: "4",
+        tropical_nights_1980: "1",
+        tropical_nights_2050: "3",
+        hot_heat_days_1980: "0",
+        hot_heat_days_2050: "2",
+        heavy_rain_days_1980: "1",
+        heavy_rain_days_2050: "2",
+        rsds_1980: "100",
+        rsds_2050: "110",
+        windy_days_1980: "3",
+        windy_days_2050: "5",
+    },
+];
 
 const baseProps = {
-  regions: [{ id: 1 }],
-  loading: false,
-  climatePrediction: [{ tas_1980: '10', tas_2050: '11' }],
-  year: 2050,
-}
+    regions: [{ id: 1 }],
+    loading: false,
+    climatePrediction: prediction,
+    year: 2050,
+    season: "annual",
+};
 
-describe('ClimateSummary', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
+const clickIcon = (container, index) => {
+    const iconButtons = container.querySelectorAll(".climate-icon-button");
+    fireEvent.click(iconButtons[index]);
+};
 
-  it('returns null when no regions are selected', () => {
-    const markup = renderToStaticMarkup(
-      <ClimateSummary
-        regions={[]}
-        loading={false}
-        climatePrediction={baseProps.climatePrediction}
-        year={baseProps.year}
-      />,
-    )
+describe("ClimateSummary", () => {
+    afterEach(cleanup);
 
-    expect(markup).toBe('')
-    expect(climateChangeMock).not.toHaveBeenCalled()
-  })
+    it("renders nothing when no regions are selected", () => {
+        const { container } = render(<ClimateSummary {...baseProps} regions={[]} />);
+        expect(container.firstChild).toBeNull();
+    });
 
-  it('renders summary text for each climate variable', () => {
-    climateChangeMock.mockReturnValue(1)
-    formatClimateDataMock.mockImplementation((_prediction, _variable, name) => ({
-      change: `${name} summary`,
-    }))
+    it("summarises each main climate variable from the prediction data", () => {
+        render(<ClimateSummary {...baseProps} />);
+        expect(screen.getByText(/Temperature increases by 2\.00 °C/i)).toBeInTheDocument();
+        expect(screen.getByText(/Rainfall decreases by 1\.00 mm\/day/i)).toBeInTheDocument();
+        // Dry Days summary text is split across elements because the name has a HelpPopover;
+        // use a custom function matcher on the parent summary-text div.
+        expect(
+            screen.getByText((_, el) =>
+                el?.classList?.contains("summary-text") &&
+                /Dry Days/i.test(el.textContent) &&
+                /increase by 3\.00 days\/year/i.test(el.textContent),
+            ),
+        ).toBeInTheDocument();
+        expect(screen.getByText(/No change in/i)).toHaveTextContent(/Windiness/i);
+    });
 
-    const markup = renderToStaticMarkup(<ClimateSummary {...baseProps} />)
+    it("shows the placeholder prompt before a variable is selected", () => {
+        render(<ClimateSummary {...baseProps} />);
+        expect(
+            screen.getByText(/Please click a climate variable icon to view additional metrics\./i),
+        ).toBeInTheDocument();
+    });
 
-    expect(markup).toContain('Temperature summary')
-    expect(markup).toContain('Rainfall summary')
-    expect(markup).toContain('Dry Days summary')
-    expect(markup).toContain('Windiness summary')
-    expect(climateChangeMock).toHaveBeenCalledWith(baseProps.climatePrediction, 'tas', 2050)
-    expect(climateChangeMock).toHaveBeenCalledWith(baseProps.climatePrediction, 'pr', 2050)
-    expect(climateChangeMock).toHaveBeenCalledWith(baseProps.climatePrediction, 'dry_days', 2050)
-    expect(climateChangeMock).toHaveBeenCalledWith(baseProps.climatePrediction, 'sfcWind', 2050)
-  })
+    it("reveals temperature detail metrics when the temperature icon is clicked", () => {
+        const { container } = render(<ClimateSummary {...baseProps} />);
+        clickIcon(container, 0); // first icon button = Temperature
+        expect(screen.getByRole("heading", { name: /temperature metrics/i })).toBeInTheDocument();
+        expect(screen.getByText(/Tropical Nights/i)).toBeInTheDocument();
+        expect(screen.getByText(/Hot Heat Days/i)).toBeInTheDocument();
+    });
 
-  it('renders arrows based on climate change direction', () => {
-    climateChangeMock.mockImplementation((_prediction, variable) => {
-      if (variable === 'tas') return 1
-      if (variable === 'pr') return -1
-      if (variable === 'sfcWind') return 0
-      return null
-    })
-    formatClimateDataMock.mockImplementation((_prediction, _variable, name) => ({
-      change: `${name} summary`,
-    }))
+    it("collapses the detail metrics back to the placeholder on a second click", () => {
+        const { container } = render(<ClimateSummary {...baseProps} />);
+        clickIcon(container, 0);
+        clickIcon(container, 0);
+        expect(
+            screen.getByText(/Please click a climate variable icon to view additional metrics\./i),
+        ).toBeInTheDocument();
+    });
 
-    const markup = renderToStaticMarkup(<ClimateSummary {...baseProps} />)
-    const upCount = (markup.match(/data-icon="up"/g) || []).length
-    const downCount = (markup.match(/data-icon="down"/g) || []).length
-
-    expect(upCount).toBe(1)
-    expect(downCount).toBe(1)
-  })
-
-  it('passes loading state to the overlay', () => {
-    climateChangeMock.mockReturnValue(1)
-    formatClimateDataMock.mockImplementation((_prediction, _variable, name) => ({
-      change: `${name} summary`,
-    }))
-
-    const markup = renderToStaticMarkup(
-      <ClimateSummary {...baseProps} loading={true} />,
-    )
-
-    expect(markup).toContain('data-active="true"')
-    expect(markup).toContain('data-text="Loading climate data"')
-  })
-})
+    it("shows the loading overlay text while loading", () => {
+        render(<ClimateSummary {...baseProps} loading={true} />);
+        expect(screen.getByText("Loading climate data")).toBeInTheDocument();
+    });
+});
