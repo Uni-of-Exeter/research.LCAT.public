@@ -1,4 +1,5 @@
 import "@testing-library/jest-dom/vitest";
+
 import { beforeAll } from "vitest";
 
 // Node 25 ships an experimental global `localStorage` that is present but non-functional:

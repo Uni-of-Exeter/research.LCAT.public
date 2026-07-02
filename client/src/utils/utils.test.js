@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import { andify, formatTextWrap, camelize } from './utils'
+import { describe, expect,it } from 'vitest'
+
+import { andify, camelize,formatTextWrap } from './utils'
 
 describe('andify', () => {
   it('returns single item', () => {
