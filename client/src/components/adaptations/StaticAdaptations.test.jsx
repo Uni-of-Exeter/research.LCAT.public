@@ -50,7 +50,7 @@ describe("StaticAdaptations", () => {
         const setSelectedAdaptationHazards = vi.fn();
         renderAdaptations({ setSelectedAdaptationHazards });
         fireEvent.click(screen.getByRole("button", { name: /extreme storms/i }));
-        expect(setSelectedAdaptationHazards).toHaveBeenCalled();
+        expect(setSelectedAdaptationHazards).toHaveBeenCalledWith(expect.any(Function));
     });
 
     it("clears hazards when Reset adaptation filters is clicked", () => {
