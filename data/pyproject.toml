@@ -8,7 +8,7 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
-numpy = "^1.26.4"
+numpy = "^2.4.6"
 geojson = "^3.2.0"
 psycopg2 = "^2.9.9"
 netcdf4 = "^1.6.5"
