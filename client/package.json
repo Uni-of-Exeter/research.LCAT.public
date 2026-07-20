@@ -28,7 +28,7 @@
         "react-plotly.js": "^2.6.0",
         "semantic-release": "^25.0.2",
         "vite-plugin-commonjs": "^0.10.1",
-        "vite-plugin-svgr": "^4.2.0"
+        "vite-plugin-svgr": "^5.2.0"
     },
     "devDependencies": {
         "@testing-library/jest-dom": "^6.9.1",
