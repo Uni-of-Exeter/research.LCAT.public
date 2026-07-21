@@ -60,7 +60,7 @@ const ClimateImpactSummary = ({ loading, selectedImpactHazard, setSelectedImpact
 
             <p>
                 You are viewing the <strong className="text-emphasis">climate</strong> impacts for&nbsp;
-                <select value={selectedImpactHazard} onChange={handleHazardChange}>
+                <select aria-label="Climate hazard" value={selectedImpactHazard} onChange={handleHazardChange}>
                     {filteredPathwayData.map((pathway) => (
                         <option value={pathway.name} key={pathway.id}>
                             {pathway.name}

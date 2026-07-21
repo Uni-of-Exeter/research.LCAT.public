@@ -312,6 +312,7 @@ const Graph = (props) => {
                                 <span className={"projected-regions"}>{andify(regions.map((e) => e.name))}</span>
                                 &nbsp;under&nbsp;
                                 <select
+                                    aria-label="Climate scenario"
                                     value={rcp}
                                     onChange={(e) => {
                                         setRcp(e.target.value);
@@ -329,6 +330,7 @@ const Graph = (props) => {
                                 )}
                                 ,&nbsp;and shows the&nbsp;
                                 <select
+                                    aria-label="Season"
                                     value={season}
                                     onChange={(e) => {
                                         setSeason(e.target.value);
@@ -340,6 +342,7 @@ const Graph = (props) => {
                                 </select>
                                 &nbsp;averages for&nbsp;
                                 <select
+                                    aria-label="Climate variable"
                                     value={variable}
                                     onChange={(e) => {
                                         setVariable(e.target.value);
@@ -353,6 +356,7 @@ const Graph = (props) => {
                                 </select>
                                 &nbsp;for&nbsp;
                                 <select
+                                    aria-label="Displayed area"
                                     onChange={(e) => {
                                         setShowAverage(e.target.value === "1");
                                     }}

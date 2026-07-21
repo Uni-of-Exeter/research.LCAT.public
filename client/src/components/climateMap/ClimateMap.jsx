@@ -180,6 +180,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                 To begin, select the area/s you are interested in by clicking on the map. Climate data for your chosen
                 area/s will appear below.{" "}
                 <select
+                    aria-label="Boundary type"
                     onChange={(e) => {
                         setRegionType(e.target.value);
                         setRegions([]);
