@@ -299,6 +299,10 @@ const Graph = (props) => {
             : [],
     };
 
+    const chartSummary = `Line chart showing projected ${variable} for ${andify(regions.map(r => r.name))}, ` +
+        `${season} averages, ${rcp === "rcp60" ? "RCP 6.0" : "RCP 8.5"} scenario. ` +
+        `Full data available in the table below the chart.`;
+
     return (
         <div>
             <div className="collapsible">
@@ -376,7 +380,11 @@ const Graph = (props) => {
                                     <option value="1">your areas vs the UK</option>
                                 </select>
                             </p>
-                            <div ref={graphContainerRef} className="graph-plot-container">
+                            <div
+                                ref={graphContainerRef}
+                                role="img"
+                                aria-label={chartSummary}
+                                className="graph-plot-container">
                                 <div className="graph-table-toggle-container">
                                     <button
                                         className="graph-table-toggle"
