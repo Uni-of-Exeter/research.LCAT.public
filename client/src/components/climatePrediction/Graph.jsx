@@ -12,6 +12,8 @@ Common Good Public License Beta 1.0 for more details. */
 
 /* global gtag */
 
+import "./Graph.css";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useCollapse } from "react-collapsed";
 import LoadingOverlay from "react-loading-overlay-ts";
@@ -43,6 +45,7 @@ const Graph = (props) => {
     } = props;
 
     const [showAverage, setShowAverage] = useState(false);
+    const [showDataTable, setShowDataTable] = useState(false);
     const [isExpanded, setExpanded] = useState(false);
     const effectiveExpanded = isExpanded && regions.length > 0;
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded: effectiveExpanded });
@@ -137,7 +140,16 @@ const Graph = (props) => {
     const gapHalfWidth = 0.015;
 
     const formatHover = (y) => (y == null ? "" : Number(y).toFixed(2));
+    const formatTableValue = (y) => (y == null ? "-" : Number(y).toFixed(2));
     const hoverTemplate = "%{customdata}<extra></extra>";
+
+    const tableRows = data.map((point, index) => ({
+        decade: point.x,
+        yourAreas: yValues[index],
+        yourAreasMin: minY[index],
+        yourAreasMax: maxY[index],
+        ukAverage: avgY[index],
+    }));
 
     const traces = [
         // Mean line
@@ -291,8 +303,7 @@ const Graph = (props) => {
         <div>
             <div className="collapsible">
                 <div
-                    className="header"
-                    style={{ margin: "1em" }}
+                    className="header graph-collapsible-header"
                     role="button"
                     tabIndex={0}
                     {...getToggleProps({})}
@@ -307,7 +318,7 @@ const Graph = (props) => {
                     <LoadingOverlay active={loading} spinner text="Loading climate data">
                         <div className="content">
                             <h1>Climate details</h1>
-                            <p>
+                            <p className="graph-description">
                                 The graph below shows the future climate change expected in&nbsp;
                                 <span className={"projected-regions"}>{andify(regions.map((e) => e.name))}</span>
                                 &nbsp;under&nbsp;
@@ -365,22 +376,75 @@ const Graph = (props) => {
                                     <option value="1">your areas vs the UK</option>
                                 </select>
                             </p>
-                            <div
-                                ref={graphContainerRef}
-                                style={{ position: "relative", width: "100%", minHeight: "400px", overflow: "visible" }}
-                            >
+                            <div ref={graphContainerRef} className="graph-plot-container">
+                                <div className="graph-table-toggle-container">
+                                    <button
+                                        className="graph-table-toggle"
+                                        type="button"
+                                        aria-expanded={showDataTable}
+                                        aria-controls="climate-details-data-table"
+                                        onClick={() => setShowDataTable(!showDataTable)}
+                                    >
+                                        {showDataTable ? "Hide" : "Show"} data table
+                                    </button>
+                                </div>
                                 <Plot
                                     data={traces}
                                     layout={{ ...layout, width: undefined, height: 400, autosize: true }}
                                     config={{ displayModeBar: false, responsive: true }}
-                                    style={{ width: "100%", height: "100%", minWidth: 0 }}
+                                    className="graph-plot"
                                 />
                             </div>
+                            {showDataTable && (
+                                <div id="climate-details-data-table" className="graph-data-table-container">
+                                    <table className="graph-data-table">
+                                        <caption>
+                                            Data table alternative for the climate graph
+                                        </caption>
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">
+                                                    Decade
+                                                </th>
+                                                <th scope="col">
+                                                    Your areas
+                                                </th>
+                                                {variable === "tas" && (
+                                                    <>
+                                                        <th scope="col">
+                                                            Your areas (min)
+                                                        </th>
+                                                        <th scope="col">
+                                                            Your areas (max)
+                                                        </th>
+                                                    </>
+                                                )}
+                                                {showAverage && <th scope="col">UK average</th>}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {tableRows.map((row) => (
+                                                <tr key={row.decade}>
+                                                    <th scope="row">{row.decade}</th>
+                                                    <td>{formatTableValue(row.yourAreas)}</td>
+                                                    {variable === "tas" && (
+                                                        <>
+                                                            <td>{formatTableValue(row.yourAreasMin)}</td>
+                                                            <td>{formatTableValue(row.yourAreasMax)}</td>
+                                                        </>
+                                                    )}
+                                                    {showAverage && <td>{formatTableValue(row.ukAverage)}</td>}
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
                         </div>
                     </LoadingOverlay>
-                    <p className="note" style={{ marginBottom: 0 }}>
+                    <p className="note graph-note-bottom">
                         {variable === "tas" && (
-                            <span style={{ display: "block", marginBottom: "1rem" }}>
+                            <span className="graph-temperature-note">
                                 The min and max numbers here do not account for extreme temperatures, which will still
                                 occur, but instead show the range of what normal and expected temperatures will be.
                             </span>
@@ -392,10 +456,10 @@ const Graph = (props) => {
                         Note: The vertical grey bar indicates the gap between the 1980 baseline and the first future
                         projection point.
                     </p>
-                    <div style={{ height: "1rem" }} />
+                    <div className="graph-collapsible-spacer" />
                 </div>
             </div>
-            <p className="note" style={{ marginTop: 0 }}>
+            <p className="note graph-note-top">
                 Data source: The current iteration of the tool uses climate data from the{" "}
                 <a href={CHESS_SCAPE_URL} target="_blank" rel="noreferrer">
                     CHESS-SCAPE
