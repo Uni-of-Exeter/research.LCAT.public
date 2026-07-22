@@ -1,13 +1,52 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export default function CookiePolicyModal({ open, onClose }) {
+    const modalRef = useRef(null);
+    const previouslyFocused = useRef(null);
+
     useEffect(() => {
         if (!open) return;
+
+        const scrollY = window.scrollY;
+
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.width = '100%';
+
+        previouslyFocused.current = document.activeElement;
+        modalRef.current?.focus();
+
         function onKeyDown(e) {
-            if (e.key === "Escape") onClose();
+            if (e.key === "Escape") {
+                onClose();
+                return;
+            }
+            if (e.key === "Tab") {
+                const focusable = modalRef.current.querySelectorAll(
+                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                );
+                if (focusable.length === 0) return;
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
         }
+
         window.addEventListener("keydown", onKeyDown);
-        return () => window.removeEventListener("keydown", onKeyDown);
+        return () => {
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+            window.scrollTo(0, scrollY);
+            window.removeEventListener("keydown", onKeyDown);
+            previouslyFocused.current?.focus?.();
+        };
     }, [open, onClose]);
 
     if (!open) return null;
@@ -17,7 +56,9 @@ export default function CookiePolicyModal({ open, onClose }) {
             id="cookie-policy-modal"
             role="dialog"
             aria-modal="true"
+            aria-labelledby="cookie-policy-modal-title"
             tabIndex={-1}
+            ref={modalRef}
             style={{
                 position: "fixed",
                 top: 0,
@@ -32,8 +73,8 @@ export default function CookiePolicyModal({ open, onClose }) {
             }}
         >
             <div
-                role="button"
-                aria-label="Close cookie policy overlay"
+                aria-hidden="true"
+                onClick={onClose}
                 style={{
                     position: "fixed",
                     top: 0,
@@ -43,14 +84,6 @@ export default function CookiePolicyModal({ open, onClose }) {
                     background: "transparent",
                     zIndex: 10001,
                     cursor: "pointer",
-                }}
-                tabIndex={0}
-                onClick={onClose}
-                onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        onClose();
-                    }
                 }}
             />
             <div
@@ -86,7 +119,9 @@ export default function CookiePolicyModal({ open, onClose }) {
                 >
                     &times;
                 </button>
-                <h2 style={{ marginTop: 0 }}>Cookie Policy</h2>
+                <h2 id="cookie-policy-modal-title" style={{ marginTop: 0 }}>
+                    Cookie Policy
+                </h2>
                 <div style={{ fontSize: "1rem", lineHeight: 1.6 }}>
                     <p>
                         <strong>What are cookies?</strong> Cookies are small text files stored on your device to help

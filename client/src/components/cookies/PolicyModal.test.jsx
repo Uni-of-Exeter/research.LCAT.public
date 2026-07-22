@@ -3,6 +3,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import CookiePolicyModal from "./PolicyModal";
 
+window.scrollTo = vi.fn();
+
 describe("CookiePolicyModal", () => {
     afterEach(cleanup);
 
@@ -20,7 +22,11 @@ describe("CookiePolicyModal", () => {
     it("calls onClose when the overlay is clicked", () => {
         const onClose = vi.fn();
         render(<CookiePolicyModal open={true} onClose={onClose} />);
-        fireEvent.click(screen.getByRole("button", { name: /close cookie policy overlay/i }));
+        const dialog = screen.getByRole("dialog", { name: /cookie policy/i });
+        const overlay = dialog.firstElementChild;
+        expect(overlay).not.toBeNull();
+
+        fireEvent.click(overlay);
         expect(onClose).toHaveBeenCalledTimes(1);
     });
 
