@@ -66,7 +66,7 @@ describe("PageSelectionModal", () => {
     it("closes on Escape", () => {
         const onClose = vi.fn();
         renderModal({ onClose });
-        fireEvent.keyDown(screen.getByRole("button", { name: /Close modal \(click background or press Escape\)/i }), {
+        fireEvent.keyDown(window, {
             key: "Escape",
         });
         expect(onClose).toHaveBeenCalledTimes(1);
@@ -75,7 +75,11 @@ describe("PageSelectionModal", () => {
     it("closes when the overlay itself is clicked", () => {
         const onClose = vi.fn();
         renderModal({ onClose });
-        fireEvent.click(screen.getByRole("button", { name: /Close modal \(click background or press Escape\)/i }));
+        const dialog = screen.getByRole("dialog", { name: /select report pages/i });
+        const overlay = dialog.parentElement;
+        expect(overlay).not.toBeNull();
+
+        fireEvent.click(overlay);
         expect(onClose).toHaveBeenCalledTimes(1);
     });
 });

@@ -1,11 +1,52 @@
 import "./PageSelectionModal.css";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const PageSelectionModal = ({ isOpen, onClose, onGenerate, availablePages }) => {
     const [selectedPages, setSelectedPages] = useState(
         availablePages.reduce((acc, page) => ({ ...acc, [page.id]: page.defaultSelected }), {}),
     );
+    const modalRef = useRef(null);
+    const previouslyFocused = useRef(null);
+
+    useEffect(() => {
+        if (!isOpen) return;
+
+        previouslyFocused.current = document.activeElement;
+        modalRef.current?.focus();
+
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+
+        function onKeyDown(event) {
+            if (event.key === "Escape") {
+                onClose();
+                return;
+            }
+            if (event.key === "Tab") {
+                const focusable = modalRef.current.querySelectorAll(
+                    'button:not([disabled]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])',
+                );
+                if (focusable.length === 0) return;
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+                if (event.shiftKey && document.activeElement === first) {
+                    event.preventDefault();
+                    last.focus();
+                } else if (!event.shiftKey && document.activeElement === last) {
+                    event.preventDefault();
+                    first.focus();
+                }
+            }
+        }
+
+        window.addEventListener("keydown", onKeyDown);
+        return () => {
+            window.removeEventListener("keydown", onKeyDown);
+            document.body.style.overflow = previousOverflow;
+            previouslyFocused.current?.focus?.();
+        };
+    }, [isOpen, onClose]);
 
     const handlePageToggle = (pageId) => {
         setSelectedPages((prev) => ({
@@ -20,12 +61,6 @@ const PageSelectionModal = ({ isOpen, onClose, onGenerate, availablePages }) => 
         onClose();
     };
 
-    const handleKeyDown = (event) => {
-        if (event.key === "Escape") {
-            onClose();
-        }
-    };
-
     const handleOverlayClick = (event) => {
         // Only close if clicking the overlay itself, not its children
         if (event.target === event.currentTarget) {
@@ -38,15 +73,18 @@ const PageSelectionModal = ({ isOpen, onClose, onGenerate, availablePages }) => 
     if (!isOpen) return null;
 
     return (
-        <div
-            className="modal-overlay"
-            onClick={handleOverlayClick}
-            onKeyDown={handleKeyDown}
-            role="button"
-            aria-label="Close modal (click background or press Escape)"
-            tabIndex="0"
-        >
-            <div className="modal-content">
+        /* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions --
+            Backdrop click-to-close is a mouse/touch convenience only; keyboard users close via Escape,
+            handled in the useEffect above. This div is intentionally non-interactive/non-focusable. */
+        <div className="modal-overlay" onClick={handleOverlayClick}>
+            <div
+                className="modal-content"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="modal-title"
+                tabIndex={-1}
+                ref={modalRef}
+            >
                 <h3 id="modal-title">Select Report Pages</h3>
 
                 <div className="page-options">
