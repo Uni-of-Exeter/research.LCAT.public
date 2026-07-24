@@ -233,6 +233,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                                 <div className="climate-map-search">
                                     <input
                                         type="text"
+                                        aria-label="Search regions"
                                         placeholder="Search regions..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}

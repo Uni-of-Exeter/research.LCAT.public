@@ -14,7 +14,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./Graph.css";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useCollapse } from "react-collapsed";
 import LoadingOverlay from "react-loading-overlay-ts";
 import PlotModule from "react-plotly.js";
@@ -50,6 +50,7 @@ const Graph = (props) => {
     const effectiveExpanded = isExpanded && regions.length > 0;
     const { getCollapseProps, getToggleProps } = useCollapse({ isExpanded: effectiveExpanded });
     const graphContainerRef = useRef(null);
+    const chartSummaryId = useId();
     const [isMobile, setIsMobile] = useState(false);
     const [containerWidth, setContainerWidth] = useState(undefined);
     const hasTrackedCollapsibleOpen = useRef(false);
@@ -299,7 +300,7 @@ const Graph = (props) => {
             : [],
     };
 
-    const chartSummary = `Line chart showing projected ${variable} for ${andify(regions.map(r => r.name))}, ` +
+    const chartSummary = `Line chart showing projected ${variable} for ${andify(regions.map((region) => region.name))}, ` +
         `${season} averages, ${rcp === "rcp60" ? "RCP 6.0" : "RCP 8.5"} scenario. ` +
         `Full data available in the table below the chart.`;
 
@@ -380,11 +381,7 @@ const Graph = (props) => {
                                     <option value="1">your areas vs the UK</option>
                                 </select>
                             </p>
-                            <div
-                                ref={graphContainerRef}
-                                role="img"
-                                aria-label={chartSummary}
-                                className="graph-plot-container">
+                            <div ref={graphContainerRef} className="graph-plot-container">
                                 <div className="graph-table-toggle-container">
                                     <button
                                         className="graph-table-toggle"
@@ -396,12 +393,17 @@ const Graph = (props) => {
                                         {showDataTable ? "Hide" : "Show"} data table
                                     </button>
                                 </div>
-                                <Plot
-                                    data={traces}
-                                    layout={{ ...layout, width: undefined, height: 400, autosize: true }}
-                                    config={{ displayModeBar: false, responsive: true }}
-                                    className="graph-plot"
-                                />
+                                <figure className="graph-chart-figure" aria-describedby={chartSummaryId}>
+                                    <Plot
+                                        data={traces}
+                                        layout={{ ...layout, width: undefined, height: 400, autosize: true }}
+                                        config={{ displayModeBar: false, responsive: true }}
+                                        className="graph-plot"
+                                    />
+                                    <figcaption id={chartSummaryId} className="graph-visually-hidden">
+                                        {chartSummary}
+                                    </figcaption>
+                                </figure>
                             </div>
                             {showDataTable && (
                                 <div id="climate-details-data-table" className="graph-data-table-container">

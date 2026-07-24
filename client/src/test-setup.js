@@ -12,6 +12,20 @@ expect.extend(toHaveNoViolations);
 // minimal in-memory replacement ONLY when the broken Node global is detected, making it a
 // no-op in environments where the real Storage API is available.
 beforeAll(() => {
+    if (typeof window !== "undefined" && typeof window.scrollTo !== "function") {
+        window.scrollTo = () => {};
+    }
+
+    if (typeof window !== "undefined" && typeof window.ResizeObserver !== "function") {
+        class ResizeObserverMock {
+            observe() {}
+
+            disconnect() {}
+        }
+
+        window.ResizeObserver = ResizeObserverMock;
+    }
+
     if (typeof localStorage !== "undefined" && typeof localStorage.getItem !== "function") {
         const storage = {};
 
