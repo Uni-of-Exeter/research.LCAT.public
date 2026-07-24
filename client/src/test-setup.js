@@ -1,6 +1,9 @@
 import "@testing-library/jest-dom/vitest";
 
-import { beforeAll, beforeEach } from "vitest";
+import { toHaveNoViolations } from "jest-axe";
+import { beforeAll, beforeEach, expect } from "vitest";
+
+expect.extend(toHaveNoViolations);
 
 // Node 25 ships an experimental global `localStorage` that is present but non-functional:
 // it requires `--localstorage-file` and prints a warning; `getItem`/`clear`/etc. are not
