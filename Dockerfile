@@ -1,4 +1,4 @@
-FROM node:22-alpine AS client-build
+FROM node:22-alpine3.22 AS client-build
 
 WORKDIR /app/client
 
@@ -8,7 +8,7 @@ RUN npm ci
 COPY client/ ./
 RUN npm run build
 
-FROM node:22-alpine AS server-runtime
+FROM node:22-alpine3.22 AS server-runtime
 
 WORKDIR /app/server
 
