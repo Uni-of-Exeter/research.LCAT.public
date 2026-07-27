@@ -9,8 +9,26 @@ jobs:
   check-source-branch:
     runs-on: ubuntu-latest
     steps:
-      - name: Fail if source branch is not dev
-        if: github.head_ref != 'dev' || github.event.pull_request.head.repo.full_name != github.repository
+      - name: Fail unless PR is from dev or a Dependabot security update
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: |
-          echo "PRs to main must come from this repository's dev branch. Source branch: ${{ github.head_ref }}. Source repository: ${{ github.event.pull_request.head.repo.full_name }}"
+          if [ "$HEAD_REPO" != "$GITHUB_REPOSITORY" ]; then
+            echo "PRs to main must come from this repository. Source repository: $HEAD_REPO"
+            exit 1
+          fi
+
+          if [ "$HEAD_REF" = "dev" ]; then
+            echo "OK: from dev"
+            exit 0
+          fi
+
+          if [ "$PR_AUTHOR" = "dependabot[bot]" ] && [[ "$HEAD_REF" == dependabot/* ]]; then
+            echo "OK: Dependabot security update from $HEAD_REF"
+            exit 0
+          fi
+
+          echo "PRs to main must come from this repository's dev branch, or be a Dependabot security update. Source branch: $HEAD_REF. Author: $PR_AUTHOR"
           exit 1
