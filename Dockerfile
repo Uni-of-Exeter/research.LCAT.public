@@ -2,8 +2,8 @@ FROM node:22-alpine3.22 AS client-build
 
 WORKDIR /app/client
 
-COPY client/package.json client/package-lock.json ./
-RUN npm ci
+COPY client/package.json ./
+RUN npm install
 
 COPY client/ ./
 RUN npm run build
@@ -15,8 +15,8 @@ WORKDIR /app/server
 ENV NODE_ENV=production
 ENV PORT=3000
 
-COPY server/package.json server/package-lock.json ./
-RUN npm ci --omit=dev
+COPY server/package.json ./
+RUN npm install --omit=dev
 
 COPY server/ ./
 COPY --from=client-build /app/client/dist /app/client/dist
