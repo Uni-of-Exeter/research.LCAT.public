@@ -13,13 +13,11 @@ cd research.LCAT.public
 
 This is the quickest way to run the app stack locally (Express server + React build + PostgreSQL).
 
-### 1. Create a local environment file
+### 1. Create a Docker Compose environment file
 
-From the repository root:
+From the repository root (this `.env` is used by Docker Compose; the manual setup below still expects `server/.env`):
 
-```bash
-cp .env.example .env
-```
+    cp .env.example .env
 
 ### 2. Build and start the stack
 
