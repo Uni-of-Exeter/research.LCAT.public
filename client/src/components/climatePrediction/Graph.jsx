@@ -394,12 +394,14 @@ const Graph = (props) => {
                                     </button>
                                 </div>
                                 <figure className="graph-chart-figure" aria-describedby={chartSummaryId}>
-                                    <Plot
-                                        data={traces}
-                                        layout={{ ...layout, width: undefined, height: 400, autosize: true }}
-                                        config={{ displayModeBar: false, responsive: true }}
-                                        className="graph-plot"
-                                    />
+                                    <div aria-hidden="true">
+                                        <Plot
+                                            data={traces}
+                                            layout={{ ...layout, width: undefined, height: 400, autosize: true }}
+                                            config={{ displayModeBar: false, responsive: true }}
+                                            className="graph-plot"
+                                        />
+                                    </div>
                                     <figcaption id={chartSummaryId} className="graph-visually-hidden">
                                         {chartSummary}
                                     </figcaption>
