@@ -101,7 +101,11 @@ const KumuImpactPathway = ({ regions, selectedImpactHazard, setSelectedImpactHaz
                         </p>
                         <p>
                             You are viewing the{" "}
-                            <select aria-label="Detail level" value={whichPathway} onChange={(event) => togglePathway(event.target.value)}>
+                            <select
+                                aria-label="Detail level"
+                                value={whichPathway}
+                                onChange={(event) => togglePathway(event.target.value)}
+                            >
                                 <option value="summary">summary</option>
                                 <option value="complete">complete</option>
                                 <option value="complete (with adaptations)">complete (with adaptations)</option>

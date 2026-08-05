@@ -6,7 +6,7 @@ import CookiePolicyModal from "./PolicyModal";
 
 describe("CookiePolicyModal accessibility", () => {
     it("has no detectable accessibility violations when open", async () => {
-        const { container } = render(<CookiePolicyModal open={true} onClose={() => { }} />);
+        const { container } = render(<CookiePolicyModal open={true} onClose={() => {}} />);
 
         const results = await axe(container);
         expect(results).toHaveNoViolations();

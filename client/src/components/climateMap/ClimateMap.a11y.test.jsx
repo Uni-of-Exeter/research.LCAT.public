@@ -26,10 +26,10 @@ describe("ClimateMap accessibility", () => {
         const { container } = render(
             <ClimateMap
                 regions={[]}
-                setRegions={() => { }}
+                setRegions={() => {}}
                 allRegions={[]}
                 regionType="boundary_uk_counties"
-                setRegionType={() => { }}
+                setRegionType={() => {}}
             />,
         );
 

@@ -300,7 +300,8 @@ const Graph = (props) => {
             : [],
     };
 
-    const chartSummary = `Line chart showing projected ${variable} for ${andify(regions.map((region) => region.name))}, ` +
+    const chartSummary =
+        `Line chart showing projected ${variable} for ${andify(regions.map((region) => region.name))}, ` +
         `${season} averages, ${rcp === "rcp60" ? "RCP 6.0" : "RCP 8.5"} scenario. ` +
         `Full data available in the table below the chart.`;
 
@@ -410,25 +411,15 @@ const Graph = (props) => {
                             {showDataTable && (
                                 <div id="climate-details-data-table" className="graph-data-table-container">
                                     <table className="graph-data-table">
-                                        <caption>
-                                            Data table alternative for the climate graph
-                                        </caption>
+                                        <caption>Data table alternative for the climate graph</caption>
                                         <thead>
                                             <tr>
-                                                <th scope="col">
-                                                    Decade
-                                                </th>
-                                                <th scope="col">
-                                                    Your areas
-                                                </th>
+                                                <th scope="col">Decade</th>
+                                                <th scope="col">Your areas</th>
                                                 {variable === "tas" && (
                                                     <>
-                                                        <th scope="col">
-                                                            Your areas (min)
-                                                        </th>
-                                                        <th scope="col">
-                                                            Your areas (max)
-                                                        </th>
+                                                        <th scope="col">Your areas (min)</th>
+                                                        <th scope="col">Your areas (max)</th>
                                                     </>
                                                 )}
                                                 {showAverage && <th scope="col">UK average</th>}

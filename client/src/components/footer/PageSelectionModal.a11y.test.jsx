@@ -12,7 +12,7 @@ const PAGES = [
 describe("PageSelectionModal accessibility", () => {
     it("has no detectable accessibility violations when open", async () => {
         const { container } = render(
-            <PageSelectionModal isOpen={true} onClose={() => { }} onGenerate={() => { }} availablePages={PAGES} />,
+            <PageSelectionModal isOpen={true} onClose={() => {}} onGenerate={() => {}} availablePages={PAGES} />,
         );
 
         const results = await axe(container);

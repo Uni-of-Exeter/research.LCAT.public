@@ -9,9 +9,9 @@ export default function CookiePolicyModal({ open, onClose }) {
 
         const scrollY = window.scrollY;
 
-        document.body.style.position = 'fixed';
+        document.body.style.position = "fixed";
         document.body.style.top = `-${scrollY}px`;
-        document.body.style.width = '100%';
+        document.body.style.width = "100%";
 
         previouslyFocused.current = document.activeElement;
         modalRef.current?.focus();
@@ -23,7 +23,7 @@ export default function CookiePolicyModal({ open, onClose }) {
             }
             if (e.key === "Tab") {
                 const focusable = modalRef.current.querySelectorAll(
-                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
                 );
                 if (focusable.length === 0) return;
                 const first = focusable[0];
@@ -40,9 +40,9 @@ export default function CookiePolicyModal({ open, onClose }) {
 
         window.addEventListener("keydown", onKeyDown);
         return () => {
-            document.body.style.position = '';
-            document.body.style.top = '';
-            document.body.style.width = '';
+            document.body.style.position = "";
+            document.body.style.top = "";
+            document.body.style.width = "";
             window.scrollTo(0, scrollY);
             window.removeEventListener("keydown", onKeyDown);
             previouslyFocused.current?.focus?.();
