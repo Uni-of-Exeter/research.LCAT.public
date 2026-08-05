@@ -13,7 +13,9 @@ Common Good Public License Beta 1.0 for more details. */
 import { useEffect, useState } from "react";
 
 export default function AccessibilityStatement() {
-    const [isActive, setIsActive] = useState(false);
+    const [isActive, setIsActive] = useState(() =>
+        typeof window !== "undefined" ? window.location.hash === "#accessibility-statement" : false,
+    );
 
     useEffect(() => {
         const updateRoute = () => setIsActive(window.location.hash === "#accessibility-statement");

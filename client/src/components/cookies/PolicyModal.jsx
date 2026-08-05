@@ -8,6 +8,9 @@ export default function CookiePolicyModal({ open, onClose }) {
         if (!open) return;
 
         const scrollY = window.scrollY;
+        const previousBodyPosition = document.body.style.position;
+        const previousBodyTop = document.body.style.top;
+        const previousBodyWidth = document.body.style.width;
 
         document.body.style.position = "fixed";
         document.body.style.top = `-${scrollY}px`;
@@ -40,9 +43,9 @@ export default function CookiePolicyModal({ open, onClose }) {
 
         window.addEventListener("keydown", onKeyDown);
         return () => {
-            document.body.style.position = "";
-            document.body.style.top = "";
-            document.body.style.width = "";
+            document.body.style.position = previousBodyPosition;
+            document.body.style.top = previousBodyTop;
+            document.body.style.width = previousBodyWidth;
             window.scrollTo(0, scrollY);
             window.removeEventListener("keydown", onKeyDown);
             previouslyFocused.current?.focus?.();

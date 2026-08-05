@@ -24,7 +24,9 @@ const PageSelectionModal = ({ isOpen, onClose, onGenerate, availablePages }) => 
                 return;
             }
             if (event.key === "Tab") {
-                const focusable = modalRef.current.querySelectorAll(
+                const modalRoot = modalRef.current;
+                if (!modalRoot) return;
+                const focusable = modalRoot.querySelectorAll(
                     'button:not([disabled]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])',
                 );
                 if (focusable.length === 0) return;

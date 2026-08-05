@@ -87,7 +87,9 @@ const App = () => {
 
     const [selectedAdaptationHazards, setSelectedAdaptationHazards] = useState([defaultState.selectedImpactHazard]);
     const [filterName, setFilterName] = useState(defaultFilterName);
-    const [isAccessibilityStatementRoute, setIsAccessibilityStatementRoute] = useState(false);
+    const [isAccessibilityStatementRoute, setIsAccessibilityStatementRoute] = useState(
+        () => typeof window !== "undefined" && window.location.hash === "#accessibility-statement",
+    );
 
     useScrollTracking();
 

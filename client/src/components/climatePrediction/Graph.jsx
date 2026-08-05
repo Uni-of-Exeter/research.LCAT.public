@@ -300,8 +300,9 @@ const Graph = (props) => {
             : [],
     };
 
+    const variableName = getClimateVariableByKey(variable)?.name ?? variable;
     const chartSummary =
-        `Line chart showing projected ${variable} for ${andify(regions.map((region) => region.name))}, ` +
+        `Line chart showing projected ${variableName} for ${andify(regions.map((region) => region.name))}, ` +
         `${season} averages, ${rcp === "rcp60" ? "RCP 6.0" : "RCP 8.5"} scenario. ` +
         `Full data available in the table below the chart.`;
 
