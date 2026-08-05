@@ -26,6 +26,7 @@ import ClimateSettings from "./components/climatePrediction/ClimateSettings";
 import ClimateSummary from "./components/climatePrediction/ClimateSummary";
 import Graph from "./components/climatePrediction/Graph";
 import CookieConsent from "./components/cookies/ConsentBanner";
+import AccessibilityStatement from "./components/footer/AccessibilityStatement";
 import Footer from "./components/footer/Footer";
 import LCATHeader from "./components/header/Header";
 import Introduction from "./components/header/Introduction";
@@ -86,6 +87,9 @@ const App = () => {
 
     const [selectedAdaptationHazards, setSelectedAdaptationHazards] = useState([defaultState.selectedImpactHazard]);
     const [filterName, setFilterName] = useState(defaultFilterName);
+    const [isAccessibilityStatementRoute, setIsAccessibilityStatementRoute] = useState(
+        () => typeof window !== "undefined" && window.location.hash === "#accessibility-statement",
+    );
 
     useScrollTracking();
 
@@ -107,6 +111,21 @@ const App = () => {
             setApplyCoastalFilter(defaultState.applyCoastalFilter);
         }
     }, [regions]);
+
+    useEffect(() => {
+        const updateRoute = () => {
+            setIsAccessibilityStatementRoute(window.location.hash === "#accessibility-statement");
+        };
+
+        updateRoute();
+        window.addEventListener("hashchange", updateRoute);
+
+        return () => window.removeEventListener("hashchange", updateRoute);
+    }, []);
+
+    if (isAccessibilityStatementRoute) {
+        return <AccessibilityStatement />;
+    }
 
     return (
         <>

@@ -1,0 +1,97 @@
+.graph-collapsible-header {
+    margin: 1em;
+}
+
+.graph-plot-container {
+    position: relative;
+    width: 100%;
+    min-height: 400px;
+    overflow: visible;
+}
+
+.graph-table-toggle-container {
+    margin-top: 0.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.graph-description {
+    margin-bottom: 0.25rem;
+}
+
+.graph-table-toggle {
+    font-size: 0.9rem;
+    padding: 0.35rem 0.55rem;
+    border-radius: 5px;
+    background: #ffd768ff;
+    cursor: pointer;
+}
+
+.graph-chart-figure {
+    margin: 0;
+}
+
+.graph-plot {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+}
+
+.graph-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.graph-data-table-container {
+    overflow-x: auto;
+    margin-top: 1rem;
+}
+
+.graph-data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.graph-data-table caption {
+    text-align: left;
+    margin-bottom: 0.5rem;
+    font-family: "Montserrat-SemiBold", Arial, Helvetica, sans-serif;
+}
+
+.graph-data-table th,
+.graph-data-table td {
+    text-align: left;
+    padding: 0.5rem;
+}
+
+.graph-data-table thead th {
+    border-bottom: 1px solid #d0d0d0;
+}
+
+.graph-data-table tbody th,
+.graph-data-table tbody td {
+    border-bottom: 1px solid #efefef;
+}
+
+.graph-note-bottom {
+    margin-bottom: 0;
+}
+
+.graph-note-top {
+    margin-top: 0;
+}
+
+.graph-temperature-note {
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.graph-collapsible-spacer {
+    height: 1rem;
+}

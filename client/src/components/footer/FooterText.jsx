@@ -94,6 +94,16 @@ const FooterText = () => {
                 >
                     Manage cookies
                 </button>
+                <a
+                    href="#accessibility-statement"
+                    style={{
+                        color: "var(--color-header-text)",
+                        textDecoration: "underline",
+                        marginRight: "1em",
+                    }}
+                >
+                    Accessibility statement
+                </a>
                 <a href="https://www.ecehh.org/privacy/" target="_blank" rel="noreferrer">
                     ECEHH privacy policy
                 </a>

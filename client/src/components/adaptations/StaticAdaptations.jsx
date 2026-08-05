@@ -154,7 +154,12 @@ const StaticAdaptations = (props) => {
                 )}
                 <li>
                     These adaptations can be filtered further by theme:{"  "}
-                    <select value={filterName} className="adaptation-theme-select" onChange={handleDropdownChange}>
+                    <select
+                        aria-label="Adaptation theme"
+                        value={filterName}
+                        className="adaptation-theme-select"
+                        onChange={handleDropdownChange}
+                    >
                         {adaptationFilters.map((filter, index) => (
                             <option value={filter.filterName} key={index}>
                                 {filter.displayName}

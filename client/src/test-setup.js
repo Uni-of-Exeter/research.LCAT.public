@@ -1,6 +1,9 @@
 import "@testing-library/jest-dom/vitest";
 
-import { beforeAll, beforeEach } from "vitest";
+import { toHaveNoViolations } from "jest-axe";
+import { beforeAll, beforeEach, expect } from "vitest";
+
+expect.extend(toHaveNoViolations);
 
 // Node 25 ships an experimental global `localStorage` that is present but non-functional:
 // it requires `--localstorage-file` and prints a warning; `getItem`/`clear`/etc. are not
@@ -9,6 +12,20 @@ import { beforeAll, beforeEach } from "vitest";
 // minimal in-memory replacement ONLY when the broken Node global is detected, making it a
 // no-op in environments where the real Storage API is available.
 beforeAll(() => {
+    if (typeof window !== "undefined" && typeof window.scrollTo !== "function") {
+        window.scrollTo = () => {};
+    }
+
+    if (typeof window !== "undefined" && typeof window.ResizeObserver !== "function") {
+        class ResizeObserverMock {
+            observe() {}
+
+            disconnect() {}
+        }
+
+        window.ResizeObserver = ResizeObserverMock;
+    }
+
     if (typeof localStorage !== "undefined" && typeof localStorage.getItem !== "function") {
         const storage = {};
 
