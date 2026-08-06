@@ -42,14 +42,14 @@ initialiseBoundaryDetails();
 
 // Derive country from ONS area code prefix, or use a fixed string for single-country boundaries
 const countrySQL = {
-    "boundary_uk_counties":  `CASE LEFT(UPPER(ctyua23cd), 1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' WHEN 'S' THEN 'Scotland' WHEN 'N' THEN 'Northern Ireland' END`,
-    "boundary_la_districts": `CASE LEFT(UPPER(lad23cd),   1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' WHEN 'S' THEN 'Scotland' WHEN 'N' THEN 'Northern Ireland' END`,
-    "boundary_lsoa":         `CASE LEFT(UPPER(lsoa21cd),  1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
-    "boundary_msoa":         `CASE LEFT(UPPER(msoa21cd),  1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
-    "boundary_parishes":     `CASE LEFT(UPPER(par23cd),   1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
-    "boundary_sc_dz":        `'Scotland'`,
-    "boundary_ni_dz":        `'Northern Ireland'`,
-    "boundary_iom":          `'Isle of Man'`,
+    boundary_uk_counties: `CASE LEFT(UPPER(ctyua23cd), 1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' WHEN 'S' THEN 'Scotland' WHEN 'N' THEN 'Northern Ireland' END`,
+    boundary_la_districts: `CASE LEFT(UPPER(lad23cd),   1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' WHEN 'S' THEN 'Scotland' WHEN 'N' THEN 'Northern Ireland' END`,
+    boundary_lsoa: `CASE LEFT(UPPER(lsoa21cd),  1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
+    boundary_msoa: `CASE LEFT(UPPER(msoa21cd),  1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
+    boundary_parishes: `CASE LEFT(UPPER(par23cd),   1) WHEN 'E' THEN 'England' WHEN 'W' THEN 'Wales' END`,
+    boundary_sc_dz: `'Scotland'`,
+    boundary_ni_dz: `'Northern Ireland'`,
+    boundary_iom: `'Isle of Man'`,
 };
 
 /// GET BOUNDARY DATA FROM DB ///
@@ -399,8 +399,8 @@ router.get("/chess_scape", async (req, res) => {
         const rawLocations = Array.isArray(req.query.locations)
             ? req.query.locations
             : req.query.locations
-                ? [req.query.locations]
-                : [];
+              ? [req.query.locations]
+              : [];
         const locations = parseIntegerArray(rawLocations);
         const rcp = req.query.rcp;
         const season = req.query.season;
@@ -489,9 +489,7 @@ router.get("/chess_scape_uk_averages", async (req, res) => {
         await client.end();
 
         // Format: { [decade]: mean }
-        const formattedData = Object.fromEntries(
-            result.rows.map((row) => [row.decade, row.mean])
-        );
+        const formattedData = Object.fromEntries(result.rows.map((row) => [row.decade, row.mean]));
         res.json(formattedData);
     } catch (err) {
         console.error("Error while executing query:", err);

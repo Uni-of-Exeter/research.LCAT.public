@@ -48,9 +48,7 @@ class CoastalIdentifier:
         Alter a boundary table to add a boolean column to it, of a given name.
         """
 
-        alter_table_query = (
-            f'ALTER TABLE "boundary_{boundary_identifier}" ADD COLUMN IF NOT EXISTS "{column_name}" BOOLEAN'
-        )
+        alter_table_query = f'ALTER TABLE "boundary_{boundary_identifier}" ADD COLUMN IF NOT EXISTS "{column_name}" BOOLEAN'
 
         self.cur.execute(alter_table_query)
         self.conn.commit()
@@ -68,7 +66,7 @@ class CoastalIdentifier:
             # Check if grid_overlaps table exists
             check_query = f"""
                 SELECT EXISTS (
-                    SELECT FROM information_schema.tables 
+                    SELECT FROM information_schema.tables
                     WHERE table_name = 'grid_overlaps_{boundary_identifier}'
                 );
             """
@@ -76,9 +74,7 @@ class CoastalIdentifier:
             table_exists = self.cur.fetchone()[0]
 
             if not table_exists:
-                print(
-                    f"Warning: grid_overlaps_{boundary_identifier} does not exist. Skipping."
-                )
+                print(f"Warning: grid_overlaps_{boundary_identifier} does not exist. Skipping.")
                 return
 
             # Check if overlaps table has any rows
@@ -87,9 +83,7 @@ class CoastalIdentifier:
             overlap_count = self.cur.fetchone()[0]
 
             if overlap_count == 0:
-                print(
-                    f"Warning: grid_overlaps_{boundary_identifier} is empty. Skipping."
-                )
+                print(f"Warning: grid_overlaps_{boundary_identifier} is empty. Skipping.")
                 return
 
             # IoM and NI: mark all regions as coastal

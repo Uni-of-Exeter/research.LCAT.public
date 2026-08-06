@@ -22,7 +22,8 @@ import { adaptationFilters, defaultFilterCategory, defaultFilterName } from "./A
 import StaticAdaptation from "./StaticAdaptation";
 
 const StaticAdaptations = (props) => {
-    const { selectedAdaptationHazards, setSelectedAdaptationHazards, applyCoastalFilter, filterName, setFilterName } = props;
+    const { selectedAdaptationHazards, setSelectedAdaptationHazards, applyCoastalFilter, filterName, setFilterName } =
+        props;
     const [showDataSource, setShowDataSource] = useState(false);
 
     // Load filter category
@@ -53,8 +54,8 @@ const StaticAdaptations = (props) => {
         });
 
         // Track first adaptation click
-        if (!hasTrackedAdaptationClick.current && typeof gtag !== 'undefined') {
-            gtag('event', 'adaptation_icon_clicked');
+        if (!hasTrackedAdaptationClick.current && typeof gtag !== "undefined") {
+            gtag("event", "adaptation_icon_clicked");
             hasTrackedAdaptationClick.current = true;
         }
     };
@@ -109,8 +110,8 @@ const StaticAdaptations = (props) => {
                 Based on the expected climate change and resulting impacts in the UK, the following adaptations should
                 be considered. These adaptations were identified to reduce risk to humans and the environment while
                 providing co-benefits where possible. Use the icons to filter adaptations by climate impact pathway.
-                More than one icon can be selected to see the adaptations relevant to multiple pathways.
-                Further filtering by adaptation theme is also possible.
+                More than one icon can be selected to see the adaptations relevant to multiple pathways. Further
+                filtering by adaptation theme is also possible.
             </p>
             <div className="horiz-container-pathway">
                 {filteredPathwayData.map((pathway) => (
@@ -123,7 +124,9 @@ const StaticAdaptations = (props) => {
                             <strong>{pathway.name}</strong>
                         </div>
                         <div className="icon">
-                            {React.cloneElement(pathway.icon, { selectedHazard: selectedAdaptationHazards.includes(pathway.name) })}
+                            {React.cloneElement(pathway.icon, {
+                                selectedHazard: selectedAdaptationHazards.includes(pathway.name),
+                            })}
                         </div>
                     </button>
                 ))}
@@ -151,7 +154,12 @@ const StaticAdaptations = (props) => {
                 )}
                 <li>
                     These adaptations can be filtered further by theme:{"  "}
-                    <select value={filterName} className="adaptation-theme-select" onChange={handleDropdownChange}>
+                    <select
+                        aria-label="Adaptation theme"
+                        value={filterName}
+                        className="adaptation-theme-select"
+                        onChange={handleDropdownChange}
+                    >
                         {adaptationFilters.map((filter, index) => (
                             <option value={filter.filterName} key={index}>
                                 {filter.displayName}
@@ -178,7 +186,7 @@ const StaticAdaptations = (props) => {
 
             <div className="data-source-section">
                 <button
-                    className={`data-source-header ${showDataSource ? 'expanded' : ''}`}
+                    className={`data-source-header ${showDataSource ? "expanded" : ""}`}
                     onClick={() => setShowDataSource(!showDataSource)}
                 >
                     <span>Reference source information</span>
@@ -188,15 +196,28 @@ const StaticAdaptations = (props) => {
                 {showDataSource && (
                     <div className="data-source-content">
                         <p>
-                            The adaptation data is based on published scientific literature and reports. You can see
-                            the references used by expanding each adaptation. The references are collected in the following categories:
+                            The adaptation data is based on published scientific literature and reports. You can see the
+                            references used by expanding each adaptation. The references are collected in the following
+                            categories:
                         </p>
                         <ul>
-                            <li><strong>Journal Article:</strong> Scholarly publications reporting original research or reviews of existing research</li>
-                            <li><strong>Report:</strong> Formal publications by organisations to communicate research, guidelines, or other relevant materials</li>
-                            <li><strong>Web page:</strong> Online reference materials (archived at time of inclusion)</li>
-                            <li><strong>Book:</strong> Sections, chapters, and full books</li>
-                            <li><strong>Database:</strong> Collections of evidence, such as tools or lists</li>
+                            <li>
+                                <strong>Journal Article:</strong> Scholarly publications reporting original research or
+                                reviews of existing research
+                            </li>
+                            <li>
+                                <strong>Report:</strong> Formal publications by organisations to communicate research,
+                                guidelines, or other relevant materials
+                            </li>
+                            <li>
+                                <strong>Web page:</strong> Online reference materials (archived at time of inclusion)
+                            </li>
+                            <li>
+                                <strong>Book:</strong> Sections, chapters, and full books
+                            </li>
+                            <li>
+                                <strong>Database:</strong> Collections of evidence, such as tools or lists
+                            </li>
                         </ul>
                     </div>
                 )}

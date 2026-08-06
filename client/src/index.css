@@ -84,6 +84,21 @@ button:hover {
     background: var(--color-button-hover);
 }
 
+.accessibility-statement-back {
+    display: inline-block;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-header-text);
+    cursor: pointer;
+    text-decoration: underline;
+    font: inherit;
+}
+
+.accessibility-statement-back:hover {
+    background: none;
+}
+
 /* Style the button that is used to open and close the collapsible content */
 .collapsible {
     display: flex;
@@ -187,6 +202,6 @@ button:hover {
 }
 
 :root {
-  --color-button-hover: rgba(245,130,31,1);
-  --color-header-text: #115158ff;
+    --color-button-hover: rgba(245, 130, 31, 1);
+    --color-header-text: #115158ff;
 }

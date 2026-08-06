@@ -29,11 +29,7 @@ const AdaptationGuide = () => {
                 </p>
                 <p>
                     Read our&nbsp;
-                    <a
-                        href={ADAPTATION_INTRO_PDF_URL}
-                        target="_blank"
-                        rel="noreferrer"
-                    >
+                    <a href={ADAPTATION_INTRO_PDF_URL} target="_blank" rel="noreferrer">
                         Introduction to Local Climate Adaptation (at ecehh.org)
                     </a>
                 </p>

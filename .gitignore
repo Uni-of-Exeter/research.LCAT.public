@@ -50,3 +50,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Superpowers workflow artifacts (specs, plans, and SDD scratch)
+.superpowers/
+docs/superpowers/

@@ -254,9 +254,7 @@ export const impacts = [
         id: 3,
         name: "Illness or injury caused by exposure to chemicals, heavy metals, and microplastics",
         inPathway: [0, 1, 2],
-        icon: (
-            <SvgAdverseHealthOutcomesAssociatedWithExposureToChemicalsHeavyMetalsAndMicroplastics className="icon" />
-        ),
+        icon: <SvgAdverseHealthOutcomesAssociatedWithExposureToChemicalsHeavyMetalsAndMicroplastics className="icon" />,
     },
     {
         id: 4,

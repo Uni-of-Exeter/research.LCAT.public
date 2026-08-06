@@ -28,11 +28,7 @@ const Handbook = () => {
                 </p>
                 <p>
                     Read the&nbsp;
-                    <a
-                        href={LCAT_HANDBOOK_URL}
-                        target="_blank"
-                        rel="noreferrer"
-                    >
+                    <a href={LCAT_HANDBOOK_URL} target="_blank" rel="noreferrer">
                         LCAT Handbook (at ecehh.org)
                     </a>
                 </p>

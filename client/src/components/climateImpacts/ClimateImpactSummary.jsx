@@ -14,7 +14,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./ClimateImpactSummary.css";
 
-import { useEffect, useRef,useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import LoadingOverlay from "react-loading-overlay-ts";
 
 import { defaultState } from "../../utils/defaultState.js";
@@ -36,13 +36,13 @@ const ClimateImpactSummary = ({ loading, selectedImpactHazard, setSelectedImpact
 
     const handleHazardChange = (e) => {
         const newHazardName = e.target.value;
-        
+
         // Track first-time hazard selection change
-        if (!hasTrackedHazardSelection.current && typeof gtag !== 'undefined') {
-            gtag('event', 'hazard_dropdown_used');
+        if (!hasTrackedHazardSelection.current && typeof gtag !== "undefined") {
+            gtag("event", "hazard_dropdown_used");
             hasTrackedHazardSelection.current = true;
         }
-        
+
         setSelectedImpactHazard(newHazardName);
     };
     const selectedPathwayData = filteredPathwayData.find((item) => item.name === selectedImpactHazard);
@@ -60,10 +60,7 @@ const ClimateImpactSummary = ({ loading, selectedImpactHazard, setSelectedImpact
 
             <p>
                 You are viewing the <strong className="text-emphasis">climate</strong> impacts for&nbsp;
-                <select
-                    value={selectedImpactHazard}
-                    onChange={handleHazardChange}
-                >
+                <select aria-label="Climate hazard" value={selectedImpactHazard} onChange={handleHazardChange}>
                     {filteredPathwayData.map((pathway) => (
                         <option value={pathway.name} key={pathway.id}>
                             {pathway.name}
@@ -84,7 +81,8 @@ const ClimateImpactSummary = ({ loading, selectedImpactHazard, setSelectedImpact
             </p>
 
             <p>
-                You are viewing the climate impacts for <strong className="text-emphasis">{selectedImpactHazard}</strong>.
+                You are viewing the climate impacts for{" "}
+                <strong className="text-emphasis">{selectedImpactHazard}</strong>.
             </p>
 
             <div className="horiz-container-impact">
@@ -106,7 +104,8 @@ const ClimateImpactSummary = ({ loading, selectedImpactHazard, setSelectedImpact
             </p>
 
             <p>
-                You are viewing the climate impacts for <strong className="text-emphasis">{selectedImpactHazard}</strong>.
+                You are viewing the climate impacts for{" "}
+                <strong className="text-emphasis">{selectedImpactHazard}</strong>.
             </p>
 
             <div className="horiz-container-impact">

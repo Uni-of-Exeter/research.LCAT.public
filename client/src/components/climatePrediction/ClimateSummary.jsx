@@ -51,7 +51,9 @@ const PredictionSummary = ({ prediction, year, variable, name, units, explanatio
         <HelpPopover content={explanation}>
             <span className="summary-name-link">{name}</span>
         </HelpPopover>
-    ) : name;
+    ) : (
+        name
+    );
 
     let text;
     if (climateData.value == null) {
@@ -59,19 +61,29 @@ const PredictionSummary = ({ prediction, year, variable, name, units, explanatio
     } else if (climateData.value === 0) {
         text = <>No change in {NameNode}</>;
     } else {
-        text = <>{NameNode} {climateData.direction} by {climateData.absoluteValue} {climateData.units}</>;
+        text = (
+            <>
+                {NameNode} {climateData.direction} by {climateData.absoluteValue} {climateData.units}
+            </>
+        );
     }
 
-    return (
-        <div className="summary-text">
-            {text}
-        </div>
-    );
+    return <div className="summary-text">{text}</div>;
 };
 
 // Component for arrow + icon + summary text
 // Only the icon is clickable – the rest of the box is not.
-const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClick = undefined, isSelected = false, isAnnual = false }) => {
+const ClimateVariable = ({
+    prediction,
+    year,
+    variable,
+    name,
+    units,
+    Icon,
+    onClick = undefined,
+    isSelected = false,
+    isAnnual = false,
+}) => {
     const value = climateChange(prediction, variable, year);
     const explanation = VARIABLE_EXPLANATIONS[variable];
 
@@ -84,11 +96,7 @@ const ClimateVariable = ({ prediction, year, variable, name, units, Icon, onClic
                     className={`climate-icon-button ${isSelected ? "climate-variable-selected" : ""}`}
                     onClick={onClick}
                 >
-                    <Icon
-                        className="climate-arrow"
-                        selected={isSelected}
-                        isAnnual={isAnnual}
-                    />
+                    <Icon className="climate-arrow" selected={isSelected} isAnnual={isAnnual} />
                 </button>
             </div>
             <PredictionSummary
@@ -113,9 +121,7 @@ const DetailClimateVariable = ({ prediction, year, variable, name, units, Icon }
         <div className="vert-container">
             {renderArrow(value)}
             <div className="climate-icon-wrapper">
-                <Icon
-                    className="climate-arrow"
-                />
+                <Icon className="climate-arrow" />
             </div>
             <PredictionSummary
                 prediction={prediction}
@@ -131,16 +137,13 @@ const DetailClimateVariable = ({ prediction, year, variable, name, units, Icon }
 
 // Final component for climate summary section
 const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) => {
-    if (regions.length === 0) return null;
-
     const [selectedVariable, setSelectedVariable] = useState(null);
 
-    const handleSelect = (variableKey) => {
-        setSelectedVariable((prev) =>
-            prev === variableKey ? null : variableKey
-        );
-    };
+    if (regions.length === 0) return null;
 
+    const handleSelect = (variableKey) => {
+        setSelectedVariable((prev) => (prev === variableKey ? null : variableKey));
+    };
 
     const isAnnual = season === "annual";
     const dryDaysUnits = isAnnual ? "days/year" : "days/season";
@@ -151,8 +154,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
         if (!selectedVariable) {
             return (
                 <div className="climate-details-placeholder">
-                    <p>Please click a climate variable icon to view additional metrics.
-                    </p>
+                    <p>Please click a climate variable icon to view additional metrics.</p>
                 </div>
             );
         }
@@ -178,7 +180,6 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                             units={derivedDayUnits}
                             Icon={HotHeatDaysSvg}
                         />
-
                     </div>
                 </div>
             );
@@ -227,7 +228,7 @@ const ClimateSummary = ({ regions, loading, climatePrediction, year, season }) =
                         year={year}
                         variable="windy_days"
                         name="Windy Days"
-                            units={derivedDayUnits}
+                        units={derivedDayUnits}
                         Icon={WindSvg}
                     />
                 </div>

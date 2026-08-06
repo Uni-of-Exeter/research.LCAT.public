@@ -218,11 +218,15 @@ def test_find_closest_grid_cell_executes_query_and_returns_three_values(oc):
         (2, b"BBB", False),
     ]
 
-    grid_cell_id, geom, bias = oc.find_closest_grid_cell("REGION", candidates)
+    with patch("data.src.overlap_calculator.psycopg2.extras.execute_values") as mock_ev:
+        grid_cell_id, geom, bias = oc.find_closest_grid_cell("REGION", candidates)
 
     assert (grid_cell_id, geom, bias) == (123, b"GEOM", True)
-    # at least ensure it ran a query with region_geom param
-    args, kwargs = oc.cur.execute.call_args
+    # execute_values was called with the candidate rows
+    mock_ev.assert_called_once()
+    assert mock_ev.call_args[0][2] == candidates
+    # the final SELECT was called with the region_geom parameter
+    args, _ = oc.cur.execute.call_args
     assert args[1] == ("REGION",)
 
 

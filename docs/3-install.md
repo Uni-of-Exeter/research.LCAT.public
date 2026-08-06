@@ -9,6 +9,42 @@ git clone https://github.com/Uni-of-Exeter/research.LCAT.public.git
 cd research.LCAT.public
 ```
 
+## Quick start with Docker Compose
+
+This is the quickest way to run the app stack locally (Express server + React build + PostgreSQL).
+
+### 1. Create a Docker Compose environment file
+
+From the repository root (this `.env` is used by Docker Compose; the manual setup below still expects `server/.env`):
+
+    cp .env.example .env
+
+### 2. Build and start the stack
+
+```bash
+docker compose up --build
+```
+
+### 3. Open the app
+
+Visit `http://localhost:3000` in your browser.
+
+### 4. Stop the stack
+
+```bash
+docker compose down
+```
+
+To remove the PostgreSQL data volume as well:
+
+```bash
+docker compose down -v
+```
+
+> Note: the database container starts empty. Build or restore the climate database using the guidance in `docs/2-build-database.md`.
+
+## Manual local setup (without Docker)
+
 ## 1. PostgreSQL database
 
 LCAT uses a Postgres database to store climate data, which is served to the user in the application via the API (located in the server module). You will need to build this database from scratch, or rebuild the database from a dump, as explained in `docs/2-build-database.md`. Once complete, ensure that the Postgres server is running.

@@ -1,38 +1,42 @@
-import { Image, Link, Text, View } from '@react-pdf/renderer';
+import { Image, Link, Text, View } from "@react-pdf/renderer";
 
-import DecreaseArrow from '../../../images/buttons/decrease.png';
-import IncreaseArrow from '../../../images/buttons/increase.png';
-import CloudIcon from '../../../images/climate/CloudCover.png';
-import RainIcon from '../../../images/climate/Rain.png';
-import TemperatureIcon from '../../../images/climate/Temperature.png';
-import WindIcon from '../../../images/climate/WindSpeed.png';
-import { climateVariables, formatClimateData } from '../../../utils/climateUtils';
-import { LCAT_HANDBOOK_URL } from '../../../utils/constants';
+import DecreaseArrow from "../../../images/buttons/decrease.png";
+import IncreaseArrow from "../../../images/buttons/increase.png";
+import CloudIcon from "../../../images/climate/CloudCover.png";
+import RainIcon from "../../../images/climate/Rain.png";
+import TemperatureIcon from "../../../images/climate/Temperature.png";
+import WindIcon from "../../../images/climate/WindSpeed.png";
+import { climateVariables, formatClimateData } from "../../../utils/climateUtils";
+import { LCAT_HANDBOOK_URL } from "../../../utils/constants";
 import { andify, rcpText, seasonText } from "../../../utils/utils";
-import { reportStyles as styles } from '../reportStyles';
-import { formatLineBreaks } from '../textFormattingUtils';
+import { reportStyles as styles } from "../reportStyles";
+import { formatLineBreaks } from "../textFormattingUtils";
 
 const getClimateIcon = (variable) => {
     const iconMap = {
-        'tas': TemperatureIcon,
-        'pr': RainIcon,
-        'rsds': CloudIcon,
-        'sfcWind': WindIcon,
-        'tropical_nights': TemperatureIcon,
-        'hot_heat_days': TemperatureIcon,
-        'heavy_rain_days': RainIcon,
-        'dry_days': CloudIcon,
-        'windy_days': WindIcon,
+        tas: TemperatureIcon,
+        pr: RainIcon,
+        rsds: CloudIcon,
+        sfcWind: WindIcon,
+        tropical_nights: TemperatureIcon,
+        hot_heat_days: TemperatureIcon,
+        heavy_rain_days: RainIcon,
+        dry_days: CloudIcon,
+        windy_days: WindIcon,
     };
     return iconMap[variable] || TemperatureIcon;
 };
 
 const getArrowIcon = (arrow) => {
     switch (arrow) {
-        case 'up': return IncreaseArrow;
-        case 'down': return DecreaseArrow;
-        case 'none': return null;
-        default: return null;
+        case "up":
+            return IncreaseArrow;
+        case "down":
+            return DecreaseArrow;
+        case "none":
+            return null;
+        default:
+            return null;
     }
 };
 
@@ -52,26 +56,34 @@ const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
             {regions && regions.length > 0 && rcp && season && (
                 <>
                     <Text style={styles.bodyText}>
-                        For <Text style={[styles.bodyText, { fontWeight: 'bold' }]}>{andify(regions.map(region => region.name))}</Text>
-                        {' '}under the
-                        <Text style={[styles.bodyText, { fontWeight: 'bold' }]}>
-                            {' '}{rcpText[rcp]}{' '}
-                        </Text>
-                        (equivalent to global warming level of {rcp === 'rcp60' ? '2.0-3.7C which is RCP 6.0' : '3.2-5.4C which is RCP 8.5'})
-                        {' '}the <Text style={[styles.bodyText, { fontWeight: 'bold' }]}>{seasonText[season]}</Text>
-                        {' '}average climate change for 2070 compared with local records for the 1980s is expected to be:
+                        For{" "}
+                        <Text style={[styles.bodyText, { fontWeight: "bold" }]}>
+                            {andify(regions.map((region) => region.name))}
+                        </Text>{" "}
+                        under the
+                        <Text style={[styles.bodyText, { fontWeight: "bold" }]}> {rcpText[rcp]} </Text>
+                        (equivalent to global warming level of{" "}
+                        {rcp === "rcp60" ? "2.0-3.7C which is RCP 6.0" : "3.2-5.4C which is RCP 8.5"}) the{" "}
+                        <Text style={[styles.bodyText, { fontWeight: "bold" }]}>{seasonText[season]}</Text> average
+                        climate change for 2070 compared with local records for the 1980s is expected to be:
                     </Text>
                 </>
             )}
 
             <View style={styles.climateContainer}>
                 {climateVariables.map((item, index) => {
-                    const climateData = formatClimateData(climatePrediction, item.variable, item.name, item.units, 2070);
+                    const climateData = formatClimateData(
+                        climatePrediction,
+                        item.variable,
+                        item.name,
+                        item.units,
+                        2070,
+                    );
                     const iconSrc = getClimateIcon(item.variable);
                     const arrowSrc = getArrowIcon(climateData.arrow);
 
                     return (
-                        <View key={index} style={[styles.climateItem, { width: '24%' }]}>
+                        <View key={index} style={[styles.climateItem, { width: "24%" }]}>
                             <View style={styles.iconContainer}>
                                 <View style={{ width: 15, height: 12, marginBottom: 4 }}>
                                     {arrowSrc && <Image src={arrowSrc} style={{ width: 15, height: 12 }} />}
@@ -87,16 +99,13 @@ const ClimateSummaryPDF = ({ climatePrediction, regions, rcp, season }) => {
 
             <Text style={styles.bodyText}>
                 Note: Yearly average climate change does not always reflect the extremes of summer and winter.
-                {'\n\n'}
+                {"\n\n"}
                 Data source: The current iteration of the tool uses climate data from the{" "}
                 <Link src="https://catalogue.ceda.ac.uk/uuid/8194b416cbee482b89e0dfbe17c5786c">CHESS-SCAPE</Link>{" "}
                 dataset. CHESS-SCAPE provides bias-corrected data for England, Scotland, Wales, and the Isle of Man.
                 CHESS-SCAPE provides non bias-corrected data for Northern Ireland and the Isles of Scilly. The tool
                 displays RCP 6.0 and RCP 8.5. For more information, please see the{" "}
-                <Link src={LCAT_HANDBOOK_URL}>
-                    LCAT Handbook
-                </Link>
-                .
+                <Link src={LCAT_HANDBOOK_URL}>LCAT Handbook</Link>.
             </Text>
         </View>
     );

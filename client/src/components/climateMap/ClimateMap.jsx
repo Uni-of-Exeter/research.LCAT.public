@@ -15,7 +15,7 @@ Common Good Public License Beta 1.0 for more details. */
 import "./ClimateMap.css";
 
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
 import LoadingOverlay from "react-loading-overlay-ts";
 
@@ -92,8 +92,8 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
             const alreadySelected = prevRegions.some((r) => r.id === gid);
             if (!alreadySelected) {
                 // Track region selection once
-                if (!hasTrackedRegionSelection.current && typeof gtag !== 'undefined') {
-                    gtag('event', 'region_selection');
+                if (!hasTrackedRegionSelection.current && typeof gtag !== "undefined") {
+                    gtag("event", "region_selection");
                     hasTrackedRegionSelection.current = true;
                 }
                 targetLayer && targetLayer.setStyle({ fillColor: highlightCol, fillOpacity: 1 });
@@ -121,7 +121,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
         countryMap.current.clear();
     };
 
-    const handleSetGeojson = (data) => {
+    const handleSetGeojson = useCallback((data) => {
         const geojsonData = data.features ? data : { features: [] };
 
         const map = new Map();
@@ -132,7 +132,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
         setGeojson(geojsonData);
         setGeojsonKey((prev) => prev + 1);
         setTriggerLoadingIndicator(false);
-    };
+    }, []);
 
     const regionTypeToName = (mapping, type) => {
         return mapping[type] || "";
@@ -180,6 +180,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                 To begin, select the area/s you are interested in by clicking on the map. Climate data for your chosen
                 area/s will appear below.{" "}
                 <select
+                    aria-label="Boundary type"
                     onChange={(e) => {
                         setRegionType(e.target.value);
                         setRegions([]);
@@ -232,6 +233,7 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                                 <div className="climate-map-search">
                                     <input
                                         type="text"
+                                        aria-label="Search regions"
                                         placeholder="Search regions..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -273,7 +275,9 @@ const ClimateMap = ({ regions, setRegions, allRegions, regionType, setRegionType
                                                         type="checkbox"
                                                         id={checkboxId}
                                                         checked={isSelected}
-                                                        onChange={() => toggleRegion(region.gid, region.name, null, region.country)}
+                                                        onChange={() =>
+                                                            toggleRegion(region.gid, region.name, null, region.country)
+                                                        }
                                                     />
                                                     <label htmlFor={checkboxId}>{region.name}</label>
                                                 </div>

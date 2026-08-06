@@ -18,10 +18,7 @@ const SvgDryDays = ({ selected, isAnnual, ...rest }) => {
         >
             <defs>
                 <linearGradient id="swatch1">
-                    <stop
-                        style={{ stopColor: "#115158", stopOpacity: 1 }}
-                        offset="0"
-                    />
+                    <stop style={{ stopColor: "#115158", stopOpacity: 1 }} offset="0" />
                 </linearGradient>
                 <linearGradient
                     xlinkHref="#swatch1"

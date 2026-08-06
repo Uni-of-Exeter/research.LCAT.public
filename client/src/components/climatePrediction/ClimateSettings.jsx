@@ -26,7 +26,7 @@ const ClimateSettings = ({ regions, rcp, season, setRcp, setSeason }) => {
                 For&nbsp;
                 <span className="projected-regions">{andify(regions.map((e) => e.name))}</span>
                 &nbsp;under the&nbsp;
-                <select value={rcp} onChange={(e) => setRcp(e.target.value)}>
+                <select aria-label="Climate scenario" value={rcp} onChange={(e) => setRcp(e.target.value)}>
                     <option value="rcp60">{rcpText.rcp60}</option>
                     <option value="rcp85">{rcpText.rcp85}</option>
                 </select>
@@ -34,7 +34,7 @@ const ClimateSettings = ({ regions, rcp, season, setRcp, setSeason }) => {
                 {rcp === "rcp60" && <span>(equivalent to global warming level of 2.0-3.7C which is RCP 6.0)</span>}
                 {rcp === "rcp85" && <span>(equivalent to global warming level of 3.2-5.4C which is RCP 8.5)</span>}
                 &nbsp;the&nbsp;
-                <select value={season} onChange={(e) => setSeason(e.target.value)}>
+                <select aria-label="Season" value={season} onChange={(e) => setSeason(e.target.value)}>
                     <option value="annual">{seasonText.annual}</option>
                     <option value="summer">{seasonText.summer}</option>
                     <option value="winter">{seasonText.winter}</option>

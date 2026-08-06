@@ -14,7 +14,7 @@ Common Good Public License Beta 1.0 for more details. */
 
 import "./PersonalSocialVulnerabilities.css";
 
-import React, { useRef,useState } from "react";
+import React, { useRef, useState } from "react";
 
 import { vulnerabilityData } from "./PersonalSocialVulnerabilitiesData";
 
@@ -26,8 +26,8 @@ const PersonalSocialVulnerabilities = () => {
         setSelectedVulnerability(vulnerabilityName);
 
         // Track first vulnerability click
-        if (!hasTrackedVulnerabilityClick.current && typeof gtag !== 'undefined') {
-            gtag('event', 'vulnerability_icon_clicked');
+        if (!hasTrackedVulnerabilityClick.current && typeof gtag !== "undefined") {
+            gtag("event", "vulnerability_icon_clicked");
             hasTrackedVulnerabilityClick.current = true;
         }
     };
@@ -68,9 +68,7 @@ const PersonalSocialVulnerabilities = () => {
                         <div className="vulnerability-text">
                             <strong>{vulnerability.name}</strong>
                         </div>
-                        <div className="icon">
-                            {React.cloneElement(vulnerability.icon, { selectedVulnerability })}
-                        </div>
+                        <div className="icon">{React.cloneElement(vulnerability.icon, { selectedVulnerability })}</div>
                     </button>
                 ))}
             </div>

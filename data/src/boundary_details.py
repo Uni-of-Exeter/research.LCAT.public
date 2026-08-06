@@ -75,7 +75,10 @@ class DetailsGenerator:
         """
 
         insert_query = f"""
-        INSERT INTO "{self.table_name}" (boundary_identifier, print_name, shapefile_name_col, source_srid, db_srid, boundary_table_name, overlap_table_name, method)
+        INSERT INTO "{self.table_name}" (
+            boundary_identifier, print_name, shapefile_name_col,
+            source_srid, db_srid, boundary_table_name, overlap_table_name, method
+        )
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
 

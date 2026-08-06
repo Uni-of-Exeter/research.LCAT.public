@@ -1,13 +1,55 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export default function CookiePolicyModal({ open, onClose }) {
+    const modalRef = useRef(null);
+    const previouslyFocused = useRef(null);
+
     useEffect(() => {
         if (!open) return;
+
+        const scrollY = window.scrollY;
+        const previousBodyPosition = document.body.style.position;
+        const previousBodyTop = document.body.style.top;
+        const previousBodyWidth = document.body.style.width;
+
+        document.body.style.position = "fixed";
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.width = "100%";
+
+        previouslyFocused.current = document.activeElement;
+        modalRef.current?.focus();
+
         function onKeyDown(e) {
-            if (e.key === 'Escape') onClose();
+            if (e.key === "Escape") {
+                onClose();
+                return;
+            }
+            if (e.key === "Tab") {
+                const focusable = modalRef.current.querySelectorAll(
+                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+                );
+                if (focusable.length === 0) return;
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
         }
-        window.addEventListener('keydown', onKeyDown);
-        return () => window.removeEventListener('keydown', onKeyDown);
+
+        window.addEventListener("keydown", onKeyDown);
+        return () => {
+            document.body.style.position = previousBodyPosition;
+            document.body.style.top = previousBodyTop;
+            document.body.style.width = previousBodyWidth;
+            window.scrollTo(0, scrollY);
+            window.removeEventListener("keydown", onKeyDown);
+            previouslyFocused.current?.focus?.();
+        };
     }, [open, onClose]);
 
     if (!open) return null;
@@ -17,7 +59,9 @@ export default function CookiePolicyModal({ open, onClose }) {
             id="cookie-policy-modal"
             role="dialog"
             aria-modal="true"
+            aria-labelledby="cookie-policy-modal-title"
             tabIndex={-1}
+            ref={modalRef}
             style={{
                 position: "fixed",
                 top: 0,
@@ -28,12 +72,12 @@ export default function CookiePolicyModal({ open, onClose }) {
                 zIndex: 10001,
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
+                justifyContent: "center",
             }}
         >
             <div
-                role="button"
-                aria-label="Close cookie policy overlay"
+                aria-hidden="true"
+                onClick={onClose}
                 style={{
                     position: "fixed",
                     top: 0,
@@ -42,15 +86,7 @@ export default function CookiePolicyModal({ open, onClose }) {
                     height: "100vh",
                     background: "transparent",
                     zIndex: 10001,
-                    cursor: "pointer"
-                }}
-                tabIndex={0}
-                onClick={onClose}
-                onKeyDown={e => {
-                    if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        onClose();
-                    }
+                    cursor: "pointer",
                 }}
             />
             <div
@@ -66,7 +102,7 @@ export default function CookiePolicyModal({ open, onClose }) {
                     zIndex: 10002,
                     overflowY: "auto",
                     display: "flex",
-                    flexDirection: "column"
+                    flexDirection: "column",
                 }}
             >
                 <button
@@ -81,16 +117,46 @@ export default function CookiePolicyModal({ open, onClose }) {
                         fontSize: 24,
                         color: "#888",
                         cursor: "pointer",
-                        zIndex: 10003
+                        zIndex: 10003,
                     }}
-                >&times;</button>
-                <h2 style={{marginTop: 0}}>Cookie Policy</h2>
-                <div style={{fontSize: "1rem", lineHeight: 1.6}}>
-                    <p><strong>What are cookies?</strong> Cookies are small text files stored on your device to help websites function and collect information about your usage.</p>
-                    <p><strong>How we use cookies:</strong> We use essential cookies for site functionality and, with your consent, analytics cookies to understand how visitors use our site. Analytics cookies are only set if you accept them.</p>
-                    <p><strong>Essential cookies:</strong> We use a cookie named <code>cookie_consent</code> in your browser&apos;s local storage to remember your cookie preferences, so we do not repeatedly ask for your consent. This value does not expire automatically and will remain until you clear your browser storage or change your preference.</p>
-                    <p><strong>Third-party cookies:</strong> We use Google Analytics to collect anonymous usage statistics. For more information, see <a href="https://policies.google.com/technologies/cookies" target="_blank" rel="noopener noreferrer">Google's cookie policy</a>.</p>
-                    <p><strong>Managing cookies:</strong> You can accept or reject analytics cookies at any time using the cookie banner or the &quot;Manage cookies&quot; link in the site footer.</p>
+                >
+                    &times;
+                </button>
+                <h2 id="cookie-policy-modal-title" style={{ marginTop: 0 }}>
+                    Cookie Policy
+                </h2>
+                <div style={{ fontSize: "1rem", lineHeight: 1.6 }}>
+                    <p>
+                        <strong>What are cookies?</strong> Cookies are small text files stored on your device to help
+                        websites function and collect information about your usage.
+                    </p>
+                    <p>
+                        <strong>How we use cookies:</strong> We use essential cookies for site functionality and, with
+                        your consent, analytics cookies to understand how visitors use our site. Analytics cookies are
+                        only set if you accept them.
+                    </p>
+                    <p>
+                        <strong>Essential cookies:</strong> We use a cookie named <code>cookie_consent</code> in your
+                        browser&apos;s local storage to remember your cookie preferences, so we do not repeatedly ask
+                        for your consent. This value does not expire automatically and will remain until you clear your
+                        browser storage or change your preference.
+                    </p>
+                    <p>
+                        <strong>Third-party cookies:</strong> We use Google Analytics to collect anonymous usage
+                        statistics. For more information, see{" "}
+                        <a
+                            href="https://policies.google.com/technologies/cookies"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Google&apos;s cookie policy
+                        </a>
+                        .
+                    </p>
+                    <p>
+                        <strong>Managing cookies:</strong> You can accept or reject analytics cookies at any time using
+                        the cookie banner or the &quot;Manage cookies&quot; link in the site footer.
+                    </p>
                 </div>
             </div>
         </div>
