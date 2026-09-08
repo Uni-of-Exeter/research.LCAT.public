@@ -5,18 +5,8 @@ updates:
     schedule:
       interval: "monthly"
     target-branch: "dev"
-    open-pull-requests-limit: 5
-    cooldown:
-      default-days: 10
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+    open-pull-requests-limit: 0
     groups:
-      minor-and-patch:
-        applies-to: version-updates
-        update-types:
-          - "minor"
-          - "patch"
       security-updates:
         applies-to: security-updates
         update-types:
@@ -28,18 +18,8 @@ updates:
     schedule:
       interval: "monthly"
     target-branch: "dev"
-    open-pull-requests-limit: 5
-    cooldown:
-      default-days: 10
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+    open-pull-requests-limit: 0
     groups:
-      minor-and-patch:
-        applies-to: version-updates
-        update-types:
-          - "minor"
-          - "patch"
       security-updates:
         applies-to: security-updates
         update-types:
@@ -51,18 +31,8 @@ updates:
     schedule:
       interval: "monthly"
     target-branch: "dev"
-    open-pull-requests-limit: 5
-    cooldown:
-      default-days: 10
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+    open-pull-requests-limit: 0
     groups:
-      minor-and-patch:
-        applies-to: version-updates
-        update-types:
-          - "minor"
-          - "patch"
       security-updates:
         applies-to: security-updates
         update-types:
