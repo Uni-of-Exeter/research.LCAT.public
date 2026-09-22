@@ -55,7 +55,11 @@ const Introduction = () => {
                     </a>
                 </li>
                 <li>
-                    <a href="https://climatedataportal.metoffice.gov.uk/pages/lacs" target="_blank" rel="noopener noreferrer">
+                    <a
+                        href="https://climatedataportal.metoffice.gov.uk/pages/lacs"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
                         Met Office Local Authority Climate Service
                     </a>
                 </li>
