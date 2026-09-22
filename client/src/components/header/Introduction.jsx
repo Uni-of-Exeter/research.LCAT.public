@@ -44,19 +44,32 @@ const Introduction = () => {
                     <a
                         href="https://www.ecehh.org/wp/wp-content/uploads/2021/09/LCAT-Introduction-to-Local-Climate-Adaptation-May-2024.pdf"
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                     >
                         Introduction to Local Climate Adaptation
                     </a>
                 </li>
                 <li>
-                    <a href={LCAT_HANDBOOK_URL} target="_blank" rel="noreferrer">
+                    <a href={LCAT_HANDBOOK_URL} target="_blank" rel="noopener noreferrer">
                         LCAT Handbook
                     </a>
                 </li>
                 <li>
-                    <a href="https://climatedataportal.metoffice.gov.uk/pages/lacs" target="_blank" rel="noreferrer">
+                    <a
+                        href="https://climatedataportal.metoffice.gov.uk/pages/lacs"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
                         Met Office Local Authority Climate Service
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://gfn.exeter.ac.uk/wp-content/uploads/Local-Adaptation-Workshop-Guide.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Local Adaptation Workshop Guide: Using LCAT to start conversations, develop plans and more
                     </a>
                 </li>
             </ul>
