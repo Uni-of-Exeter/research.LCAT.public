@@ -59,6 +59,11 @@ const Introduction = () => {
                         Met Office Local Authority Climate Service
                     </a>
                 </li>
+                <li>
+                    <a href="https://gfn.exeter.ac.uk/wp-content/uploads/Local-Adaptation-Workshop-Guide.pdf" target="_blank" rel="noreferrer">
+                        Local Adaptation Workshop Guide: Using LCAT to start conversations, develop plans and more
+                    </a>
+                </li>
             </ul>
             <p>
                 Once you have selected your area, you can use the{" "}
